@@ -46,9 +46,13 @@ For future reference
 * https://www.openarchives.org/rs/notification/1.0.1/notification
 * http://aksw.org/Projects/SemanticPingback.html
 * https://en.wikipedia.org/wiki/WebSub
+* (not working) https://www.programmableweb.com/api/ping-semantic-web
 
 ## List of repos for upload of metadata
 * https://www.sciencebase.gov/catalog/ 
+* DataHub ?
+* LingHub ?
+* LOD Cloud ? 
 
 
 
