@@ -44,14 +44,14 @@ ${project.build.resources[0].directory}
                 <groupId>org.dbpedia.databus</groupId>
                 <artifactId>databus-maven-plugin</artifactId>
                 <version>1.0-SNAPSHOT</version>
-                <!--executions>
+                <executions>
                     <execution>
                         <phase>compile</phase>
                         <goals>
                             <goal>metadata</goal>
                         </goals>
                     </execution>
-                </executions-->
+                </executions>
             </plugin>
         </plugins>
     </build>

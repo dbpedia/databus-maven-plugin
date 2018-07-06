@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * Goal which touches a timestamp file.
  *
- * @goal process-resources
+ * @goal metadata
  * 
  * @phase compile
  */
