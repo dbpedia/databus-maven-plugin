@@ -33,10 +33,20 @@ Data
 * sign with WebID
 
 
+# Announcing updates with Webmentions:
+`curl -i -d "source=$your_url&target=$target_url" $targets_webmention_endpoint`
+
+One-liner webmentions
+
+This will send the webmention in a single command:
+
+```
+curl -i -d "source=$your_url&target=$target_url" `curl -i -s $target_url | grep 'rel="http://webmention.org/"' | sed 's/rel="webmention"//' | grep -o -E 'https?://[^ ">]+' | sort | uniq`
+```
 
 
 
-# Add-ons and formats
+# Add-ons and formats 
 For future reference
 
 ## List of versioning approaches
