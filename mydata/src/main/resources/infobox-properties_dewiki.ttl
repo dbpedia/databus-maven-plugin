@@ -1,0 +1,10 @@
+<http://de.dbpedia.org/resource/Anglizismus> <http://de.dbpedia.org/property/autor> "Margret Altleitner"@de .
+<http://de.dbpedia.org/resource/Anglizismus> <http://de.dbpedia.org/property/titel> "Der Wellness-Effekt: Die Bedeutung von Anglizismen aus der Perspektive der kognitiven Linguistik"@de .
+<http://de.dbpedia.org/resource/Anglizismus> <http://de.dbpedia.org/property/reihe> "Europäische Hochschulschriften"@de .
+<http://de.dbpedia.org/resource/Anglizismus> <http://de.dbpedia.org/property/bandreihe> "Band 21: Linguistik, Band 310"@de .
+<http://de.dbpedia.org/resource/Anglizismus> <http://de.dbpedia.org/property/verlag> "Peter Lang"@de .
+<http://de.dbpedia.org/resource/Anglizismus> <http://de.dbpedia.org/property/ort> "Frankfurt am Main"@de .
+<http://de.dbpedia.org/resource/Anglizismus> <http://de.dbpedia.org/property/datum> "2007"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://de.dbpedia.org/resource/Anglizismus> <http://de.dbpedia.org/property/isbn> "978"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://de.dbpedia.org/resource/Anglizismus> <http://de.dbpedia.org/property/kommentar> "Dissertation Uni München 2006"@de .
+<http://de.dbpedia.org/resource/Anglizismus> <http://de.dbpedia.org/property/titel> "Anglizismen – quantitativ"@de .
