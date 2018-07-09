@@ -5,10 +5,14 @@
     <artifactId>databus-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>databus-maven-plugin</name>
+    <name>${project.artifactId}</name>
+
     <url>http://maven.apache.org</url>
     <properties>
+        <encoding>UTF-8</encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <scala.version>2.11.12</scala.version>
+        <scala.compat.version>2.11</scala.compat.version>
     </properties>
 
     <dependencies>
@@ -29,6 +33,98 @@
             <version>3.4</version>
             <scope>provided</scope>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-reflect</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
 
+    </dependencies>
+    <build>
+        <sourceDirectory>src/main/scala</sourceDirectory>
+        <testSourceDirectory>src/test/scala</testSourceDirectory>
+
+        <plugins>
+            <plugin>
+                <!-- see http://davidb.github.com/scala-maven-plugin -->
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <args>
+                                <!--<arg>-make:transitive</arg>-->
+                                <arg>-dependencyfile</arg>
+                                <arg>${project.build.directory}/.scala_dependencies</arg>
+                                <arg>-deprecation</arg>
+                                <arg>-feature</arg>
+                            </args>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <recompileMode>incremental</recompileMode>
+                    <launchers>
+                        <launcher>
+                            <id>runner</id>
+                            <mainClass>org.dbpedia.databus.ids.Runner</mainClass>
+                            <jvmArgs>
+                                <jvmArg>-server</jvmArg>
+                                <jvmArg>-Xmx200G</jvmArg>
+                                <jvmArg>-XX:+UseConcMarkSweepGC</jvmArg>
+                                <jvmArg>-Dcom.sun.management.jmxremote=true</jvmArg>
+                                <jvmArg>-Dcom.sun.management.jmxremote.authenticate=false</jvmArg>
+                                <jvmArg>-Dcom.sun.management.jmxremote.ssl=false</jvmArg>
+                                <jvmArg>-Dcom.sun.management.jmxremote.port=9010</jvmArg>
+                                <jvmArg>-Dcom.sun.management.jmxremote.rmi.port=9011</jvmArg>
+                                <jvmArg>-Djava.rmi.server.hostname=localhost</jvmArg>
+                            </jvmArgs>
+                        </launcher>
+                    </launchers>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+                <configuration>
+                    <useFile>false</useFile>
+                    <disableXmlReport>true</disableXmlReport>
+                    <!-- If you have classpath issue like NoDefClassError,... -->
+                    <!-- useManifestOnlyJar>false</useManifestOnlyJar -->
+                    <includes>
+                        <include>**/*Test.*</include>
+                        <include>**/*Suite.*</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <configuration>
+                    <rules>
+                        <dependencyConvergence/>
+                    </rules>
+                </configuration>
+            </plugin>
+        </plugins>
+
+
+    </build>
 </project>

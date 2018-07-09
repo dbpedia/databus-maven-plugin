@@ -14,10 +14,10 @@ import org.apache.maven.plugins.annotations.Parameter;
  * - get the public key from the webid
  * - get the private key from the config, generate a public key and compare to the public key
  *
- * @phase validate
+ * @phase validate2
  */
-@Mojo(name = "validate")
-public class Validate extends AbstractMojo {
+@Mojo(name = "validate2")
+public class Validate2 extends AbstractMojo {
 
     @Parameter
     private String maintainer;
