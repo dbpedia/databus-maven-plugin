@@ -16,6 +16,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  *
  * @phase validate2
  */
+@Deprecated
 @Mojo(name = "validate2")
 public class Validate2 extends AbstractMojo {
 

@@ -43,16 +43,16 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>metadata-create</id>
-
-                        <phase>compile</phase>
+                        <id>analysis</id>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>metadata</goal>
+                            <goal>analysis</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
                     <maintainer>https://termilion.github.io/webid.ttl#this</maintainer>
+                    <resourceDirectory>src/main/resources/</resourceDirectory>
                 </configuration>
             </plugin>
         </plugins>

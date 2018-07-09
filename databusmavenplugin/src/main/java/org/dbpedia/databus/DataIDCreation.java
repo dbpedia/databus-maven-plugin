@@ -16,6 +16,7 @@ import java.io.IOException;
  * @goal metadata
  * @phase compile
  */
+@Deprecated
 @Mojo( name = "metadata-create")
 public class DataIDCreation
         extends AbstractMojo {

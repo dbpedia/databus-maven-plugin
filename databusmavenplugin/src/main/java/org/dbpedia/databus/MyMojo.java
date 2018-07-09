@@ -30,6 +30,7 @@ import java.io.IOException;
  * 
  * @phase process-sources
  */
+@Deprecated
 public class MyMojo
     extends AbstractMojo
 {
