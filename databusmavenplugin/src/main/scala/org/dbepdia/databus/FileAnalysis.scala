@@ -9,13 +9,20 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 
 
 /**
-  * Analyse release files
+  * Analyse release data files
   *
-  * WebID
-  * - dereference and download
-  * - get the public key from the webid
-  * - get the private key from the config, generate a public key and compare to the public key
+  * Generates statistics from the release data files such as:
+  * * md5sum
+  * * bytesize
+  * * compression algo used
+  * * internal mimetype
+  * Also creates a signature with the private key
   *
+  * Later more can be added like
+  * * links
+  * * triple size
+  *
+  * @phase generate-resources
   */
 @Mojo(name = "analysis", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 class FileAnalysis extends AbstractMojo {
