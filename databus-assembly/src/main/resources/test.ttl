@@ -1,1 +1,0 @@
-<http://downloads.dbpedia.org/2016-10/core-i18n/de/2016-10_dataid_de.ttl> a dataid:DataId.

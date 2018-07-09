@@ -14,6 +14,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <dataset>infobox-properties</dataset>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <!-- CONFIGURATION -->
+        <maintainer>https://termilion.github.io/webid.ttl#this</maintainer>
+        <date.issued>2018-07-04</date.issued>
+        <date.modified>2018-07-04</date.modified>
     </properties>
     <!--
 ${project.build.resources[0].directory}
@@ -50,12 +58,17 @@ ${project.build.resources[0].directory}
                 <version>1.0-SNAPSHOT</version>
                 <executions>
                     <execution>
+                        <id>metadata-create</id>
+
                         <phase>compile</phase>
                         <goals>
                             <goal>metadata</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <maintainer>https://termilion.github.io/webid.ttl#this</maintainer>
+                </configuration>
             </plugin>
         </plugins>
     </build>
