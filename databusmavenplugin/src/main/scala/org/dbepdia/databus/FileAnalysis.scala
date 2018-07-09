@@ -5,8 +5,7 @@ import java.security.{DigestInputStream, MessageDigest}
 
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
-import org.apache.maven.plugins.annotations.Mojo
-import org.apache.maven.plugins.annotations.Parameter
+import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 
 
 /**
@@ -17,28 +16,48 @@ import org.apache.maven.plugins.annotations.Parameter
   * - get the public key from the webid
   * - get the private key from the config, generate a public key and compare to the public key
   *
-  * @phase generate-resources
   */
-@Mojo(name = "analysis")
+@Mojo(name = "analysis", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 class FileAnalysis extends AbstractMojo {
 
-  //@Parameter private var sourceDirectory
-  //@Expression("${project.build.directory}")
+  @Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
+  private val multiModuleBaseDirectory : String = ""
 
   @Parameter
-  var resourceDirectory: String = _
+  val resourceDirectory: String = ""
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
-
-    getLog.info("reading from "+resourceDirectory);
-    //val l = getListOfFiles(resourceDirectory)
-    val l = new File(".").listFiles()
-    getLog.info("reading from "+l);
-
-    l.foreach(f => getLog.info(f.getAbsolutePath))
+    val moduleDirectories = getModules(multiModuleBaseDirectory)
+    moduleDirectories.foreach(moduleDir => {
+      getLog.info(s"reading from module $moduleDir")
+      getListOfFiles(s"$moduleDir/$resourceDirectory").foreach(datafile => {
+        getLog.info(s"found file $datafile")
+        val md5 = computeHash(datafile.getAbsolutePath)
+        getLog.info(s"md5: ${md5}")
+        // triple-count != line-count? Comments, duplicates or other serializations would make them differ
+        // TODO: implement a better solution
+        val lines = io.Source.fromFile(datafile).getLines.size
+        getLog.info(s"Lines: $lines")
+        val bytes = datafile.length()
+        getLog.info(s"ByteSize: $bytes")
+      })
+    })
   }
 
+  /**
+    * returns list of Subdirectories
+    * @param dir
+    * @return
+    */
+  def getModules(dir: String): List[File] = {
+    val d = new File(dir)
+    if (d.exists && d.isDirectory) {
+      d.listFiles().filter(_.isDirectory).toList
+    } else {
+      List[File]()
+    }
+  }
   /**
     * guess what
     *
