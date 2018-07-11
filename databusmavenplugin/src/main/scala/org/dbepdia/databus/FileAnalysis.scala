@@ -1,10 +1,11 @@
 package org.dbpedia.databus
 
 import java.io.{File, FileInputStream}
-import java.security.{DigestInputStream, MessageDigest}
+import java.nio.file.Files
+import java.security._
+import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 
-import org.apache.maven.plugin.AbstractMojo
-import org.apache.maven.plugin.MojoExecutionException
+import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 
 
@@ -22,7 +23,6 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
   * * links
   * * triple size
   *
-  * @phase generate-resources
   */
 @Mojo(name = "analysis", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 class FileAnalysis extends AbstractMojo {
@@ -48,6 +48,15 @@ class FileAnalysis extends AbstractMojo {
         getLog.info(s"Lines: $lines")
         val bytes = datafile.length()
         getLog.info(s"ByteSize: $bytes")
+        val mimetypes = getMimeType(datafile.getName)
+        val innerMime = mimetypes.inner
+        val outerMime = mimetypes.outer
+        innerMime.foreach(v =>
+          getLog.info(s"MimeTypes(inner): $v")
+        )
+        outerMime.foreach(v =>
+          getLog.info(s"MimeTypes(outer): $v")
+        )
       })
     })
   }
@@ -84,7 +93,6 @@ class FileAnalysis extends AbstractMojo {
     * Compute a hash of a file
     * The output of this function should match the output of running "md5 -q <file>"
     */
-
   def computeHash(path: String): String = {
     val buffer = new Array[Byte](8192)
     val md5 = MessageDigest.getInstance("MD5")
@@ -99,5 +107,52 @@ class FileAnalysis extends AbstractMojo {
     md5.digest.map("%02x".format(_)).mkString
   }
 
+  def sign(privateKeyPath: String, dataid: Array[Byte]): String = {
+    val keyBytes = Files.readAllBytes(new File(privateKeyPath).toPath)
+    val spec = new PKCS8EncodedKeySpec(keyBytes)
+    val kf = KeyFactory.getInstance("RSA")
+    val privateKey = kf.generatePrivate(spec)
+    val rsa = Signature.getInstance("SHA1withRSA")
+    rsa.initSign(privateKey)
+    rsa.update(dataid)
+    rsa.sign().toString
+  }
+
+  def verify(publicKeyBytes: Array[Byte], dataid: Array[Byte], signature: Array[Byte]): Boolean = {
+    val spec = new X509EncodedKeySpec(publicKeyBytes)
+    val kf = KeyFactory.getInstance("RSA")
+    val publicKey = kf.generatePublic(spec)
+    val rsa = Signature.getInstance("SHA1withRSA")
+    rsa.initVerify(publicKey)
+    rsa.update(dataid)
+    rsa.verify(signature)
+  }
+
+  def getMimeType(fileName: String): MimeTypeHelper = {
+    val innerMimeTypes = Map(
+      "ttl" -> "text/turtle",
+      "tql" -> "application/n-quads",
+      "nt" -> "application/n-quads",
+      "xml" -> "application/xml"
+    )
+    val outerMimeTypes = Map(
+      "gz" -> "application/x-gzip",
+      "bz2" -> "application/x-bzip2",
+      "sparql" -> "application/sparql-results+xml"
+    )
+    var mimetypes = MimeTypeHelper(None, None)
+    outerMimeTypes.foreach{case (key, value) => {
+      if(fileName.contains(key)){
+        mimetypes.outer = Some(value)
+      }
+    }}
+    innerMimeTypes.foreach{case (key, value) => {
+      if(fileName.contains(key)){
+        mimetypes.inner = Some(value)
+      }
+    }}
+    mimetypes
+  }
+  case class MimeTypeHelper(var outer: Option[String], var inner: Option[String])
 }
 
