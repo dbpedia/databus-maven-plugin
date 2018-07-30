@@ -4,6 +4,7 @@ import java.io.{BufferedInputStream, File, FileInputStream}
 import java.nio.file.Files
 import java.security.{DigestInputStream, KeyFactory, MessageDigest, Signature}
 import java.security.spec.PKCS8EncodedKeySpec
+import java.util.Base64
 
 
 /**
@@ -35,13 +36,13 @@ object HashAndSign {
     md5.digest.map("%02x".format(_)).mkString
   }
 
-  def sign(privateKeyPath: String, file: File): String = {
+  def sign(privateKeyFile: File, file: File): String = {
 
-    sign(privateKeyPath, file, 1024)
+    sign(privateKeyFile, file, 1024)
   }
 
-  def sign(privateKeyPath: String, file: File, bufferSize: Integer): String = {
-    val keyBytes = Files.readAllBytes(new File(privateKeyPath).toPath)
+  def sign(privateKeyFile: File, file: File, bufferSize: Integer): String = {
+    val keyBytes = Files.readAllBytes(privateKeyFile.toPath)
     val spec = new PKCS8EncodedKeySpec(keyBytes)
     val kf = KeyFactory.getInstance("RSA")
     val privateKey = kf.generatePrivate(spec)
@@ -60,6 +61,7 @@ object HashAndSign {
       rsa.update(buffer, 0, len)
     }
 
-    rsa.sign().toString
+    val bytes = rsa.sign()
+    new String (Base64.getEncoder.encode(bytes))
   }
 }

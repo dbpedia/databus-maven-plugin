@@ -36,8 +36,8 @@ class FileAnalysis extends AbstractMojo {
   private val packaging: String = ""
 
 
+  @Parameter var privateKeyFile: File = _
   @Parameter val resourceDirectory: String = ""
-
   @Parameter var contentVariants: util.ArrayList[String] = _
 
 
@@ -57,46 +57,51 @@ class FileAnalysis extends AbstractMojo {
 
       // processing all file per module
       getListOfFiles(s"$moduleDir/$resourceDirectory").foreach(datafile => {
-        getLog.info(s"found file $datafile")
-
-        /**
-          * Begin basic stats
-          */
-
-        // md5
-        val md5 = HashAndSign.computeHash(datafile)
-        getLog.info(s"md5: ${md5}")
-
-        // bytes
-        val bytes = datafile.length()
-        getLog.info(s"ByteSize: $bytes")
-
-        // private key signature
-        //val signature = HashAndSign.sign(xx,datafile);
-        //getLog.info(s"Signature: $signature")
-
-        // mimetypes
-        val mimetypes = getMimeType(datafile.getName)
-        val innerMime = mimetypes.inner
-        val outerMime = mimetypes.outer
-        innerMime.foreach(v =>
-          getLog.info(s"MimeTypes(inner): $v")
-        )
-        outerMime.foreach(v =>
-          getLog.info(s"MimeTypes(outer): $v")
-        )
-
-
-        /**
-          * extended stats
-          */
-        // triple-count != line-count? Comments, duplicates or other serializations would make them differ
-        // TODO: implement a better solution
-        val lines = io.Source.fromFile(datafile).getLines.size
-        getLog.info(s"Lines: $lines")
-
+        processFile(datafile)
       })
     })
+  }
+
+  def processFile(datafile:File): Unit ={
+    getLog.info(s"found file $datafile")
+
+    /**
+      * Begin basic stats
+      */
+
+    // md5
+    val md5 = HashAndSign.computeHash(datafile)
+    getLog.info(s"md5: ${md5}")
+
+    // bytes
+    val bytes = datafile.length()
+    getLog.info(s"ByteSize: $bytes")
+
+    // private key signature
+    val signature = HashAndSign.sign(privateKeyFile,datafile);
+    getLog.info(s"Signature: $signature")
+
+    // mimetypes
+    val mimetypes = getMimeType(datafile.getName)
+    val innerMime = mimetypes.inner
+    val outerMime = mimetypes.outer
+    innerMime.foreach(v =>
+      getLog.info(s"MimeTypes(inner): $v")
+    )
+    outerMime.foreach(v =>
+      getLog.info(s"MimeTypes(outer): $v")
+    )
+
+
+    /**
+      * extended stats
+      */
+    // triple-count != line-count? Comments, duplicates or other serializations would make them differ
+    // TODO: implement a better solution
+    val lines = io.Source.fromFile(datafile).getLines.size
+    getLog.info(s"Lines: $lines")
+
+
   }
 
   /**
