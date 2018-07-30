@@ -14,7 +14,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dataset>infobox-properties</dataset>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
@@ -47,7 +46,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <maintainer>https://termilion.github.io/webid.ttl#this</maintainer>
+                    <!--maintainer>https://termilion.github.io/webid.ttl#this</maintainer-->
+                    <maintainer>http://kurzum.net/dev-dummy.ttl#this</maintainer>
+                    <privateKeyFile>private_key_dev_dummy.pem</privateKeyFile>
                     <resourceDirectory>src/main/resources/</resourceDirectory>
                 </configuration>
             </plugin>
