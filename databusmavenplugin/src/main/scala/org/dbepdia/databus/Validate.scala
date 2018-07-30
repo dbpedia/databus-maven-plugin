@@ -2,13 +2,14 @@ package org.dbpedia.databus
 
 
 import java.io.File
+import java.net.URL
 import java.util
 
-import org.apache.jena.graph.Node
 import org.apache.jena.rdf.model.{ModelFactory, NodeIterator, RDFNode}
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
+
 
 
 /**
@@ -32,7 +33,7 @@ class Validate extends AbstractMojo {
   private val packaging: String = ""
 
 
-  @Parameter var maintainer: String = _
+  @Parameter var maintainer: URL = _
   @Parameter var privateKeyFile: File = _
 
   //@Parameter var contentVariants:util.ArrayList[ContentVariant] = null
@@ -61,9 +62,9 @@ class Validate extends AbstractMojo {
       * Read the webid
       */
     val model = ModelFactory.createDefaultModel
-    model.read(maintainer)
+    model.read(maintainer.toString)
     getLog.info("Read " + model.size() + " triples from " + maintainer)
-    val ni: NodeIterator = model.listObjectsOfProperty(model.getResource(maintainer), model.getProperty("http://www.w3.org/ns/auth/cert#key"))
+    val ni: NodeIterator = model.listObjectsOfProperty(model.getResource(maintainer.toString), model.getProperty("http://www.w3.org/ns/auth/cert#key"))
 
     //TODO validate against the private key
     getLog.info("Private Key File: " + privateKeyFile)

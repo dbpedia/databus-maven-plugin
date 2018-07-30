@@ -1,11 +1,12 @@
 package org.dbpedia.databus
 
-import java.io.{File, FileInputStream}
+import java.io.{File, FileInputStream, FileWriter, OutputStream}
 import java.nio.file.Files
 import java.security._
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 import java.util
 
+import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import org.dbepdia.databus.lib.HashAndSign
@@ -35,6 +36,9 @@ class FileAnalysis extends AbstractMojo {
   @Parameter(defaultValue = "${project.packaging}", readonly = true)
   private val packaging: String = ""
 
+  @Parameter(defaultValue = "${project.build.outputDirectory}", readonly = true)
+  private val outputDirectory: String = ""
+
 
   @Parameter var privateKeyFile: File = _
   @Parameter val resourceDirectory: String = ""
@@ -62,7 +66,7 @@ class FileAnalysis extends AbstractMojo {
     })
   }
 
-  def processFile(datafile:File): Unit ={
+  def processFile(datafile: File): Unit = {
     getLog.info(s"found file $datafile")
 
     /**
@@ -78,7 +82,7 @@ class FileAnalysis extends AbstractMojo {
     getLog.info(s"ByteSize: $bytes")
 
     // private key signature
-    val signature = HashAndSign.sign(privateKeyFile,datafile);
+    val signature = HashAndSign.sign(privateKeyFile, datafile);
     getLog.info(s"Signature: $signature")
 
     // mimetypes
@@ -101,6 +105,13 @@ class FileAnalysis extends AbstractMojo {
     val lines = io.Source.fromFile(datafile).getLines.size
     getLog.info(s"Lines: $lines")
 
+
+    /**
+      * write to file
+      */
+
+    val model = ModelFactory.createDefaultModel
+    //model.write( new FileWriter( new File(outputDirectory+"/"+datafile.getName+".dataid.ttl")),"turtle")
 
   }
 

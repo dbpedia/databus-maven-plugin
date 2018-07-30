@@ -106,6 +106,11 @@ This step needs to be adapted by you the most as it depends on where you will ho
 
 Announces the uris of the main dataid for each artifact id to the databus for indexing.  
 
+# misc
+```
+# command to convert pem to der format 
+openssl pkcs8 -topk8 -inform PEM -outform DER -in private_key_dev_dummy.pem -out private_key_dev_dummy.der -nocrypt
+```
 
 
 # Add-ons and formats 
