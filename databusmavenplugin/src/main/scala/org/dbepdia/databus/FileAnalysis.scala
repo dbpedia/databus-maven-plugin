@@ -1,11 +1,12 @@
 package org.dbpedia.databus
 
-import java.io.{File, FileInputStream, FileWriter, OutputStream}
+import java.io._
 import java.nio.file.Files
 import java.security._
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 import java.util
 
+import org.apache.commons.compress.compressors.{CompressorException, CompressorInputStream, CompressorStreamFactory}
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
@@ -88,22 +89,22 @@ class FileAnalysis extends AbstractMojo {
     // mimetypes
     val mimetypes = getMimeType(datafile.getName)
     val innerMime = mimetypes.inner
-    val outerMime = mimetypes.outer
+
+
     innerMime.foreach(v =>
       getLog.info(s"MimeTypes(inner): $v")
     )
-    outerMime.foreach(v =>
-      getLog.info(s"MimeTypes(outer): $v")
-    )
 
+    val compressionVariant:String = detectCompression(datafile)
+    getLog.info("Compression: " + compressionVariant )
 
     /**
       * extended stats
       */
     // triple-count != line-count? Comments, duplicates or other serializations would make them differ
     // TODO: implement a better solution
-    val lines = io.Source.fromFile(datafile).getLines.size
-    getLog.info(s"Lines: $lines")
+    // val lines = io.Source.fromFile(datafile).getLines.size
+    //getLog.info(s"Lines: $lines")
 
 
     /**
@@ -112,6 +113,21 @@ class FileAnalysis extends AbstractMojo {
 
     val model = ModelFactory.createDefaultModel
     //model.write( new FileWriter( new File(outputDirectory+"/"+datafile.getName+".dataid.ttl")),"turtle")
+
+  }
+
+  //TODO streams need to be closed properly
+  def detectCompression(datafile: File): String = {
+    try {
+      val fi = new FileInputStream(datafile)
+      val bi = new BufferedInputStream(fi)
+      val input: CompressorInputStream = new CompressorStreamFactory()
+        .createCompressorInputStream(bi)
+      input.getClass.getSimpleName + ""
+
+    } catch {
+      case ce: CompressorException => "None"
+    }
 
   }
 
@@ -156,6 +172,11 @@ class FileAnalysis extends AbstractMojo {
     rsa.verify(signature)
   }
 
+
+  /**
+    * replaced partly by detect compression
+    * */
+  @Deprecated
   def getMimeType(fileName: String): MimeTypeHelper = {
     val innerMimeTypes = Map(
       "ttl" -> "text/turtle",
