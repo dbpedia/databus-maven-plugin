@@ -2,7 +2,7 @@ package org.dbepdia.databus.lib
 
 import java.io.{BufferedInputStream, File, FileInputStream}
 import java.nio.file.Files
-import java.security.{DigestInputStream, KeyFactory, MessageDigest, Signature}
+import java.security._
 import java.security.spec.PKCS8EncodedKeySpec
 import java.util.Base64
 
@@ -36,21 +36,27 @@ object HashAndSign {
     md5.digest.map("%02x".format(_)).mkString
   }
 
-  def sign(privateKeyFile: File, file: File): String = {
 
-    sign(privateKeyFile, file, 1024)
-  }
 
-  def sign(privateKeyFile: File, file: File, bufferSize: Integer): String = {
+  def readPrivateKeyFile(privateKeyFile: File): PrivateKey = {
     val keyBytes = Files.readAllBytes(privateKeyFile.toPath)
     val spec = new PKCS8EncodedKeySpec(keyBytes)
     val kf = KeyFactory.getInstance("RSA")
     val privateKey = kf.generatePrivate(spec)
-    val rsa = Signature.getInstance("SHA1withRSA")
+    privateKey
+  }
 
-    // start signature
+  def sign(privateKey: PrivateKey, datafile: File): Array[Byte] = {
+
+    sign(privateKey, datafile, 1024)
+  }
+
+  //todo close stream
+  def sign(privateKey: PrivateKey, datafile: File, bufferSize: Integer): Array[Byte] = {
+
+    val rsa = Signature.getInstance("SHA1withRSA")
     rsa.initSign(privateKey)
-    val fis = new FileInputStream(file)
+    val fis = new FileInputStream(datafile)
     val bufin = new BufferedInputStream(fis)
     val buffer = new Array[Byte](bufferSize)
     var len = 0
@@ -61,7 +67,7 @@ object HashAndSign {
       rsa.update(buffer, 0, len)
     }
 
-    val bytes = rsa.sign()
-    new String (Base64.getEncoder.encode(bytes))
+    rsa.sign()
+    //new String (Base64.getEncoder.encode(bytes))
   }
 }

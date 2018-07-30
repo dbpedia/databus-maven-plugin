@@ -3,8 +3,10 @@ package org.dbpedia.databus
 import java.io._
 import java.nio.file.Files
 import java.security._
-import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
+import java.security.interfaces.RSAPrivateCrtKey
+import java.security.spec.{PKCS8EncodedKeySpec, RSAPublicKeySpec, X509EncodedKeySpec}
 import java.util
+import java.util.Base64
 
 import org.apache.commons.compress.compressors.{CompressorException, CompressorInputStream, CompressorStreamFactory}
 import org.apache.jena.rdf.model.{Model, ModelFactory}
@@ -83,8 +85,21 @@ class FileAnalysis extends AbstractMojo {
     getLog.info(s"ByteSize: $bytes")
 
     // private key signature
-    val signature = HashAndSign.sign(privateKeyFile, datafile);
-    getLog.info(s"Signature: $signature")
+    val privateKey = HashAndSign.readPrivateKeyFile(privateKeyFile)
+
+    val signatureBytes: Array[Byte] = HashAndSign.sign(privateKey, datafile);
+    val signatureBase64 = new String(Base64.getEncoder.encode(signatureBytes))
+    getLog.info(s"Signature: $signatureBase64")
+
+    //verify
+    val verified = verify2(privateKey,datafile,signatureBytes)
+    getLog.info(s"Verified: $verified")
+
+    //compression
+    val compressionVariant: String = detectCompression(datafile)
+    getLog.info("Compression: " + compressionVariant)
+
+
 
     // mimetypes
     val mimetypes = getMimeType(datafile.getName)
@@ -95,8 +110,6 @@ class FileAnalysis extends AbstractMojo {
       getLog.info(s"MimeTypes(inner): $v")
     )
 
-    val compressionVariant:String = detectCompression(datafile)
-    getLog.info("Compression: " + compressionVariant )
 
     /**
       * extended stats
@@ -117,13 +130,14 @@ class FileAnalysis extends AbstractMojo {
   }
 
   //TODO streams need to be closed properly
+  //TODO remove compression name hack
   def detectCompression(datafile: File): String = {
     try {
       val fi = new FileInputStream(datafile)
       val bi = new BufferedInputStream(fi)
       val input: CompressorInputStream = new CompressorStreamFactory()
         .createCompressorInputStream(bi)
-      input.getClass.getSimpleName + ""
+      input.getClass.getSimpleName.replace("CompressorInputStream", "")
 
     } catch {
       case ce: CompressorException => "None"
@@ -172,10 +186,30 @@ class FileAnalysis extends AbstractMojo {
     rsa.verify(signature)
   }
 
+  def verify2(privateKey: PrivateKey, datafile: File, signature: Array[Byte]): Boolean = {
+
+    val privk: RSAPrivateCrtKey = privateKey.asInstanceOf[RSAPrivateCrtKey]
+    val publicKeySpec: RSAPublicKeySpec = new RSAPublicKeySpec(privk.getModulus, privk.getPublicExponent)
+    val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")
+    val publicKey: PublicKey = keyFactory.generatePublic(publicKeySpec)
+    val rsa = Signature.getInstance("SHA1withRSA")
+    rsa.initVerify(publicKey)
+    val fis = new FileInputStream(datafile)
+    val bufin = new BufferedInputStream(fis)
+    val buffer = new Array[Byte](1024)
+    var len = 0
+    while ( {
+      len = bufin.read(buffer)
+      len >= 0
+    }) {
+      rsa.update(buffer, 0, len)
+    }
+    rsa.verify(signature)
+  }
 
   /**
     * replaced partly by detect compression
-    * */
+    **/
   @Deprecated
   def getMimeType(fileName: String): MimeTypeHelper = {
     val innerMimeTypes = Map(

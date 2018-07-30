@@ -3,13 +3,14 @@ package org.dbpedia.databus
 
 import java.io.File
 import java.net.URL
+import java.security.interfaces.RSAPrivateCrtKey
 import java.util
 
 import org.apache.jena.rdf.model.{ModelFactory, NodeIterator, RDFNode}
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-
+import org.dbepdia.databus.lib.HashAndSign
 
 
 /**
@@ -23,7 +24,6 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
   */
 @Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE)
 class Validate extends AbstractMojo {
-
 
 
   @Parameter(defaultValue = "${project.artifactId}", readonly = true)
@@ -72,9 +72,22 @@ class Validate extends AbstractMojo {
       var node: RDFNode = ni.next()
       var modulus = model.listObjectsOfProperty(node.asResource(), model.getProperty("http://www.w3.org/ns/auth/cert#modulus")).next()
       var exponent = model.listObjectsOfProperty(node.asResource(), model.getProperty("http://www.w3.org/ns/auth/cert#exponent")).next()
+      //TODO fix paths
+      val fileHack: File = new File(privateKeyFile.getAbsolutePath.replace("${project.parent.basedir}/", ""))
+
+      val privateKey = HashAndSign.readPrivateKeyFile(fileHack)
+      //TODO hexadecimalformat
+      val privk: RSAPrivateCrtKey = privateKey.asInstanceOf[RSAPrivateCrtKey]
+
       getLog.info("BlankNode: " + node + "")
-      getLog.info("Exponent: " + exponent.asLiteral().getLexicalForm )
-      getLog.info("Modulus: " + modulus.asLiteral().getLexicalForm )
+      getLog.info("Exponent (from webid): " + exponent.asLiteral().getLexicalForm)
+      getLog.info("Exponent (from privk): " + privk.getPublicExponent )
+      getLog.info("Modulus (from webid): " + modulus.asLiteral().getLexicalForm)
+      //getLog.info("Modulus (from webid): " + Long.parseInt(modulus.asLiteral().getLexicalForm, 16))
+      getLog.info("Modulus (from privk): " +  privk.getModulus)
+      //getLog.info("Modulus (from privk): " +  java.lang.Long.valueOf(privk.getModulus.toString,16))
+
+
     }
 
   }
