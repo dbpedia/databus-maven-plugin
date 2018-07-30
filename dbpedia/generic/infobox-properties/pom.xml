@@ -15,22 +15,6 @@
             <plugin>
                 <groupId>org.dbpedia.databus</groupId>
                 <artifactId>databus-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>validate</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>validate</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>analysis</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>analysis</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
                     <contentVariants>
                         <contentVariant>dewiki,enwiki</contentVariant>

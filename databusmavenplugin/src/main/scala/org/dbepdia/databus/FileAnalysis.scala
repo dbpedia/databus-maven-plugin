@@ -4,6 +4,7 @@ import java.io.{File, FileInputStream}
 import java.nio.file.Files
 import java.security._
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
+import java.util
 
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
@@ -29,13 +30,25 @@ import org.dbepdia.databus.lib.HashAndSign
 class FileAnalysis extends AbstractMojo {
 
   @Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
-  private val multiModuleBaseDirectory : String = ""
+  private val multiModuleBaseDirectory: String = ""
 
-  @Parameter
-  val resourceDirectory: String = ""
+  @Parameter(defaultValue = "${project.packaging}", readonly = true)
+  private val packaging: String = ""
+
+
+  @Parameter val resourceDirectory: String = ""
+
+  @Parameter var contentVariants: util.ArrayList[String] = _
+
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
+    //skip the parent module
+    if (packaging.equals("pom")) {
+      getLog.info("skipping parent module")
+      return
+    }
+
     val moduleDirectories = getModules(multiModuleBaseDirectory)
 
     // processing each module
@@ -88,6 +101,7 @@ class FileAnalysis extends AbstractMojo {
 
   /**
     * returns list of Subdirectories
+    *
     * @param dir
     * @return
     */
@@ -99,6 +113,7 @@ class FileAnalysis extends AbstractMojo {
       List[File]()
     }
   }
+
   /**
     * guess what
     *
@@ -113,7 +128,6 @@ class FileAnalysis extends AbstractMojo {
       List[File]()
     }
   }
-
 
 
   def verify(publicKeyBytes: Array[Byte], dataid: Array[Byte], signature: Array[Byte]): Boolean = {
@@ -139,18 +153,22 @@ class FileAnalysis extends AbstractMojo {
       "sparql" -> "application/sparql-results+xml"
     )
     var mimetypes = MimeTypeHelper(None, None)
-    outerMimeTypes.foreach{case (key, value) => {
-      if(fileName.contains(key)){
+    outerMimeTypes.foreach { case (key, value) => {
+      if (fileName.contains(key)) {
         mimetypes.outer = Some(value)
       }
-    }}
-    innerMimeTypes.foreach{case (key, value) => {
-      if(fileName.contains(key)){
+    }
+    }
+    innerMimeTypes.foreach { case (key, value) => {
+      if (fileName.contains(key)) {
         mimetypes.inner = Some(value)
       }
-    }}
+    }
+    }
     mimetypes
   }
+
   case class MimeTypeHelper(var outer: Option[String], var inner: Option[String])
+
 }
 
