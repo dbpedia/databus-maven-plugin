@@ -7,6 +7,7 @@ import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
+import org.dbepdia.databus.lib.HashAndSign
 
 
 /**
@@ -36,18 +37,32 @@ class FileAnalysis extends AbstractMojo {
   @throws[MojoExecutionException]
   override def execute(): Unit = {
     val moduleDirectories = getModules(multiModuleBaseDirectory)
+
+    // processing each module
     moduleDirectories.foreach(moduleDir => {
       getLog.info(s"reading from module $moduleDir")
+
+      // processing all file per module
       getListOfFiles(s"$moduleDir/$resourceDirectory").foreach(datafile => {
         getLog.info(s"found file $datafile")
-        val md5 = computeHash(datafile.getAbsolutePath)
+
+        /**
+          * Begin basic stats
+          */
+
+        // md5
+        val md5 = HashAndSign.computeHash(datafile)
         getLog.info(s"md5: ${md5}")
-        // triple-count != line-count? Comments, duplicates or other serializations would make them differ
-        // TODO: implement a better solution
-        val lines = io.Source.fromFile(datafile).getLines.size
-        getLog.info(s"Lines: $lines")
+
+        // bytes
         val bytes = datafile.length()
         getLog.info(s"ByteSize: $bytes")
+
+        // private key signature
+        //val signature = HashAndSign.sign(xx,datafile);
+        //getLog.info(s"Signature: $signature")
+
+        // mimetypes
         val mimetypes = getMimeType(datafile.getName)
         val innerMime = mimetypes.inner
         val outerMime = mimetypes.outer
@@ -57,6 +72,16 @@ class FileAnalysis extends AbstractMojo {
         outerMime.foreach(v =>
           getLog.info(s"MimeTypes(outer): $v")
         )
+
+
+        /**
+          * extended stats
+          */
+        // triple-count != line-count? Comments, duplicates or other serializations would make them differ
+        // TODO: implement a better solution
+        val lines = io.Source.fromFile(datafile).getLines.size
+        getLog.info(s"Lines: $lines")
+
       })
     })
   }
@@ -89,34 +114,7 @@ class FileAnalysis extends AbstractMojo {
     }
   }
 
-  /** From https://stackoverflow.com/questions/41642595/scala-file-hashing
-    * Compute a hash of a file
-    * The output of this function should match the output of running "md5 -q <file>"
-    */
-  def computeHash(path: String): String = {
-    val buffer = new Array[Byte](8192)
-    val md5 = MessageDigest.getInstance("MD5")
 
-    val dis = new DigestInputStream(new FileInputStream(new File(path)), md5)
-    try {
-      while (dis.read(buffer) != -1) {}
-    } finally {
-      dis.close()
-    }
-
-    md5.digest.map("%02x".format(_)).mkString
-  }
-
-  def sign(privateKeyPath: String, dataid: Array[Byte]): String = {
-    val keyBytes = Files.readAllBytes(new File(privateKeyPath).toPath)
-    val spec = new PKCS8EncodedKeySpec(keyBytes)
-    val kf = KeyFactory.getInstance("RSA")
-    val privateKey = kf.generatePrivate(spec)
-    val rsa = Signature.getInstance("SHA1withRSA")
-    rsa.initSign(privateKey)
-    rsa.update(dataid)
-    rsa.sign().toString
-  }
 
   def verify(publicKeyBytes: Array[Byte], dataid: Array[Byte], signature: Array[Byte]): Boolean = {
     val spec = new X509EncodedKeySpec(publicKeyBytes)
