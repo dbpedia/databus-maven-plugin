@@ -10,6 +10,49 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>infobox-properties</artifactId>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.dbpedia.databus</groupId>
+                <artifactId>databus-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>analysis</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>analysis</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <contentVariants>
+                        <contentVariant>dewiki,enwiki</contentVariant>
+                    </contentVariants>
+                    <formatVariants>
+                        <formatVariant>ttl</formatVariant>
+                        <formatVariant>tql</formatVariant>
+                    </formatVariants>
+                    <!--contentVariants>
+                        <contentVariant>
+                            <values>
+                                <value>dewiki</value>
+                                <value>enwiki</value>
+                            </values>
+                            <description>
+                            states the original wikipedia which was extracted
+                            </description>
+                        </contentVariant>
+                    </contentVariants-->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

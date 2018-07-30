@@ -1,5 +1,8 @@
 package org.dbpedia.databus
 
+
+import java.util
+
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
@@ -19,9 +22,22 @@ class Validate extends AbstractMojo {
 
   @Parameter var maintainer:String = _
 
+  @Parameter(defaultValue = "${project.artifactId}", readonly = true)
+  private val artifactId : String = ""
+
+  //@Parameter var contentVariants:util.ArrayList[ContentVariant] = null
+  @Parameter var contentVariants:util.ArrayList[String] = _
+  @Parameter var formatVariants:util.ArrayList[String] = _
+
   @throws[MojoExecutionException]
   override def execute(): Unit = {
+
+  getLog.error(maintainer.toString)
+  getLog.error(contentVariants.toString)
+  getLog.error(formatVariants.toString)
+
   }
 
 }
+
 
