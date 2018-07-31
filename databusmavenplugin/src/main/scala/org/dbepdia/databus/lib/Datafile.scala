@@ -21,10 +21,13 @@
 
 package org.dbepdia.databus.lib
 
-import java.io.{File, FileNotFoundException}
+import java.io._
 import java.nio.file.Files
 import java.security.PrivateKey
 import java.util.Base64
+
+import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
+import org.apache.commons.compress.compressors.CompressorStreamFactory
 
 /**
   * a simple dao to collect all values for a file
@@ -53,6 +56,28 @@ class Datafile private(datafile: File) {
     this
   }
 
+  /**
+    * Opens the file with compression, etc.
+    * NOTE: if file is an archive, we assume it is only one file in it and this will be on the stream
+    *
+    * @return
+    */
+  def getInputStream(): InputStream = {
+    val fi = new BufferedInputStream(new FileInputStream(datafile))
+    if (isCompressed) {
+      new CompressorStreamFactory()
+        .createCompressorInputStream(compressionVariant, fi)
+    } else if (isArchive) {
+      val ais: ArchiveInputStream = new ArchiveStreamFactory()
+        .createArchiveInputStream(compressionVariant, fi)
+      ais.getNextEntry
+      ais
+    } else {
+      fi
+    }
+
+
+  }
 
   override def toString = s"\nDatafile(\nmd5=$md5\n bytes=$bytes\n isArchive=$isArchive\n isCompressed=$isCompressed\n compressionVariant=$compressionVariant\n signatureBytes=$signatureBytes\n signatureBase64=$signatureBase64\n verified=$verified)"
 }

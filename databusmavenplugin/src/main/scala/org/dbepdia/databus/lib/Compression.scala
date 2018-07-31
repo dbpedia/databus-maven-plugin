@@ -20,9 +20,9 @@
  */
 package org.dbepdia.databus.lib
 
-import java.io.{BufferedInputStream, File, FileInputStream}
+import java.io.{BufferedInputStream, File, FileInputStream, InputStream}
 
-import org.apache.commons.compress.archivers.{ArchiveException, ArchiveStreamFactory}
+import org.apache.commons.compress.archivers.{ArchiveEntry, ArchiveException, ArchiveInputStream, ArchiveStreamFactory}
 import org.apache.commons.compress.compressors.{CompressorException, CompressorInputStream, CompressorStreamFactory}
 
 object Compression {
@@ -49,6 +49,15 @@ object Compression {
   }
 
   /*
+  def readFirstFileFromArchive ( in : ArchiveInputStream, out:InputStream) : Unit = {
+
+    in.getNextEntry
+
+    val out: OutputStream = Files.newOutputStream(dir.toPath.resolve(entry.getName))
+    IOUtils.copy(in, out)
+    out.close()
+  }
+
   import org.apache.commons.compress.archivers.ArchiveInputStream
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
