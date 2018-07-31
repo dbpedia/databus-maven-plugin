@@ -22,10 +22,6 @@
 package org.dbpedia.databus
 
 import java.io._
-import java.nio.file.Files
-import java.security._
-import java.security.interfaces.RSAPrivateCrtKey
-import java.security.spec.{PKCS8EncodedKeySpec, RSAPublicKeySpec, X509EncodedKeySpec}
 import java.util
 import java.util.Base64
 
@@ -33,7 +29,7 @@ import org.apache.commons.compress.compressors.{CompressorException, CompressorI
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-import org.dbepdia.databus.lib.HashAndSign
+import org.dbepdia.databus.lib.{Hash, Sign}
 
 
 /**
@@ -63,7 +59,6 @@ class FileAnalysis extends AbstractMojo {
   @Parameter(defaultValue = "${project.build.outputDirectory}", readonly = true)
   private val outputDirectory: String = ""
 
-
   @Parameter var privateKeyFile: File = _
   @Parameter val resourceDirectory: String = ""
   @Parameter var contentVariants: util.ArrayList[String] = _
@@ -71,6 +66,8 @@ class FileAnalysis extends AbstractMojo {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
+
+
     //skip the parent module
     if (packaging.equals("pom")) {
       getLog.info("skipping parent module")
@@ -98,7 +95,7 @@ class FileAnalysis extends AbstractMojo {
       */
 
     // md5
-    val md5 = HashAndSign.computeHash(datafile)
+    val md5 = Hash.computeHash(datafile)
     getLog.info(s"md5: ${md5}")
 
     // bytes
@@ -106,22 +103,21 @@ class FileAnalysis extends AbstractMojo {
     getLog.info(s"ByteSize: $bytes")
 
     // private key signature
-    val privateKey = HashAndSign.readPrivateKeyFile(privateKeyFile)
+    val privateKey = Sign.readPrivateKeyFile(privateKeyFile)
 
-    val signatureBytes: Array[Byte] = HashAndSign.sign(privateKey, datafile);
+    val signatureBytes: Array[Byte] = Sign.sign(privateKey, datafile);
 
 
     val signatureBase64 = new String(Base64.getEncoder.encode(signatureBytes))
     getLog.info(s"Signature: $signatureBase64")
 
     //verify
-    val verified = verify2(privateKey,datafile,signatureBytes)
+    val verified = Sign.verify(privateKey, datafile, signatureBytes)
     getLog.info(s"Verified: $verified")
 
     //compression
     val compressionVariant: String = detectCompression(datafile)
     getLog.info("Compression: " + compressionVariant)
-
 
 
     // mimetypes
@@ -198,37 +194,6 @@ class FileAnalysis extends AbstractMojo {
     }
   }
 
-
-  def verify(publicKeyBytes: Array[Byte], dataid: Array[Byte], signature: Array[Byte]): Boolean = {
-    val spec = new X509EncodedKeySpec(publicKeyBytes)
-    val kf = KeyFactory.getInstance("RSA")
-    val publicKey = kf.generatePublic(spec)
-    val rsa = Signature.getInstance("SHA1withRSA")
-    rsa.initVerify(publicKey)
-    rsa.update(dataid)
-    rsa.verify(signature)
-  }
-
-  def verify2(privateKey: PrivateKey, datafile: File, signature: Array[Byte]): Boolean = {
-
-    val privk: RSAPrivateCrtKey = privateKey.asInstanceOf[RSAPrivateCrtKey]
-    val publicKeySpec: RSAPublicKeySpec = new RSAPublicKeySpec(privk.getModulus, privk.getPublicExponent)
-    val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")
-    val publicKey: PublicKey = keyFactory.generatePublic(publicKeySpec)
-    val rsa = Signature.getInstance("SHA1withRSA")
-    rsa.initVerify(publicKey)
-    val fis = new FileInputStream(datafile)
-    val bufin = new BufferedInputStream(fis)
-    val buffer = new Array[Byte](1024)
-    var len = 0
-    while ( {
-      len = bufin.read(buffer)
-      len >= 0
-    }) {
-      rsa.update(buffer, 0, len)
-    }
-    rsa.verify(signature)
-  }
 
   /**
     * replaced partly by detect compression

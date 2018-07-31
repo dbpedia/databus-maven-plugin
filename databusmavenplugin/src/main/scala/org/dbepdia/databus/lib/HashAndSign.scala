@@ -23,20 +23,22 @@ package org.dbepdia.databus.lib
 import java.io.{BufferedInputStream, File, FileInputStream}
 import java.nio.file.Files
 import java.security._
-import java.security.spec.PKCS8EncodedKeySpec
-import java.util.Base64
+import java.security.interfaces.RSAPrivateCrtKey
+import java.security.spec.{PKCS8EncodedKeySpec, RSAPublicKeySpec, X509EncodedKeySpec}
 
 
 /**
   * The main purpose of this class is to group and compare functions for hashing and signing
   */
-object HashAndSign {
+object Hash {
+  var bufferSizeHash: Int = 8192
+
 
   /**
     *
     */
   def computeHash(file: File): String = {
-    computeHash(file, 8192)
+    computeHash(file, bufferSizeHash)
   }
 
   /** From https://stackoverflow.com/questions/41642595/scala-file-hashing
@@ -56,6 +58,10 @@ object HashAndSign {
     md5.digest.map("%02x".format(_)).mkString
   }
 
+}
+
+object Sign {
+  var bufferSizeCrypt = 8192
 
 
   def readPrivateKeyFile(privateKeyFile: File): PrivateKey = {
@@ -68,14 +74,36 @@ object HashAndSign {
 
   def sign(privateKey: PrivateKey, datafile: File): Array[Byte] = {
 
-    sign(privateKey, datafile, 1024)
+    sign(privateKey, datafile, bufferSizeCrypt)
   }
 
-  //todo close stream
   def sign(privateKey: PrivateKey, datafile: File, bufferSize: Integer): Array[Byte] = {
 
     val rsa = Signature.getInstance("SHA1withRSA")
     rsa.initSign(privateKey)
+    update(rsa,datafile,bufferSize)
+    rsa.sign()
+    //new String (Base64.getEncoder.encode(bytes))
+  }
+
+  def verify(privateKey: PrivateKey, datafile: File, signature: Array[Byte]): Boolean = {
+    verify(privateKey, datafile, signature, bufferSizeCrypt)
+  }
+
+  def verify(privateKey: PrivateKey, datafile: File, signature: Array[Byte], bufferSize: Int): Boolean = {
+
+    val privk: RSAPrivateCrtKey = privateKey.asInstanceOf[RSAPrivateCrtKey]
+    val publicKeySpec: RSAPublicKeySpec = new RSAPublicKeySpec(privk.getModulus, privk.getPublicExponent)
+    val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")
+    val publicKey: PublicKey = keyFactory.generatePublic(publicKeySpec)
+    val rsa = Signature.getInstance("SHA1withRSA")
+    rsa.initVerify(publicKey)
+    update(rsa,datafile,bufferSize)
+    rsa.verify(signature)
+  }
+
+  //todo close stream
+  private def update(rsa: Signature, datafile: File, bufferSize: Int): Unit = {
     val fis = new FileInputStream(datafile)
     val bufin = new BufferedInputStream(fis)
     val buffer = new Array[Byte](bufferSize)
@@ -86,8 +114,18 @@ object HashAndSign {
     }) {
       rsa.update(buffer, 0, len)
     }
-
-    rsa.sign()
-    //new String (Base64.getEncoder.encode(bytes))
   }
+
+  @Deprecated
+  def verifyold(publicKeyBytes: Array[Byte], dataid: Array[Byte], signature: Array[Byte]): Boolean = {
+    val spec = new X509EncodedKeySpec(publicKeyBytes)
+    val kf = KeyFactory.getInstance("RSA")
+    val publicKey = kf.generatePublic(spec)
+    val rsa = Signature.getInstance("SHA1withRSA")
+    rsa.initVerify(publicKey)
+    rsa.update(dataid)
+    rsa.verify(signature)
+  }
+
+
 }

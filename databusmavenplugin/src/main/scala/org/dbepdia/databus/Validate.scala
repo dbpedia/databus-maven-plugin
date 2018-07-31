@@ -30,7 +30,7 @@ import org.apache.jena.rdf.model.{ModelFactory, NodeIterator, RDFNode}
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-import org.dbepdia.databus.lib.HashAndSign
+import org.dbepdia.databus.lib.{Sign}
 
 
 /**
@@ -95,16 +95,16 @@ class Validate extends AbstractMojo {
       //TODO fix paths
       val fileHack: File = new File(privateKeyFile.getAbsolutePath.replace("${project.parent.basedir}/", ""))
 
-      val privateKey = HashAndSign.readPrivateKeyFile(fileHack)
+      val privateKey = Sign.readPrivateKeyFile(fileHack)
       //TODO hexadecimalformat
       val privk: RSAPrivateCrtKey = privateKey.asInstanceOf[RSAPrivateCrtKey]
 
       getLog.info("BlankNode: " + node + "")
       getLog.info("Exponent (from webid): " + exponent.asLiteral().getLexicalForm)
-      getLog.info("Exponent (from privk): " + privk.getPublicExponent )
+      getLog.info("Exponent (from privk): " + privk.getPublicExponent)
       getLog.info("Modulus (from webid): " + modulus.asLiteral().getLexicalForm)
       //getLog.info("Modulus (from webid): " + Long.parseInt(modulus.asLiteral().getLexicalForm, 16))
-      getLog.info("Modulus (from privk): " +  privk.getModulus)
+      getLog.info("Modulus (from privk): " + privk.getModulus)
       //getLog.info("Modulus (from privk): " +  java.lang.Long.valueOf(privk.getModulus.toString,16))
 
 
