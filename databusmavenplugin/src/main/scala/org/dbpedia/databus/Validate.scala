@@ -30,7 +30,7 @@ import org.apache.jena.rdf.model.{ModelFactory, NodeIterator, RDFNode}
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-import org.dbepdia.databus.lib.Sign
+import org.dbpedia.databus.lib.Sign
 
 
 /**

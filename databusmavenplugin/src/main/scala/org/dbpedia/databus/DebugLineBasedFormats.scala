@@ -22,7 +22,7 @@ package org.dbpedia.databus
 
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-import org.dbepdia.databus.lib.{Datafile, FileHelper}
+import org.dbpedia.databus.lib.{Datafile, FileHelper}
 
 @Mojo(name = "debug", defaultPhase = LifecyclePhase.VALIDATE)
 class DebugLineBasedFormats extends AbstractMojo {

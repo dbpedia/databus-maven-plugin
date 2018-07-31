@@ -26,7 +26,7 @@ import java.util
 
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-import org.dbepdia.databus.lib.{Datafile, FileHelper, Hash, Sign}
+import org.dbpedia.databus.lib.{Datafile, FileHelper, Hash, Sign}
 
 
 /**
