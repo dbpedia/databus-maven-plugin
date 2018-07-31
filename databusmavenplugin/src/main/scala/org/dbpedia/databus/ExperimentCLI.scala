@@ -20,10 +20,15 @@
  */
 package org.dbpedia.databus
 
+import scala.collection.mutable
+
 /**
   * a junk class to test some code
   */
-class ExperimentCLI {
+object ExperimentCLI {
+
+  val knownCompressionFileEndings = mutable.HashSet [String]("gz", "bz2")
+
 
   def main(args: Array[String]): Unit = {
     val contentVariantSeparator = "_"
@@ -55,7 +60,12 @@ class ExperimentCLI {
       }
 
       var cv = f.substring(0,f.indexOf(fileEndingSeparator))
-      var endings = f.substring(f.indexOf(fileEndingSeparator))
+      var endings = mutable.HashSet[String] ()
+      for (s <- f.substring(f.indexOf(fileEndingSeparator)).split(fileEndingSeparator)){
+        endings += s
+      }
+      endings --= knownCompressionFileEndings
+
 
       System.out.println(cv)
       System.out.println(endings)

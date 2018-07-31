@@ -30,7 +30,7 @@ import org.apache.jena.rdf.model.{ModelFactory, NodeIterator, RDFNode}
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-import org.dbpedia.databus.lib.Sign
+import org.dbpedia.databus.lib.{FileHelper, Sign}
 
 
 /**
@@ -44,7 +44,8 @@ import org.dbpedia.databus.lib.Sign
   */
 @Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE)
 class Validate extends AbstractMojo {
-
+  @Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
+  private val multiModuleBaseDirectory: String = ""
 
   @Parameter(defaultValue = "${project.artifactId}", readonly = true)
   private val artifactId: String = ""
@@ -55,6 +56,7 @@ class Validate extends AbstractMojo {
 
   @Parameter var maintainer: URL = _
   @Parameter var privateKeyFile: File = _
+  @Parameter val resourceDirectory: String = ""
 
   //@Parameter var contentVariants:util.ArrayList[ContentVariant] = null
   @Parameter var contentVariants: util.ArrayList[String] = _
@@ -102,13 +104,12 @@ class Validate extends AbstractMojo {
       val privk: RSAPrivateCrtKey = privateKey.asInstanceOf[RSAPrivateCrtKey]
 
 
-
       getLog.info("BlankNode: " + node + "")
       getLog.info("Exponent (from webid): " + exponentWebId)
       getLog.info("Exponent (from privk): " + privk.getPublicExponent)
-      if(exponentWebId.equalsIgnoreCase(privk.getPublicExponent.toString())){
+      if (exponentWebId.equalsIgnoreCase(privk.getPublicExponent.toString())) {
         getLog.info("Exponents match")
-      }else {
+      } else {
         getLog.error("Exponents do NOT match")
       }
 
@@ -116,9 +117,9 @@ class Validate extends AbstractMojo {
       getLog.info("Modulus (from privk): " + privk.getModulus.toString(16))
 
 
-      if(modulusWebId.equalsIgnoreCase(privk.getModulus.toString(16))){
+      if (modulusWebId.equalsIgnoreCase(privk.getModulus.toString(16))) {
         getLog.info("Moduli match")
-      }else {
+      } else {
         getLog.error("Moduli do NOT match")
       }
 
@@ -131,9 +132,27 @@ class Validate extends AbstractMojo {
   }
 
   def validateFileNames(): Unit = {
+    val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
 
+    // processing each module
+    moduleDirectories.foreach(moduleDir => {
+      getLog.info(s"reading from module $moduleDir")
+
+      // processing all file per module
+      FileHelper.getListOfFiles(s"$moduleDir/$resourceDirectory").foreach(datafile => {
+
+        // check for matching artifactId
+        if (datafile.getName.startsWith(artifactId)) {
+          //good
+        } else {
+          //bad
+        }
+
+        // check mimetype
+
+      })
+    })
   }
-
 
 }
 
