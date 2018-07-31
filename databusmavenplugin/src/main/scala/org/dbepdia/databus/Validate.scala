@@ -22,6 +22,7 @@ package org.dbpedia.databus
 
 
 import java.io.File
+import java.math.BigInteger
 import java.net.URL
 import java.security.interfaces.RSAPrivateCrtKey
 import java.util
@@ -30,7 +31,7 @@ import org.apache.jena.rdf.model.{ModelFactory, NodeIterator, RDFNode}
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-import org.dbepdia.databus.lib.{Sign}
+import org.dbepdia.databus.lib.Sign
 
 
 /**
@@ -90,7 +91,7 @@ class Validate extends AbstractMojo {
     getLog.info("Private Key File: " + privateKeyFile)
     while (ni.hasNext) {
       var node: RDFNode = ni.next()
-      var modulus = model.listObjectsOfProperty(node.asResource(), model.getProperty("http://www.w3.org/ns/auth/cert#modulus")).next()
+      var modulusHex = model.listObjectsOfProperty(node.asResource(), model.getProperty("http://www.w3.org/ns/auth/cert#modulus")).next()
       var exponent = model.listObjectsOfProperty(node.asResource(), model.getProperty("http://www.w3.org/ns/auth/cert#exponent")).next()
       //TODO fix paths
       val fileHack: File = new File(privateKeyFile.getAbsolutePath.replace("${project.parent.basedir}/", ""))
@@ -99,12 +100,18 @@ class Validate extends AbstractMojo {
       //TODO hexadecimalformat
       val privk: RSAPrivateCrtKey = privateKey.asInstanceOf[RSAPrivateCrtKey]
 
+
+
       getLog.info("BlankNode: " + node + "")
       getLog.info("Exponent (from webid): " + exponent.asLiteral().getLexicalForm)
       getLog.info("Exponent (from privk): " + privk.getPublicExponent)
-      getLog.info("Modulus (from webid): " + modulus.asLiteral().getLexicalForm)
-      //getLog.info("Modulus (from webid): " + Long.parseInt(modulus.asLiteral().getLexicalForm, 16))
+      getLog.info("Modulus (from webid): " + modulusHex.asLiteral().getLexicalForm)
       getLog.info("Modulus (from privk): " + privk.getModulus)
+
+      val toHex = new BigInteger(privk.getModulus.toString(16))
+
+      getLog.info("Modulus (from privkhex): " + toHex)
+
       //getLog.info("Modulus (from privk): " +  java.lang.Long.valueOf(privk.getModulus.toString,16))
 
 

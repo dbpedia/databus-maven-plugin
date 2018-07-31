@@ -28,6 +28,9 @@ import java.util.Base64
 
 import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
 import org.apache.commons.compress.compressors.CompressorStreamFactory
+import org.apache.jena.rdf.model.{Model, ModelFactory}
+
+import scala.io.Source
 
 /**
   * a simple dao to collect all values for a file
@@ -47,6 +50,30 @@ class Datafile private(datafile: File) {
   var signatureBase64: String = ""
   var verified: Boolean = false
 
+  var preview: String = ""
+
+  def toModel(): Model = {
+    var model: Model = ModelFactory.createDefaultModel
+
+
+    model
+  }
+
+  def updatePreview(lineCount: Int): Datafile = {
+
+    val source = Source.fromInputStream(getInputStream())
+    var x = 0
+    val sb = new StringBuilder
+    val it = source.getLines()
+    it.size
+    while (it.hasNext && x <= lineCount) {
+      sb.append(it.next()).append("\n")
+      x += 1
+    }
+    preview = sb.toString()
+    source.close
+    this
+  }
 
   def updateSignature(privateKey: PrivateKey): Datafile = {
     signatureBytes = Sign.sign(privateKey, datafile);
@@ -79,7 +106,8 @@ class Datafile private(datafile: File) {
 
   }
 
-  override def toString = s"\nDatafile(\nmd5=$md5\n bytes=$bytes\n isArchive=$isArchive\n isCompressed=$isCompressed\n compressionVariant=$compressionVariant\n signatureBytes=$signatureBytes\n signatureBase64=$signatureBase64\n verified=$verified)"
+
+  override def toString = s"Datafile(md5=$md5\nbytes=$bytes\nisArchive=$isArchive\nisCompressed=$isCompressed\ncompressionVariant=$compressionVariant\nsignatureBytes=$signatureBytes\nsignatureBase64=$signatureBase64\nverified=$verified\npreview=$preview)"
 }
 
 object Datafile {
@@ -115,7 +143,7 @@ object Datafile {
     }
 
     arch match {
-      // note that if compression is also none, value has already been assigned above
+      // note that if compression is also none\nvalue has already been assigned above
       case "None" => {
         df.isArchive = false
       }

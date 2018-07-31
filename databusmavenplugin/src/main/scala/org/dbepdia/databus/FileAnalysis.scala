@@ -91,29 +91,15 @@ class FileAnalysis extends AbstractMojo {
     val privateKey = Sign.readPrivateKeyFile(privateKeyFile)
 
 
-    df.updateSignature(privateKey)
+    df
+      .updateSignature(privateKey)
+      .updatePreview(10)
+
+    var model = df.toModel()
     getLog.info(df.toString)
 
     /**
       * Begin basic stats
-
-
-
-    // private key signature
-
-    val signatureBytes: Array[Byte] = Sign.sign(privateKey, datafile);
-
-
-    val signatureBase64 = new String(Base64.getEncoder.encode(signatureBytes))
-    getLog.info(s"Signature: $signatureBase64")
-
-    //verify
-    val verified = Sign.verify(privateKey, datafile, signatureBytes)
-    getLog.info(s"Verified: $verified")
-
-    //compression
-    val compressionVariant: String = detectCompression(datafile)
-    getLog.info("Compression: " + compressionVariant)
 
 
     // mimetypes
