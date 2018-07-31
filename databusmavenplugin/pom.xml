@@ -145,6 +145,13 @@
                 <version>1.16</version>
                 <configuration>
                     <verbose>false</verbose>
+                    <roots>
+                        <root>src/main/scala</root>
+                        <root>src/test</root>
+                    </roots>
+                    <extraExtensions>
+                        <scala>java</scala>
+                    </extraExtensions>
                 </configuration>
                 <executions>
                     <execution>
@@ -153,13 +160,6 @@
                             <goal>update-file-header</goal>
                         </goals>
                         <phase>process-sources</phase>
-                        <configuration>
-                            <licenseName>gpl_v3</licenseName>
-                            <roots>
-                                <root>src/main/scala</root>
-                                <root>src/test</root>
-                            </roots>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
