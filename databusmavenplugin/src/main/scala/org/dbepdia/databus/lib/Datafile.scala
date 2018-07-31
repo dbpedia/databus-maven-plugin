@@ -38,8 +38,8 @@ import scala.io.Source
   */
 class Datafile private(datafile: File) {
 
-  var md5: String = Hash.computeHash(datafile)
-  val bytes = datafile.length()
+  var md5: String = ""
+  var bytes : Long = _
 
   // compression option
   var isArchive: Boolean = false
@@ -57,6 +57,16 @@ class Datafile private(datafile: File) {
 
 
     model
+  }
+
+  def updateMD5():Datafile = {
+    md5 = Hash.computeHash(datafile)
+    this
+  }
+
+  def updateBytes():Datafile = {
+    bytes = datafile.length()
+    this
   }
 
   def updatePreview(lineCount: Int): Datafile = {

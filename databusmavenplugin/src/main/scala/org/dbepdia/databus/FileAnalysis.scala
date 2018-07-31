@@ -23,13 +23,10 @@ package org.dbpedia.databus
 
 import java.io._
 import java.util
-import java.util.Base64
 
-import org.apache.commons.compress.compressors.{CompressorException, CompressorInputStream, CompressorStreamFactory}
-import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-import org.dbepdia.databus.lib.{Datafile, Hash, Sign}
+import org.dbepdia.databus.lib.{Datafile, FileHelper, Hash, Sign}
 
 
 /**
@@ -72,14 +69,14 @@ class FileAnalysis extends AbstractMojo {
       return
     }
 
-    val moduleDirectories = getModules(multiModuleBaseDirectory)
+    val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
 
     // processing each module
     moduleDirectories.foreach(moduleDir => {
       getLog.info(s"reading from module $moduleDir")
 
       // processing all file per module
-      getListOfFiles(s"$moduleDir/$resourceDirectory").foreach(datafile => {
+      FileHelper.getListOfFiles(s"$moduleDir/$resourceDirectory").foreach(datafile => {
         processFile(datafile)
       })
     })
@@ -92,6 +89,8 @@ class FileAnalysis extends AbstractMojo {
 
 
     df
+      .updateMD5()
+      .updateBytes()
       .updateSignature(privateKey)
       .updatePreview(10)
 
@@ -123,35 +122,6 @@ class FileAnalysis extends AbstractMojo {
 
 
 
-  /**
-    * returns list of Subdirectories
-    *
-    * @param dir
-    * @return
-    */
-  def getModules(dir: String): List[File] = {
-    val d = new File(dir)
-    if (d.exists && d.isDirectory) {
-      d.listFiles().filter(_.isDirectory).toList
-    } else {
-      List[File]()
-    }
-  }
-
-  /**
-    * guess what
-    *
-    * @param dir
-    * @return
-    */
-  def getListOfFiles(dir: String): List[File] = {
-    val d = new File(dir)
-    if (d.exists && d.isDirectory) {
-      d.listFiles.filter(_.isFile).toList
-    } else {
-      List[File]()
-    }
-  }
 
 
   /**

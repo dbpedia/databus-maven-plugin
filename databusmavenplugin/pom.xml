@@ -62,6 +62,20 @@
             <version>1.17</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-api -->
+        <dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-rio-api</artifactId>
+            <version>2.3.0-M2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-ntriples -->
+        <dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-rio-ntriples</artifactId>
+            <version>2.3.0-M2</version>
+        </dependency>
+
     </dependencies>
     <build>
         <sourceDirectory>src/main/scala</sourceDirectory>

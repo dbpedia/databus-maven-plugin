@@ -22,7 +22,6 @@ package org.dbpedia.databus
 
 
 import java.io.File
-import java.math.BigInteger
 import java.net.URL
 import java.security.interfaces.RSAPrivateCrtKey
 import java.util
@@ -91,26 +90,38 @@ class Validate extends AbstractMojo {
     getLog.info("Private Key File: " + privateKeyFile)
     while (ni.hasNext) {
       var node: RDFNode = ni.next()
-      var modulusHex = model.listObjectsOfProperty(node.asResource(), model.getProperty("http://www.w3.org/ns/auth/cert#modulus")).next()
-      var exponent = model.listObjectsOfProperty(node.asResource(), model.getProperty("http://www.w3.org/ns/auth/cert#exponent")).next()
+      val exponentResource = model.listObjectsOfProperty(node.asResource(), model.getProperty("http://www.w3.org/ns/auth/cert#exponent")).next()
+      val exponentWebId = exponentResource.asLiteral().getLexicalForm
+
+      val modulusResource = model.listObjectsOfProperty(node.asResource(), model.getProperty("http://www.w3.org/ns/auth/cert#modulus")).next()
+      val modulusWebId = modulusResource.asLiteral().getLexicalForm
+
       //TODO fix paths
       val fileHack: File = new File(privateKeyFile.getAbsolutePath.replace("${project.parent.basedir}/", ""))
-
       val privateKey = Sign.readPrivateKeyFile(fileHack)
-      //TODO hexadecimalformat
       val privk: RSAPrivateCrtKey = privateKey.asInstanceOf[RSAPrivateCrtKey]
 
 
 
       getLog.info("BlankNode: " + node + "")
-      getLog.info("Exponent (from webid): " + exponent.asLiteral().getLexicalForm)
+      getLog.info("Exponent (from webid): " + exponentWebId)
       getLog.info("Exponent (from privk): " + privk.getPublicExponent)
-      getLog.info("Modulus (from webid): " + modulusHex.asLiteral().getLexicalForm)
-      getLog.info("Modulus (from privk): " + privk.getModulus)
+      if(exponentWebId.equalsIgnoreCase(privk.getPublicExponent.toString())){
+        getLog.info("Exponents match")
+      }else {
+        getLog.error("Exponents do NOT match")
+      }
 
-      val toHex = new BigInteger(privk.getModulus.toString(16))
+      getLog.info("Modulus (from webid): " + modulusWebId)
+      getLog.info("Modulus (from privk): " + privk.getModulus.toString(16))
 
-      getLog.info("Modulus (from privkhex): " + toHex)
+
+      if(modulusWebId.equalsIgnoreCase(privk.getModulus.toString(16))){
+        getLog.info("Moduli match")
+      }else {
+        getLog.error("Moduli do NOT match")
+      }
+
 
       //getLog.info("Modulus (from privk): " +  java.lang.Long.valueOf(privk.getModulus.toString,16))
 
