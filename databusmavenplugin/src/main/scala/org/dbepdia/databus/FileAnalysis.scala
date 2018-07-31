@@ -29,7 +29,7 @@ import org.apache.commons.compress.compressors.{CompressorException, CompressorI
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-import org.dbepdia.databus.lib.{Hash, Sign}
+import org.dbepdia.databus.lib.{Datafile, Hash, Sign}
 
 
 /**
@@ -66,8 +66,6 @@ class FileAnalysis extends AbstractMojo {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
-
-
     //skip the parent module
     if (packaging.equals("pom")) {
       getLog.info("skipping parent module")
@@ -89,21 +87,19 @@ class FileAnalysis extends AbstractMojo {
 
   def processFile(datafile: File): Unit = {
     getLog.info(s"found file $datafile")
+    val df: Datafile = Datafile.init(datafile)
+    val privateKey = Sign.readPrivateKeyFile(privateKeyFile)
+
+
+    df.updateSignature(privateKey)
+    getLog.info(df.toString)
 
     /**
       * Begin basic stats
-      */
 
-    // md5
-    val md5 = Hash.computeHash(datafile)
-    getLog.info(s"md5: ${md5}")
 
-    // bytes
-    val bytes = datafile.length()
-    getLog.info(s"ByteSize: $bytes")
 
     // private key signature
-    val privateKey = Sign.readPrivateKeyFile(privateKeyFile)
 
     val signatureBytes: Array[Byte] = Sign.sign(privateKey, datafile);
 
@@ -129,40 +125,17 @@ class FileAnalysis extends AbstractMojo {
       getLog.info(s"MimeTypes(inner): $v")
     )
 
-
-    /**
-      * extended stats
-      */
     // triple-count != line-count? Comments, duplicates or other serializations would make them differ
     // TODO: implement a better solution
     // val lines = io.Source.fromFile(datafile).getLines.size
     //getLog.info(s"Lines: $lines")
 
-
-    /**
-      * write to file
-      */
-
     val model = ModelFactory.createDefaultModel
     //model.write( new FileWriter( new File(outputDirectory+"/"+datafile.getName+".dataid.ttl")),"turtle")
-
+*/
   }
 
-  //TODO streams need to be closed properly
-  //TODO remove compression name hack
-  def detectCompression(datafile: File): String = {
-    try {
-      val fi = new FileInputStream(datafile)
-      val bi = new BufferedInputStream(fi)
-      val input: CompressorInputStream = new CompressorStreamFactory()
-        .createCompressorInputStream(bi)
-      input.getClass.getSimpleName.replace("CompressorInputStream", "")
 
-    } catch {
-      case ce: CompressorException => "None"
-    }
-
-  }
 
   /**
     * returns list of Subdirectories
