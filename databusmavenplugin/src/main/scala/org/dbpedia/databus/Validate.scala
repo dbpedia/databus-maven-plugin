@@ -44,8 +44,9 @@ import org.dbpedia.databus.lib.{FileHelper, Sign}
   */
 @Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE)
 class Validate extends AbstractMojo {
-  @Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
-  private val multiModuleBaseDirectory: String = ""
+
+  //@Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
+  //private val multiModuleBaseDirectory: String = ""
 
   @Parameter(defaultValue = "${project.artifactId}", readonly = true)
   private val artifactId: String = ""
@@ -132,7 +133,7 @@ class Validate extends AbstractMojo {
   }
 
   def validateFileNames(): Unit = {
-    val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
+/*    val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
 
     // processing each module
     moduleDirectories.foreach(moduleDir => {
@@ -152,6 +153,7 @@ class Validate extends AbstractMojo {
 
       })
     })
+    */
   }
 
 }

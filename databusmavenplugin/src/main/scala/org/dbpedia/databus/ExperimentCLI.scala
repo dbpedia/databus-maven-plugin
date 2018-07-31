@@ -25,12 +25,12 @@ import scala.collection.mutable
 /**
   * a junk class to test some code
   */
-object ExperimentCLI {
+class ExperimentCLI {
 
   val knownCompressionFileEndings = mutable.HashSet [String]("gz", "bz2")
 
 
-  def main(args: Array[String]): Unit = {
+  def main2(args: Array[String]): Unit = {
     val contentVariantSeparator = "_"
     val fileEndingSeparator = "."
 

@@ -97,27 +97,8 @@ class FileAnalysis extends AbstractMojo {
     var model = df.toModel()
     getLog.info(df.toString)
 
-    /**
-      * Begin basic stats
+//    model.write( new FileWriter( new File(outputDirectory+"/"+datafile.getName+".dataid.ttl")),"turtle")
 
-
-    // mimetypes
-    val mimetypes = getMimeType(datafile.getName)
-    val innerMime = mimetypes.inner
-
-
-    innerMime.foreach(v =>
-      getLog.info(s"MimeTypes(inner): $v")
-    )
-
-    // triple-count != line-count? Comments, duplicates or other serializations would make them differ
-    // TODO: implement a better solution
-    // val lines = io.Source.fromFile(datafile).getLines.size
-    //getLog.info(s"Lines: $lines")
-
-    val model = ModelFactory.createDefaultModel
-    //model.write( new FileWriter( new File(outputDirectory+"/"+datafile.getName+".dataid.ttl")),"turtle")
-*/
   }
 
 

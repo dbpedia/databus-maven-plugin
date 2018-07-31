@@ -29,6 +29,7 @@ import java.util.Base64
 import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
 import org.apache.commons.compress.compressors.CompressorStreamFactory
 import org.apache.jena.rdf.model.{Model, ModelFactory}
+import org.apache.jena.vocabulary.RDF
 
 import scala.io.Source
 
@@ -63,6 +64,7 @@ class Datafile private(datafile: File) {
 
   def toModel(): Model = {
     var model: Model = ModelFactory.createDefaultModel
+    val thisResource = model.createResource(datafile.getName)
     /*
     <http://dbpedia.org/dataset/article_categories?lang=en&dbpv=2016-10&file=article_categories_en.tql.bz2>
         a                            dataid:SingleFile ;
@@ -86,9 +88,8 @@ class Datafile private(datafile: File) {
         dcat:mediaType               dataid-mt:MediaType_n-quads_x-bzip2 .
      */
 
-    
 
-
+    thisResource.addProperty(RDF.`type`,"SingleFile")
     model
   }
 
