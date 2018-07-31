@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-package org.dbepdia.databus.lib
+package org.dbpedia.databus.lib
 
 import java.io.{BufferedInputStream, File, FileInputStream}
 import java.nio.file.Files

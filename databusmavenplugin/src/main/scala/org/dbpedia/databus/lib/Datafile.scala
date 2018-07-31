@@ -19,7 +19,7 @@
  * #L%
  */
 
-package org.dbepdia.databus.lib
+package org.dbpedia.databus.lib
 
 import java.io._
 import java.nio.file.Files
