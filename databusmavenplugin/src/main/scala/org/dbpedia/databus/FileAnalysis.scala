@@ -24,6 +24,7 @@ package org.dbpedia.databus
 import java.io._
 import java.util
 
+import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import org.dbpedia.databus.lib.{Datafile, FileHelper, Hash, Sign}
@@ -56,6 +57,15 @@ class FileAnalysis extends AbstractMojo {
   @Parameter(defaultValue = "${project.build.outputDirectory}", readonly = true)
   private val outputDirectory: String = ""
 
+  @Parameter(defaultValue = "${project.build.directory}", readonly = true)
+  private val targetDirectory: String = ""
+
+  @Parameter(defaultValue = "${project.artifactId}", readonly = true)
+  private val artifactId: String = ""
+
+  @Parameter(defaultValue = "${project.version}", readonly = true)
+  private val version: String = ""
+
   @Parameter var privateKeyFile: File = _
   @Parameter val resourceDirectory: String = ""
   @Parameter var contentVariants: util.ArrayList[String] = _
@@ -68,21 +78,29 @@ class FileAnalysis extends AbstractMojo {
       getLog.info("skipping parent module")
       return
     }
-
     val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
+
+
+    var dataIdCollect: Model = ModelFactory.createDefaultModel
 
     // processing each module
     moduleDirectories.foreach(moduleDir => {
       getLog.info(s"reading from module $moduleDir")
-
       // processing all file per module
       FileHelper.getListOfFiles(s"$moduleDir/$resourceDirectory").foreach(datafile => {
-        processFile(datafile)
+        processFile(datafile, dataIdCollect)
       })
     })
+
+    // write the model to target
+    var db: File = new File(targetDirectory+"/databus/"+artifactId+"/"+version+"/"+artifactId+"-"+version+"-dataid.ttl")
+    db.getParentFile.mkdirs()
+    dataIdCollect.write( new FileWriter(db),"turtle")
+
+
   }
 
-  def processFile(datafile: File): Unit = {
+  def processFile(datafile: File, dataIdCollect: Model): Unit = {
     getLog.info(s"found file $datafile")
     val df: Datafile = Datafile.init(datafile)
     val privateKey = Sign.readPrivateKeyFile(privateKeyFile)
@@ -96,8 +114,7 @@ class FileAnalysis extends AbstractMojo {
 
     var model = df.toModel()
     getLog.info(df.toString)
-
-    model.write( new FileWriter( new File(outputDirectory+"/"+datafile.getName+".dataid.ttl")),"turtle")
+    dataIdCollect.add(model)
 
   }
 

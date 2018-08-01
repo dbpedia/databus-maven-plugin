@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>generic</artifactId>
-        <groupId>org.dbpedia.org.Termilion</groupId>
+        <groupId>org.dbpedia.databus.Termilion</groupId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -16,14 +16,14 @@
                 <groupId>org.dbpedia.databus</groupId>
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
-                    <contentVariants>
+                    <!--contentVariants>
                         <contentVariant>dewiki,enwiki</contentVariant>
                     </contentVariants>
                     <formatVariants>
                         <formatVariant>ttl</formatVariant>
                         <formatVariant>tql</formatVariant>
                     </formatVariants>
-                    <!--contentVariants>
+                    <contentVariants>
                         <contentVariant>
                             <values>
                                 <value>dewiki</value>
