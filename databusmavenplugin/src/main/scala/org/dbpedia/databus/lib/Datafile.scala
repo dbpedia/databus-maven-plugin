@@ -40,11 +40,11 @@ import scala.io.Source
   */
 class Datafile private(datafile: File) {
 
-  val mimetypes = Map(
+  val mimetypeMap = Map(
+    "nt" -> "application/n-triples",
     "ttl" -> "text/turtle",
     "tql" -> "application/n-quads",
     "nq" -> "application/n-quads",
-    "nt" -> "text/ntriples",
     "rdf" -> "application/rdf+xml"
   )
 
@@ -68,7 +68,7 @@ class Datafile private(datafile: File) {
   }
 
   def updateMimetype(): Datafile = {
-    mimetypes.foreach { case (key, value) => {
+    mimetypeMap.foreach { case (key, value) => {
       if (datafile.getName.contains(key)) {
         mimetype = value
       }
@@ -87,6 +87,11 @@ class Datafile private(datafile: File) {
     this
   }
 
+  /**
+    *
+    * @param lineCount gives the linecount of the preview, however it is limited to 500 chars per line, in case there is a very long line
+    * @return
+    */
   def updatePreview(lineCount: Int): Datafile = {
 
     val source = Source.fromInputStream(getInputStream())
@@ -97,8 +102,12 @@ class Datafile private(datafile: File) {
       sb.append(it.next()).append("\n")
       x += 1
     }
-    preview = sb.toString()
     source.close
+    preview = sb.toString()
+    //limit
+    if (preview.size > (lineCount*500)){
+      preview = preview.substring(0,lineCount*500)
+    }
     this
   }
 
@@ -136,7 +145,7 @@ class Datafile private(datafile: File) {
 
   override def toString
 
-  = s"Datafile(md5=$md5\nbytes=$bytes\nisArchive=$isArchive\nisCompressed=$isCompressed\ncompressionVariant=$compressionVariant\nsignatureBytes=$signatureBytes\nsignatureBase64=$signatureBase64\nverified=$verified\npreview=$preview)"
+  = s"Datafile(md5=$md5\nbytes=$bytes\nisArchive=$isArchive\nisCompressed=$isCompressed\ncompressionVariant=$compressionVariant\nsignatureBytes=$signatureBytes\nsignatureBase64=$signatureBase64\nverified=$verified\n})"
 }
 
 object Datafile {

@@ -32,6 +32,8 @@ import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import org.dbpedia.databus.lib.{FileHelper, Sign}
 
+import scala.collection.mutable
+
 
 /**
   * Validate setup and resources
@@ -46,23 +48,37 @@ import org.dbpedia.databus.lib.{FileHelper, Sign}
 class Validate extends AbstractMojo with Properties {
 
 
+  /**
+    *  TODO potential caveat: check if, else based on pom could fail
 
+    * @throws MojoExecutionException
+    */
   @throws[MojoExecutionException]
   override def execute(): Unit = {
 
-    if (packaging.equals("pom")) {
+    /**
+      * setup
+       */
+    // create targetDir
+    targetDirectory.mkdirs()
+
+    /**
+      * validation
+      */
+
+    // parent module, i.e. packaging pom
+    if (isParent()) {
 
       validateWebId()
 
+    // all submodules
     } else {
-
       validateFileNames()
-
     }
   }
 
   /**
-    * for now just prints all keys
+    *
     */
   def validateWebId(): Unit = {
 
@@ -71,37 +87,42 @@ class Validate extends AbstractMojo with Properties {
       */
     val model = ModelFactory.createDefaultModel
     model.read(maintainer.toString)
-    getLog.info("Read " + model.size() + " triples from " + maintainer)
-    val ni: NodeIterator = model.listObjectsOfProperty(model.getResource(maintainer.toString), model.getProperty("http://www.w3.org/ns/auth/cert#key"))
+    getLog.debug("Read " + model.size() + " triples from " + maintainer)
 
-    //TODO validate against the private key
+
+    val ni: NodeIterator = model.listObjectsOfProperty(model.getResource(maintainer.toString), model.getProperty("http://www.w3.org/ns/auth/cert#key"))
+    // TODO add a
     getLog.info("Private Key File: " + privateKeyFile)
+    //val fileHack: File = new File(privateKeyFile.getAbsolutePath.replace("", ""))
+    val privateKey = Sign.readPrivateKeyFile(privateKeyFile)
+    val privk: RSAPrivateCrtKey = privateKey.asInstanceOf[RSAPrivateCrtKey]
+    val modulusPrivkHex = privk.getModulus.toString(16)
+    val exponentPrivk = privk.getPublicExponent.toString()
+
+    var matching:Boolean = false
+    // iterate all public keys from webid
     while (ni.hasNext) {
       var node: RDFNode = ni.next()
       val exponentResource = model.listObjectsOfProperty(node.asResource(), model.getProperty("http://www.w3.org/ns/auth/cert#exponent")).next()
       val exponentWebId = exponentResource.asLiteral().getLexicalForm
-
       val modulusResource = model.listObjectsOfProperty(node.asResource(), model.getProperty("http://www.w3.org/ns/auth/cert#modulus")).next()
       val modulusWebId = modulusResource.asLiteral().getLexicalForm
 
-      //TODO fix paths
-      val fileHack: File = new File(privateKeyFile.getAbsolutePath.replace("${project.parent.basedir}/", ""))
-      val privateKey = Sign.readPrivateKeyFile(fileHack)
-      val privk: RSAPrivateCrtKey = privateKey.asInstanceOf[RSAPrivateCrtKey]
-
-
+      // some log output
+      // TODO change to debug later
       getLog.info("BlankNode: " + node + "")
       getLog.info("Exponent (from webid): " + exponentWebId)
-      getLog.info("Exponent (from privk): " + privk.getPublicExponent)
-      if (exponentWebId.equalsIgnoreCase(privk.getPublicExponent.toString())) {
+      getLog.info("Exponent (from privk): " + exponentPrivk)
+      getLog.info("Modulus (from webid): " + modulusWebId.substring(0,30).toLowerCase+"...")
+      getLog.info("Modulus (from privk): " + modulusPrivkHex.substring(0,30)+"...")
+
+
+      // mainly for debugging
+      if (exponentWebId.equalsIgnoreCase(exponentPrivk)) {
         getLog.info("Exponents match")
       } else {
         getLog.error("Exponents do NOT match")
       }
-
-      getLog.info("Modulus (from webid): " + modulusWebId)
-      getLog.info("Modulus (from privk): " + privk.getModulus.toString(16))
-
 
       if (modulusWebId.equalsIgnoreCase(privk.getModulus.toString(16))) {
         getLog.info("Moduli match")
@@ -109,15 +130,42 @@ class Validate extends AbstractMojo with Properties {
         getLog.error("Moduli do NOT match")
       }
 
-
+      // the real condition
+      if (exponentWebId.equalsIgnoreCase(exponentPrivk) && modulusWebId.equalsIgnoreCase(privk.getModulus.toString(16))){
+        matching = true
+      }
       //getLog.info("Modulus (from privk): " +  java.lang.Long.valueOf(privk.getModulus.toString,16))
+    }
 
-
+    if (matching) {
+      getLog.info("SUCCESS: Private Key validated against WebID")
+    } else {
+      getLog.error("FAILURE: Private Key and WebID do not match")
     }
 
   }
 
   def validateFileNames(): Unit = {
+
+    FileHelper.getListOfFiles(dataDirectory).foreach(datafile => {
+
+      getLog.info("Checking files")
+      val in = new mutable.HashSet[String]
+      val out = new mutable.HashSet[String]
+      // check for matching artifactId
+      if (datafile.getName.startsWith(artifactId)) {
+        in.add(datafile.toString)
+      } else {
+        out.add(datafile.toString)
+      }
+
+      getLog.info("including "+in.size+ " files starting with "+artifactId)
+      getLog.info("/n"+in.mkString("\n"))
+      getLog.info("excluding  "+in.size+ " files NOT starting with "+artifactId)
+      // check mimetype
+
+    })
+
    /*  val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
     getLog.info(moduleDirectories+"")
     getLog.info(multiModuleBaseDirectory)

@@ -24,36 +24,94 @@ import java.io.File
 import java.net.URL
 import java.util
 
+import com.codahale.metrics.MetricRegistry
 import org.apache.maven.plugins.annotations.Parameter
 
+
+/**
+  * Collection of all properties
+  *
+  * Dev Note:
+  * val targetDirectory = new File (mavenTargetDirectory,"/databus/"+artifactId+"/"+version)
+  * or scripting does not work as these are executed on startup, the injection of values
+  * by maven is done later, so all vars are empty on startup
+  *
+  */
 trait Properties {
+
+  /**
+    * SH: I marked this one as deprecated as it does not seem to work correctly
+    * reproduce with running mvn help:evaluate -Dexpression=maven.multiModuleProjectDirectory in parent and module dir
+    * I tried to implement an isParent method below to use centrally
+    * At the moment, we are working with the assumption that we only have one parent with modules, no deeper
+    */
+  @deprecated(message = "see above", since = "early days")
+  @Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
+  val multiModuleBaseDirectory: String = ""
+
+  /**
+    * Project vars
+    */
 
   @Parameter(defaultValue = "${project.artifactId}", readonly = true)
   val artifactId: String = ""
 
-  @Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
-  val multiModuleBaseDirectory: String = ""
+  @Parameter(defaultValue = "${project.version}", readonly = true)
+  val version: String = ""
 
   @Parameter(defaultValue = "${project.packaging}", readonly = true)
   val packaging: String = ""
 
+  @Parameter(defaultValue = "${project.build.directory}", readonly = true)
+  var mavenTargetDirectory: File = _
+
+
+
+
+  // refers to target/classes
   @Parameter(defaultValue = "${project.build.outputDirectory}", readonly = true)
   val outputDirectory: String = ""
 
-  @Parameter(defaultValue = "${project.build.directory}", readonly = true)
-  val targetDirectory: String = ""
+  // not usable, needs to set explicitly in the pom.xml of modules to be queried
+  // @Parameter(defaultValue = "${parent.relativePath}", readonly = true)
+  // val relPath: String = ""
 
-  @Parameter(defaultValue = "${project.version}", readonly = true)
-  val version: String = ""
 
+  /**
+    * Plugin specific vars for parent module
+    */
+
+  /**
+    * the envisioned target dir
+    * folder is created in validate
+    */
+  @Parameter var targetDirectory: File = _
   @Parameter var maintainer: URL = _
+
+  //TODO the absolutepath here is different for parent and modules the function
+  // read privatekeyfiles in hash and signs searches in the parent folder using ../
+  // works for now, but could fail
   @Parameter var privateKeyFile: File = _
-  @Parameter val resourceDirectory: String = ""
+  @Parameter var dataDirectory: File = _
 
   //@Parameter var contentVariants:util.ArrayList[ContentVariant] = null
   //@Parameter var contentVariants: util.ArrayList[String] = _
   //@Parameter var formatVariants: util.ArrayList[String] = _
 
+  /**
+    * Other
+     */
 
+
+  // val metrics = new MetricRegistry
+
+  /**
+    *
+    * @return
+    */
+
+  def isParent(): Boolean = {
+    packaging.equals("pom")
+  }
 
 }

@@ -64,8 +64,20 @@ object Sign {
   var bufferSizeCrypt = 8192
 
 
+  /**
+    * reads the private key file
+    *
+    * @param privateKeyFile
+    * @return
+    */
   def readPrivateKeyFile(privateKeyFile: File): PrivateKey = {
-    val keyBytes = Files.readAllBytes(privateKeyFile.toPath)
+    var corrected = privateKeyFile
+    if (!corrected.exists()) {
+      corrected = new File(privateKeyFile.getParentFile.getParentFile, privateKeyFile.getName)
+      System.out.println(corrected)
+    }
+
+    val keyBytes = Files.readAllBytes(corrected.toPath)
     val spec = new PKCS8EncodedKeySpec(keyBytes)
     val kf = KeyFactory.getInstance("RSA")
     val privateKey = kf.generatePrivate(spec)
@@ -81,7 +93,7 @@ object Sign {
 
     val rsa = Signature.getInstance("SHA1withRSA")
     rsa.initSign(privateKey)
-    update(rsa,datafile,bufferSize)
+    update(rsa, datafile, bufferSize)
     rsa.sign()
     //new String (Base64.getEncoder.encode(bytes))
   }
@@ -98,7 +110,7 @@ object Sign {
     val publicKey: PublicKey = keyFactory.generatePublic(publicKeySpec)
     val rsa = Signature.getInstance("SHA1withRSA")
     rsa.initVerify(publicKey)
-    update(rsa,datafile,bufferSize)
+    update(rsa, datafile, bufferSize)
     rsa.verify(signature)
   }
 

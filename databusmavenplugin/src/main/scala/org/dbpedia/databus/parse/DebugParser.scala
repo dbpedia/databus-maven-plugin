@@ -19,7 +19,8 @@
  * #L%
  */
 
-package org.dbpedia.databus.lib
+package org.dbpedia.databus.parse
+
 import java.io._
 
 import org.eclipse.rdf4j.rio._
@@ -34,7 +35,9 @@ import scala.io.Source
 object DebugParser {
   val batchSize = 500 * 1000
 
-  def parse(in: InputStream): mutable.HashSet[String] = {
+
+  def parse(in: InputStream, rdfFormat: RDFFormat): mutable.HashSet[String] = {
+
     val wrongTriples = new mutable.HashSet[String]
     val batch = new mutable.HashSet[String]
     val it = Source.fromInputStream(in)
@@ -45,7 +48,7 @@ object DebugParser {
     //config.set(BasicParserSettings.VERIFY_LANGUAGE_TAGS, false)
     //config.set(BasicParserSettings.VERIFY_RELATIVE_URIS, false)
 
-    val rdfParser = Rio.createParser(RDFFormat.NTRIPLES)
+    val rdfParser = Rio.createParser(rdfFormat)
     //rdfParser.setParserConfig(config)
 
     while (it.hasNext) {

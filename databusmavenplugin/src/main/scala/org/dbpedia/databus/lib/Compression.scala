@@ -22,6 +22,7 @@ package org.dbpedia.databus.lib
 
 import java.io.{BufferedInputStream, File, FileInputStream, InputStream}
 
+import com.codahale.metrics.MetricRegistry
 import org.apache.commons.compress.archivers.{ArchiveEntry, ArchiveException, ArchiveInputStream, ArchiveStreamFactory}
 import org.apache.commons.compress.compressors.{CompressorException, CompressorInputStream, CompressorStreamFactory}
 

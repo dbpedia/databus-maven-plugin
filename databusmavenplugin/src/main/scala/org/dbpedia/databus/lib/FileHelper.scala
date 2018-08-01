@@ -41,11 +41,11 @@ object FileHelper {
   /**
     * guess what
     *
-    * @param dir
+    * @param d
     * @return
     */
-  def getListOfFiles(dir: String): List[File] = {
-    val d = new File(dir)
+  def getListOfFiles(d: File): List[File] = {
+    //val d = new File(dir)
     if (d.exists && d.isDirectory) {
       d.listFiles.filter(_.isFile).toList
     } else {

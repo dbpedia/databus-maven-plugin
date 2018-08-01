@@ -23,40 +23,41 @@ package org.dbpedia.databus
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import org.dbpedia.databus.lib.{Datafile, FileHelper}
+import org.dbpedia.databus.parse.DebugParser
+import org.eclipse.rdf4j.rio.RDFFormat
 
-@Mojo(name = "debug", defaultPhase = LifecyclePhase.VALIDATE)
-class DebugLineBasedFormats extends AbstractMojo {
-
-  @Parameter(defaultValue = "${project.packaging}", readonly = true)
-  private val packaging: String = ""
-
-  @Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
-  private val multiModuleBaseDirectory: String = ""
-
-  @Parameter val resourceDirectory: String = ""
+@Mojo(name = "validate-files", defaultPhase = LifecyclePhase.VALIDATE)
+class ValidateFiles extends AbstractMojo with Properties {
 
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
     //skip the parent module
-    if (packaging.equals("pom")) {
+    if (isParent()) {
       getLog.info("skipping parent module")
       return
     }
 
-    val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
-
-    // processing each module
-    moduleDirectories.foreach(moduleDir => {
-      getLog.info(s"reading from module $moduleDir")
-
-      // processing all file per module
-      FileHelper.getListOfFiles(s"$moduleDir/$resourceDirectory").foreach(datafile => {
-        getLog.info(s"found file $datafile")
+    FileHelper.getListOfFiles(dataDirectory).foreach(datafile => {
+      if (datafile.getName.startsWith(artifactId)) {
+        getLog.info(s"Validating file $datafile")
         val df: Datafile = Datafile.init(datafile)
-        //TODO debug file with parser, if ntriples
+        df.mimetype match {
+          case "application/n-triples" => {
+            getLog.info("parsing file " + datafile + " with " + RDFFormat.NTRIPLES + " parser")
+            getLog.info(DebugParser.parse(df.getInputStream(), RDFFormat.NTRIPLES).mkString("/n"))
+          }
+          case "application/n-quads" => {
+            getLog.info("parsing with nquads")
+            getLog.info(DebugParser.parse(df.getInputStream(), RDFFormat.NQUADS).mkString("/n"))
+          }
+          case _ => {
+            getLog.info(df.mimetype + " for" + datafile.toString)
+          }
+        }
 
-      })
+
+      }
     })
 
   }
