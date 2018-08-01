@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>org.dbpedia.databus</groupId>
+  <artifactId>databus-maven-plugin</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20180801.171439</timestamp>
+      <buildNumber>4</buildNumber>
+    </snapshot>
+    <lastUpdated>20180801171439</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>1.0-20180801.171439-4</value>
+        <updated>20180801171439</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1.0-20180801.171439-4</value>
+        <updated>20180801171439</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
