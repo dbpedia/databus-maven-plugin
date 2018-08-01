@@ -97,7 +97,7 @@ class FileAnalysis extends AbstractMojo {
     var model = df.toModel()
     getLog.info(df.toString)
 
-//    model.write( new FileWriter( new File(outputDirectory+"/"+datafile.getName+".dataid.ttl")),"turtle")
+    model.write( new FileWriter( new File(outputDirectory+"/"+datafile.getName+".dataid.ttl")),"turtle")
 
   }
 
