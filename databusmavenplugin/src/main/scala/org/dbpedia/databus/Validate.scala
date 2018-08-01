@@ -43,28 +43,13 @@ import org.dbpedia.databus.lib.{FileHelper, Sign}
   *
   */
 @Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE)
-class Validate extends AbstractMojo {
-
-  @Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
-  private val multiModuleBaseDirectory: String = ""
-
-  @Parameter(defaultValue = "${project.artifactId}", readonly = true)
-  private val artifactId: String = ""
-
-  @Parameter(defaultValue = "${project.packaging}", readonly = true)
-  private val packaging: String = ""
+class Validate extends AbstractMojo with Properties {
 
 
-  @Parameter var maintainer: URL = _
-  @Parameter var privateKeyFile: File = _
-  @Parameter val resourceDirectory: String = ""
-
-  //@Parameter var contentVariants:util.ArrayList[ContentVariant] = null
-  @Parameter var contentVariants: util.ArrayList[String] = _
-  @Parameter var formatVariants: util.ArrayList[String] = _
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
+
     if (packaging.equals("pom")) {
 
       validateWebId()

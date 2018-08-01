@@ -46,33 +46,12 @@ import org.dbpedia.databus.lib.{Datafile, FileHelper, Hash, Sign}
   *
   */
 @Mojo(name = "analysis", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
-class FileAnalysis extends AbstractMojo {
-
-  @Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
-  private val multiModuleBaseDirectory: String = ""
-
-  @Parameter(defaultValue = "${project.packaging}", readonly = true)
-  private val packaging: String = ""
-
-  @Parameter(defaultValue = "${project.build.outputDirectory}", readonly = true)
-  private val outputDirectory: String = ""
-
-  @Parameter(defaultValue = "${project.build.directory}", readonly = true)
-  private val targetDirectory: String = ""
-
-  @Parameter(defaultValue = "${project.artifactId}", readonly = true)
-  private val artifactId: String = ""
-
-  @Parameter(defaultValue = "${project.version}", readonly = true)
-  private val version: String = ""
-
-  @Parameter var privateKeyFile: File = _
-  @Parameter val resourceDirectory: String = ""
-  @Parameter var contentVariants: util.ArrayList[String] = _
-
+class FileAnalysis extends AbstractMojo with Properties {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
+
+
     //skip the parent module
     if (packaging.equals("pom")) {
       getLog.info("skipping parent module")
