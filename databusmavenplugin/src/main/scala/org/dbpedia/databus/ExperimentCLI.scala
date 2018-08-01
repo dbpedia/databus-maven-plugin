@@ -48,16 +48,8 @@ object ExperimentCLI {
     val feed = input.build(new InputStreamReader(feedUrl.openStream))
     val types: List[String] = List("rss_0.9", "rss_0.91", "rss_0.92", "rss_0.93", "rss_0.94", "rss_1.0", "rss_2.0", "atom_0.3")
     feed.setFeedType(types.apply(5))
-
-
-
-
-
-
     var entries: util.ArrayList[SyndEntry] = new util.ArrayList[SyndEntry]()
     var entry: SyndEntry = new SyndEntryImpl()
-
-
     entry.setTitle("Rome v1.0")
     entry.setLink("http://wiki.java.net/bin/view/Javawsxml/Rome01")
     //entry.setPublishedDate(DATE_PARSER.parse("2004-06-08"))
@@ -65,11 +57,7 @@ object ExperimentCLI {
     description.setType("text/plain")
     description.setValue("Initial release of Rome")
     entry.setDescription(description)
-
-
     entries.add(entry)
-
-
     entry = new SyndEntryImpl()
     entry.setTitle("Rome v3.0")
     entry.setLink("http://wiki.java.net/bin/view/Javawsxml/Rome03")
