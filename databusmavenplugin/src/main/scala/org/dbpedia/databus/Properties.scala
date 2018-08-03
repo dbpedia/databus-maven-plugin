@@ -67,11 +67,22 @@ trait Properties {
   var finalName: String = _
 
 
-
+  /**
+    * directories
+    */
 
   // refers to target/classes
   @Parameter(defaultValue = "${project.build.outputDirectory}", readonly = true)
   val outputDirectory: String = ""
+
+  /**
+    * the envisioned target dir
+    * folder is created in validate
+    */
+  @Parameter var dataIdDirectory: File = _
+  @Parameter var pluginDirectory: File = _
+  @Parameter var dataDirectory: File = _
+
 
   // not usable, needs to set explicitly in the pom.xml of modules to be queried
   // @Parameter(defaultValue = "${parent.relativePath}", readonly = true)
@@ -82,39 +93,29 @@ trait Properties {
     * Plugin specific vars for parent module
     */
 
-  /**
-    * the envisioned target dir
-    * folder is created in validate
-    */
-  @Parameter var targetDirectory: File = _
-  @Parameter var maintainer: URL = _
-  @Parameter var publisher: URL = _
+
 
   //TODO the absolutepath here is different for parent and modules the function
   // read privatekeyfiles in hash and signs searches in the parent folder using ../
   // works for now, but could fail
   @Parameter var privateKeyFile: File = _
-  @Parameter var dataDirectory: File = _
 
 
   /**
-    * for the modules
+    * for the dataid
     */
+  @Parameter var maintainer: URL = _
+  @Parameter var publisher: URL = _
   @Parameter val labels: java.util.List[String] = new java.util.ArrayList[String]
   @Parameter val datasetDescription: String = ""
-
-
-//  @Parameter val dataset: String = ""
   @Parameter val license: String = ""
-  //@Parameter val latestVersion: String = ""
   @Parameter val downloadURL: String = ""
   @Parameter val issuedDate: String = ""
   @Parameter val modifiedDate: String = ""
 
   /**
     * Other
-     */
-
+    */
 
 
   /**
@@ -124,6 +125,10 @@ trait Properties {
 
   def isParent(): Boolean = {
     packaging.equals("pom")
+  }
+
+  def getDataIdFile() : File = {
+    new File(dataIdDirectory,"/"+artifactId+"-"+version+"-dataid.ttl")
   }
 
 }

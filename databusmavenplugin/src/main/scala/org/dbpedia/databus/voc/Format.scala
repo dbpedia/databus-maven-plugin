@@ -43,11 +43,11 @@ object Format {
       }
     }
     x match {
-      case "nt" => (x, ApplicationNTriples)
-      case "ttl" => (x, TextTurtle)
-      case "tql" => (x, ApplicationNQuad)
-      case "nq" => (x, ApplicationNQuad)
-      case "rdf" => (x, ApplicationRDFXML)
+      case ".nt" => (x, ApplicationNTriples)
+      case ".ttl" => (x, TextTurtle)
+      case ".tql" => (x, ApplicationNQuad)
+      case ".nq" => (x, ApplicationNQuad)
+      case ".rdf" => (x, ApplicationRDFXML)
       case _ => (x, UNKNOWN)
     }
   }
@@ -55,7 +55,7 @@ object Format {
 }
 
 // line base
-object ApplicationNTriples extends Format("application/n-triples", false, org.eclipse.rdf4j.rio.RDFFormat.NTRIPLES, org.apache.jena.riot.RDFFormat.NTRIPLES) {}
+object ApplicationNTriples extends Format("application/n-triples", true, org.eclipse.rdf4j.rio.RDFFormat.NTRIPLES, org.apache.jena.riot.RDFFormat.NTRIPLES) {}
 
 object ApplicationNQuad extends Format("application/n-quads", true, org.eclipse.rdf4j.rio.RDFFormat.NQUADS, org.apache.jena.riot.RDFFormat.NQUADS) {}
 

@@ -20,10 +20,13 @@
  */
 package org.dbpedia.databus
 
+import java.io.{File, FileWriter}
+
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import org.dbpedia.databus.lib.{Datafile, FileHelper}
 import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
+import org.dbpedia.databus.voc.UNKNOWN
 import org.eclipse.rdf4j.rio.{RDFFormat, RDFParser, Rio}
 
 @Mojo(name = "validate-files", defaultPhase = LifecyclePhase.VALIDATE)
@@ -39,13 +42,15 @@ class ValidateFiles extends AbstractMojo with Properties {
     }
 
     var parseLog = new StringBuilder
-    FileHelper.getListOfFiles(dataDirectory).foreach(datafile => {
-      if (datafile.getName.startsWith(artifactId)) {
 
-        val df: Datafile = Datafile.init(datafile )
+
+    FileHelper.getListOfDataFiles(dataDirectory, artifactId,getDataIdFile().getName ).foreach(datafile => {
+
+        val df: Datafile = Datafile.init(datafile)
         val in = df.getInputStream()
 
         parseLog.append(s"*****************${datafile.getName}\n${df.mimetype}\n")
+        getLog.info(s"\n*****************${datafile.getName}\n${df.mimetype}\n")
 
         //val config = new ParserConfig
         //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_DATATYPES, false)
@@ -57,34 +62,42 @@ class ValidateFiles extends AbstractMojo with Properties {
         var rdfParser: RDFParser = null
         //rdfParser.setParserConfig(config)
 
-        if (df.mimetype.lineBased) {
-          rdfParser = Rio.createParser(df.mimetype.rio)
-          getLog.info("" + rdfParser.getRDFFormat)
+        if (df.mimetype != UNKNOWN) {
 
-          val (lines, all, good, bad) = LineBasedRioDebugParser.parse(in, rdfParser)
-          parseLog.append(s"Triples: $all\nValid: $good\nErrors: ${bad.size}\n")
-          if (bad.size > 0) {
-            parseLog.append(s"Error details:\n${bad.mkString("\n")}")
+          if (df.mimetype.lineBased) {
+            rdfParser = Rio.createParser(df.mimetype.rio)
 
-          }
-        } else {
+            val (lines, all, good, bad) = LineBasedRioDebugParser.parse(in, rdfParser)
 
-          if (df.mimetype != null) {
+            getLog.info(s"Lines: $lines\nTriples: $all\nValid: $good\nErrors: ${bad.size}\n")
+            parseLog.append(s"Lines: $lines\nTriples: $all\nValid: $good\nErrors: ${bad.size}\n")
+
+            if (bad.size > 0) {
+              parseLog.append(s"Error details:\n${bad.mkString("\n")}")
+
+            }
+          } else {
             rdfParser = Rio.createParser(df.mimetype.rio)
             val (success, errors) = RioOtherParser.parse(in, rdfParser)
             parseLog.append(s"Success = $success\nErrors = $errors\n")
+            getLog.info(s"Success = $success\nErrors = $errors\n")
           }
-          else {
-            parseLog.append("no rdf format")
-          }
-
-
         }
-      }
+        else {
+          getLog.info("no rdf format")
+          parseLog.append("no rdf format")
+        }
+
+
     })
 
+    val logDir = new File(pluginDirectory, "/log/")
+    logDir.mkdirs()
+    val logFile = logDir+"/"+"parselog.txt"
+    new FileWriter (logFile).write(parseLog.toString())
 
-    getLog.info(parseLog.toString())
+    getLog.info(s"Parselog written to $logFile")
+
 
   }
 

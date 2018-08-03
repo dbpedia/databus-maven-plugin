@@ -56,7 +56,8 @@ class Validate extends AbstractMojo with Properties {
       * setup
        */
     // create targetDir
-    targetDirectory.mkdirs()
+    pluginDirectory.mkdirs()
+    dataIdDirectory.mkdirs()
 
     /**
       * validation
@@ -143,24 +144,10 @@ class Validate extends AbstractMojo with Properties {
 
   def validateFileNames(): Unit = {
 
-    FileHelper.getListOfFiles(dataDirectory).foreach(datafile => {
-
-      getLog.info("Checking files")
-      val in = new mutable.HashSet[String]
-      val out = new mutable.HashSet[String]
-      // check for matching artifactId
-      if (datafile.getName.startsWith(artifactId)) {
-        in.add(datafile.toString)
-      } else {
-        out.add(datafile.toString)
-      }
-
-      getLog.info("including "+in.size+ " files starting with "+artifactId)
-      getLog.info("/n"+in.mkString("\n"))
-      getLog.info("excluding  "+in.size+ " files NOT starting with "+artifactId)
-      // check mimetype
-
-    })
+    getLog.info("Checking files")
+    val in =  FileHelper.getListOfDataFiles(dataDirectory,artifactId,getDataIdFile().getName)
+    getLog.info("including "+in.size+ " files starting with "+artifactId + " and not pre-existing dataid files")
+    getLog.info("\n"+in.mkString("\n"))
 
    /*  val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
     getLog.info(moduleDirectories+"")

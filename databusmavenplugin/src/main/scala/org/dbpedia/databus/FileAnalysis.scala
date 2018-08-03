@@ -60,11 +60,8 @@ class FileAnalysis extends AbstractMojo with Properties {
 
    // val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
 
-    FileHelper.getListOfFiles(dataDirectory).foreach(datafile => {
-      if (datafile.getName.startsWith(artifactId)) {
+    FileHelper.getListOfDataFiles(dataDirectory, artifactId ,getDataIdFile().getName).foreach(datafile => {
         processFile(datafile, dataIdCollect)
-      }
-
     })
 
     // processing each module
@@ -75,7 +72,7 @@ class FileAnalysis extends AbstractMojo with Properties {
     //})
 
     // write the model to target
-    var db: File = new File(targetDirectory,"/"+artifactId+"-"+version+"-dataid.ttl")
+    var db = getDataIdFile()
     db.getParentFile.mkdirs()
     dataIdCollect.write( new FileWriter(db),"turtle")
 
@@ -92,7 +89,6 @@ class FileAnalysis extends AbstractMojo with Properties {
       .updateMD5()
       .updateBytes()
       .updateSignature(privateKey)
-      .updatePreview(10)
 
     var model = df.toModel(this)
     getLog.info(df.toString)

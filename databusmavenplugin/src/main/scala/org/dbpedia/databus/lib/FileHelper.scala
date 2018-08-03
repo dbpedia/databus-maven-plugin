@@ -22,6 +22,8 @@ package org.dbpedia.databus.lib
 
 import java.io.File
 
+import scala.collection.mutable
+
 object FileHelper {
   /**
     * returns list of Subdirectories
@@ -44,10 +46,15 @@ object FileHelper {
     * @param d
     * @return
     */
-  def getListOfFiles(d: File): List[File] = {
+  def getListOfDataFiles(d: File, artifactId: String, dataidName: String): List[File] = {
     //val d = new File(dir)
+
     if (d.exists && d.isDirectory) {
-      d.listFiles.filter(_.isFile).toList
+      d.listFiles
+        .filter(_.isFile)
+        .filter(_.getName.startsWith(artifactId))
+        .filter(_.getName != dataidName)
+        .toList
     } else {
       List[File]()
     }

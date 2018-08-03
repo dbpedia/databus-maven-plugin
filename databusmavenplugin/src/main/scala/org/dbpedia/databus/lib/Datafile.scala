@@ -30,10 +30,11 @@ import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamF
 import org.apache.commons.compress.compressors.CompressorStreamFactory
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.jena.vocabulary.RDF
-import org.dbpedia.databus.voc.{DataFileToModel, Format}
+import org.dbpedia.databus.voc.{ApplicationNTriples, DataFileToModel, Format, TextTurtle}
 import org.apache.jena.rdf.model.Model
 import org.dbpedia.databus.Properties
-import org.dbpedia.databus.voc.DataFileToModel
+import org.dbpedia.databus.parse.LineBasedRioDebugParser
+import org.eclipse.rdf4j.rio.{RDFParser, Rio}
 
 import scala.io.Source
 
@@ -60,14 +61,28 @@ class Datafile private(datafile: File) {
 
   var preview: String = ""
 
+  def getName(): String ={
+    datafile.getName
+  }
+
   def toModel( props: Properties): Model = {
     DataFileToModel.datafile2Model(this, datafile, props)
   }
 
-  //todo we need to have this in dataid-mt
-  def updateMimetype(): Datafile = {
+  private def updateMimetype(): Datafile = {
     val (ext, mt )= Format.detectMimetypeByFileExtension(datafile)
     mimetype = mt
+
+    // downgrade turtle to ntriple, if linebased
+    if(mt == TextTurtle){
+      val baos: ByteArrayInputStream = new ByteArrayInputStream(preview.getBytes);
+      val (a,b,c,d) = LineBasedRioDebugParser.parse(baos,Rio.createParser(ApplicationNTriples.rio))
+      if(d.size==0){
+        mimetype = ApplicationNTriples
+      }
+    }
+
+
     fileExtension = ext
     this
   }
@@ -87,7 +102,7 @@ class Datafile private(datafile: File) {
     * @param lineCount gives the linecount of the preview, however it is limited to 500 chars per line, in case there is a very long line
     * @return
     */
-  def updatePreview(lineCount: Int): Datafile = {
+  private def updatePreview(lineCount: Int): Datafile = {
 
     val source = Source.fromInputStream(getInputStream())
     var x = 0
@@ -146,7 +161,7 @@ class Datafile private(datafile: File) {
 object Datafile {
   /**
     * factory method
-    * * checks wether the file exists
+    * * checks whether the file exists
     * * detects compression for further reading
     *
     * @param datafile
@@ -160,8 +175,7 @@ object Datafile {
     }
     var df: Datafile = new Datafile(datafile)
 
-    //detect mimetype
-    df.updateMimetype()
+
 
     // detect compression
     var comp = Compression.detectCompression(datafile)
@@ -190,6 +204,11 @@ object Datafile {
       }
     }
 
+    // we need a preview for mimetype
+    df.updatePreview(10)
+
+    //detect mimetype
+    df.updateMimetype()
 
     df
   }

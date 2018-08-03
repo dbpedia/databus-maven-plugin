@@ -42,36 +42,37 @@ object LineBasedRioDebugParser {
 
     var (lines, totalTriples, good, wrongTriples) = (0, 0, 0, new mutable.HashSet[String])
 
-    val batch = new mutable.HashSet[String]
+    var batch = new mutable.HashSet[String]
     val it = Source.fromInputStream(in).getLines()
+    var lc = 0
 
 
     while (it.hasNext) {
+      lc+=1
       val line = it.next().toString
       // batch it
       batch += line
       if (batch.size >= batchSize) {
         //todo better way
         var (a, b, c) = parseBatch(rdfParser, batch)
-        lines += batch.size
         totalTriples += a
         good += b
         wrongTriples ++= c
+        System.out.println(s"${lc} parsed, more than ${lc%batchSize} duplicates")
 
         //reset batch
-        batch.empty
+        batch = new mutable.HashSet[String]
       }
     }
 
     // remaining
     //todo better way
     var (a, b, c) = parseBatch(rdfParser, batch)
-    lines += batch.size
     totalTriples += a
     good += b
     wrongTriples ++= c
 
-    (lines, totalTriples, good, wrongTriples)
+    (lc, totalTriples, good, wrongTriples)
   }
 
   def parseBatch(rdfParser: RDFParser, batch: mutable.HashSet[String]): (Integer, Integer, mutable.HashSet[String]) = {
