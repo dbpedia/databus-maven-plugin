@@ -82,6 +82,9 @@ object DataFileToModel {
       thisResource.addProperty(
         model.getProperty(model.getNsPrefixURI("rdfs"), "label"),
         model.createLiteral(split.head, split.last))
+      thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"),
+        "title"), model.createLiteral(split.head, split.last))
+
     }
     //dataid properties
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "associatedAgent"), model.createResource(properties.maintainer.toString))
@@ -105,7 +108,6 @@ object DataFileToModel {
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "issued"), model.createTypedLiteral(properties.issuedDate, model.getNsPrefixURI("xsd") + "date"))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "license"), model.createResource(properties.license))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "modified"), model.createTypedLiteral(properties.modifiedDate, model.getNsPrefixURI("xsd") + "date"))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "title"), model.createLiteral(properties.englishLabel, "en"))
 
     //dcat properties
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "byteSize"), model.createLiteral(datafile.bytes.toString))
