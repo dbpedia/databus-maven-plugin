@@ -31,7 +31,7 @@ import java.security.spec.{PKCS8EncodedKeySpec, RSAPublicKeySpec, X509EncodedKey
   * The main purpose of this class is to group and compare functions for hashing and signing
   */
 object Hash {
-  var bufferSizeHash: Int = 8192
+  var bufferSizeHash: Int = 32768
 
 
   /**
@@ -61,7 +61,7 @@ object Hash {
 }
 
 object Sign {
-  var bufferSizeCrypt = 8192
+  var bufferSizeCrypt = 32768
 
 
   /**

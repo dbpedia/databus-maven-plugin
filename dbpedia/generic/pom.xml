@@ -73,12 +73,12 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <dataDirectory>/home/shellmann/IdeaProjects/data-release-tool-ti/dbpedia/20180420</dataDirectory>
+                    <targetDirectory>${project.build.directory}/databus/${project.artifactId}/${project.version}/</targetDirectory>
                     <!--maintainer>https://termilion.github.io/webid.ttl#this</maintainer-->
                     <maintainer>http://kurzum.net/dev-dummy.ttl#this</maintainer>
-                    <publisher>http://wiki.dbpedia.org/dbpedia-association</publisher>
-                    <targetDirectory>${project.build.directory}/databus/${project.artifactId}/${project.version}/</targetDirectory>
                     <privateKeyFile>private_key_dev_dummy.der</privateKeyFile>
-                    <dataDirectory>src/main/databus/</dataDirectory>
+                    <!--dataDirectory>src/main/databus/</dataDirectory-->
                     <issuedDate>2018-08-01</issuedDate>
                     <modifiedDate>2018-08-03</modifiedDate>
                     <license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</license>

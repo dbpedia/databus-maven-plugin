@@ -64,7 +64,7 @@ trait Properties {
   var mavenTargetDirectory: File = _
 
   @Parameter(defaultValue = "${project.build.finalName}", readonly = true)
-  var finalName: File = _
+  var finalName: String = _
 
 
 
