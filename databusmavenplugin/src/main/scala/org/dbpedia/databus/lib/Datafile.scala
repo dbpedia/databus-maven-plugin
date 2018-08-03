@@ -28,9 +28,15 @@ import java.util.Base64
 
 import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
 import org.apache.commons.compress.compressors.CompressorStreamFactory
+<<<<<<< HEAD
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.jena.vocabulary.RDF
 import org.dbpedia.databus.voc.{DataFileToModel, Format}
+=======
+import org.apache.jena.rdf.model.Model
+import org.dbpedia.databus.Properties
+import org.dbpedia.databus.voc.DataFileToModel
+>>>>>>> 1dbd9c16cf525812f986d7c8025026a8c92922d2
 
 import scala.io.Source
 
@@ -38,8 +44,24 @@ import scala.io.Source
   * a simple dao to collect all values for a file
   * private constructor, must be called with init to handle compression detection
   */
-class Datafile private(datafile: File) {
+class Datafile private(datafile: File, props: Properties) {
 
+  val properties = props
+
+<<<<<<< HEAD
+=======
+  val mimetypeMap = Map(
+    "nt" -> "application/n-triples",
+    "ttl" -> "text/turtle",
+    "tql" -> "application/n-quads",
+    "nq" -> "application/n-quads",
+    "rdf" -> "application/rdf+xml"
+  )
+  val compressionMimetypeMap = Map(
+    "bzip2" -> "application/x-bzip2",
+    "gz" -> "application/x-gzip"
+  )
+>>>>>>> 1dbd9c16cf525812f986d7c8025026a8c92922d2
 
   var mimetype: Format = _
 
@@ -149,12 +171,12 @@ object Datafile {
     * @return
     */
   //todo add exception to signature
-  def init(datafile: File): Datafile = {
+  def init(datafile: File, properties: Properties): Datafile = {
 
     if (!Files.exists(datafile.toPath)) {
       throw new FileNotFoundException("File not found: " + datafile)
     }
-    var df: Datafile = new Datafile(datafile)
+    var df: Datafile = new Datafile(datafile, properties)
 
     //detect mimetype
     df.updateMimetype()

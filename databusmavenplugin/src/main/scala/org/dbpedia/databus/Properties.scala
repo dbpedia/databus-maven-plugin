@@ -22,9 +22,7 @@ package org.dbpedia.databus
 
 import java.io.File
 import java.net.URL
-import java.util
 
-import com.codahale.metrics.MetricRegistry
 import org.apache.maven.plugins.annotations.Parameter
 
 
@@ -87,6 +85,7 @@ trait Properties {
     */
   @Parameter var targetDirectory: File = _
   @Parameter var maintainer: URL = _
+  @Parameter var publisher: URL = _
 
   //TODO the absolutepath here is different for parent and modules the function
   // read privatekeyfiles in hash and signs searches in the parent folder using ../
@@ -94,9 +93,20 @@ trait Properties {
   @Parameter var privateKeyFile: File = _
   @Parameter var dataDirectory: File = _
 
-  //@Parameter var contentVariants:util.ArrayList[ContentVariant] = null
+  @Parameter val datasetDescription: String = ""
+  @Parameter val englishLabel: String = ""
+  @Parameter val dataset: String = ""
+  @Parameter val license: String = ""
+  @Parameter val latestVersion: String = ""
+  @Parameter val downloadURL: String = ""
+  @Parameter val issuedDate: String = ""
+  @Parameter val modifiedDate: String = ""
+
+  @Parameter private val contentVariants: String = ""
+  var contentVars = contentVariants.split(",")
   //@Parameter var contentVariants: util.ArrayList[String] = _
-  //@Parameter var formatVariants: util.ArrayList[String] = _
+  @Parameter private val formatVariants: String = ""
+  var formatVars = formatVariants.split(",")
 
   /**
     * Other

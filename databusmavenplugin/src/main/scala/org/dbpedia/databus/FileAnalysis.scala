@@ -22,12 +22,11 @@
 package org.dbpedia.databus
 
 import java.io._
-import java.util
 
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
-import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-import org.dbpedia.databus.lib.{Datafile, FileHelper, Hash, Sign}
+import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
+import org.dbpedia.databus.lib.{Datafile, FileHelper, Sign}
 
 
 /**
@@ -85,7 +84,7 @@ class FileAnalysis extends AbstractMojo with Properties {
 
   def processFile(datafile: File, dataIdCollect: Model): Unit = {
     getLog.info(s"found file $datafile")
-    val df: Datafile = Datafile.init(datafile)
+    val df: Datafile = Datafile.init(datafile, this)
     val privateKey = Sign.readPrivateKeyFile(privateKeyFile)
 
 

@@ -21,7 +21,7 @@
 package org.dbpedia.databus
 
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
-import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
+import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import org.dbpedia.databus.lib.{Datafile, FileHelper}
 import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
 import org.eclipse.rdf4j.rio.{RDFFormat, RDFParser, Rio}
@@ -41,6 +41,7 @@ class ValidateFiles extends AbstractMojo with Properties {
     var parseLog = new StringBuilder
     FileHelper.getListOfFiles(dataDirectory).foreach(datafile => {
       if (datafile.getName.startsWith(artifactId)) {
+<<<<<<< HEAD
         val df: Datafile = Datafile.init(datafile)
         val in = df.getInputStream()
 
@@ -64,6 +65,16 @@ class ValidateFiles extends AbstractMojo with Properties {
           parseLog.append(s"Triples: $all\nValid: $good\nErrors: ${bad.size}\n")
           if (bad.size > 0) {
             parseLog.append(s"Error details:\n${bad.mkString("\n")}")
+=======
+        getLog.info(s"Validating file $datafile")
+        val df: Datafile = Datafile.init(datafile, this)
+        df.mimetype match {
+          case "application/n-triples" => {
+            val (all, good, bad) = DebugParser.parse(df.getInputStream(), RDFFormat.NTRIPLES)
+            getLog.info("format" + RDFFormat.NTRIPLES)
+            getLog.info("total " + all + " good " + good + " bad "+bad.size)
+            getLog.info(bad.mkString("/n"))
+>>>>>>> 1dbd9c16cf525812f986d7c8025026a8c92922d2
           }
         } else {
 
