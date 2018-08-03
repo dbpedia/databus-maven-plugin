@@ -44,17 +44,22 @@ class ValidateFiles extends AbstractMojo with Properties {
         val df: Datafile = Datafile.init(datafile)
         df.mimetype match {
           case "application/n-triples" => {
-            getLog.info("parsing file " + datafile + " with " + RDFFormat.NTRIPLES + " parser")
-            getLog.info(DebugParser.parse(df.getInputStream(), RDFFormat.NTRIPLES).mkString("/n"))
+            val (all, good, bad) = DebugParser.parse(df.getInputStream(), RDFFormat.NTRIPLES)
+            getLog.info("format" + RDFFormat.NTRIPLES)
+            getLog.info("total " + all + " good " + good + " bad "+bad.size)
+            getLog.info(bad.mkString("/n"))
           }
           case "application/n-quads" => {
-            getLog.info("parsing with nquads")
-            getLog.info(DebugParser.parse(df.getInputStream(), RDFFormat.NQUADS).mkString("/n"))
+            val (all, good, bad) = DebugParser.parse(df.getInputStream(), RDFFormat.NQUADS)
+            getLog.info("format" + RDFFormat.NQUADS)
+            getLog.info("total " + all + " good " + good + " bad "+bad.size)
+            getLog.info(bad.mkString("/n"))
           }
           case _ => {
             getLog.info(df.mimetype + " for" + datafile.toString)
           }
         }
+
 
 
       }
