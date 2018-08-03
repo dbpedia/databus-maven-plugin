@@ -22,11 +22,6 @@
                     <datasetDescription>
                         Extracted Data from the Wikipedia Article-Infoboxes
                     </datasetDescription>
-
-                    <dataset>http://dbpedia.org/dataset/article_categories</dataset>
-                    <latestVersion>http://dbpedia.org/dataset/article_categories?lang=en&amp;dbpv=2016-10&amp;file=article_categories_en.tql.bz2</latestVersion>
-                    <downloadURL>http://downloads.dbpedia.org/2016-10/core-i18n/en/</downloadURL>
-
                 </configuration>
             </plugin>
         </plugins>

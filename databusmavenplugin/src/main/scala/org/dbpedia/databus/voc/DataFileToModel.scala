@@ -60,24 +60,14 @@ object DataFileToModel {
     //todo handle correctly, if not default
     val downloadURL = file.getName
 
-    //todo check
-    var latestVersion = downloadURL
-    if (properties.latestVersion != "") {
-      latestVersion = properties.latestVersion
-    }
-
-
     for ((key, value) <- prefixes) {
       model.setNsPrefix(key, value)
     }
 
     //type properties
     thisResource.addProperty(RDF.`type`, model.createResource(s"${model.getNsPrefixURI("dataid")}SingleFile"))
-    val a = "a"
-
 
     for (label :String <- properties.labels) {
-
       val split = label.split("@")
       thisResource.addProperty(
         model.getProperty(model.getNsPrefixURI("rdfs"), "label"),
@@ -91,15 +81,18 @@ object DataFileToModel {
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "publisher"), model.createResource(properties.maintainer.toString))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "md5"), model.createLiteral(datafile.md5))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "signature"), model.createLiteral(datafile.signatureBase64))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "isDistributionOf"), model.createResource(properties.dataset))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "latestVersion"), model.createResource(latestVersion))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "preview"), model.createLiteral(datafile.preview))
+
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "isDistributionOf"),
+      s"${properties.finalName}-dataid.ttl")
+    //thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "latestVersion"), model.createResource(latestVersion))
+
 
     // todo add uncompressedByteSize if possible
     //thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "uncompressedByteSize"), model.createLiteral(datafile.bytes.toString))
 
     //properties
-    // todo add version number
+    // todo add version number, but this is a dataid issue
     thisResource.addProperty(
       model.getProperty(model.getNsPrefixURI("dc"), "conformsTo"),
       model.createResource(model.getNsPrefixURI("dataid")))
@@ -111,6 +104,7 @@ object DataFileToModel {
 
     //dcat properties
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "byteSize"), model.createLiteral(datafile.bytes.toString))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "fileExtension"), model.createLiteral(datafile.fileExtension))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "downloadURL"), model.createResource(downloadURL))
 
     val format = datafile.mimetype

@@ -33,22 +33,22 @@ class Format(val mimeType: String = "UNKNOWN", val lineBased: Boolean, val rio: 
 
 object Format {
 
-  def detectMimetypeByFileExtension(datafile: File): Format = {
-    val knownExt = Set ("nt", "ttl", "tql", "nq", "rdf")
-    var extension = ""
+  def detectMimetypeByFileExtension(datafile: File): (String, Format) = {
+    val knownExt = Set(".nt", ".ttl", ".tql", ".nq", ".rdf")
+    var x = ""
 
     for (key <- knownExt) {
-      if (datafile.getName.contains("." + key)) {
-        extension = key
+      if (datafile.getName.contains(key)) {
+        x = key
       }
     }
-    extension match {
-      case "nt" => ApplicationNTriples
-      case "ttl" => TextTurtle
-      case "tql" => ApplicationNQuad
-      case "nq" => ApplicationNQuad
-      case "rdf" => ApplicationRDFXML
-      case _ => UNKNOWN
+    x match {
+      case "nt" => (x, ApplicationNTriples)
+      case "ttl" => (x, TextTurtle)
+      case "tql" => (x, ApplicationNQuad)
+      case "nq" => (x, ApplicationNQuad)
+      case "rdf" => (x, ApplicationRDFXML)
+      case _ => (x, UNKNOWN)
     }
   }
 

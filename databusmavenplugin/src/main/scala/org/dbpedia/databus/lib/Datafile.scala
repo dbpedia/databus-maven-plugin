@@ -44,7 +44,7 @@ import scala.io.Source
 class Datafile private(datafile: File) {
 
   var mimetype: Format = _
-
+  var fileExtension: String = ""
 
   var md5: String = ""
   var bytes: Long = _
@@ -66,7 +66,9 @@ class Datafile private(datafile: File) {
 
   //todo we need to have this in dataid-mt
   def updateMimetype(): Datafile = {
-    mimetype = Format.detectMimetypeByFileExtension(datafile)
+    val (ext, mt )= Format.detectMimetypeByFileExtension(datafile)
+    mimetype = mt
+    fileExtension = ext
     this
   }
 

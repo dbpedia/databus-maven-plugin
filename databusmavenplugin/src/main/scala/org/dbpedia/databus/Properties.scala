@@ -63,6 +63,9 @@ trait Properties {
   @Parameter(defaultValue = "${project.build.directory}", readonly = true)
   var mavenTargetDirectory: File = _
 
+  @Parameter(defaultValue = "${project.build.finalName}", readonly = true)
+  var finalName: File = _
+
 
 
 
@@ -101,9 +104,9 @@ trait Properties {
   @Parameter val datasetDescription: String = ""
 
 
-  @Parameter val dataset: String = ""
+//  @Parameter val dataset: String = ""
   @Parameter val license: String = ""
-  @Parameter val latestVersion: String = ""
+  //@Parameter val latestVersion: String = ""
   @Parameter val downloadURL: String = ""
   @Parameter val issuedDate: String = ""
   @Parameter val modifiedDate: String = ""
