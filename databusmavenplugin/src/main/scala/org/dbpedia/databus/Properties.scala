@@ -93,8 +93,14 @@ trait Properties {
   @Parameter var privateKeyFile: File = _
   @Parameter var dataDirectory: File = _
 
+
+  /**
+    * for the modules
+    */
+  @Parameter val labels: java.util.List[String] = new java.util.ArrayList[String]
   @Parameter val datasetDescription: String = ""
-  @Parameter val englishLabel: String = ""
+
+
   @Parameter val dataset: String = ""
   @Parameter val license: String = ""
   @Parameter val latestVersion: String = ""
@@ -102,18 +108,11 @@ trait Properties {
   @Parameter val issuedDate: String = ""
   @Parameter val modifiedDate: String = ""
 
-  @Parameter private val contentVariants: String = ""
-  var contentVars = contentVariants.split(",")
-  //@Parameter var contentVariants: util.ArrayList[String] = _
-  @Parameter private val formatVariants: String = ""
-  var formatVars = formatVariants.split(",")
-
   /**
     * Other
      */
 
 
-  // val metrics = new MetricRegistry
 
   /**
     *

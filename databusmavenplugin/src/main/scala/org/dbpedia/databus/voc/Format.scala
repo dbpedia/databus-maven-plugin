@@ -43,7 +43,7 @@ object Format {
       }
     }
     extension match {
-      case "nt" => ApplicationNTripels
+      case "nt" => ApplicationNTriples
       case "ttl" => TextTurtle
       case "tql" => ApplicationNQuad
       case "nq" => ApplicationNQuad
@@ -55,7 +55,7 @@ object Format {
 }
 
 // line base
-object ApplicationNTripels extends Format("application/n-triples", false, org.eclipse.rdf4j.rio.RDFFormat.NTRIPLES, org.apache.jena.riot.RDFFormat.NTRIPLES) {}
+object ApplicationNTriples extends Format("application/n-triples", false, org.eclipse.rdf4j.rio.RDFFormat.NTRIPLES, org.apache.jena.riot.RDFFormat.NTRIPLES) {}
 
 object ApplicationNQuad extends Format("application/n-quads", true, org.eclipse.rdf4j.rio.RDFFormat.NQUADS, org.apache.jena.riot.RDFFormat.NQUADS) {}
 

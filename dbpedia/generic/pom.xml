@@ -79,6 +79,10 @@
                     <targetDirectory>${project.build.directory}/databus/${project.artifactId}/${project.version}/</targetDirectory>
                     <privateKeyFile>private_key_dev_dummy.der</privateKeyFile>
                     <dataDirectory>src/main/databus/</dataDirectory>
+                    <issuedDate>2018-08-01</issuedDate>
+                    <modifiedDate>2018-08-03</modifiedDate>
+                    <license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</license>
+
                 </configuration>
             </plugin>
         </plugins>
