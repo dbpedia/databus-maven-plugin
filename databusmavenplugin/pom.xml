@@ -85,6 +85,19 @@
             <version>2.3.0-M2</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-ntriples -->
+        <dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-rio-rdfxml</artifactId>
+            <version>2.3.0-M2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-ntriples -->
+        <dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-rio-turtle</artifactId>
+            <version>2.3.0-M2</version>
+        </dependency>
+
         <!-- used for time measurements-->
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>

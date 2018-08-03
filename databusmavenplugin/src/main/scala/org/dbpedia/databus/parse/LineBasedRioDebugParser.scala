@@ -30,46 +30,30 @@ import com.codahale.metrics.{ConsoleReporter, Meter, MetricRegistry}
 
 
 /**
-  * currently supports only Ntriples
+  * currently supports only Ntriples, Nquad
   */
-object DebugParser {
-
-
-  private val metrics = new MetricRegistry
-  private val triples = metrics.meter("triples")
-  private val reporter: ConsoleReporter = ConsoleReporter.forRegistry(metrics)
-    .convertRatesTo(TimeUnit.SECONDS)
-    .convertDurationsTo(TimeUnit.MILLISECONDS)
-    .build()
-
-  reporter.start(1, TimeUnit.SECONDS)
+object LineBasedRioDebugParser {
 
   val batchSize = 500 * 1000
 
 
-  def parse(in: InputStream, rdfFormat: RDFFormat): (Integer, Integer, mutable.HashSet[String]) = {
+  def parse(in: InputStream, rdfParser: RDFParser): (Integer, Integer, Integer, mutable.HashSet[String]) = {
 
-    var (totalTriples, good, wrongTriples) = (0, 0, new mutable.HashSet[String])
+
+    var (lines, totalTriples, good, wrongTriples) = (0, 0, 0, new mutable.HashSet[String])
 
     val batch = new mutable.HashSet[String]
     val it = Source.fromInputStream(in).getLines()
-    //val config = new ParserConfig
-    //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_DATATYPES, false)
-    //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_LANGUAGES, false)
-    //config.set(BasicParserSettings.VERIFY_DATATYPE_VALUES, false)
-    //config.set(BasicParserSettings.VERIFY_LANGUAGE_TAGS, false)
-    //config.set(BasicParserSettings.VERIFY_RELATIVE_URIS, false)
 
-    val rdfParser = Rio.createParser(rdfFormat)
-    //rdfParser.setParserConfig(config)
 
     while (it.hasNext) {
-      val tmp = it.next().toString
+      val line = it.next().toString
       // batch it
-      batch += tmp
+      batch += line
       if (batch.size >= batchSize) {
         //todo better way
         var (a, b, c) = parseBatch(rdfParser, batch)
+        lines += batch.size
         totalTriples += a
         good += b
         wrongTriples ++= c
@@ -82,37 +66,37 @@ object DebugParser {
     // remaining
     //todo better way
     var (a, b, c) = parseBatch(rdfParser, batch)
+    lines += batch.size
     totalTriples += a
     good += b
     wrongTriples ++= c
 
-    reporter.report()
-    (totalTriples, good, wrongTriples)
+    (lines, totalTriples, good, wrongTriples)
   }
 
   def parseBatch(rdfParser: RDFParser, batch: mutable.HashSet[String]): (Integer, Integer, mutable.HashSet[String]) = {
     val (totalTriples, good, wrongTriples) = (0, 0, new mutable.HashSet[String])
 
     try {
+      // hand batch to parser
       val baos: ByteArrayInputStream = new ByteArrayInputStream(batch.mkString("\n").getBytes());
-
-
-      rdfParser.parse(baos, "");
-      triples.mark()
+      rdfParser.parse(baos, "")
       baos.close()
-      // parsing successfull
+      // parsing of batch successfull
     } catch {
       case e: RDFParseException => {
-        //parsing failed, reiterate
+        //parsing failed somewhere, reiterate
         for (line <- batch) {
           try {
+            // hand each line to parser
+            // todo check whether baos needs to be closed
             val baos: ByteArrayInputStream = new ByteArrayInputStream(line.getBytes());
             rdfParser.parse(baos, "");
-            triples.mark()
+
           } catch {
             case rio: Exception => {}
               //L.trace("parser error, the problem triple was:\n"+one+" "+rio.getMessage());
-              wrongTriples.add("#" + rio.getMessage() + "\n" + line);
+              wrongTriples.add("Err: " + rio.getMessage() + ": " + line);
           }
         }
       }

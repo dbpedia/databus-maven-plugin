@@ -30,7 +30,7 @@ import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamF
 import org.apache.commons.compress.compressors.CompressorStreamFactory
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.jena.vocabulary.RDF
-import org.dbpedia.databus.voc.DataFileToModel
+import org.dbpedia.databus.voc.{DataFileToModel, Format}
 
 import scala.io.Source
 
@@ -40,15 +40,10 @@ import scala.io.Source
   */
 class Datafile private(datafile: File) {
 
-  val mimetypeMap = Map(
-    "nt" -> "application/n-triples",
-    "ttl" -> "text/turtle",
-    "tql" -> "application/n-quads",
-    "nq" -> "application/n-quads",
-    "rdf" -> "application/rdf+xml"
-  )
 
-  var mimetype = "UNKNOWN"
+  var mimetype: Format = _
+
+
   var md5: String = ""
   var bytes: Long = _
 
@@ -67,13 +62,9 @@ class Datafile private(datafile: File) {
     DataFileToModel.datafile2Model(this, datafile)
   }
 
+  //todo we need to have this in dataid-mt
   def updateMimetype(): Datafile = {
-    mimetypeMap.foreach { case (key, value) => {
-      if (datafile.getName.contains(key)) {
-        mimetype = value
-      }
-    }
-    }
+    mimetype = Format.detectMimetypeByFileExtension(datafile)
     this
   }
 
@@ -105,8 +96,8 @@ class Datafile private(datafile: File) {
     source.close
     preview = sb.toString()
     //limit
-    if (preview.size > (lineCount*500)){
-      preview = preview.substring(0,lineCount*500)
+    if (preview.size > (lineCount * 500)) {
+      preview = preview.substring(0, lineCount * 500)
     }
     this
   }
@@ -198,7 +189,6 @@ object Datafile {
 
     df
   }
-
 
 
 }

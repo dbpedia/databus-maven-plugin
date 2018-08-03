@@ -23,8 +23,8 @@ package org.dbpedia.databus
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import org.dbpedia.databus.lib.{Datafile, FileHelper}
-import org.dbpedia.databus.parse.DebugParser
-import org.eclipse.rdf4j.rio.RDFFormat
+import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
+import org.eclipse.rdf4j.rio.{RDFFormat, RDFParser, Rio}
 
 @Mojo(name = "validate-files", defaultPhase = LifecyclePhase.VALIDATE)
 class ValidateFiles extends AbstractMojo with Properties {
@@ -38,32 +38,52 @@ class ValidateFiles extends AbstractMojo with Properties {
       return
     }
 
+    var parseLog = new StringBuilder
     FileHelper.getListOfFiles(dataDirectory).foreach(datafile => {
       if (datafile.getName.startsWith(artifactId)) {
-        getLog.info(s"Validating file $datafile")
         val df: Datafile = Datafile.init(datafile)
-        df.mimetype match {
-          case "application/n-triples" => {
-            val (all, good, bad) = DebugParser.parse(df.getInputStream(), RDFFormat.NTRIPLES)
-            getLog.info("format" + RDFFormat.NTRIPLES)
-            getLog.info("total " + all + " good " + good + " bad "+bad.size)
-            getLog.info(bad.mkString("/n"))
+        val in = df.getInputStream()
+
+        parseLog.append(s"*****************${datafile.getName}\n${df.mimetype}\n")
+
+        //val config = new ParserConfig
+        //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_DATATYPES, false)
+        //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_LANGUAGES, false)
+        //config.set(BasicParserSettings.VERIFY_DATATYPE_VALUES, false)
+        //config.set(BasicParserSettings.VERIFY_LANGUAGE_TAGS, false)
+        //config.set(BasicParserSettings.VERIFY_RELATIVE_URIS, false)
+
+        var rdfParser: RDFParser = null
+        //rdfParser.setParserConfig(config)
+
+        if (df.mimetype.lineBased) {
+          rdfParser = Rio.createParser(df.mimetype.rio)
+          getLog.info("" + rdfParser.getRDFFormat)
+
+          val (lines, all, good, bad) = LineBasedRioDebugParser.parse(in, rdfParser)
+          parseLog.append(s"Triples: $all\nValid: $good\nErrors: ${bad.size}\n")
+          if (bad.size > 0) {
+            parseLog.append(s"Error details:\n${bad.mkString("\n")}")
           }
-          case "application/n-quads" => {
-            val (all, good, bad) = DebugParser.parse(df.getInputStream(), RDFFormat.NQUADS)
-            getLog.info("format" + RDFFormat.NQUADS)
-            getLog.info("total " + all + " good " + good + " bad "+bad.size)
-            getLog.info(bad.mkString("/n"))
+        } else {
+
+          if (df.mimetype != null) {
+            rdfParser = Rio.createParser(df.mimetype.rio)
+            val (success, errors) = RioOtherParser.parse(in, rdfParser)
+            parseLog.append(s"Success = $success\nErrors = $errors\n")
           }
-          case _ => {
-            getLog.info(df.mimetype + " for" + datafile.toString)
+          else {
+            parseLog.append("no rdf format")
           }
+
+
         }
-
-
-
       }
     })
 
+
+    getLog.info(parseLog.toString())
+
   }
+
 }
