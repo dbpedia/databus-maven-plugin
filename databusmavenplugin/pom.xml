@@ -117,12 +117,12 @@
 		<repository>
 		  <id>archiva.internal</id>
 		  <name>Internal Release Repository</name>
-		  <url>dav:http://95.216.13.238:8081/archiva/repository/internal/</url>
+		  <url>http://95.216.13.238:8081/repository/internal/</url>
 		</repository>
 		<snapshotRepository>
 		  <id>archiva.snapshots</id>
 		  <name>Internal Snapshot Repository</name>
-		  <url>dav:http://95.216.13.238:8081/archiva/repository/snapshots/</url>
+		  <url>http://95.216.13.238:8081/repository/snapshots/</url>
 		</snapshotRepository>
     </distributionManagement>
 
