@@ -21,7 +21,7 @@
 package org.dbpedia.databus
 
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
-import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
+import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import org.dbpedia.databus.lib.{Datafile, FileHelper}
 import org.dbpedia.databus.parse.DebugParser
 import org.eclipse.rdf4j.rio.RDFFormat
@@ -41,7 +41,7 @@ class ValidateFiles extends AbstractMojo with Properties {
     FileHelper.getListOfFiles(dataDirectory).foreach(datafile => {
       if (datafile.getName.startsWith(artifactId)) {
         getLog.info(s"Validating file $datafile")
-        val df: Datafile = Datafile.init(datafile)
+        val df: Datafile = Datafile.init(datafile, this)
         df.mimetype match {
           case "application/n-triples" => {
             val (all, good, bad) = DebugParser.parse(df.getInputStream(), RDFFormat.NTRIPLES)

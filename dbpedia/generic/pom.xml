@@ -18,17 +18,16 @@
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
 	<repositories>
-	<repository>
-		  <id>archiva.internal</id>
-		  <name>Internal Release Repository</name>
-		  <url>http://databus.dbpedia.org:8081/archiva/repository/internal/</url>
-		</repository>
+	    <repository>
+		    <id>archiva.internal</id>
+		    <name>Internal Release Repository</name>
+		    <url>http://databus.dbpedia.org:8081/archiva/repository/internal/</url>
+        </repository>
 		<snapshotRepository>
-		  <id>archiva.snapshots</id>
-		  <name>Internal Snapshot Repository</name>
-		  <url>http://databus.dbpedia.org:8081/archiva/repository/snapshots/</url>
-	</snapshotRepository>
-	
+		    <id>archiva.snapshots</id>
+		    <name>Internal Snapshot Repository</name>
+		    <url>http://databus.dbpedia.org:8081/archiva/repository/snapshots/</url>
+	    </snapshotRepository>
 	</repositories>
 
 
@@ -62,9 +61,10 @@
                 <configuration>
                     <!--maintainer>https://termilion.github.io/webid.ttl#this</maintainer-->
                     <maintainer>http://kurzum.net/dev-dummy.ttl#this</maintainer>
+                    <publisher>http://wiki.dbpedia.org/dbpedia-association</publisher>
+                    <targetDirectory>${project.build.directory}/databus/${project.artifactId}/${project.version}/</targetDirectory>
                     <privateKeyFile>private_key_dev_dummy.der</privateKeyFile>
                     <dataDirectory>src/main/databus/</dataDirectory>
-                    <targetDirectory>${project.build.directory}/databus/${project.artifactId}/${project.version}/</targetDirectory>
                 </configuration>
             </plugin>
         </plugins>
