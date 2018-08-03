@@ -84,7 +84,7 @@ class FileAnalysis extends AbstractMojo with Properties {
 
   def processFile(datafile: File, dataIdCollect: Model): Unit = {
     getLog.info(s"found file $datafile")
-    val df: Datafile = Datafile.init(datafile, this)
+    val df: Datafile = Datafile.init(datafile)
     val privateKey = Sign.readPrivateKeyFile(privateKeyFile)
 
 
@@ -94,7 +94,7 @@ class FileAnalysis extends AbstractMojo with Properties {
       .updateSignature(privateKey)
       .updatePreview(10)
 
-    var model = df.toModel()
+    var model = df.toModel(this)
     getLog.info(df.toString)
     dataIdCollect.add(model)
 

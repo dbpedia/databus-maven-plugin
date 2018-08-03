@@ -26,6 +26,7 @@ import java.io.File
 import org.apache.jena.atlas.json.JSON
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.jena.vocabulary.RDF
+import org.dbpedia.databus.Properties
 import org.dbpedia.databus.lib.Datafile
 
 import scala.collection.JavaConverters._
@@ -34,12 +35,12 @@ object DataFileToModel {
 
   val mediaTypeBase = "MediaType_"
 
-  def datafile2Model(datafile: Datafile, file: File): Model = {
+  def datafile2Model(datafile: Datafile, file: File, properties: Properties): Model = {
     var model: Model = ModelFactory.createDefaultModel
     val thisResource = model.createResource(file.getName)
-    val downloadURL = datafile.properties.downloadURL + file.getName
+    val downloadURL = properties.downloadURL + file.getName
     val latestVersion =
-      if (datafile.properties.latestVersion != "") datafile.properties.latestVersion
+      if (properties.latestVersion != "") properties.latestVersion
       else downloadURL
 
     //nsPrefixes
@@ -51,60 +52,44 @@ object DataFileToModel {
 
     //type properties
     thisResource.addProperty(RDF.`type`, model.createResource(s"${model.getNsPrefixURI("dataid")}SingleFile"))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("rdfs"), "label"), model.createLiteral(datafile.properties.englishLabel, "en"))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("rdfs"), "label"), model.createLiteral(properties.englishLabel, "en"))
 
     //dataid properties
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "associatedAgent"), model.createResource(datafile.properties.maintainer.toString))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "associatedAgent"), model.createResource(datafile.properties.publisher.toString))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "associatedAgent"), model.createResource(properties.maintainer.toString))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "associatedAgent"), model.createResource(properties.publisher.toString))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "checksum"), model.createLiteral(datafile.md5))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "isDistributionOf"), model.createResource(datafile.properties.dataset))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "isDistributionOf"), model.createResource(properties.dataset))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "latestVersion"), model.createResource(latestVersion))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "preview"), model.createLiteral(datafile.preview))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "uncompressedByteSize"), model.createLiteral(datafile.bytes.toString))
 
     //properties
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "conformsTo"), model.createResource(model.getNsPrefixURI("dataid").split("#").head))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "description"), model.createLiteral(datafile.properties.datasetDescription))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "hasVersion"), model.createLiteral(datafile.properties.version))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "issued"), model.createLiteral(datafile.properties.issuedDate, model.getNsPrefixURI("xsd") + "date"))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "license"), model.createResource(datafile.properties.license))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "modified"), model.createLiteral(datafile.properties.modifiedDate, model.getNsPrefixURI("xsd") + "date"))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "publisher"), model.createResource(datafile.properties.publisher.toString))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "title"), model.createLiteral(datafile.properties.englishLabel, "en"))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "description"), model.createLiteral(properties.datasetDescription))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "hasVersion"), model.createLiteral(properties.version))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "issued"), model.createLiteral(properties.issuedDate, model.getNsPrefixURI("xsd") + "date"))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "license"), model.createResource(properties.license))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "modified"), model.createLiteral(properties.modifiedDate, model.getNsPrefixURI("xsd") + "date"))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "publisher"), model.createResource(properties.publisher.toString))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "title"), model.createLiteral(properties.englishLabel, "en"))
 
     //dcat properties
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "byteSize"), model.createLiteral(datafile.bytes.toString))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "downloadURL"), model.createResource(downloadURL))
 
-    if (datafile.isCompressed) {
-      val compressionMimeType = datafile.compressionMimetypeMap(datafile.compressionVariant)
-      val mimetype = datafile.mimetype
-      val mediaTypeName = mimetype.substring(mimetype.lastIndexOf("/") + 1)
-      val compressedMediaTypeName = mimetype.substring(mimetype.lastIndexOf("/") + 1) + "_" + compressionMimeType.substring(compressionMimeType.lastIndexOf("/") + 1)
+    val format = datafile.mimetype
+    // mediatype
+    val mediaType = model.createResource(model.getNsPrefixURI("dataid-mt") + datafile.mimetype.getClass.getName)
+    mediaType.addProperty(RDF.`type`, model.createResource(s"${model.getNsPrefixURI("dataid-mt")}MediaType"))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "mediaType"), mediaType)
 
-      val mediaType = model.createResource(model.getNsPrefixURI("dataid-mt") + mediaTypeBase + mediaTypeName)
-      mediaType.addProperty(RDF.`type`, model.createResource(s"${model.getNsPrefixURI("dataid-mt")}MediaType"))
-      mediaType.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "typeTemplate"), mimetype)
-      mediaType.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "conformsTo"), model.createResource(model.getNsPrefixURI("dataid").split("#").head))
 
-      val compressedMediaType = model.createResource(model.getNsPrefixURI("dataid-mt") + mediaTypeBase + compressedMediaTypeName)
-      compressedMediaType.addProperty(RDF.`type`, model.createResource(s"${model.getNsPrefixURI("dataid-mt")}MediaType"))
-      compressedMediaType.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "innerMediaType"), mediaType)
-      compressedMediaType.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "typeExtension"), "." + file.getName.substring(file.getName.lastIndexOf(".") + 1))
-      compressedMediaType.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "typeTemplate"), compressionMimeType)
-      compressedMediaType.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "conformsTo"), model.createResource(model.getNsPrefixURI("dataid").split("#").head))
+    mediaType.addProperty(model.getProperty(model.getNsPrefixURI("dataid"),
+      "mimetype"), datafile.mimetype.mimeType)
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"),
+      "compression"), datafile.compressionVariant)
+    //compressedMediaType.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "typeExtension"), "." + file.getName.substring(file.getName.lastIndexOf(".") + 1))
 
-      thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "mediaType"), mediaType)
-    } else {
-      val mimetype = datafile.mimetype
-      val mediaTypeName = mimetype.substring(mimetype.lastIndexOf("/") + 1)
-      val mediaType = model.createResource(model.getNsPrefixURI("dataid-mt") + mediaTypeBase + mediaTypeName)
-      mediaType.addProperty(RDF.`type`, model.createResource(s"${model.getNsPrefixURI("dataid-mt")}MediaType"))
-      mediaType.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "typeTemplate"), mimetype)
-      mediaType.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "conformsTo"), model.createResource(model.getNsPrefixURI("dataid").split("#").head))
-
-      thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "mediaType"), mediaType)
-    }
 
     /*
     dataid-mt:MediaType_turtle_x-bzip2
