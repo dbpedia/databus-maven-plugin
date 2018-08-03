@@ -20,17 +20,14 @@
  */
 package org.dbpedia.databus
 
+import java.io.{FileWriter, InputStreamReader}
 import java.net.URL
-
-import scala.collection.mutable
-import com.rometools.rome.feed.synd._
-import com.rometools.rome.io.SyndFeedInput
-import java.io.{FileWriter, InputStreamReader, PrintWriter}
-
-import com.rometools.rome.io.SyndFeedOutput
 import java.util
 
-import com.rometools.rome.feed.atom.Entry
+import com.rometools.rome.feed.synd._
+import com.rometools.rome.io.{SyndFeedInput, SyndFeedOutput}
+
+import scala.collection.mutable
 
 /**
   * a junk class to test some code

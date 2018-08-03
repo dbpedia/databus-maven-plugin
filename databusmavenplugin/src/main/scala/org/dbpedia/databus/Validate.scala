@@ -21,15 +21,11 @@
 package org.dbpedia.databus
 
 
-import java.io.File
-import java.net.URL
 import java.security.interfaces.RSAPrivateCrtKey
-import java.util
 
 import org.apache.jena.rdf.model.{ModelFactory, NodeIterator, RDFNode}
-import org.apache.maven.plugin.AbstractMojo
-import org.apache.maven.plugin.MojoExecutionException
-import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
+import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
+import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import org.dbpedia.databus.lib.{FileHelper, Sign}
 
 import scala.collection.mutable
