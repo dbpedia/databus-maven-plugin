@@ -65,7 +65,7 @@ object Sign {
 
 
   /**
-    * reads the private key file
+    * reads the private key file, also looks in ../
     *
     * @param privateKeyFile
     * @return
@@ -74,7 +74,6 @@ object Sign {
     var corrected = privateKeyFile
     if (!corrected.exists()) {
       corrected = new File(privateKeyFile.getParentFile.getParentFile, privateKeyFile.getName)
-      System.out.println(corrected)
     }
 
     val keyBytes = Files.readAllBytes(corrected.toPath)

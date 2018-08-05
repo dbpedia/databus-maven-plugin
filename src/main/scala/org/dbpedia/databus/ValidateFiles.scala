@@ -22,6 +22,7 @@ package org.dbpedia.databus
 
 import java.io.{File, FileWriter}
 
+import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import org.dbpedia.databus.lib.{Datafile, FileHelper}
@@ -29,7 +30,7 @@ import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
 import org.dbpedia.databus.voc.UNKNOWN
 import org.eclipse.rdf4j.rio.{RDFFormat, RDFParser, Rio}
 
-@Mojo(name = "validate-files", defaultPhase = LifecyclePhase.VALIDATE)
+@Mojo(name = "validate-files", defaultPhase = LifecyclePhase.TEST)
 class ValidateFiles extends AbstractMojo with Properties {
 
 
@@ -41,62 +42,62 @@ class ValidateFiles extends AbstractMojo with Properties {
       return
     }
 
-    var parseLog = new StringBuilder
+    parseLogDirectory.mkdirs()
 
 
-    FileHelper.getListOfDataFiles(dataDirectory, artifactId,getDataIdFile().getName ).foreach(datafile => {
+    getListOfDataFiles(dataDirectory).foreach(datafile => {
 
-        val df: Datafile = Datafile.init(datafile)
-        val in = df.getInputStream()
+      var parseLog = new StringBuilder
+      var details = new StringBuilder
+      val df: Datafile = Datafile.init(datafile)
+      val in = df.getInputStream()
+      var model: Model = ModelFactory.createDefaultModel
+      val thisResource = model.createResource("#" + datafile.getName)
 
-        parseLog.append(s"*****************${datafile.getName}\n${df.mimetype}\n")
-        getLog.info(s"\n*****************${datafile.getName}\n${df.mimetype}\n")
 
-        //val config = new ParserConfig
-        //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_DATATYPES, false)
-        //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_LANGUAGES, false)
-        //config.set(BasicParserSettings.VERIFY_DATATYPE_VALUES, false)
-        //config.set(BasicParserSettings.VERIFY_LANGUAGE_TAGS, false)
-        //config.set(BasicParserSettings.VERIFY_RELATIVE_URIS, false)
+      parseLog.append(s"${datafile.getName}\n${df.mimetype}\n")
 
-        var rdfParser: RDFParser = null
-        //rdfParser.setParserConfig(config)
+      //val config = new ParserConfig
+      //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_DATATYPES, false)
+      //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_LANGUAGES, false)
+      //config.set(BasicParserSettings.VERIFY_DATATYPE_VALUES, false)
+      //config.set(BasicParserSettings.VERIFY_LANGUAGE_TAGS, false)
+      //config.set(BasicParserSettings.VERIFY_RELATIVE_URIS, false)
 
-        if (df.mimetype != UNKNOWN) {
+      var rdfParser: RDFParser = null
+      //rdfParser.setParserConfig(config)
 
-          if (df.mimetype.lineBased) {
-            rdfParser = Rio.createParser(df.mimetype.rio)
+      if (df.mimetype != UNKNOWN) {
 
-            val (lines, all, good, bad) = LineBasedRioDebugParser.parse(in, rdfParser)
+        if (df.mimetype.lineBased) {
+          rdfParser = Rio.createParser(df.mimetype.rio)
 
-            getLog.info(s"Lines: $lines\nTriples: $all\nValid: $good\nErrors: ${bad.size}\n")
-            parseLog.append(s"Lines: $lines\nTriples: $all\nValid: $good\nErrors: ${bad.size}\n")
+          val (lines, all, good, bad) = LineBasedRioDebugParser.parse(in, rdfParser)
+          parseLog.append(s"Lines: $lines\nTriples: $all\nValid: $good\nErrors: ${bad.size}\n")
 
-            if (bad.size > 0) {
-              parseLog.append(s"Error details:\n${bad.mkString("\n")}")
+          if (bad.size > 0) {
+            details.append(s"#Error details:\n#${bad.mkString("\n#")}")
 
-            }
-          } else {
-            rdfParser = Rio.createParser(df.mimetype.rio)
-            val (success, errors) = RioOtherParser.parse(in, rdfParser)
-            parseLog.append(s"Success = $success\nErrors = $errors\n")
-            getLog.info(s"Success = $success\nErrors = $errors\n")
           }
+        } else {
+          rdfParser = Rio.createParser(df.mimetype.rio)
+          val (success, errors) = RioOtherParser.parse(in, rdfParser)
+          parseLog.append(s"Success = $success\nErrors = $errors\n")
         }
-        else {
-          getLog.info("no rdf format")
-          parseLog.append("no rdf format")
-        }
+      }
+      else {
+        parseLog.append("no rdf format")
+      }
+
+      // parselog
+      thisResource.addProperty(model.createProperty("parseLog"), parseLog.toString);
+      model.write(new FileWriter(getParseLogFile(),true), "turtle")
+      new FileWriter(getParseLogFile(),true).write(details.toString())
+      getLog.info(s"Parselog written to ${getParseLogFile()}")
+      getLog.info(parseLog)
 
 
     })
-
-    val logDir = new File(pluginDirectory, "/log/")
-    logDir.mkdirs()
-    val logFile = logDir+"/"+"parselog.txt"
-    new FileWriter (logFile).write(parseLog.toString())
-
-    getLog.info(s"Parselog written to $logFile")
 
 
   }

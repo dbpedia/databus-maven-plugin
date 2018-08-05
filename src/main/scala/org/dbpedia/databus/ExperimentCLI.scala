@@ -38,6 +38,7 @@ object ExperimentCLI {
 
 
   def main(args: Array[String]): Unit = {
+    System.exit(0)
 
 
     val feedUrl = new URL("http://www.bbc.co.uk/feeds/rss/music/latest_releases.xml")

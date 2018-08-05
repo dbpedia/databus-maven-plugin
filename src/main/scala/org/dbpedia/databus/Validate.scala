@@ -57,6 +57,7 @@ class Validate extends AbstractMojo with Properties {
        */
     // create targetDir
     pluginDirectory.mkdirs()
+    dataDirectory.mkdirs()
     dataIdDirectory.mkdirs()
 
     /**
@@ -65,12 +66,12 @@ class Validate extends AbstractMojo with Properties {
 
     // parent module, i.e. packaging pom
     if (isParent()) {
-
       validateWebId()
 
     // all submodules
     } else {
-      validateFileNames()
+      // as we changed the phases this one goes out here
+      //validateFileNames()
     }
   }
 
@@ -88,7 +89,6 @@ class Validate extends AbstractMojo with Properties {
 
 
     val ni: NodeIterator = model.listObjectsOfProperty(model.getResource(maintainer.toString), model.getProperty("http://www.w3.org/ns/auth/cert#key"))
-    // TODO add a
     getLog.info("Private Key File: " + privateKeyFile)
     //val fileHack: File = new File(privateKeyFile.getAbsolutePath.replace("", ""))
     val privateKey = Sign.readPrivateKeyFile(privateKeyFile)
@@ -144,10 +144,10 @@ class Validate extends AbstractMojo with Properties {
 
   def validateFileNames(): Unit = {
 
-    getLog.info("Checking files")
-    val in =  FileHelper.getListOfDataFiles(dataDirectory,artifactId,getDataIdFile().getName)
-    getLog.info("including "+in.size+ " files starting with "+artifactId + " and not pre-existing dataid files")
-    getLog.info("\n"+in.mkString("\n"))
+    //getLog.info("Checking files")
+    //val in =  FileHelper.getListOfDataFiles(dataDirectory,artifactId,getDataIdFile().getName)
+    //getLog.info("including "+in.size+ " files starting with "+artifactId + " and not pre-existing dataid files")
+    //getLog.info("\n"+in.mkString("\n"))
 
    /*  val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
     getLog.info(moduleDirectories+"")

@@ -50,7 +50,7 @@ class FileAnalysis extends AbstractMojo with Properties {
   @throws[MojoExecutionException]
   override def execute(): Unit = {
     //skip the parent module
-    if (isParent()){
+    if (isParent()) {
       getLog.info("skipping parent module")
       return
     }
@@ -58,23 +58,23 @@ class FileAnalysis extends AbstractMojo with Properties {
     var dataIdCollect: Model = ModelFactory.createDefaultModel
 
 
-   // val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
+    // val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
 
-    FileHelper.getListOfDataFiles(dataDirectory, artifactId ,getDataIdFile().getName).foreach(datafile => {
-        processFile(datafile, dataIdCollect)
+    getListOfDataFiles(dataDirectory).foreach(datafile => {
+      processFile(datafile, dataIdCollect)
     })
 
     // processing each module
-   // moduleDirectories.foreach(moduleDir => {
-     // getLog.info(s"reading from module $moduleDir")
-      // processing all file per module
+    // moduleDirectories.foreach(moduleDir => {
+    // getLog.info(s"reading from module $moduleDir")
+    // processing all file per module
 
     //})
 
     // write the model to target
     var db = getDataIdFile()
     db.getParentFile.mkdirs()
-    dataIdCollect.write( new FileWriter(db),"turtle")
+    dataIdCollect.write(new FileWriter(db), "turtle")
 
 
   }
@@ -95,9 +95,6 @@ class FileAnalysis extends AbstractMojo with Properties {
     dataIdCollect.add(model)
 
   }
-
-
-
 
 
   /**

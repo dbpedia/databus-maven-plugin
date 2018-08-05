@@ -30,7 +30,7 @@ object FileHelper {
     *
     * @param dir
     * @return
-    */
+
   def getModules(dir: String): List[File] = {
     val d = new File(dir)
     if (d.exists && d.isDirectory) {
@@ -40,24 +40,6 @@ object FileHelper {
     }
   }
 
-  /**
-    * guess what
-    *
-    * @param d
-    * @return
     */
-  def getListOfDataFiles(d: File, artifactId: String, dataidName: String): List[File] = {
-    //val d = new File(dir)
-
-    if (d.exists && d.isDirectory) {
-      d.listFiles
-        .filter(_.isFile)
-        .filter(_.getName.startsWith(artifactId))
-        .filter(_.getName != dataidName)
-        .toList
-    } else {
-      List[File]()
-    }
-  }
 
 }

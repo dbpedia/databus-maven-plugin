@@ -38,7 +38,6 @@ import org.apache.maven.plugins.annotations.Parameter
 trait Properties {
 
 
-
   /**
     * Project vars given by Maven
     */
@@ -75,13 +74,15 @@ trait Properties {
 
   /**
     * directories as documented in the archetype
+    * Note that these are also created in Validate
     */
 
   @Parameter var dataDependencyDirectory: File = _
   @Parameter var pluginDirectory: File = _
   @Parameter var dataDirectory: File = _
-  @Parameter var includeParseLogs : Boolean = true
+  @Parameter var includeParseLogs: Boolean = true
   @Parameter var dataIdDirectory: File = _
+  @Parameter var parseLogDirectory: File = _
 
 
   /**
@@ -107,19 +108,43 @@ trait Properties {
 
   @Parameter val labels: java.util.List[String] = new java.util.ArrayList[String]
   @Parameter val datasetDescription: String = ""
-  
 
-  /**
-    *
-    * @return
-    */
 
   def isParent(): Boolean = {
     packaging.equals("pom")
   }
 
-  def getDataIdFile() : File = {
-    new File(dataIdDirectory,"/"+artifactId+"-"+version+"-dataid.ttl")
+  def getDataIdFile(): File = {
+    new File(dataIdDirectory, "/" + artifactId + "-" + version + "-dataid.ttl")
   }
+
+  def getParseLogFile(): File = {
+    new File(parseLogDirectory, "/" + artifactId + "-" + version + "-parselog.ttl")
+  }
+
+  /**
+    * lists all appropriate data files, using these filters:
+    * * is a file
+    * * starts with artifactid
+    * * is not a dataid
+    * * is not a parselog
+    *
+    * @param dir
+    * @return
+    */
+  def getListOfDataFiles(dir: File): List[File] = {
+
+    if (dir.exists && dir.isDirectory) {
+      dir.listFiles
+        .filter(_.isFile)
+        .filter(_.getName.startsWith(artifactId))
+        .filter(_ != getDataIdFile())
+        .filter(_ != getParseLogFile())
+        .toList
+    } else {
+      List[File]()
+    }
+  }
+
 
 }
