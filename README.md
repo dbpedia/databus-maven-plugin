@@ -1,5 +1,6 @@
-# Total Interoperability (TI) - DBpedia Databus Release Tool
-Release data on your webspace with total interoperability and push the metadata to the DBpedia Databus
+# Databus Maven Plugin
+Aligning Data and Software Lifecycle with Maven 
+
 
 # License and Contributions
 License of the software is AGPL with intended copyleft. We expect that you spend your best effort to commit upstream to make this tool better or at least that your extensions are made available again. 
