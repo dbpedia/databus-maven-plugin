@@ -37,18 +37,10 @@ import org.apache.maven.plugins.annotations.Parameter
   */
 trait Properties {
 
-  /**
-    * SH: I marked this one as deprecated as it does not seem to work correctly
-    * reproduce with running mvn help:evaluate -Dexpression=maven.multiModuleProjectDirectory in parent and module dir
-    * I tried to implement an isParent method below to use centrally
-    * At the moment, we are working with the assumption that we only have one parent with modules, no deeper
-    */
-  @deprecated(message = "see above", since = "early days")
-  @Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
-  val multiModuleBaseDirectory: String = ""
+
 
   /**
-    * Project vars
+    * Project vars given by Maven
     */
 
   @Parameter(defaultValue = "${project.artifactId}", readonly = true)
@@ -66,57 +58,56 @@ trait Properties {
   @Parameter(defaultValue = "${project.build.finalName}", readonly = true)
   var finalName: String = _
 
-
-  /**
-    * directories
-    */
-
-  // refers to target/classes
-  @Parameter(defaultValue = "${project.build.outputDirectory}", readonly = true)
-  val outputDirectory: String = ""
-
-  /**
-    * the envisioned target dir
-    * folder is created in validate
-    */
-  @Parameter var dataIdDirectory: File = _
-  @Parameter var pluginDirectory: File = _
-  @Parameter var dataDirectory: File = _
-
-
   // not usable, needs to set explicitly in the pom.xml of modules to be queried
   // @Parameter(defaultValue = "${parent.relativePath}", readonly = true)
   // val relPath: String = ""
 
+  /**
+    * SH: I marked this one as deprecated as it does not seem to work correctly
+    * reproduce with running mvn help:evaluate -Dexpression=maven.multiModuleProjectDirectory in parent and module dir
+    * I tried to implement an isParent method below to use centrally
+    * At the moment, we are working with the assumption that we only have one parent with modules, no deeper
+    */
+  @deprecated(message = "see above", since = "early days")
+  @Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
+  val multiModuleBaseDirectory: String = ""
+
 
   /**
-    * Plugin specific vars for parent module
+    * directories as documented in the archetype
     */
 
+  @Parameter var dataDependencyDirectory: File = _
+  @Parameter var pluginDirectory: File = _
+  @Parameter var dataDirectory: File = _
+  @Parameter var includeParseLogs : Boolean = true
+  @Parameter var dataIdDirectory: File = _
 
+
+  /**
+    * Plugin specific vars defined in parent module
+    */
 
   //TODO the absolutepath here is different for parent and modules the function
   // read privatekeyfiles in hash and signs searches in the parent folder using ../
   // works for now, but could fail
   @Parameter var privateKeyFile: File = _
 
-
-  /**
-    * for the dataid
-    */
   @Parameter var maintainer: URL = _
   @Parameter var publisher: URL = _
-  @Parameter val labels: java.util.List[String] = new java.util.ArrayList[String]
-  @Parameter val datasetDescription: String = ""
   @Parameter val license: String = ""
   @Parameter val downloadURL: String = ""
   @Parameter val issuedDate: String = ""
   @Parameter val modifiedDate: String = ""
 
+
   /**
-    * Other
+    * for each modules
     */
 
+  @Parameter val labels: java.util.List[String] = new java.util.ArrayList[String]
+  @Parameter val datasetDescription: String = ""
+  
 
   /**
     *
