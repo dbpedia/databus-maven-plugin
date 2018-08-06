@@ -43,7 +43,7 @@ class ValidateFiles extends AbstractMojo with Properties {
     }
 
     parseLogDirectory.mkdirs()
-
+    val parseLogFileWriter = new FileWriter(getParseLogFile())
 
     getListOfDataFiles(dataDirectory).foreach(datafile => {
 
@@ -76,7 +76,7 @@ class ValidateFiles extends AbstractMojo with Properties {
           parseLog.append(s"Lines: $lines\nTriples: $all\nValid: $good\nErrors: ${bad.size}\n")
 
           if (bad.size > 0) {
-            details.append(s"#Error details:\n#${bad.mkString("\n#")}")
+            details.append(s"\n#Error details for $datafile\n#${bad.mkString("\n#")}")
 
           }
         } else {
@@ -91,14 +91,15 @@ class ValidateFiles extends AbstractMojo with Properties {
 
       // parselog
       thisResource.addProperty(model.createProperty("parseLog"), parseLog.toString);
-      model.write(new FileWriter(getParseLogFile(),true), "turtle")
-      new FileWriter(getParseLogFile(),true).write(details.toString())
-      getLog.info(s"Parselog written to ${getParseLogFile()}")
+      model.write(parseLogFileWriter, "turtle")
+      parseLogFileWriter.write(details.toString())
       getLog.info(parseLog)
 
 
     })
 
+    getLog.info(s"Parselog written to ${getParseLogFile()}")
+    parseLogFileWriter.close()
 
   }
 
