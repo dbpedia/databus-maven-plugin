@@ -51,7 +51,7 @@ object Hash {
 
     val dis = new DigestInputStream(new FileInputStream(file), md5)
     try {
-      while (dis.read(buffer) != -1) {}
+      while(dis.read(buffer) != -1) {}
     } finally {
       dis.close()
     }
@@ -70,25 +70,31 @@ object Sign {
     * @param privateKeyFile
     * @return
     */
-  def readPrivateKeyFile(privateKeyFile: File): PrivateKey = {
-    var corrected = privateKeyFile
-    if (!corrected.exists()) {
-      corrected = new File(privateKeyFile.getParentFile.getParentFile, privateKeyFile.getName)
+  def readPrivateKeyFile(privateKeyFile: File, origPath: Option[File] = None): PrivateKey = {
+
+    if(!privateKeyFile.exists()) {
+
+      origPath match {
+
+        case Some(origPath) => sys.error("Unable to find the private key file at " +
+          s"'${origPath.getPath}' or '${privateKeyFile.getPath}'")
+
+        case None => {
+
+          val parentDirPath = new File(privateKeyFile.getParentFile.getParentFile, privateKeyFile.getName)
+
+          readPrivateKeyFile(parentDirPath)
+        }
+      }
     }
 
-    val keyBytes = Files.readAllBytes(corrected.toPath)
-    val spec = new PKCS8EncodedKeySpec(keyBytes)
-    val kf = KeyFactory.getInstance("RSA")
-    val privateKey = kf.generatePrivate(spec)
-    privateKey
+    val keyBytes = Files.readAllBytes(privateKeyFile.toPath)
+    val keySpec = new PKCS8EncodedKeySpec(keyBytes)
+    val keyFactory = KeyFactory.getInstance("RSA")
+    keyFactory.generatePrivate(keySpec)
   }
 
-  def sign(privateKey: PrivateKey, datafile: File): Array[Byte] = {
-
-    sign(privateKey, datafile, bufferSizeCrypt)
-  }
-
-  def sign(privateKey: PrivateKey, datafile: File, bufferSize: Integer): Array[Byte] = {
+  def sign(privateKey: PrivateKey, datafile: File, bufferSize: Int = bufferSizeCrypt): Array[Byte] = {
 
     val rsa = Signature.getInstance("SHA1withRSA")
     rsa.initSign(privateKey)
@@ -119,7 +125,7 @@ object Sign {
     val bufin = new BufferedInputStream(fis)
     val buffer = new Array[Byte](bufferSize)
     var len = 0
-    while ( {
+    while( {
       len = bufin.read(buffer)
       len >= 0
     }) {
