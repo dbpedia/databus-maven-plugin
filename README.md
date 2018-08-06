@@ -55,61 +55,21 @@ Strict minimal requirements:
 * Java 1.7
 
 ## Quickstart
-### Standalone with maven archetype
-run `TODO` to generate a sample project template, which you only need to configure
+### Use the template
+Copy and adjust the bundle folder in https://github.com/dbpedia/databus-maven-plugin/tree/master/archetype/existing-project
+
+### Maven archetype
+NOTE: We are in the process of submitting the archetype to maven central, at the moment you can use it by installing it:
+Clone the repository and run:
+```
+cd archetype/exisiting-project
+./deploy.sh 
+mvn archetype:generate -DgroupId=org.myorg -DartifactId=mydataset -DarchetypeGroupId=org.dbpedia -Dversion=1.0-SNAPSHOT -DarchetypeGroupId=org.dbpedia.databus -DarchetypeArtifactId=bundle-archetype -DarchetypeVersion=RELEASE 
+```
 
 ### Integration into software
-Include the repository in pom.xml
-```
-    <!-- we will move to maven central soon, this is the dev maven repo-->
-    <pluginRepositories>
-           <pluginRepository>
-               <id>archiva.internal</id>
-               <name>Internal Release Repository</name>
-               <url>http://databus.dbpedia.org:8081/repository/internal</url>
-           </pluginRepository>
-           <pluginRepository>
-               <id>archiva.snapshots</id>
-               <name>Internal Snapshot Repository</name>
-               <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
-           </pluginRepository>
-       </pluginRepositories>
-```
-Include the plugin
-```
-    <properties>
-    <!-- copy from TODO-->
-    </properties
-    <build>
-           <plugins>
-               <plugin>
-                   <groupId>org.dbpedia.databus</groupId>
-                   <artifactId>databus-maven-plugin</artifactId>
-                   <version>1.0-SNAPSHOT</version>
-                   <executions>
-                       <execution>
-                           <id>validate</id>
-                           <phase>validate</phase>
-                           <goals>
-                               <goal>validate</goal>
-                           </goals>
-                       </execution>
-                       <execution>
-                           <id>analysis</id>
-                           <phase>process-resources</phase>
-                           <goals>
-                               <goal>analysis</goal>
-                           </goals>
-                       </execution>
-                   </executions>
-                   <configuration>
-                   <!-- copy from TODO -->
-                   </configuration>
-            </plugin>
-        </plugins>
-    </build>
+https://github.com/dbpedia/databus-maven-plugin/tree/master/archetype/existing-project contains a runnable project, where you can copy the relevant parts into your pom.xml
                    
-```
 
 
 # License and Contributions
