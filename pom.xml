@@ -20,6 +20,7 @@
         <license.licenseName>agpl_v3</license.licenseName>
         <!-- github server corresponds to entry in ~/.m2/settings.xml -->
         <github.global.server>github</github.global.server>
+        <rdf4j.version>2.3.2</rdf4j.version>
     </properties>
 
     <dependencies>
@@ -68,34 +69,34 @@
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-rio-api</artifactId>
-            <version>2.3.0-M2</version>
+            <version>${rdf4j.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-ntriples -->
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-rio-ntriples</artifactId>
-            <version>2.3.0-M2</version>
+            <version>${rdf4j.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-ntriples -->
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-rio-nquads</artifactId>
-            <version>2.3.0-M2</version>
+            <version>${rdf4j.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-ntriples -->
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-rio-rdfxml</artifactId>
-            <version>2.3.0-M2</version>
+            <version>${rdf4j.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-ntriples -->
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-rio-turtle</artifactId>
-            <version>2.3.0-M2</version>
+            <version>${rdf4j.version}</version>
         </dependency>
 
         <!-- used for time measurements-->
