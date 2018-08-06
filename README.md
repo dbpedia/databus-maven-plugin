@@ -1,6 +1,44 @@
 # Databus Maven Plugin
-Aligning data and software lifecycle with Maven 
+Aligning data and software lifecycle with Maven
+The plugin provides the following features:
+* Maven is a widely used software build automation tool; triggered by the ever-growing importance of data you can now integrate data seamlessly into your software lifecycle with this plugin, i.e. 
+  1. import data to be used by the software automatically
+  2. compile and run the software as usual, producing new data as output
+  3. republish that data on the web and the databus (for other to discover and use with this plugin)
+* the plugin can also be used as a *standalone version*, i.e. if you just have a folder with data that you want to publish
 
+
+
+<!--run ` ./gh-md-toc --insert README.md` to regenerate -->
+# Table of Contents
+<!--ts-->
+   * [Databus Maven Plugin](#databus-maven-plugin)
+   * [Table of Contents](#table-of-contents)
+   * [License and Contributions](#license-and-contributions)
+      * [Some dev rules](#some-dev-rules)
+   * [Problem](#problem)
+   * [Solution](#solution)
+   * [Storage and Tools](#storage-and-tools)
+   * [How to use this repo](#how-to-use-this-repo)
+      * [How to publish data](#how-to-publish-data)
+         * [Setup](#setup)
+         * [Lifecycles of the plugin](#lifecycles-of-the-plugin)
+            * [Validate](#validate)
+            * [Generate Resources, Goal analysis](#generate-resources-goal-analysis)
+            * [prepare-package](#prepare-package)
+            * [Deploy, Goal deploy-local](#deploy-goal-deploy-local)
+            * [Deploy, Goal databus-deploy](#deploy-goal-databus-deploy)
+   * [misc](#misc)
+   * [Add-ons and formats](#add-ons-and-formats)
+      * [List of versioning approaches](#list-of-versioning-approaches)
+      * [List of notifications](#list-of-notifications)
+      * [List of repos for upload of metadata](#list-of-repos-for-upload-of-metadata)
+      * [Requirements for development](#requirements-for-development)
+      * [Usage](#usage)
+
+<!-- Added by: shellmann, at: 2018-08-06T02:20+02:00 -->
+
+<!--te-->
 
 # License and Contributions
 License of the software is AGPL with intended copyleft. We expect that you spend your best effort to commit upstream to make this tool better or at least that your extensions are made available again. 

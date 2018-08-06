@@ -1,3 +1,5 @@
 /.idea/
 *.iml
 target
+README.md.orig.*
+README.md.toc.*
