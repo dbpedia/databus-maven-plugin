@@ -1,10 +1,14 @@
 # Databus Maven Plugin
-Aligning Data and Software Lifecycle with Maven 
+Aligning data and software lifecycle with Maven 
 
 
 # License and Contributions
 License of the software is AGPL with intended copyleft. We expect that you spend your best effort to commit upstream to make this tool better or at least that your extensions are made available again. 
 Any contribution will be merged under the copyright of the DBpedia Association. 
+## Some dev rules
+* All paths are configured in Properties.scala, which is a trait for the Mojos (Maven Plugin classes), please handle all paths there
+* Datafile.scala is a quasi decorator for files, use getInputStream to open any file
+* Use the issue tracker, do branches instead of forks (we can give access), we will merge with master
 
 # Problem
 Publishing data on the web in a de-centralised manner is the grand vision of the Semantic Web. However, decentralisation comes with its problems. Putting data files on your web server and creating a landing page to describe this data, just goes a short way. Humans can read the landing page and use the right-click save-as to download the files. Crawlers can discover links and can download the files automatically, but have no understanding of the context, publisher, version or other metadata of the files, making its usage limited. 
