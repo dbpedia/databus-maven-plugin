@@ -14,29 +14,21 @@ The plugin provides the following features:
 <!--ts-->
    * [Databus Maven Plugin](#databus-maven-plugin)
    * [Table of Contents](#table-of-contents)
+   * [Requirements](#requirements)
+      * [Technical requirements](#technical-requirements)
+      * [Quickstart](#quickstart)
+         * [Use the template](#use-the-template)
+         * [Maven archetype](#maven-archetype)
+         * [Integration into software](#integration-into-software)
    * [License and Contributions](#license-and-contributions)
-      * [Some dev rules](#some-dev-rules)
-   * [Problem](#problem)
-   * [Solution](#solution)
-   * [Storage and Tools](#storage-and-tools)
-   * [How to use this repo](#how-to-use-this-repo)
-      * [How to publish data](#how-to-publish-data)
-         * [Setup](#setup)
-         * [Lifecycles of the plugin](#lifecycles-of-the-plugin)
-            * [Validate](#validate)
-            * [Generate Resources, Goal analysis](#generate-resources-goal-analysis)
-            * [prepare-package](#prepare-package)
-            * [Deploy, Goal deploy-local](#deploy-goal-deploy-local)
-            * [Deploy, Goal databus-deploy](#deploy-goal-databus-deploy)
-   * [misc](#misc)
-   * [Add-ons and formats](#add-ons-and-formats)
-      * [List of versioning approaches](#list-of-versioning-approaches)
-      * [List of notifications](#list-of-notifications)
-      * [List of repos for upload of metadata](#list-of-repos-for-upload-of-metadata)
-      * [Requirements for development](#requirements-for-development)
-      * [Usage](#usage)
+      * [Development rules](#development-rules)
+   * [Phases](#phases)
+   * [Usage](#usage)
+      * [Standalone Version](#standalone-version)
+      * [Integration with Software](#integration-with-software)
+   * [Documentation of available plugins](#documentation-of-available-plugins)
 
-<!-- Added by: shellmann, at: 2018-08-06T02:20+02:00 -->
+<!-- Added by: shellmann, at: 2018-08-06T16:04+02:00 -->
 
 <!--te-->
 # Requirements
@@ -89,7 +81,7 @@ Phase | Goal | Description
 validate|`databus:validate`|validate the project is correct and all necessary information is available, especially check the WebId and the private key
 generate-resources|not yet implemented|Download the data dependencies
 compile| none |compile the source code of the project
- - |`exec` | The software has to be executed between compile and test in order to produce the data
+  |`exec` | The software has to be executed between compile and test in order to produce the data
 test|`databus:test-data` | Parses all data files to check for correctness, generates a parselog for inclusion in the package. `-DskipTests=true` skips this phase, as it requires some time to run
 prepare-package|`databus:metadata`|Analyses each file and prepares the metadata
 prepare-package|`databus:rss`|TODO
