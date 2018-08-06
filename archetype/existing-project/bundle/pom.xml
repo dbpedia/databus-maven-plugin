@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
     <version>1.0.0</version>
     <modules>
-        <module>dataset1</module>
+        <module>add-one-dataset</module>
     </modules>
 
     <properties>
@@ -39,18 +39,20 @@ You configured your tool to put the data into the bundle/data folder
 b) ABSOLUTE PATHS:
 <databus.dataDirectory>/var/www/something</databus.dataDirectory>
 <databus.dataDirectory>/home/user/mydata</databus.dataDirectory>
-USAGE: 1. run your tool, 2. cd bundle, 3. run the plugin separately
+USAGE: 1. run your tool, 2. cd into bundle, 3. run the plugin on the whole bundle
 
 CASE 2 INTEGRATED
 APPLICABLE: Your tool already uses maven and you configure it to produce data relative to the modules
 If you have a software like the the DBpedia extraction framework that produces data, 
 you are required to funnel the produced data into the respective directories of the modules:
 <databus.dataDirectory>${databus.pluginDirectory}/data</databus.dataDirectory>
+(i.e. $module/databus/data)
 Example:
 Include bundle as a module in your tool
 put all data for dataset1 into  bundle/dataset1/target/databus/data/
 put all data for dataset2 into  bundle/dataset2/target/databus/data/
-USAGE: Run your tool as you would normally using mvn exec, after running mvn exec you can use mvn package/install/deploy and it will deploy the software and the data
+USAGE: Run your tool as you would normally using mvn exec, after running mvn exec you can use 
+mvn package/install/deploy and it will deploy the software and the data
 
 Note: that per convention:
 * only files will be included that have the same prefix as the artifactId
@@ -58,7 +60,7 @@ Note: that per convention:
 -->
         <databus.dataDirectory>${session.executionRootDirectory}/data</databus.dataDirectory>
 
-        <!--includeParseLogs DEFAULT : true
+        <!--includeParseLogs DEFAULT: true
 The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
 We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
          -->
@@ -150,11 +152,18 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                             <goal>validate</goal>
                         </goals>
                     </execution>
-                    <execution>
-                        <id>analysis</id>
-                        <phase>process-resources</phase>
+                     <execution>
+                        <id>test-data</id>
+                        <phase>test</phase>
                         <goals>
-                            <goal>analysis</goal>
+                            <goal>test-data</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>metadata</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>metadata</goal>
                         </goals>
                     </execution>
                 </executions>
