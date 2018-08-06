@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.dbpedia.databus</groupId>
+    <artifactId>bundle</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0</version>
+    <modules>
+        <module>dataset1</module>
+    </modules>
+
+    <properties>
+		 <!--pluginDirectory Default: ${project.build.directory}/databus
+all the generated files will be written here, i.e. parselogs, dataids, feeds (i.e. target/databus/ in each module)
+        -->
+        <databus.pluginDirectory>${project.build.directory}/databus</databus.pluginDirectory>
+        <!--dataDirectory 
+the directory where the datafiles are, that you wish to publish
+
+Explanation:
+Configuring the data directory is the most crucial part. The two cases below describe 
+whether you have the plugin read from a certain directory or bring the data to the plugin or have the plugin 
+
+DEFAULT CASE 1 STANDALONE: The plugin reads and publishes from a certain directory, which you configure here, e.g. 
+put all data in a "data" folder of the bundle: <databus.dataDirectory>${session.executionRootDirectory}/data</databus.dataDirectory>
+APPLICABLE:
+* your tool writes data to a folder, e.g. "data"
+* you have any other directory with data 
+a) RELATIVE PATHS Configure <databus.dataDirectory> to the folder where your data is relative to maven:
+Example 1: 
+<databus.dataDirectory>${session.executionRootDirectory}/../data</databus.dataDirectory>
+(meaning bundle is a subfolder in your tool directory and the data is residing one folder up)
+Example 2:
+<databus.dataDirectory>${session.executionRootDirectory}/data</databus.dataDirectory>
+You configured your tool to put the data into the bundle/data folder
+b) ABSOLUTE PATHS:
+<databus.dataDirectory>/var/www/something</databus.dataDirectory>
+<databus.dataDirectory>/home/user/mydata</databus.dataDirectory>
+USAGE: 1. run your tool, 2. cd bundle, 3. run the plugin separately
+
+CASE 2 INTEGRATED
+APPLICABLE: Your tool already uses maven and you configure it to produce data relative to the modules
+If you have a software like the the DBpedia extraction framework that produces data, 
+you are required to funnel the produced data into the respective directories of the modules:
+<databus.dataDirectory>${databus.pluginDirectory}/data</databus.dataDirectory>
+Example:
+Include bundle as a module in your tool
+put all data for dataset1 into  bundle/dataset1/target/databus/data/
+put all data for dataset2 into  bundle/dataset2/target/databus/data/
+USAGE: Run your tool as you would normally using mvn exec, after running mvn exec you can use mvn package/install/deploy and it will deploy the software and the data
+
+Note: that per convention:
+* only files will be included that have the same prefix as the artifactId
+* any dataid files from previous runs will also be ignored
+-->
+        <databus.dataDirectory>${session.executionRootDirectory}/data</databus.dataDirectory>
+
+        <!--includeParseLogs DEFAULT : true
+The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
+We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
+         -->
+        <databus.includeParseLogs>true</databus.includeParseLogs>
+        <databus.parseLogDirectory>${databus.pluginDirectory}/parselogs
+        </databus.parseLogDirectory>
+        <!--dataIdDirectory DEFAULT: <databus.dataDirectory>
+the directory where the dataids and other metadata are written
+DEFAULT: Same as dataDirectory
+The plugin will write all dataid directly into the data folder, which si often the most convenient way 
+<databus.dataIdDirectory>${databus.dataDirectory}</databus.dataIdDirectory>
+If you configured <databus.dataDirectory>, it is convenient to configure this config var to point to the same dir,
+so you can write the metadata/dataids in the same dir as your data
+        -->
+        <databus.dataIdDirectory>${databus.dataDirectory}</databus.dataIdDirectory>
+
+        <!--publisher
+refers to the WebID that does the publication on the web and on the databus
+This one is matched against the private key file (next option)
+Please read on https://github.com/dbpedia/webid how to create such file
+We include a dev-dummy webid file here, please don't use it for publishing, use your own
+-->
+        <databus.publisher>http://kurzum.net/dev-dummy.ttl#this</databus.publisher>
+        <!--privateKeyFile
+The private key file that is matched against the publisher WebID, see the tutorial suggested there.
+Note that Java/Scala only accepts DER/PKCS8 formatted files, so you might need to run:
+$ openssl pkcs8 -topk8 -inform PEM -outform DER -in private_key.pem -out private_key.der -nocrypt
+We recommend putting the file in ~/.m2 next to the settings.xml (Maven user dir):
+```
+<privateKeyFile>${user.home}/.m2/private_key.der</privateKeyFile>
+```
+SECURITY NOTICE:
+* Protect your private key file, do not loose, do not send over network
+* chmod 700
+* The channel youo are about to create requires it to republish new versions there.
+        -->
+        <databus.privateKeyFile>private_key_dev_dummy.der</databus.privateKeyFile>
+        <!--maintainer
+The maintainer of the data release, normally the person to contact, often the same as publisher
+        -->
+        <databus.maintainer>${databus.publisher}</databus.maintainer>
+        <!--license
+Pick one from here: http://rdflicense.linkeddata.es/
+        -->
+        <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</databus.license>
+        <!--not clear if needed-->
+        <databus.issuedDate>2018-08-01</databus.issuedDate>
+        <!--not clear if needed-->
+        <databus.modifiedDate>2018-08-03</databus.modifiedDate>
+        
+        <!--
+Normally there should be no need to edit below
+        
+        -->
+        
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--dataDependencyDirectory
+NOT IMPLEMENTED YET - This directory will be used to store any files downloaded from the databus as input for your tool
+        -->
+        <databus.dataDependencyDirectory>NOT-IMPLEMENTED-YET</databus.dataDependencyDirectory>
+
+    </properties>
+
+    <!-- we will move to maven central soon, this is the dev maven repo-->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>archiva.internal</id>
+            <name>Internal Release Repository</name>
+            <url>http://databus.dbpedia.org:8081/repository/internal</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>archiva.snapshots</id>
+            <name>Internal Snapshot Repository</name>
+            <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.dbpedia.databus</groupId>
+                <artifactId>databus-maven-plugin</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>analysis</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>analysis</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--dataDirectory>/home/shellmann/IdeaProjects/data-release-tool-ti/dbpedia/20180420</dataDirectory-->
+
+                    <!--DO NOT EDIT HERE, unless you know what you are doing, We recommend changing the properties above-->
+                    <dataDirectory>${databus.dataDirectory}</dataDirectory>
+                    <pluginDirectory>${databus.pluginDirectory}</pluginDirectory>
+                    <includeParseLogs>${databus.includeParseLogs}</includeParseLogs>
+                    <parseLogDirectory>${databus.parseLogDirectory}</parseLogDirectory>
+                    <dataIdDirectory>${databus.dataIdDirectory}</dataIdDirectory>
+                    <publisher>${databus.publisher}</publisher>
+                    <maintainer>${databus.maintainer}</maintainer>
+                    <license>${databus.license}</license>
+                    <privateKeyFile>${databus.privateKeyFile}</privateKeyFile>
+
+                    <issuedDate>${databus.issuedDate}</issuedDate>
+                    <modifiedDate>${databus.modifiedDate}</modifiedDate>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>
