@@ -24,11 +24,9 @@ The plugin provides the following features:
       * [Development rules](#development-rules)
    * [Phases](#phases)
    * [Usage](#usage)
-      * [Standalone Version](#standalone-version)
-      * [Integration with Software](#integration-with-software)
    * [Documentation of available plugins](#documentation-of-available-plugins)
 
-<!-- Added by: shellmann, at: 2018-08-06T16:04+02:00 -->
+<!-- Added by: shellmann, at: 2018-08-06T16:08+02:00 -->
 
 <!--te-->
 # Requirements
@@ -84,17 +82,21 @@ compile| none |compile the source code of the project
   |`exec` | The software has to be executed between compile and test in order to produce the data
 test|`databus:test-data` | Parses all data files to check for correctness, generates a parselog for inclusion in the package. `-DskipTests=true` skips this phase, as it requires some time to run
 prepare-package|`databus:metadata`|Analyses each file and prepares the metadata
-prepare-package|`databus:rss`|TODO
+prepare-package|`databus:rss`|TODO Not implemented yet
 package| |take the compiled code and package it in its distributable format
 verify| |run any checks on results of integration tests to ensure quality criteria are met
 install| |install the package into the local repository, for use as a dependency in other projects locally
 deploy| |done in the build environment, copies the final package to the remote repository for sharing with other developers and projects.
 
 # Usage
-## Standalone Version
-## Integration with Software 
+
+The usage is documented in this existing project https://github.com/dbpedia/databus-maven-plugin/tree/master/archetype/existing-project/bundle
+
+Once you have downloaded the pom.xml from this project and configured it properly, you can use the maven commands as specified in the phases, e.g. `mvn databus:validate`, `mvn databus:test-data` and `mvn databust:metadata`
+
 
 # Documentation of available plugins
+user contributed plugins
 <!--
 # Problem
 Publishing data on the web in a de-centralised manner is the grand vision of the Semantic Web. However, decentralisation comes with its problems. Putting data files on your web server and creating a landing page to describe this data, just goes a short way. Humans can read the landing page and use the right-click save-as to download the files. Crawlers can discover links and can download the files automatically, but have no understanding of the context, publisher, version or other metadata of the files, making its usage limited. 
