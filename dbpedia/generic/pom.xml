@@ -96,7 +96,7 @@ Pick one from here: http://rdflicense.linkeddata.es/
         <databus.modifiedDate>2018-08-03</databus.modifiedDate>
     </properties>
 
-
+    <!-- we will move to maven central soon, this is the dev maven repo-->
     <pluginRepositories>
         <pluginRepository>
             <id>archiva.internal</id>

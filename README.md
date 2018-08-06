@@ -41,8 +41,9 @@ The plugin provides the following features:
 <!--te-->
 # Requirements
 Databus maven plugin philosophy:
-* enforces as few requirements as possible on how you handle your data
-* automate the data release process as much as possible
+*  enforces as few requirements as possible on how you handle your data (wide applicability)
+*  automate the data release process as much as possible (medium effort to learn and setup, great time-saver afterwards)
+
 
 Strict minimal requirements:
 * WebID/Private key: in order to guarantee clear provenance
@@ -118,6 +119,7 @@ Any contribution will be merged under the copyright of the DBpedia Association.
 * All paths are configured in Properties.scala, which is a trait for the Mojos (Maven Plugin classes), please handle all paths there
 * Datafile.scala is a quasi decorator for files, use getInputStream to open any file
 * Use the issue tracker, do branches instead of forks (we can give access), we will merge with master
+* Document options in the archetype pom and here
 
 # Phases
 Below we are listing all the phases, that are relevant and describe how the databus-maven-plugin hooks into the maven lifecycle. Not all phases are used, see the [complete reference](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference)
@@ -128,7 +130,7 @@ validate|`databus:validate`|validate the project is correct and all necessary in
 generate-resources|not yet implemented|Download the data dependencies
 compile| none |compile the source code of the project
  - |`exec` | The software has to be executed between compile and test in order to produce the data
-test|`databus:test-data` |Parses all data files to check for correctness, generates a parselog for inclusion in the package
+test|`databus:test-data` | Parses all data files to check for correctness, generates a parselog for inclusion in the package. `-DskipTests=true` skips this phase, as it requires some time to run
 prepare-package|`databus:metadata`|Analyses each file and prepares the metadata
 prepare-package|`databus:rss`|TODO
 package| |take the compiled code and package it in its distributable format
@@ -140,7 +142,8 @@ deploy| |done in the build environment, copies the final package to the remote r
 ## Standalone Version
 ## Integration with Software 
 
-
+# Documentation of available plugins
+<!--
 # Problem
 Publishing data on the web in a de-centralised manner is the grand vision of the Semantic Web. However, decentralisation comes with its problems. Putting data files on your web server and creating a landing page to describe this data, just goes a short way. Humans can read the landing page and use the right-click save-as to download the files. Crawlers can discover links and can download the files automatically, but have no understanding of the context, publisher, version or other metadata of the files, making its usage limited. 
 
@@ -293,7 +296,7 @@ mvn install
 </repositories>
 
 ```
-
+-->
 
 
 
