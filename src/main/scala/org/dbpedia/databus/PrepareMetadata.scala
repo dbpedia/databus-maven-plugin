@@ -44,8 +44,8 @@ import org.dbpedia.databus.lib.{Datafile, FileHelper, Sign}
   * * triple size
   *
   */
-@Mojo(name = "analysis", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
-class FileAnalysis extends AbstractMojo with Properties {
+@Mojo(name = "metadata", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
+class PrepareMetadata extends AbstractMojo with Properties {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {

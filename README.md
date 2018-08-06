@@ -39,14 +39,107 @@ The plugin provides the following features:
 <!-- Added by: shellmann, at: 2018-08-06T02:20+02:00 -->
 
 <!--te-->
+# Requirements
+Databus maven plugin philosophy:
+* enforces as few requirements as possible on how you handle your data
+* automate the data release process as much as possible
+
+Strict minimal requirements:
+* WebID/Private key: in order to guarantee clear provenance
+* Same-Origin-Policy: metadata files are required to be published under the same domain as the data, i.e. no third-party rebranding of already published data
+
+
+## Technical requirements
+* Maven 3 `sudo apt-get install maven`
+* Java 1.7
+
+## Quickstart
+### Standalone with maven archetype
+run `TODO` to generate a sample project template, which you only need to configure
+
+### Integration into software
+Include the repository in pom.xml
+```
+    <!-- we will move to maven central soon, this is the dev maven repo-->
+    <pluginRepositories>
+           <pluginRepository>
+               <id>archiva.internal</id>
+               <name>Internal Release Repository</name>
+               <url>http://databus.dbpedia.org:8081/repository/internal</url>
+           </pluginRepository>
+           <pluginRepository>
+               <id>archiva.snapshots</id>
+               <name>Internal Snapshot Repository</name>
+               <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
+           </pluginRepository>
+       </pluginRepositories>
+```
+Include the plugin
+```
+    <properties>
+    <!-- copy from TODO-->
+    </properties
+    <build>
+           <plugins>
+               <plugin>
+                   <groupId>org.dbpedia.databus</groupId>
+                   <artifactId>databus-maven-plugin</artifactId>
+                   <version>1.0-SNAPSHOT</version>
+                   <executions>
+                       <execution>
+                           <id>validate</id>
+                           <phase>validate</phase>
+                           <goals>
+                               <goal>validate</goal>
+                           </goals>
+                       </execution>
+                       <execution>
+                           <id>analysis</id>
+                           <phase>process-resources</phase>
+                           <goals>
+                               <goal>analysis</goal>
+                           </goals>
+                       </execution>
+                   </executions>
+                   <configuration>
+                   <!-- copy from TODO -->
+                   </configuration>
+            </plugin>
+        </plugins>
+    </build>
+                   
+```
+
 
 # License and Contributions
 License of the software is AGPL with intended copyleft. We expect that you spend your best effort to commit upstream to make this tool better or at least that your extensions are made available again. 
 Any contribution will be merged under the copyright of the DBpedia Association. 
-## Some dev rules
+## Development rules
 * All paths are configured in Properties.scala, which is a trait for the Mojos (Maven Plugin classes), please handle all paths there
 * Datafile.scala is a quasi decorator for files, use getInputStream to open any file
 * Use the issue tracker, do branches instead of forks (we can give access), we will merge with master
+
+# Phases
+Below we are listing all the phases, that are relevant and describe how the databus-maven-plugin hooks into the maven lifecycle. Not all phases are used, see the [complete reference](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference)
+
+Phase | Goal | Description 
+--- | --- | ---
+validate|`databus:validate`|validate the project is correct and all necessary information is available, especially check the WebId and the private key
+generate-resources|not yet implemented|Download the data dependencies
+compile| none |compile the source code of the project
+ - |`exec` | The software has to be executed between compile and test in order to produce the data
+test|`databus:test-data` |Parses all data files to check for correctness, generates a parselog for inclusion in the package
+prepare-package|`databus:metadata`|Analyses each file and prepares the metadata
+prepare-package|`databus:rss`|TODO
+package| |take the compiled code and package it in its distributable format
+verify| |run any checks on results of integration tests to ensure quality criteria are met
+install| |install the package into the local repository, for use as a dependency in other projects locally
+deploy| |done in the build environment, copies the final package to the remote repository for sharing with other developers and projects.
+
+# Usage
+## Standalone Version
+## Integration with Software 
+
 
 # Problem
 Publishing data on the web in a de-centralised manner is the grand vision of the Semantic Web. However, decentralisation comes with its problems. Putting data files on your web server and creating a landing page to describe this data, just goes a short way. Humans can read the landing page and use the right-click save-as to download the files. Crawlers can discover links and can download the files automatically, but have no understanding of the context, publisher, version or other metadata of the files, making its usage limited. 

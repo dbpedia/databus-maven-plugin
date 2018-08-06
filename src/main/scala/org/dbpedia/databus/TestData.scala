@@ -30,8 +30,8 @@ import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
 import org.dbpedia.databus.voc.UNKNOWN
 import org.eclipse.rdf4j.rio.{RDFFormat, RDFParser, Rio}
 
-@Mojo(name = "validate-files", defaultPhase = LifecyclePhase.TEST)
-class ValidateFiles extends AbstractMojo with Properties {
+@Mojo(name = "test-data", defaultPhase = LifecyclePhase.TEST)
+class TestData extends AbstractMojo with Properties {
 
 
   @throws[MojoExecutionException]
