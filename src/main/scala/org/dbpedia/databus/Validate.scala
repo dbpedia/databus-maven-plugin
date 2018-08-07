@@ -26,7 +26,7 @@ import java.security.interfaces.RSAPrivateCrtKey
 import org.apache.jena.rdf.model.{ModelFactory, NodeIterator, RDFNode}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-import org.dbpedia.databus.lib.{FileHelper, Sign}
+import org.dbpedia.databus.lib.{ Sign}
 
 import scala.collection.mutable
 

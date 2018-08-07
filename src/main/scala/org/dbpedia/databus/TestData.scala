@@ -25,7 +25,7 @@ import java.io.{File, FileWriter}
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-import org.dbpedia.databus.lib.{Datafile, FileHelper}
+import org.dbpedia.databus.lib.{Datafile}
 import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
 import org.dbpedia.databus.voc.UNKNOWN
 import org.eclipse.rdf4j.rio.{RDFFormat, RDFParser, Rio}

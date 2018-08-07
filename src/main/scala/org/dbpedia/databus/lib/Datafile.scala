@@ -28,13 +28,11 @@ import java.util.Base64
 
 import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
 import org.apache.commons.compress.compressors.CompressorStreamFactory
-import org.apache.jena.rdf.model.{Model, ModelFactory}
-import org.apache.jena.vocabulary.RDF
 import org.dbpedia.databus.voc.{ApplicationNTriples, DataFileToModel, Format, TextTurtle}
 import org.apache.jena.rdf.model.Model
 import org.dbpedia.databus.Properties
 import org.dbpedia.databus.parse.LineBasedRioDebugParser
-import org.eclipse.rdf4j.rio.{RDFParser, Rio}
+import org.eclipse.rdf4j.rio.{ Rio}
 
 import scala.io.Source
 

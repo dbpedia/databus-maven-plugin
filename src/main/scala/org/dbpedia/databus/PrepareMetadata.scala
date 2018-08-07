@@ -26,7 +26,7 @@ import java.io._
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-import org.dbpedia.databus.lib.{Datafile, FileHelper, Sign}
+import org.dbpedia.databus.lib.{Datafile, Sign}
 
 
 /**
