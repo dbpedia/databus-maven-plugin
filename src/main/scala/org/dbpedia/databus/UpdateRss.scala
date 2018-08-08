@@ -32,7 +32,7 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 
 
 /**
-  * TODO use right dataid files maybe iterate over dataid.ttl files
+  * TODO use right links to dataid (catalog)
   */
 @Mojo(name = "update-rss", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 class UpdaeRss extends AbstractMojo with Properties {
@@ -60,16 +60,27 @@ class UpdaeRss extends AbstractMojo with Properties {
 
     // init URL, init file or existing file
     var feedFile: File = new File (feedDirectory+"/feed.xml");
-    if(feedFile.exists()) {
+    // TODO remove && false to use exisiting file
+    if(feedFile.exists() && false) {
       fd = input.build(feedFile)
     } else if( feedInit.startsWith("http://")){
       fd = input.build(new InputStreamReader(new URL(feedInit).openStream))
     } else {
       fd = input.build(new File(feedInit))
     }
-    // channel setup
+    // channel setup based on pom
+    fd.setTitle(artifactId)
     fd.setFeedType(types.apply(5))
-    // fd.setDescription(datasetDescription);
+    fd.setAuthor(maintainer.toString)
+    fd.setDescription(datasetDescription)
+    var categories: util.ArrayList[SyndCategory] = new util.ArrayList[SyndCategory]()
+    var cat = new SyndCategoryImpl()
+    cat.setName("Databus and TODO")
+    categories.add(cat)
+    fd.setCategories(categories)
+    fd.setCopyright("Copyright TODO")
+    // TODO which link
+    fd.setLink("infobox-properties/data/dataid_catalog.ttl")
 
     // check if already included
     var isDone: Boolean = false
@@ -93,11 +104,12 @@ class UpdaeRss extends AbstractMojo with Properties {
       // changelog file ?
       var description: SyndContent = new SyndContentImpl()
       description.setType("text/plain")
-      description.setValue(datasetDescription)
+      description.setValue("TODO data from changelog")
       entry.setDescription(description)
 
       entries.add(entry)
       fd.setEntries(entries)
+
 
       val output = new SyndFeedOutput
       output.output(fd, new FileWriter(feedFile))
