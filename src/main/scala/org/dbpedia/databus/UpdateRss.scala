@@ -84,7 +84,8 @@ class UpdaeRss extends AbstractMojo with Properties {
 
       // for each dataid ?
       entry.setTitle(finalName)
-      entry.setLink(artifactId+"/data/version/dataid.ttl")
+      var link: File = new File(dataDirectory+"/"+artifactId+"-"+version+"-dataid.ttl")
+      entry.setLink(link.getPath)
 
       val format = new java.text.SimpleDateFormat("yyyy-MM-dd")
       entry.setPublishedDate(format.parse(modifiedDate))
