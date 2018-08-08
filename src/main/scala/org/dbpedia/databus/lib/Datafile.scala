@@ -21,26 +21,31 @@
 
 package org.dbpedia.databus.lib
 
+import org.dbpedia.databus.Properties
+import org.dbpedia.databus.parse.LineBasedRioDebugParser
+import org.dbpedia.databus.voc.{ApplicationNTriples, DataFileToModel, Format, TextTurtle}
+
+import better.files.{File => BetterFile, ManagedResource => _, _}
+import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
+import org.apache.commons.compress.compressors.CompressorStreamFactory
+import org.apache.jena.rdf.model.Model
+import org.eclipse.rdf4j.rio.Rio
+import resource._
+
+import scala.io.Source
+
 import java.io._
 import java.nio.file.Files
 import java.security.PrivateKey
 import java.util.Base64
-
-import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
-import org.apache.commons.compress.compressors.CompressorStreamFactory
-import org.dbpedia.databus.voc.{ApplicationNTriples, DataFileToModel, Format, TextTurtle}
-import org.apache.jena.rdf.model.Model
-import org.dbpedia.databus.Properties
-import org.dbpedia.databus.parse.LineBasedRioDebugParser
-import org.eclipse.rdf4j.rio.{ Rio}
-
-import scala.io.Source
 
 /**
   * a simple dao to collect all values for a file
   * private constructor, must be called with init to handle compression detection
   */
 class Datafile private(datafile: File) {
+
+  lazy val betterfile = BetterFile(datafile.toPath)
 
   var mimetype: Format = _
   var fileExtension: String = ""
@@ -102,20 +107,22 @@ class Datafile private(datafile: File) {
     */
   private def updatePreview(lineCount: Int): Datafile = {
 
-    val source = Source.fromInputStream(getInputStream())
-    var x = 0
-    val sb = new StringBuilder
-    val it = source.getLines()
-    while (it.hasNext && x <= lineCount) {
-      sb.append(it.next()).append("\n")
-      x += 1
+    val unshortenedPreview = for {
+      inputStream <- getInputStream
+      source <- managed(Source.fromInputStream(inputStream))
+    } yield {
+      source.getLines().take(lineCount).mkString("\n")
     }
-    source.close
-    preview = sb.toString()
-    //limit
-    if (preview.size > (lineCount * 500)) {
-      preview = preview.substring(0, lineCount * 500)
+
+    def maxLength = lineCount * 500
+
+    preview = unshortenedPreview apply {
+
+      case tooLong if tooLong.size > maxLength => tooLong.substring(0, maxLength)
+
+      case shortEnough => shortEnough
     }
+
     this
   }
 
@@ -133,7 +140,8 @@ class Datafile private(datafile: File) {
     *
     * @return
     */
-  def getInputStream(): InputStream = {
+  def getInputStream(): ManagedResource[InputStream] = managed({
+
     val fi = new BufferedInputStream(new FileInputStream(datafile))
     if (isCompressed) {
       new CompressorStreamFactory()
@@ -146,9 +154,7 @@ class Datafile private(datafile: File) {
     } else {
       fi
     }
-
-
-  }
+  })
 
 
   override def toString

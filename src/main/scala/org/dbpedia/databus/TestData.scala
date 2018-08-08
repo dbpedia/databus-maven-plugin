@@ -50,7 +50,6 @@ class TestData extends AbstractMojo with Properties {
       var parseLog = new StringBuilder
       var details = new StringBuilder
       val df: Datafile = Datafile.init(datafile)
-      val in = df.getInputStream()
       var model: Model = ModelFactory.createDefaultModel
       val thisResource = model.createResource("#" + datafile.getName)
 
@@ -72,7 +71,11 @@ class TestData extends AbstractMojo with Properties {
         if (df.mimetype.lineBased) {
           rdfParser = Rio.createParser(df.mimetype.rio)
 
-          val (lines, all, good, bad) = LineBasedRioDebugParser.parse(in, rdfParser)
+          val (lines, all, good, bad) = df.getInputStream().acquireAndGet { in =>
+
+            LineBasedRioDebugParser.parse(in, rdfParser)
+          }
+
           parseLog.append(s"Lines: $lines\nTriples: $all\nValid: $good\nErrors: ${bad.size}\n")
 
           if (bad.size > 0) {
@@ -81,7 +84,9 @@ class TestData extends AbstractMojo with Properties {
           }
         } else {
           rdfParser = Rio.createParser(df.mimetype.rio)
-          val (success, errors) = RioOtherParser.parse(in, rdfParser)
+          val (success, errors) = df.getInputStream().acquireAndGet { in =>
+            RioOtherParser.parse(in, rdfParser)
+          }
           parseLog.append(s"Success = $success\nErrors = $errors\n")
         }
       }
