@@ -72,7 +72,13 @@ object Sign {
     */
   def readPrivateKeyFile(privateKeyFile: File, origPath: Option[File] = None): PrivateKey = {
 
-    if(!privateKeyFile.exists()) {
+    if(privateKeyFile.isFile) {
+
+      val keyBytes = Files.readAllBytes(privateKeyFile.toPath)
+      val keySpec = new PKCS8EncodedKeySpec(keyBytes)
+      val keyFactory = KeyFactory.getInstance("RSA")
+      keyFactory.generatePrivate(keySpec)
+    } else {
 
       origPath match {
 
@@ -83,15 +89,10 @@ object Sign {
 
           val parentDirPath = new File(privateKeyFile.getParentFile.getParentFile, privateKeyFile.getName)
 
-          readPrivateKeyFile(parentDirPath)
+          readPrivateKeyFile(parentDirPath, Some(privateKeyFile))
         }
       }
     }
-
-    val keyBytes = Files.readAllBytes(privateKeyFile.toPath)
-    val keySpec = new PKCS8EncodedKeySpec(keyBytes)
-    val keyFactory = KeyFactory.getInstance("RSA")
-    keyFactory.generatePrivate(keySpec)
   }
 
   def sign(privateKey: PrivateKey, datafile: File, bufferSize: Int = bufferSizeCrypt): Array[Byte] = {
