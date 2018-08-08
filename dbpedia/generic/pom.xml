@@ -130,6 +130,13 @@ Pick one from here: http://rdflicense.linkeddata.es/
                             <goal>metadata</goal>
                         </goals>
                     </execution>
+					<execution>
+                        <id>update-rss</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>update-rss</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <configuration>
                     <!--dataDirectory>/home/shellmann/IdeaProjects/data-release-tool-ti/dbpedia/20180420</dataDirectory-->
@@ -147,6 +154,9 @@ Pick one from here: http://rdflicense.linkeddata.es/
 
                     <issuedDate>${databus.issuedDate}</issuedDate>
                     <modifiedDate>${databus.modifiedDate}</modifiedDate>
+
+                    <!--<initializationFeed>http://www.bbc.co.uk/feeds/rss/music/latest_releases.xml</initializationFeed>-->
+                    <initializationFeed>rss_dummy.xml</initializationFeed>
                 </configuration>
             </plugin>
         </plugins>

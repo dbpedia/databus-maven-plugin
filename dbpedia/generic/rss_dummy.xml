@@ -1,0 +1,10 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <channel rdf:about="infobox-properties/data/dataid_catalog.ttl"> <!-- or should that be the dataid_catalog? -->
+        <title>DBpedia ontology based wikidata extraction</title>
+        <link>infobox-properties/data/dataid_catalog.ttl</link>
+        <description>Latest releases</description>
+        <dc:subject>Databus</dc:subject>
+        <dc:language>en-en</dc:language>
+        <dc:rights>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</dc:rights>
+    </channel>
+</rdf:RDF>

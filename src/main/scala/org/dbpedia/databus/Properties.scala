@@ -101,6 +101,8 @@ trait Properties {
   @Parameter val issuedDate: String = ""
   @Parameter val modifiedDate: String = ""
 
+  // RSS
+  @Parameter val initializationFeed: String = ""
 
   /**
     * for each modules
