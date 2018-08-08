@@ -14,7 +14,8 @@
 
     <properties>
 		 <!--pluginDirectory Default: ${project.build.directory}/databus
-all the generated files will be written here, i.e. parselogs, dataids, feeds (i.e. target/databus/ in each module)
+(relative path to the pom.xml, i.e. target/databus/ in each module)
+all the generated files will be written here, i.e. parselogs, dataids, feeds 
         -->
         <databus.pluginDirectory>${project.build.directory}/databus</databus.pluginDirectory>
         <!--dataDirectory 
