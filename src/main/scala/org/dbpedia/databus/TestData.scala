@@ -71,7 +71,7 @@ class TestData extends AbstractMojo with Properties {
         if (df.mimetype.lineBased) {
           rdfParser = Rio.createParser(df.mimetype.rio)
 
-          val (lines, all, good, bad) = df.getInputStream().acquireAndGet { in =>
+          val (lines, all, good, bad) = df.getInputStream().apply { in =>
 
             LineBasedRioDebugParser.parse(in, rdfParser)
           }
@@ -84,7 +84,7 @@ class TestData extends AbstractMojo with Properties {
           }
         } else {
           rdfParser = Rio.createParser(df.mimetype.rio)
-          val (success, errors) = df.getInputStream().acquireAndGet { in =>
+          val (success, errors) = df.getInputStream().apply { in =>
             RioOtherParser.parse(in, rdfParser)
           }
           parseLog.append(s"Success = $success\nErrors = $errors\n")
@@ -105,7 +105,5 @@ class TestData extends AbstractMojo with Properties {
 
     getLog.info(s"Parselog written to ${getParseLogFile()}")
     parseLogFileWriter.close()
-
   }
-
 }

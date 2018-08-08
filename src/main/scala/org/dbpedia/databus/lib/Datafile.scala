@@ -142,17 +142,17 @@ class Datafile private(datafile: File) {
     */
   def getInputStream(): ManagedResource[InputStream] = managed({
 
-    val fi = new BufferedInputStream(new FileInputStream(datafile))
+    val bis = betterfile.newInputStream.buffered
     if (isCompressed) {
       new CompressorStreamFactory()
-        .createCompressorInputStream(compressionVariant, fi)
+        .createCompressorInputStream(compressionVariant, bis)
     } else if (isArchive) {
       val ais: ArchiveInputStream = new ArchiveStreamFactory()
-        .createArchiveInputStream(compressionVariant, fi)
+        .createArchiveInputStream(compressionVariant, bis)
       ais.getNextEntry
       ais
     } else {
-      fi
+      bis
     }
   })
 
