@@ -22,13 +22,14 @@
 package org.dbpedia.databus.voc
 
 import java.io.File
+import java.text.SimpleDateFormat
 
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.jena.vocabulary.RDF
 import org.dbpedia.databus.Properties
 import org.dbpedia.databus.lib.Datafile
 
-import collection.JavaConversions._
+import scala.collection.JavaConversions._
 
 
 object DataFileToModel {
@@ -58,6 +59,8 @@ object DataFileToModel {
     for ((key, value) <- prefixes) {
       model.setNsPrefix(key, value)
     }
+
+    val modifiedDate = new SimpleDateFormat("yyyy-MM-dd").format(file.lastModified())
 
     // main uri of dataid
     val thisResource = model.createResource("#" + file.getName)
@@ -95,7 +98,7 @@ object DataFileToModel {
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "hasVersion"), model.createLiteral(properties.version))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "issued"), model.createTypedLiteral(properties.issuedDate, model.getNsPrefixURI("xsd") + "date"))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "license"), model.createResource(properties.license))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "modified"), model.createTypedLiteral(properties.modifiedDate, model.getNsPrefixURI("xsd") + "date"))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "modified"), model.createTypedLiteral(modifiedDate, model.getNsPrefixURI("xsd") + "date"))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "associatedAgent"), model.createResource(properties.maintainer.toString))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "publisher"), model.createResource(properties.maintainer.toString))
 
