@@ -80,6 +80,7 @@ cd archetype/existing-projects
 
 #### Step 2:
 configure -DgroupId -DartifactId -Dversion
+
 `mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus \
 	-DgroupId=org.example -DartifactId="animals" -Dversion="1.0.0" -DinteractiveMode=false`
 
@@ -135,9 +136,9 @@ deploy| |done in the build environment, copies the final package to the remote r
 
 # Usage
 
-The configuration is documented in the example pom.xml
+The configuration is documented in the example pom.xml: https://github.com/dbpedia/databus-maven-plugin/blob/master/example/animals/pom.xml
 
-Once you have downloaded the pom.xml from this project and configured it properly, you can use the maven commands as specified in the phases, e.g. `mvn databus:validate`, `mvn databus:test-data` and `mvn databust:metadata`
+Once you have downloaded the pom.xml from this project and configured it properly, you can use the maven commands as specified in the phases, e.g. `mvn databus:validate`, `mvn databus:test-data`, `mvn databust:metadata`, `mvn databus:package-export`
 
 
 # Documentation of available plugins
