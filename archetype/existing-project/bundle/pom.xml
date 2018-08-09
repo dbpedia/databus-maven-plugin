@@ -139,6 +139,10 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                     -->
                     <dataIdDirectory>${project.build.directory}/databus/dataid</dataIdDirectory>
 
+                    <!--dataIdDirectory DEFAULT: ${project.build.directory}/databus/feed
+            the directory where the rss feeds are written
+                    -->
+                    <feedDirectory>${project.build.directory}/databus/feed</feedDirectory>
 
 
                     <dataInputDirectory>${databus.dataInputDirectory}</dataInputDirectory>

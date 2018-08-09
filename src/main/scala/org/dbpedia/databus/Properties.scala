@@ -79,11 +79,14 @@ trait Properties {
 
   @Parameter var dataInputDirectory: File = _
   @Parameter var packageDirectory: File = _
+
   @Parameter var dataDependencyDirectory: File = _
+
   @Parameter var pluginDirectory: File = _
   @Parameter var includeParseLogs: Boolean = true
   @Parameter var dataIdDirectory: File = _
   @Parameter var parseLogDirectory: File = _
+  @Parameter var feedDirectory: File = _
 
 
   /**

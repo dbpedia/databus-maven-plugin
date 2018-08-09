@@ -35,89 +35,105 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 /**
   * TODO use right links to dataid (catalog)
   */
-@Mojo(name = "update-rss", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
-class UpdaeRss extends AbstractMojo with Properties {
+@Mojo(name = "update-rss", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
+class UpdateRss extends AbstractMojo with Properties {
 
-  val types: List[String] = List("rss_0.9", "rss_0.91", "rss_0.92", "rss_0.93", "rss_0.94", "rss_1.0", "rss_2.0", "atom_0.3")
+  // rometools offers different options:
+  // "rss_0.9", "rss_0.91", "rss_0.92", "rss_0.93", "rss_0.94", "rss_1.0", "rss_2.0", "atom_0.3"
+  val feedType = "rss_1.0"
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
 
     //skip the parent module for now
-    if (isParent()){
+    if (isParent()) {
       getLog.info("skipping parent module")
       return
     }
 
-    val feedDirectory: File  = new File(mavenTargetDirectory+"/"+artifactId)
-//    var feedInit = initializationFeed
-
-    if( !feedDirectory.exists()) {
-      feedDirectory.mkdirs()
-    }
+    feedDirectory.mkdirs()
 
     val input = new SyndFeedInput
-    var fd:SyndFeed = null
+    var newFeed: SyndFeed = new SyndFeedImpl()
 
-    // init URL, init file or existing file
-    var feedFile: File = new File (feedDirectory+"/feed.xml");
-    // TODO remove
-    if(feedFile.exists()) {
-      fd = input.build(feedFile)
-//    } else if( feedInit.startsWith("http://")){
-//      fd = input.build(new InputStreamReader(new URL(feedInit).openStream))
+    // TODO make this configurable
+    // TODO this can also be a weburl
+    var oldReleaseFeedFile = new File("/dev/null/feed.xml")
+    var oldFeed: SyndFeed = null
+    if (oldReleaseFeedFile.exists()) {
+      oldFeed = input.build(oldReleaseFeedFile)
+    }
+
+    // the feedfile, where output is written
+    var newFeedFile: File = new File(feedDirectory + "/feed.xml")
+
+    // create the new entry
+    var entry: SyndEntry = new SyndEntryImpl()
+    var title = finalName
+    entry.setTitle(finalName)
+    // path to dataid
+    val dataidPath: Path = Paths.get(dataIdDirectory + "/" + artifactId + "-" + version + "-dataid.ttl")
+    val feedPath: Path = Paths.get(mavenTargetDirectory + "/" + artifactId + "/")
+    val relative = feedPath.relativize(dataidPath)
+    entry.setLink(relative.toString)
+    entry.setPublishedDate(new java.text.SimpleDateFormat("yyyy-MM-dd").parse(modifiedDate))
+
+    // todo changelog file ?
+    var description: SyndContent = new SyndContentImpl()
+    description.setType("text/plain")
+    description.setValue("TODO data from changelog")
+    entry.setDescription(description)
+
+    if (oldFeed != null) {
+      newFeed = oldFeed
+      // check if already included
+      // todo check if criteria after implementing
+      var hasEntry = false
+      // TODO implement the scala way
+      for (syndentry: SyndEntry <- oldFeed.getEntries()) {
+        if (syndentry.getTitle.contentEquals(title)) {
+          getLog.info(s"${title} already in feed")
+        }
+      }
+
+      // add new Entry
+      if (!hasEntry) {
+        newFeed.getEntries.add(entry)
+      }
+
+
+
+      // generate new feed
     } else {
-//      fd = input.build(new File(feedInit))
-      fd = new SyndFeedImpl()
-    }
-    // channel setup based on pom
-    fd.setTitle(artifactId)
-    fd.setFeedType(types.apply(5))
-    fd.setAuthor(maintainer.toString)
-    fd.setDescription(datasetDescription)
-    var categories: util.ArrayList[SyndCategory] = new util.ArrayList[SyndCategory]()
-    var cat = new SyndCategoryImpl()
-    cat.setName("Databus and TODO")
-    categories.add(cat)
-    fd.setCategories(categories)
-    fd.setCopyright("Copyright TODO")
-    // TODO which link
-    fd.setLink("path/to/dataid_catalog.ttl")
 
-    // check if already included
-    var isDone: Boolean = false
-    for( syndentry: SyndEntry <- fd.getEntries() ) {
-      if( syndentry.getTitle.contentEquals(finalName)) isDone = true
-    }
+      // channel setup based on pom
+      newFeed.setTitle(artifactId)
+      newFeed.setFeedType(feedType)
+      newFeed.setAuthor(maintainer.toString)
+      newFeed.setDescription(datasetDescription)
+      newFeed.setCopyright("Copyright TODO")
+      // TODO which link
+      newFeed.setLink("path/to/dataid_catalog.ttl")
 
-    //skip if already updated
-    if(!isDone) {
-      var entries: util.List[SyndEntry] = fd.getEntries()
-      var entry: SyndEntry = new SyndEntryImpl()
+      // todo categories
+      var categories: util.ArrayList[SyndCategory] = new util.ArrayList[SyndCategory]()
+      var cat = new SyndCategoryImpl()
+      cat.setName("Databus and TODO")
+      categories.add(cat)
+      newFeed.setCategories(categories)
 
-      entry.setTitle(finalName)
+      // create the entrylist and connect with feed
+      var entries: util.List[SyndEntry] = newFeed.getEntries()
+      newFeed.setEntries(entries)
 
-      // path to dataid 
-      val dataidPath: Path = Paths.get(dataIdDirectory+"/"+artifactId+"-"+version+"-dataid.ttl")
-      val feedPath: Path = Paths.get(mavenTargetDirectory+"/"+artifactId+"/")
-      val relative = feedPath.relativize(dataidPath)
-      entry.setLink(relative.toString)
-
-      val format = new java.text.SimpleDateFormat("yyyy-MM-dd")
-      entry.setPublishedDate(format.parse(modifiedDate))
-
-      // changelog file ?
-      var description: SyndContent = new SyndContentImpl()
-      description.setType("text/plain")
-      description.setValue("TODO data from changelog")
-      entry.setDescription(description)
 
       entries.add(entry)
-      fd.setEntries(entries)
-
-
-      val output = new SyndFeedOutput
-      output.output(fd, new FileWriter(feedFile))
     }
+
+    // write
+    val output = new SyndFeedOutput
+    output.output(newFeed, new FileWriter(newFeedFile))
+
+
   }
 }
