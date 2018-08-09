@@ -73,10 +73,11 @@ class PrepareMetadata extends AbstractMojo with Properties {
     //})
 
     // write the model to target
-    var db = getDataIdFile()
-    db.getParentFile.mkdirs()
-    dataIdCollect.write(new FileWriter(db), "turtle")
-
+    if(!dataIdCollect.isEmpty) {
+      var db = getDataIdFile()
+      db.getParentFile.mkdirs()
+      dataIdCollect.write(new FileWriter(db), "turtle")
+    }
 
   }
 

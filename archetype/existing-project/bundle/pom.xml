@@ -33,7 +33,7 @@ We recommend putting the file in ~/.m2 next to the settings.xml (Maven user dir)
 SECURITY NOTICE:
 * Protect your private key file, do not loose, do not send over network
 * chmod 700
-* The channel youo are about to create requires it to republish new versions there.
+* The data channel you are about to create requires it to republish new versions there.
         -->
         <databus.privateKeyFile>private_key_dev_dummy.der</databus.privateKeyFile>
         <!--maintainer
