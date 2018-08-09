@@ -16,17 +16,19 @@ The plugin provides the following features:
    * [Table of Contents](#table-of-contents)
    * [Requirements](#requirements)
       * [Technical requirements](#technical-requirements)
+      * [Terminology](#terminology)
       * [Quickstart](#quickstart)
-         * [Use the template](#use-the-template)
-         * [Maven archetype](#maven-archetype)
-         * [Integration into software](#integration-into-software)
+         * [Run an example](#run-an-example)
+         * [Create your own (how the example was created)](#create-your-own-how-the-example-was-created)
+            * [Step 1: Deploy archetypes into your local repository](#step-1-deploy-archetypes-into-your-local-repository)
+            * [Step 2:](#step-2)
    * [License and Contributions](#license-and-contributions)
       * [Development rules](#development-rules)
    * [Phases](#phases)
    * [Usage](#usage)
    * [Documentation of available plugins](#documentation-of-available-plugins)
 
-<!-- Added by: shellmann, at: 2018-08-06T16:08+02:00 -->
+<!-- Added by: shellmann, at: 2018-08-09T16:47+02:00 -->
 
 <!--te-->
 # Requirements
@@ -50,13 +52,20 @@ Strict minimal requirements:
 Note that the distinction between dataset and bundle is up to the creator, we only require that all files in a dataset start with the same prefix, i.e. the artifactid
 
 ## Quickstart
+clone the repository
 ```
-# clone
 git clone https://github.com/dbpedia/databus-maven-plugin.git
 cd databus-maven-plugin
 ```
-### Use an example 
+### Run an example 
 There are working examples in the example folder, which you can copy and adapt
+`cd example/animals`
+validate, parse, generate metadata and package
+`mvn databus:validate databus:test-data databus:metadata databus:package-export`
+
+modify output folder
+`mvn databus:package-export -Ddatabus.packageDirectory="/var/www/mydata.org/datareleases"` 
+
 
 ### Create your own (how the example was created)
 Maven provides a template called archetype. We provide two such templates:
@@ -66,71 +75,36 @@ Maven provides a template called archetype. We provide two such templates:
 ```
 cd archetype/existing-projects
 ./deploy.sh
-# deploy.sh runs mvn install on bundle and bundle/add-one-dataset 
 ```
+`deploy.sh` runs mvn install on bundle and bundle/add-one-dataset 
+
 #### Step 2:
-```
+configure -DgroupId -DartifactId -Dversion
+`mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus \
+	-DgroupId=org.example -DartifactId="animals" -Dversion="1.0.0" -DinteractiveMode=false`
 
-# configure -DgroupId -DartifactId -Dversion
-mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus \
-	-DgroupId=org.example -DartifactId="animals" -Dversion="1.0.0" -DinteractiveMode=false
+go into the bundle
+`cd animals` 
 
-# go into the bundle
-cd animals 
+generate a new module "mamals"
+`mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=add-one-dataset-archetype -DarchetypeGroupId=org.dbpedia.databus \
+	-DgroupId=org.example -DartifactId=mammals -Dversion="1.0.0" -DinteractiveMode=false`
 
-# generate a new module "mamals"
-mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=add-one-dataset-archetype -DarchetypeGroupId=org.dbpedia.databus \
-	-DgroupId=org.example -DartifactId=mammals -Dversion="1.0.0" -DinteractiveMode=false
+HOTFIX: adjust mammals/pom.xml and fix the <parent>
+(we will try to create an archetype that does it automatically in the future)
+`sed -i "s|<artifactId>bundle</artifactId>|<artifactId>animals</artifactId>|" mammals/pom.xml`
+`sed -i "s|<groupId>org.dbpedia.databus</groupId>|<groupId>org.example</groupId>|" mammals/pom.xml`
 
-# adjust mammals/pom.xml and fix the <parent>
-sed -i "s|<artifactId>bundle</artifactId>|<artifactId>animals</artifactId>|" mammals/pom.xml
-sed -i "s|<groupId>org.dbpedia.databus</groupId>|<groupId>org.example</groupId>|" mammals/pom.xml
+add as many other datasets in the same way
+(optional) remove the example dataset folder and the module
+`rm -r add-one-dataset`
+`sed -i  's|<module>add-one-dataset</module>||' pom.xml`
 
-# add as many other datasets in the same way
+start editing the pom.xml in animals and the subfolders
+remove the example files under src/main/databus/input
+copy your data in the modules/subfolders into src/main/databus/input
+file names need to start with the artifactId 
 
-# (optional) remove the example dataset folder and the module
-rm -r add-one-dataset
-sed -i  's|<module>add-one-dataset</module>||' pom.xml
-
-# start editing the pom.xml in animals and the subfolders
-# remove the example files under src/main/databus/input
-# copy your data in the modules/subfolders into src/main/databus/input
-# file names need to start with the artifactId 
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### Use the template
-Copy and adjust the bundle folder in https://github.com/dbpedia/databus-maven-plugin/tree/master/archetype/existing-project
-
-### Maven archetype
-NOTE: We are in the process of submitting the archetype to maven central, at the moment you can use it by installing it:
-Clone the repository and run:
-```
-cd archetype/exisiting-project
-./deploy.sh 
-mvn archetype:generate -DgroupId=org.myorg -DartifactId=mydataset -DarchetypeGroupId=org.dbpedia -Dversion=1.0-SNAPSHOT -DarchetypeGroupId=org.dbpedia.databus -DarchetypeArtifactId=bundle-archetype -DarchetypeVersion=RELEASE 
-```
-
-### Integration into software
-https://github.com/dbpedia/databus-maven-plugin/tree/master/archetype/existing-project contains a runnable project, where you can copy the relevant parts into your pom.xml
-                   
 
 
 # License and Contributions
@@ -161,7 +135,7 @@ deploy| |done in the build environment, copies the final package to the remote r
 
 # Usage
 
-The usage is documented in this existing project https://github.com/dbpedia/databus-maven-plugin/tree/master/archetype/existing-project/bundle
+The configuration is documented in the example pom.xml
 
 Once you have downloaded the pom.xml from this project and configured it properly, you can use the maven commands as specified in the phases, e.g. `mvn databus:validate`, `mvn databus:test-data` and `mvn databust:metadata`
 
