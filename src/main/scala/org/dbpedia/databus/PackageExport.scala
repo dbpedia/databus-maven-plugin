@@ -20,15 +20,12 @@
  */
 package org.dbpedia.databus
 
-import java.io.FileWriter
+import java.io.{File, FileWriter}
+import java.nio.file.{CopyOption, Files}
+import java.nio.file.StandardCopyOption.REPLACE_EXISTING
 
-import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-import org.dbpedia.databus.lib.Datafile
-import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
-import org.dbpedia.databus.voc.UNKNOWN
-import org.eclipse.rdf4j.rio.{RDFParser, Rio}
 
 @Mojo(name = "package-export", defaultPhase = LifecyclePhase.PACKAGE)
 class PackageExport extends AbstractMojo with Properties {
@@ -45,69 +42,22 @@ class PackageExport extends AbstractMojo with Properties {
     // for each module
 
     // copy all files to target
-
-    parseLogDirectory.mkdirs()
-    val parseLogFileWriter = new FileWriter(getParseLogFile())
-
     getListOfDataFiles().foreach(datafile => {
-
-      var parseLog = new StringBuilder
-      var details = new StringBuilder
-      val df: Datafile = Datafile.init(datafile)
-      var model: Model = ModelFactory.createDefaultModel
-      val thisResource = model.createResource("#" + datafile.getName)
-
-
-      parseLog.append(s"${datafile.getName}\n${df.mimetype}\n")
-
-      //val config = new ParserConfig
-      //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_DATATYPES, false)
-      //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_LANGUAGES, false)
-      //config.set(BasicParserSettings.VERIFY_DATATYPE_VALUES, false)
-      //config.set(BasicParserSettings.VERIFY_LANGUAGE_TAGS, false)
-      //config.set(BasicParserSettings.VERIFY_RELATIVE_URIS, false)
-
-      var rdfParser: RDFParser = null
-      //rdfParser.setParserConfig(config)
-
-      if (df.mimetype != UNKNOWN) {
-
-        if (df.mimetype.lineBased) {
-          rdfParser = Rio.createParser(df.mimetype.rio)
-
-          val (lines, all, good, bad) = df.getInputStream().apply { in =>
-
-            LineBasedRioDebugParser.parse(in, rdfParser)
-          }
-
-          parseLog.append(s"Lines: $lines\nTriples: $all\nValid: $good\nErrors: ${bad.size}\n")
-
-          if (bad.size > 0) {
-            details.append(s"\n#Error details for $datafile\n#${bad.mkString("\n#")}")
-
-          }
-        } else {
-          rdfParser = Rio.createParser(df.mimetype.rio)
-          val (success, errors) = df.getInputStream().apply { in =>
-            RioOtherParser.parse(in, rdfParser)
-          }
-          parseLog.append(s"Success = $success\nErrors = $errors\n")
-        }
-      }
-      else {
-        parseLog.append("no rdf format")
-      }
-
-      // parselog
-      thisResource.addProperty(model.createProperty("parseLog"), parseLog.toString);
-      model.write(parseLogFileWriter, "turtle")
-      parseLogFileWriter.write(details.toString())
-      getLog.info(parseLog)
-
+      val target = new File(getAndCreatePackageDirectory(), "/" + datafile.getName).toPath
+      getLog.info(target+"")
+      getLog.info(target+"")
+      Files.copy(datafile.getAbsoluteFile.toPath, target, REPLACE_EXISTING)
 
     })
 
-    getLog.info(s"Parselog written to ${getParseLogFile()}")
-    parseLogFileWriter.close()
+    //var dataIdCollect: Model = ModelFactory.createDefaultModel
+
+    if (includeParseLogs) {
+      //dataIdCollect.read(getDataIdFile().toString, "turtle","file:///"+getDataIdFile().toString)
+    }
+    val dataIdPackageTarget = new File(getAndCreatePackageDirectory(), "/" + getDataIdFile().getName)
+    //dataIdCollect.write(new FileWriter(dataIdpackage),"turtle", "")
+    Files.copy(getDataIdFile().toPath,dataIdPackageTarget.toPath, REPLACE_EXISTING)
+    getLog.info(s"package written to ${packageDirectory}")
   }
 }

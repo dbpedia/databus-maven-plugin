@@ -57,34 +57,6 @@ Pick one from here: http://rdflicense.linkeddata.es/
         <!--not clear if needed-->
         <databus.modifiedDate>2018-08-03</databus.modifiedDate>
         
-        <!--
-Normally there should be no need to edit below
-        
-        -->
-
-        <!--pluginDirectory Default: ${project.build.directory}/databus
-* all the generated files will be written here, i.e. parselogs, dataids, feeds
-* the path is relative to the module, i.e. target/databus/
-* `mvn clean` will delete all `target` folders in your project
-       -->
-        <databus.pluginDirectory>${project.build.directory}/databus</databus.pluginDirectory>
-
-        <!--includeParseLogs DEFAULT: true
-The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
-We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
-         -->
-        <databus.parseLogDirectory>${databus.pluginDirectory}/parselogs</databus.parseLogDirectory>
-        <databus.includeParseLogs>true</databus.includeParseLogs>
-
-        <!--dataIdDirectory DEFAULT: <databus.pluginDirectory>/dataid
-the directory where the dataids and other metadata are written
-DEFAULT: Same as dataDirectory
-The plugin will write all dataid directly into the data folder, which si often the most convenient way
-<databus.dataIdDirectory>${databus.dataDirectory}</databus.dataIdDirectory>
-If you configured <databus.dataDirectory>, it is convenient to configure this config var to point to the same dir,
-so you can write the metadata/dataids in the same dir as your data
-        -->
-        <databus.dataIdDirectory>${databus.pluginDirectory}/dataid</databus.dataIdDirectory>
 
         <!--publisher
 refers to the WebID that does the publication on the web and on the databus
@@ -145,14 +117,32 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                     </execution>
                 </executions>
                 <configuration>
-                    <!--dataDirectory>/home/shellmann/IdeaProjects/data-release-tool-ti/dbpedia/20180420</dataDirectory-->
 
                     <!--DO NOT EDIT HERE, unless you know what you are doing, We recommend changing the properties above-->
-                    <dataDirectory>${databus.dataDirectory}</dataDirectory>
-                    <pluginDirectory>${databus.pluginDirectory}</pluginDirectory>
-                    <includeParseLogs>${databus.includeParseLogs}</includeParseLogs>
-                    <parseLogDirectory>${databus.parseLogDirectory}</parseLogDirectory>
-                    <dataIdDirectory>${databus.dataIdDirectory}</dataIdDirectory>
+
+                    <!--pluginDirectory Default: ${project.build.directory}/databus
+* all the generated files will be written here, i.e. parselogs, dataids, feeds
+* the path is relative to the module, i.e. target/databus/
+* `mvn clean` will delete all `target` folders in your project
+-->
+                    <pluginDirectory>${project.build.directory}/databus</pluginDirectory>
+
+                    <!--includeParseLogs DEFAULT: true
+            The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
+            We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
+                     -->
+                    <parseLogDirectory>${project.build.directory}/databus/parselogs</parseLogDirectory>
+                    <includeParseLogs>true</includeParseLogs>
+
+                    <!--dataIdDirectory DEFAULT: <databus.pluginDirectory>/dataid
+            the directory where the dataids and other metadata are written
+                    -->
+                    <dataIdDirectory>${project.build.directory}/databus/dataid</dataIdDirectory>
+
+
+
+                    <dataInputDirectory>${databus.dataInputDirectory}</dataInputDirectory>
+                    <packageDirectory>${databus.packageDirectory}</packageDirectory>
                     <publisher>${databus.publisher}</publisher>
                     <maintainer>${databus.maintainer}</maintainer>
                     <license>${databus.license}</license>
@@ -160,6 +150,9 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
 
                     <issuedDate>${databus.issuedDate}</issuedDate>
                     <modifiedDate>${databus.modifiedDate}</modifiedDate>
+
+
+
                 </configuration>
             </plugin>
         </plugins>

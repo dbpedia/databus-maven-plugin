@@ -123,6 +123,14 @@ trait Properties {
     new File(parseLogDirectory, "/" + artifactId + "-" + version + "-parselog.ttl")
   }
 
+  def getAndCreatePackageDirectory():File = {
+    val d = new File(packageDirectory, "/" + artifactId + "/" + version)
+    d.mkdirs()
+    d
+  }
+
+
+
   /**
     * lists all appropriate data files, using these filters:
     * * is a file
