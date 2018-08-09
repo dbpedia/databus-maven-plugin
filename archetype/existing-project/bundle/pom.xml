@@ -35,7 +35,9 @@ SECURITY NOTICE:
 * chmod 700
 * The data channel you are about to create requires it to republish new versions there.
         -->
+        <!--<databus.privateKeyFile>${user.home}/.m2/private_key.der</databus.privateKeyFile>-->
         <databus.privateKeyFile>private_key_dev_dummy.der</databus.privateKeyFile>
+        
         <!--maintainer
 The maintainer of the data release, normally the person to contact, often the same as publisher
         -->

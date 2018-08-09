@@ -74,6 +74,11 @@ class PrepareMetadata extends AbstractMojo with Properties {
 
     // write the model to target
     if(!dataIdCollect.isEmpty) {
+      val datasetResource = dataIdCollect.createResource( s"#${finalName}")
+      datasetResource.addProperty(dataIdCollect.createProperty("todonote"), "we are still refactoring code for dataid creation, much more information will be available at this resource later")
+
+
+
       var db = getDataIdFile()
       db.getParentFile.mkdirs()
       dataIdCollect.write(new FileWriter(db), "turtle")

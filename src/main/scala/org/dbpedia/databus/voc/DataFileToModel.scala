@@ -65,12 +65,17 @@ object DataFileToModel {
     /**
       * linking to other constructs
       */
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "isDistributionOf"),
-      model.createResource( s"${properties.finalName}-dataid.ttl#${properties.finalName}"))
+    val datasetResource = model.createResource( s"#${properties.finalName}")
+
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "isDistributionOf"),datasetResource)
+    datasetResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "distribution"),thisResource)
+
 
 
     //type properties
     thisResource.addProperty(RDF.`type`, model.createResource(s"${model.getNsPrefixURI("dataid")}SingleFile"))
+    datasetResource.addProperty(RDF.`type`, model.createResource(s"${model.getNsPrefixURI("dataid")}Dataset"))
+
 
     // label
     for (label :String <- properties.labels) {
