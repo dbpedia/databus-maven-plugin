@@ -60,8 +60,8 @@ class PrepareMetadata extends AbstractMojo with Properties {
 
     // val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
 
-    getLog.info(s"looking for data files in: ${dataDirectory.getCanonicalPath}")
-    getListOfDataFiles(dataDirectory).foreach(datafile => {
+    getLog.info(s"looking for data files in: ${dataInputDirectory.getCanonicalPath}")
+    getListOfDataFiles().foreach(datafile => {
       processFile(datafile, dataIdCollect)
     })
 

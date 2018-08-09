@@ -77,9 +77,10 @@ trait Properties {
     * Note that these are also created in Validate
     */
 
+  @Parameter var dataInputDirectory: File = _
+  @Parameter var packageDirectory: File = _
   @Parameter var dataDependencyDirectory: File = _
   @Parameter var pluginDirectory: File = _
-  @Parameter var dataDirectory: File = _
   @Parameter var includeParseLogs: Boolean = true
   @Parameter var dataIdDirectory: File = _
   @Parameter var parseLogDirectory: File = _
@@ -129,13 +130,13 @@ trait Properties {
     * * is not a dataid
     * * is not a parselog
     *
-    * @param dir
     * @return
     */
-  def getListOfDataFiles(dir: File): List[File] = {
+  def getListOfDataFiles(): List[File] = {
 
-    if (dir.exists && dir.isDirectory) {
-      dir.listFiles
+
+    if (dataInputDirectory.exists && dataInputDirectory.isDirectory) {
+      dataInputDirectory.listFiles
         .filter(_.isFile)
         .filter(_.getName.startsWith(artifactId))
         .filter(_ != getDataIdFile())

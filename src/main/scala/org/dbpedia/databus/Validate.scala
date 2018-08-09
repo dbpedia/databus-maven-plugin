@@ -57,7 +57,6 @@ class Validate extends AbstractMojo with Properties {
        */
     // create targetDir
     pluginDirectory.mkdirs()
-    dataDirectory.mkdirs()
     dataIdDirectory.mkdirs()
 
     /**

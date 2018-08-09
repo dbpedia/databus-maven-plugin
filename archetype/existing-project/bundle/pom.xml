@@ -19,7 +19,13 @@
 * all files have to start with the $artifactId of the module, i.e. src/main/databus/input/${artifactId}_en.nt.bz2
 
 -->
-        <databus.dataDirectory>src/main/databus/input</databus.dataDirectory>
+        <databus.dataInputDirectory>src/main/databus/input</databus.dataInputDirectory>
+
+
+        <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package
+* all files are copied into this directory where mvn databus:package-export is run
+-->
+        <databus.packageDirectory>${session.executionRootDirectory}/target/databus/package</databus.packageDirectory>
 
         <databus.publisher>http://kurzum.net/dev-dummy.ttl#this</databus.publisher>
         <!--privateKeyFile

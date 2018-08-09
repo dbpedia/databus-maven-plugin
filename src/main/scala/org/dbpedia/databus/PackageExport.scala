@@ -8,30 +8,30 @@
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
 package org.dbpedia.databus
 
-import java.io.{File, FileWriter}
+import java.io.FileWriter
 
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-import org.dbpedia.databus.lib.{Datafile}
+import org.dbpedia.databus.lib.Datafile
 import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
 import org.dbpedia.databus.voc.UNKNOWN
-import org.eclipse.rdf4j.rio.{RDFFormat, RDFParser, Rio}
+import org.eclipse.rdf4j.rio.{RDFParser, Rio}
 
-@Mojo(name = "test-data", defaultPhase = LifecyclePhase.TEST)
-class TestData extends AbstractMojo with Properties {
+@Mojo(name = "package-export", defaultPhase = LifecyclePhase.PACKAGE)
+class PackageExport extends AbstractMojo with Properties {
 
 
   @throws[MojoExecutionException]
@@ -41,6 +41,10 @@ class TestData extends AbstractMojo with Properties {
       getLog.info("skipping parent module")
       return
     }
+
+    // for each module
+
+    // copy all files to target
 
     parseLogDirectory.mkdirs()
     val parseLogFileWriter = new FileWriter(getParseLogFile())
