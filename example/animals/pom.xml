@@ -110,6 +110,13 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                             <goal>metadata</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>update-rss</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>update-rss</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <configuration>
 
