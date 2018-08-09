@@ -80,26 +80,34 @@ cd archetype/existing-projects
 
 #### Step 2:
 configure -DgroupId -DartifactId -Dversion
-
-`mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus \
+```
+mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus \
 	-DgroupId=org.example -DartifactId="animals" -Dversion="1.0.0" -DinteractiveMode=false`
+```
 
 go into the bundle
+
 `cd animals` 
 
 generate a new module "mamals"
-`mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=add-one-dataset-archetype -DarchetypeGroupId=org.dbpedia.databus \
-	-DgroupId=org.example -DartifactId=mammals -Dversion="1.0.0" -DinteractiveMode=false`
+```
+mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=add-one-dataset-archetype -DarchetypeGroupId=org.dbpedia.databus \
+	-DgroupId=org.example -DartifactId=mammals -Dversion="1.0.0" -DinteractiveMode=false
+```
 
 HOTFIX: adjust mammals/pom.xml and fix the <parent>
 (we will try to create an archetype that does it automatically in the future)
-`sed -i "s|<artifactId>bundle</artifactId>|<artifactId>animals</artifactId>|" mammals/pom.xml`
-`sed -i "s|<groupId>org.dbpedia.databus</groupId>|<groupId>org.example</groupId>|" mammals/pom.xml`
+```
+sed -i "s|<artifactId>bundle</artifactId>|<artifactId>animals</artifactId>|" mammals/pom.xml
+sed -i "s|<groupId>org.dbpedia.databus</groupId>|<groupId>org.example</groupId>|" mammals/pom.xml
+```
 
 add as many other datasets in the same way
 (optional) remove the example dataset folder and the module
-`rm -r add-one-dataset`
-`sed -i  's|<module>add-one-dataset</module>||' pom.xml`
+```
+rm -r add-one-dataset
+sed -i  's|<module>add-one-dataset</module>||' pom.xml
+```
 
 start editing the pom.xml in animals and the subfolders
 remove the example files under src/main/databus/input
