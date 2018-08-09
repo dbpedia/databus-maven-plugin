@@ -37,14 +37,85 @@ Databus maven plugin philosophy:
 
 Strict minimal requirements:
 * WebID/Private key: in order to guarantee clear provenance
-* Same-Origin-Policy: metadata files are required to be published under the same domain as the data, i.e. no third-party rebranding of already published data
-
+* (under discussion) Same-Origin-Policy: metadata files are required to be published under the same domain as the data, i.e. no third-party rebranding of already published data
+* (under discussion) dataid uses relative path and assumes the file lies in the same folder
 
 ## Technical requirements
 * Maven 3 `sudo apt-get install maven`
 * Java 1.7
 
+## Terminology
+* Dataset (handled as a maven module): we define a dataset as a collection of files with the same starting prefix ($artifactId). These files normally contain the same or similar kind of data with some variants, e.g. different languages (contenvariant) and formats
+* Bundle (handled as parent pom): a collection of datasets (modules) released together, mainly for practical purposes, e.g. they have the same metadata, i.e. publisher, version number, etc. 
+Note that the distinction between dataset and bundle is up to the creator, we only require that all files in a dataset start with the same prefix, i.e. the artifactid
+
 ## Quickstart
+```
+# clone
+git clone https://github.com/dbpedia/databus-maven-plugin.git
+cd databus-maven-plugin
+```
+### Use an example 
+There are working examples in the example folder, which you can copy and adapt
+
+### Create your own (how the example was created)
+Maven provides a template called archetype. We provide two such templates:
+* `bundle-archetype` generates a bundle with one dataset (called add-one-dataset)
+* `add-one-dataset-archetype` adds a module to an existing bundle
+#### Step 1: Deploy archetypes into your local repository
+```
+cd archetype/existing-projects
+./deploy.sh
+# deploy.sh runs mvn install on bundle and bundle/add-one-dataset 
+```
+#### Step 2:
+```
+
+# configure -DgroupId -DartifactId -Dversion
+mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus \
+	-DgroupId=org.example -DartifactId="animals" -Dversion="1.0.0" -DinteractiveMode=false
+
+# go into the bundle
+cd animals 
+
+# generate a new module "mamals"
+mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=add-one-dataset-archetype -DarchetypeGroupId=org.dbpedia.databus \
+	-DgroupId=org.example -DartifactId=mammals -Dversion="1.0.0" -DinteractiveMode=false
+
+# adjust mammals/pom.xml and fix the <parent>
+sed -i "s|<artifactId>bundle</artifactId>|<artifactId>animals</artifactId>|" mammals/pom.xml
+sed -i "s|<groupId>org.dbpedia.databus</groupId>|<groupId>org.example</groupId>|" mammals/pom.xml
+
+# add as many other datasets in the same way
+
+# (optional) remove the example dataset folder and the module
+rm -r add-one-dataset
+sed -i  's|<module>add-one-dataset</module>||' pom.xml
+
+# start editing the pom.xml in animals and the subfolders
+# remove the example files under src/main/databus/input
+# copy your data in the modules/subfolders into src/main/databus/input
+# file names need to start with the artifactId 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### Use the template
 Copy and adjust the bundle folder in https://github.com/dbpedia/databus-maven-plugin/tree/master/archetype/existing-project
 
