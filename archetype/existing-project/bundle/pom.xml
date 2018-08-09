@@ -13,44 +13,14 @@
     </modules>
 
     <properties>
-		 <!--pluginDirectory Default: ${project.build.directory}/databus
-* all the generated files will be written here, i.e. parselogs, dataids, feeds
-* the path is relative to the module, i.e. target/databus/ 
-* `mvn clean` will delete all `target` folders in your project
-        -->
-        <databus.pluginDirectory>${project.build.directory}/databus</databus.pluginDirectory>
-        
         <!--dataDirectory DEFAULT: src/main/databus/input
-* input folder for data 
+* input folder for data
 * copy/move all your datafiles in the respective modules
 * all files have to start with the $artifactId of the module, i.e. src/main/databus/input/${artifactId}_en.nt.bz2
 
 -->
         <databus.dataDirectory>src/main/databus/input</databus.dataDirectory>
 
-        <!--includeParseLogs DEFAULT: true
-The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
-We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
-         -->
-        <databus.includeParseLogs>true</databus.includeParseLogs>
-        <databus.parseLogDirectory>${databus.pluginDirectory}/parselogs
-        </databus.parseLogDirectory>
-        <!--dataIdDirectory DEFAULT: <databus.dataDirectory>
-the directory where the dataids and other metadata are written
-DEFAULT: Same as dataDirectory
-The plugin will write all dataid directly into the data folder, which si often the most convenient way 
-<databus.dataIdDirectory>${databus.dataDirectory}</databus.dataIdDirectory>
-If you configured <databus.dataDirectory>, it is convenient to configure this config var to point to the same dir,
-so you can write the metadata/dataids in the same dir as your data
-        -->
-        <databus.dataIdDirectory>${databus.dataDirectory}</databus.dataIdDirectory>
-
-        <!--publisher
-refers to the WebID that does the publication on the web and on the databus
-This one is matched against the private key file (next option)
-Please read on https://github.com/dbpedia/webid how to create such file
-We include a dev-dummy webid file here, please don't use it for publishing, use your own
--->
         <databus.publisher>http://kurzum.net/dev-dummy.ttl#this</databus.publisher>
         <!--privateKeyFile
 The private key file that is matched against the publisher WebID, see the tutorial suggested there.
@@ -83,6 +53,37 @@ Pick one from here: http://rdflicense.linkeddata.es/
 Normally there should be no need to edit below
         
         -->
+
+        <!--pluginDirectory Default: ${project.build.directory}/databus
+* all the generated files will be written here, i.e. parselogs, dataids, feeds
+* the path is relative to the module, i.e. target/databus/
+* `mvn clean` will delete all `target` folders in your project
+       -->
+        <databus.pluginDirectory>${project.build.directory}/databus</databus.pluginDirectory>
+
+        <!--includeParseLogs DEFAULT: true
+The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
+We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
+         -->
+        <databus.parseLogDirectory>${databus.pluginDirectory}/parselogs</databus.parseLogDirectory>
+        <databus.includeParseLogs>true</databus.includeParseLogs>
+
+        <!--dataIdDirectory DEFAULT: <databus.pluginDirectory>/dataid
+the directory where the dataids and other metadata are written
+DEFAULT: Same as dataDirectory
+The plugin will write all dataid directly into the data folder, which si often the most convenient way
+<databus.dataIdDirectory>${databus.dataDirectory}</databus.dataIdDirectory>
+If you configured <databus.dataDirectory>, it is convenient to configure this config var to point to the same dir,
+so you can write the metadata/dataids in the same dir as your data
+        -->
+        <databus.dataIdDirectory>${databus.pluginDirectory}/dataid</databus.dataIdDirectory>
+
+        <!--publisher
+refers to the WebID that does the publication on the web and on the databus
+This one is matched against the private key file (next option)
+Please read on https://github.com/dbpedia/webid how to create such file
+We include a dev-dummy webid file here, please don't use it for publishing, use your own
+-->
         
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!--dataDependencyDirectory
