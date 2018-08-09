@@ -34,7 +34,7 @@ import org.dbpedia.databus.lib.{Datafile, Sign}
   *
   * Generates statistics from the release data files such as:
   * * md5sum
-  * * bytesize
+  * * file size in bytes
   * * compression algo used
   * * internal mimetype
   * Also creates a signature with the private key
@@ -60,6 +60,7 @@ class PrepareMetadata extends AbstractMojo with Properties {
 
     // val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
 
+    getLog.info(s"looking for data files in: ${dataDirectory.getCanonicalPath}")
     getListOfDataFiles(dataDirectory).foreach(datafile => {
       processFile(datafile, dataIdCollect)
     })
@@ -80,7 +81,7 @@ class PrepareMetadata extends AbstractMojo with Properties {
   }
 
   def processFile(datafile: File, dataIdCollect: Model): Unit = {
-    getLog.info(s"found file $datafile")
+    getLog.info(s"found file ${datafile.getCanonicalPath}")
     val df: Datafile = Datafile.init(datafile)
     val privateKey = Sign.readPrivateKeyFile(privateKeyFile)
 
@@ -93,7 +94,6 @@ class PrepareMetadata extends AbstractMojo with Properties {
     var model = df.toModel(this)
     getLog.info(df.toString)
     dataIdCollect.add(model)
-
   }
 
 

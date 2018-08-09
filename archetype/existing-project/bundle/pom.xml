@@ -19,6 +19,7 @@
 * `mvn clean` will delete all `target` folders in your project
         -->
         <databus.pluginDirectory>${project.build.directory}/databus</databus.pluginDirectory>
+        
         <!--dataDirectory DEFAULT: src/main/databus/input
 * input folder for data 
 * copy/move all your datafiles in the respective modules

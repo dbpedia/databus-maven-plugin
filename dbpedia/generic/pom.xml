@@ -42,8 +42,7 @@ Note: that per convention:
 * only files will be included that have the same prefix as the artifactId
 * any dataid files from previous runs will also be ignored
 -->
-        <databus.dataDirectory>${databus.pluginDirectory}/output/${project.artifactId}/${project.version}
-        </databus.dataDirectory>
+        <databus.dataDirectory>${project.build.sourceDirectory}/../databus</databus.dataDirectory>
         <!--includeParseLogs DEFAULT : true
 The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
 We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
@@ -128,7 +127,7 @@ Pick one from here: http://rdflicense.linkeddata.es/
                         <id>analysis</id>
                         <phase>process-resources</phase>
                         <goals>
-                            <goal>analysis</goal>
+                            <goal>metadata</goal>
                         </goals>
                     </execution>
                 </executions>

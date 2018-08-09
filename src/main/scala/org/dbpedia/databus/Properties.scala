@@ -89,7 +89,7 @@ trait Properties {
     * Plugin specific vars defined in parent module
     */
 
-  //TODO the absolutepath here is different for parent and modules the function
+  //TODO the absolute path here is different for parent and modules the function
   // read privatekeyfiles in hash and signs searches in the parent folder using ../
   // works for now, but could fail
   @Parameter var privateKeyFile: File = _
