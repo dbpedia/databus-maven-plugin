@@ -16,19 +16,20 @@ The plugin provides the following features:
    * [Table of Contents](#table-of-contents)
    * [Requirements](#requirements)
       * [Technical requirements](#technical-requirements)
-      * [Terminology](#terminology)
-      * [Quickstart](#quickstart)
-         * [Run an example](#run-an-example)
-         * [Create your own (how the example was created)](#create-your-own-how-the-example-was-created)
-            * [Step 1: Deploy archetypes into your local repository](#step-1-deploy-archetypes-into-your-local-repository)
-            * [Step 2:](#step-2)
+   * [Terminology](#terminology)
+   * [Quickstart](#quickstart)
+      * [Run an example](#run-an-example)
+      * [Create your own (how the example was created)](#create-your-own-how-the-example-was-created)
+         * [Step 1: Deploy archetypes into your local repository](#step-1-deploy-archetypes-into-your-local-repository)
+         * [Step 2:](#step-2)
+      * [Step 3](#step-3)
    * [License and Contributions](#license-and-contributions)
       * [Development rules](#development-rules)
    * [Phases](#phases)
    * [Usage](#usage)
    * [Documentation of available plugins](#documentation-of-available-plugins)
 
-<!-- Added by: shellmann, at: 2018-08-09T16:47+02:00 -->
+<!-- Added by: shellmann, at: 2018-08-09T17:02+02:00 -->
 
 <!--te-->
 # Requirements
@@ -46,18 +47,18 @@ Strict minimal requirements:
 * Maven 3 `sudo apt-get install maven`
 * Java 1.7
 
-## Terminology
+# Terminology
 * Dataset (handled as a maven module): we define a dataset as a collection of files with the same starting prefix ($artifactId). These files normally contain the same or similar kind of data with some variants, e.g. different languages (contenvariant) and formats
 * Bundle (handled as parent pom): a collection of datasets (modules) released together, mainly for practical purposes, e.g. they have the same metadata, i.e. publisher, version number, etc. 
 Note that the distinction between dataset and bundle is up to the creator, we only require that all files in a dataset start with the same prefix, i.e. the artifactid
 
-## Quickstart
+# Quickstart
 clone the repository
 ```
 git clone https://github.com/dbpedia/databus-maven-plugin.git
 cd databus-maven-plugin
 ```
-### Run an example 
+## Run an example 
 There are working examples in the example folder, which you can copy and adapt
 `cd example/animals`
 validate, parse, generate metadata and package
@@ -67,18 +68,18 @@ modify output folder
 `mvn databus:package-export -Ddatabus.packageDirectory="/var/www/mydata.org/datareleases"` 
 
 
-### Create your own (how the example was created)
+## Create your own (how the example was created)
 Maven provides a template called archetype. We provide two such templates:
 * `bundle-archetype` generates a bundle with one dataset (called add-one-dataset)
 * `add-one-dataset-archetype` adds a module to an existing bundle
-#### Step 1: Deploy archetypes into your local repository
+### Step 1: Deploy archetypes into your local repository
 ```
 cd archetype/existing-projects
 ./deploy.sh
 ```
 `deploy.sh` runs mvn install on bundle and bundle/add-one-dataset 
 
-#### Step 2:
+### Step 2:
 configure -DgroupId -DartifactId -Dversion
 ```
 mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus \
@@ -113,7 +114,8 @@ start editing the pom.xml in animals and the subfolders
 remove the example files under src/main/databus/input
 copy your data in the modules/subfolders into src/main/databus/input
 file names need to start with the artifactId 
-
+## Step 3
+`mvn databus:metadata databus:package-export`
 
 
 # License and Contributions
