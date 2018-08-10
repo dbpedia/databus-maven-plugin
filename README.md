@@ -22,14 +22,14 @@ The plugin provides the following features:
       * [Create your own (how the example was created)](#create-your-own-how-the-example-was-created)
          * [Step 1: Deploy archetypes into your local repository](#step-1-deploy-archetypes-into-your-local-repository)
          * [Step 2:](#step-2)
-      * [Step 3](#step-3)
+         * [Step 3](#step-3)
    * [License and Contributions](#license-and-contributions)
       * [Development rules](#development-rules)
    * [Phases](#phases)
    * [Usage](#usage)
    * [Documentation of available plugins](#documentation-of-available-plugins)
 
-<!-- Added by: shellmann, at: 2018-08-09T17:02+02:00 -->
+<!-- Added by: shellmann, at: 2018-08-10T13:32+02:00 -->
 
 <!--te-->
 # Requirements
@@ -83,7 +83,7 @@ cd archetype/existing-projects
 configure -DgroupId -DartifactId -Dversion
 ```
 mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus \
-	-DgroupId=org.example -DartifactId="animals" -Dversion="1.0.0" -DinteractiveMode=false`
+	-DgroupId=org.example -DartifactId="animals" -Dversion="1.0.0" -DinteractiveMode=false
 ```
 
 go into the bundle
@@ -98,10 +98,9 @@ mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=add-one-da
 
 HOTFIX: adjust mammals/pom.xml and fix the <parent>
 (we will try to create an archetype that does it automatically in the future)
-```
-sed -i "s|<artifactId>bundle</artifactId>|<artifactId>animals</artifactId>|" mammals/pom.xml
-sed -i "s|<groupId>org.dbpedia.databus</groupId>|<groupId>org.example</groupId>|" mammals/pom.xml
-```
+replace `<artifactId>bundle</artifactId>` with `<artifactId>animals</artifactId>` 
+replace `<groupId>org.dbpedia.databus</groupId>` with `<groupId>org.example</groupId>` 
+
 
 add as many other datasets in the same way
 (optional) remove the example dataset folder and the module
@@ -114,7 +113,7 @@ start editing the pom.xml in animals and the subfolders
 remove the example files under src/main/databus/input
 copy your data in the modules/subfolders into src/main/databus/input
 file names need to start with the artifactId 
-## Step 3
+### Step 3
 `mvn databus:metadata databus:package-export`
 
 
@@ -213,15 +212,15 @@ Version number x.y.z, etc.
 ```
 
 
-#### Generate Resources, Goal analysis
-`mvn databus:analysis`
+#### prepare-package, Goal metadata
+`mvn databus:metadata`
 
 ```
 <execution>
-	<id>analysis</id>
-	<phase>process-resources</phase>
+	<id>metadata</id>
+	<phase>prepare-package</phase>
 	<goals>
-		<goal>analysis</goal>
+		<goal>metadata</goal>
 	</goals>
 </execution>
 ```
