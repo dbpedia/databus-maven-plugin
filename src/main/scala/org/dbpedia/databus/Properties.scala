@@ -127,6 +127,10 @@ trait Properties {
     new File(getParselogDirectory, "/" + finalName + "_parselog.ttl")
   }
 
+  def getFeedFile(): File = {
+    new File(getFeedDirectory,"/"+ finalName + "_feed.xml")
+  }
+
   def getDataIdDirectory: File = {
     create(new File(pluginDirectory, "/dataid"))
   }

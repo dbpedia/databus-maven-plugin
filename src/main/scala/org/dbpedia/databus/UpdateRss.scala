@@ -25,12 +25,11 @@ import java.net.URL
 import java.nio.file.{Path, Paths}
 import java.util
 
-import collection.JavaConversions._
 import com.rometools.rome.feed.synd._
 import com.rometools.rome.io.{SyndFeedInput, SyndFeedOutput}
+
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-import org.jdom2.Element
 
 import scala.collection.convert.decorateAll._
 
@@ -76,7 +75,7 @@ class UpdateRss extends AbstractMojo with Properties {
         }
       }
 
-      // useOldFeed from file
+      // use oldFeed from file
       // TODO use from file only as init
     } else {
       try {
@@ -89,16 +88,13 @@ class UpdateRss extends AbstractMojo with Properties {
       }
     }
 
-    // the feedfile, where output is written
-    var newFeedFile: File = new File(getFeedDirectory, "/feed.xml")
-
     // create the new entry
     var entry: SyndEntry = new SyndEntryImpl()
     var title = finalName
     entry.setTitle(finalName)
     // path to dataid
-    val dataidPath: Path = Paths.get(getDataIdDirectory + "/" + artifactId + "-" + version + "-dataid.ttl")
-    val feedPath: Path = Paths.get(mavenTargetDirectory + "/" + artifactId + "/")
+    val dataidPath: Path = Paths.get(getDataIdFile().toString)
+    val feedPath: Path = Paths.get(getFeedDirectory.toString)
     val relative = feedPath.relativize(dataidPath)
     entry.setLink(relative.toString)
 
@@ -116,7 +112,7 @@ class UpdateRss extends AbstractMojo with Properties {
 
       // check if already included, otherwise add entry
       oldFeed.getEntries.asScala.find(_.getTitle.contentEquals(title)) match {
-        case Some(titleMatch) => getLog.info(s"${title} already in feed")
+        case Some(titleMatch) => getLog.info(s"$title already in feed")
         case None => newFeed.getEntries.add(entry)
       }
 
@@ -140,7 +136,7 @@ class UpdateRss extends AbstractMojo with Properties {
       newFeed.setCategories(categories)
 
       // create the entrylist and connect with feed
-      var entries: util.List[SyndEntry] = newFeed.getEntries()
+      var entries: util.List[SyndEntry] = newFeed.getEntries
       entries.add(entry)
       newFeed.setEntries(entries)
 
@@ -152,13 +148,13 @@ class UpdateRss extends AbstractMojo with Properties {
     var tmpFeed:Writer = new StringWriter()
     output.output(newFeed,tmpFeed)
     newFeed = input.build(new StringReader(tmpFeed.toString))
-    output.output(newFeed, new FileWriter(newFeedFile))
+    output.output(newFeed, new FileWriter(getFeedFile()))
   }
 
   // returns old feed from feedDirectory if already exists
   def fromFeedDirectory() : SyndFeed = {
     val input = new SyndFeedInput
-    var oldReleaseFeedFile: File = new File(getFeedDirectory+"/feed.xml")
+    var oldReleaseFeedFile: File = getFeedFile()
     if (oldReleaseFeedFile.exists()) {
       return input.build(oldReleaseFeedFile)
     } else {
