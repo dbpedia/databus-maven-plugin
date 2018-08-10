@@ -87,7 +87,7 @@ trait Properties {
   @Parameter var dataIdDirectory: File = _
   @Parameter var parseLogDirectory: File = _
   @Parameter var feedDirectory: File = _
-
+  @Parameter var feedFrom: String = ""
 
   /**
     * Plugin specific vars defined in parent module

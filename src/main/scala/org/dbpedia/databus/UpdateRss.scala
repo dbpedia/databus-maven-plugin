@@ -30,6 +30,9 @@ import com.rometools.rome.feed.synd._
 import com.rometools.rome.io.{SyndFeedInput, SyndFeedOutput}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
+import org.jdom2.Element
+
+import scala.collection.convert.decorateAll._
 
 
 /**
@@ -58,10 +61,34 @@ class UpdateRss extends AbstractMojo with Properties {
 
     // TODO make this configurable
     // TODO this can also be a weburl
-    var oldReleaseFeedFile = new File("/dev/null/feed.xml")
     var oldFeed: SyndFeed = null
-    if (oldReleaseFeedFile.exists()) {
-      oldFeed = input.build(oldReleaseFeedFile)
+    // use oldFeed from feedDirectory
+    if( feedFrom.contentEquals("")) {
+      oldFeed = fromFeedDirectory()
+
+      // use oldFeed from url
+      // TODO use form url only as init
+    } else if ( feedFrom.startsWith("http://")) {
+      try {
+        oldFeed = input.build(new InputStreamReader(new URL(feedFrom).openStream))
+      } catch {
+        case e: Exception => {
+          getLog.info("old feed not found")
+          oldFeed = fromFeedDirectory()
+        }
+      }
+
+      // useOldFeed from file
+      // TODO use from file only as init
+    } else {
+      try {
+        oldFeed = input.build(new File(feedFrom))
+      } catch {
+        case fne: FileNotFoundException => {
+          getLog.info("old feed not found")
+          oldFeed = fromFeedDirectory()
+        }
+      }
     }
 
     // the feedfile, where output is written
@@ -76,9 +103,11 @@ class UpdateRss extends AbstractMojo with Properties {
     val feedPath: Path = Paths.get(mavenTargetDirectory + "/" + artifactId + "/")
     val relative = feedPath.relativize(dataidPath)
     entry.setLink(relative.toString)
+
+    // published date
     entry.setPublishedDate(new java.text.SimpleDateFormat("yyyy-MM-dd").parse(modifiedDate))
 
-    // todo changelog file ?
+    // Todo changelog
     var description: SyndContent = new SyndContentImpl()
     description.setType("text/plain")
     description.setValue("TODO data from changelog")
@@ -86,22 +115,12 @@ class UpdateRss extends AbstractMojo with Properties {
 
     if (oldFeed != null) {
       newFeed = oldFeed
-      // check if already included
-      // todo check if criteria after implementing
-      var hasEntry = false
-      // TODO implement the scala way
-      for (syndentry: SyndEntry <- oldFeed.getEntries()) {
-        if (syndentry.getTitle.contentEquals(title)) {
-          getLog.info(s"${title} already in feed")
-        }
+
+      // check if already included, otherwise add entry
+      oldFeed.getEntries.asScala.find(_.getTitle.contentEquals(title)) match {
+        case Some(titleMatch) => getLog.info(s"${title} already in feed")
+        case None => newFeed.getEntries.add(entry)
       }
-
-      // add new Entry
-      if (!hasEntry) {
-        newFeed.getEntries.add(entry)
-      }
-
-
 
       // generate new feed
     } else {
@@ -111,11 +130,11 @@ class UpdateRss extends AbstractMojo with Properties {
       newFeed.setFeedType(feedType)
       newFeed.setAuthor(maintainer.toString)
       newFeed.setDescription(datasetDescription)
+      // TODO copyright
       newFeed.setCopyright("Copyright TODO")
-      // TODO which link
+      // TODO channel link
       newFeed.setLink("path/to/dataid_catalog.ttl")
-
-      // todo categories
+      // Todo categories
       var categories: util.ArrayList[SyndCategory] = new util.ArrayList[SyndCategory]()
       var cat = new SyndCategoryImpl()
       cat.setName("Databus and TODO")
@@ -124,16 +143,28 @@ class UpdateRss extends AbstractMojo with Properties {
 
       // create the entrylist and connect with feed
       var entries: util.List[SyndEntry] = newFeed.getEntries()
+      entries.add(entry)
       newFeed.setEntries(entries)
 
-
-      entries.add(entry)
     }
 
     // write
+    // tmpFeed workaround to add new items/seq/li/@resource on the first feed write
     val output = new SyndFeedOutput
+    var tmpFeed:Writer = new StringWriter()
+    output.output(newFeed,tmpFeed)
+    newFeed = input.build(new StringReader(tmpFeed.toString))
     output.output(newFeed, new FileWriter(newFeedFile))
+  }
 
-
+  // returns old feed from feedDirectory if already exists
+  def fromFeedDirectory() : SyndFeed = {
+    val input = new SyndFeedInput
+    var oldReleaseFeedFile: File = new File(feedDirectory+"/feed.xml")
+    if (oldReleaseFeedFile.exists()) {
+      return input.build(oldReleaseFeedFile)
+    } else {
+      return null
+    }
   }
 }
