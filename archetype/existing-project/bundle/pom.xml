@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -53,7 +54,7 @@ SECURITY NOTICE:
         -->
         <!--<databus.privateKeyFile>${user.home}/.m2/private_key.der</databus.privateKeyFile>-->
         <databus.privateKeyFile>private_key_dev_dummy.der</databus.privateKeyFile>
-        
+
         <!--maintainer
 The maintainer of the data release, normally the person to contact, often the same as publisher
         -->
@@ -66,7 +67,7 @@ Pick one from here: http://rdflicense.linkeddata.es/
         <databus.issuedDate>2018-08-01</databus.issuedDate>
         <!--not clear if needed, read from file at the moment-->
         <databus.modifiedDate>2018-08-03</databus.modifiedDate>
-        
+
 
         <!--publisher
 refers to the WebID that does the publication on the web and on the databus
@@ -74,7 +75,7 @@ This one is matched against the private key file (next option)
 Please read on https://github.com/dbpedia/webid how to create such file
 We include a dev-dummy webid file here, please don't use it for publishing, use your own
 -->
-        
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!--dataDependencyDirectory
 NOT IMPLEMENTED YET - This directory will be used to store any files downloaded from the databus as input for your tool
@@ -111,7 +112,7 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                             <goal>validate</goal>
                         </goals>
                     </execution>
-                     <execution>
+                    <execution>
                         <id>test-data</id>
                         <phase>test</phase>
                         <goals>
@@ -142,6 +143,13 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
             We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
                      -->
                     <includeParseLogs>true</includeParseLogs>
+
+                    <!-- feedFrom
+                        existing feed file, feed url, or empty
+                        if empty: creates the channel based on the pom properties and use old feed from feedDirectory/feed.xml if exists
+                        TODO add property above
+                     -->
+                    <feedFrom></feedFrom>
                     <dataInputDirectory>${databus.dataInputDirectory}</dataInputDirectory>
                     <packageDirectory>${databus.packageDirectory}</packageDirectory>
                     <bundle>${databus.bundle}</bundle>
@@ -153,8 +161,6 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
 
                     <issuedDate>${databus.issuedDate}</issuedDate>
                     <modifiedDate>${databus.modifiedDate}</modifiedDate>
-
-
 
                 </configuration>
             </plugin>

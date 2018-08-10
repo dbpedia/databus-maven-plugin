@@ -87,6 +87,7 @@ trait Properties {
 
   @Parameter var bundle: String = ""
   @Parameter var downloadUrlPath: URL = _
+  @Parameter var feedFrom: String = ""
 
 
   /**
