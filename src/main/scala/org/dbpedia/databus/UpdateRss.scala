@@ -158,7 +158,7 @@ class UpdateRss extends AbstractMojo with Properties {
   // returns old feed from feedDirectory if already exists
   def fromFeedDirectory() : SyndFeed = {
     val input = new SyndFeedInput
-    var oldReleaseFeedFile: File = new File(feedDirectory+"/feed.xml")
+    var oldReleaseFeedFile: File = new File(getFeedDirectory+"/feed.xml")
     if (oldReleaseFeedFile.exists()) {
       return input.build(oldReleaseFeedFile)
     } else {
