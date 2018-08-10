@@ -47,15 +47,16 @@ object Hash {
     */
   def computeHash(file: File, bufferSize: Integer): String = {
     val buffer = new Array[Byte](bufferSize)
-    val md5 = MessageDigest.getInstance("MD5")
+    //val md5 = MessageDigest.getInstance("MD5")
+    val sha256 = MessageDigest.getInstance("SHA-256")
 
-    val dis = new DigestInputStream(new FileInputStream(file), md5)
+    val dis = new DigestInputStream(new FileInputStream(file), sha256)
     try {
       while(dis.read(buffer) != -1) {}
     } finally {
       dis.close()
     }
-    md5.digest.map("%02x".format(_)).mkString
+    sha256.digest.map("%02x".format(_)).mkString
   }
 
 }

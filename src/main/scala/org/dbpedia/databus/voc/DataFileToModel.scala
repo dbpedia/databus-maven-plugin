@@ -104,7 +104,7 @@ object DataFileToModel {
 
 
     // specific info about the file
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "md5"), model.createLiteral(datafile.md5))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "sha256sum"), model.createLiteral(datafile.sha256sum))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "signature"), model.createLiteral(datafile.signatureBase64))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "preview"), model.createLiteral(datafile.preview))
     // todo add uncompressedByteSize if possible

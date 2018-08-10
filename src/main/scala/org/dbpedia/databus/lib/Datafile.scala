@@ -50,7 +50,7 @@ class Datafile private(datafile: File) {
   var mimetype: Format = _
   var fileExtension: String = ""
 
-  var md5: String = ""
+  var sha256sum: String = ""
   var bytes: Long = _
 
   // compression option
@@ -91,7 +91,7 @@ class Datafile private(datafile: File) {
   }
 
   def updateMD5(): Datafile = {
-    md5 = Hash.computeHash(datafile)
+    sha256sum = Hash.computeHash(datafile)
     this
   }
 
@@ -159,7 +159,7 @@ class Datafile private(datafile: File) {
 
   override def toString
 
-  = s"Datafile(md5=$md5\nbytes=$bytes\nisArchive=$isArchive\nisCompressed=$isCompressed\ncompressionVariant=$compressionVariant\nsignatureBytes=$signatureBytes\nsignatureBase64=$signatureBase64\nverified=$verified\n})"
+  = s"Datafile(sha256sum=$sha256sum\nbytes=$bytes\nisArchive=$isArchive\nisCompressed=$isCompressed\ncompressionVariant=$compressionVariant\nsignatureBytes=$signatureBytes\nsignatureBase64=$signatureBase64\nverified=$verified\n})"
 }
 
 object Datafile {
