@@ -58,32 +58,21 @@ class PrepareMetadata extends AbstractMojo with Properties {
     var dataIdCollect: Model = ModelFactory.createDefaultModel
 
 
-    // val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
 
     getLog.info(s"looking for data files in: ${dataInputDirectory.getCanonicalPath}")
     getListOfDataFiles().foreach(datafile => {
       processFile(datafile, dataIdCollect)
     })
 
-    // processing each module
-    // moduleDirectories.foreach(moduleDir => {
-    // getLog.info(s"reading from module $moduleDir")
-    // processing all file per module
 
-    //})
 
     // write the model to target
     if(!dataIdCollect.isEmpty) {
       val datasetResource = dataIdCollect.createResource( s"#${finalName}")
       datasetResource.addProperty(dataIdCollect.createProperty("todonote"), "we are still refactoring code for dataid creation, much more information will be available at this resource later")
-
-
-
       var db = getDataIdFile()
-      db.getParentFile.mkdirs()
       dataIdCollect.write(new FileWriter(db), "turtle")
     }
-
   }
 
   def processFile(datafile: File, dataIdCollect: Model): Unit = {
@@ -93,7 +82,7 @@ class PrepareMetadata extends AbstractMojo with Properties {
 
 
     df
-      .updateMD5()
+      .updateSHA256sum()
       .updateBytes()
       .updateSignature(privateKey)
 

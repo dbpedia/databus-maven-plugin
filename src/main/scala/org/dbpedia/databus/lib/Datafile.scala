@@ -68,6 +68,8 @@ class Datafile private(datafile: File) {
     datafile.getName
   }
 
+
+
   def toModel( props: Properties): Model = {
     DataFileToModel.datafile2Model(this, datafile, props)
   }
@@ -90,7 +92,7 @@ class Datafile private(datafile: File) {
     this
   }
 
-  def updateMD5(): Datafile = {
+  def updateSHA256sum(): Datafile = {
     sha256sum = Hash.computeHash(datafile)
     this
   }
@@ -171,15 +173,12 @@ object Datafile {
     * @param datafile
     * @return
     */
-  //todo add exception to signature
   def init(datafile: File): Datafile = {
 
     if (!Files.exists(datafile.toPath)) {
       throw new FileNotFoundException("File not found: " + datafile)
     }
     var df: Datafile = new Datafile(datafile)
-
-
 
     // detect compression
     var comp = Compression.detectCompression(datafile)

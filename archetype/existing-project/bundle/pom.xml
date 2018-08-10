@@ -16,17 +16,27 @@
         <!--dataDirectory DEFAULT: src/main/databus/input
 * input folder for data
 * copy/move all your datafiles in the respective modules
-* all files have to start with the $artifactId of the module, i.e. src/main/databus/input/${artifactId}_en.nt.bz2
+* all files have to start with the $artifactId of the module, i.e. src/main/databus/input/$artifactId_en.nt.bz2
 
 -->
         <databus.dataInputDirectory>src/main/databus/input</databus.dataInputDirectory>
+		<!-- the name of the bundle, used for packageing -->
+		<databus.bundle>generic</databus.bundle>
 
-
-        <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package
+        <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
 * all files are copied into this directory where mvn databus:package-export is run
 -->
-        <databus.packageDirectory>${session.executionRootDirectory}/target/databus/package</databus.packageDirectory>
+        <databus.packageDirectory>${session.executionRootDirectory}/target/databus/package/${databus.bundle}</databus.packageDirectory>
+        
+         <!-- downloadUrlPath 
+Configure downloadUrlPath, where the dataset will be deployed:
+DBpedia will publish 4 more bundles with dozens of artifacts and new versions at regular intervals, our downloadurl looks like this:
+<databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
+We recommend to do the same, as you can add more bundles and datasets later.
 
+-->
+		<databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
+        
         <databus.publisher>http://kurzum.net/dev-dummy.ttl#this</databus.publisher>
         <!--privateKeyFile
 The private key file that is matched against the publisher WebID, see the tutorial suggested there.
@@ -52,9 +62,9 @@ The maintainer of the data release, normally the person to contact, often the sa
 Pick one from here: http://rdflicense.linkeddata.es/
         -->
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</databus.license>
-        <!--not clear if needed-->
+        <!--not clear if needed, using today at the moment-->
         <databus.issuedDate>2018-08-01</databus.issuedDate>
-        <!--not clear if needed-->
+        <!--not clear if needed, read from file at the moment-->
         <databus.modifiedDate>2018-08-03</databus.modifiedDate>
         
 
@@ -131,22 +141,11 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
             The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
             We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
                      -->
-                    <parseLogDirectory>${project.build.directory}/databus/parselogs</parseLogDirectory>
                     <includeParseLogs>true</includeParseLogs>
-
-                    <!--dataIdDirectory DEFAULT: <databus.pluginDirectory>/dataid
-            the directory where the dataids and other metadata are written
-                    -->
-                    <dataIdDirectory>${project.build.directory}/databus/dataid</dataIdDirectory>
-
-                    <!--dataIdDirectory DEFAULT: ${project.build.directory}/databus/feed
-            the directory where the rss feeds are written
-                    -->
-                    <feedDirectory>${project.build.directory}/databus/feed</feedDirectory>
-
-
                     <dataInputDirectory>${databus.dataInputDirectory}</dataInputDirectory>
                     <packageDirectory>${databus.packageDirectory}</packageDirectory>
+                    <bundle>${databus.bundle}</bundle>
+                    <downloadUrlPath>${databus.downloadUrlPath}</downloadUrlPath>
                     <publisher>${databus.publisher}</publisher>
                     <maintainer>${databus.maintainer}</maintainer>
                     <license>${databus.license}</license>

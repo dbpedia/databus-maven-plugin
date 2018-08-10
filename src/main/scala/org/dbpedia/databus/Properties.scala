@@ -84,9 +84,9 @@ trait Properties {
 
   @Parameter var pluginDirectory: File = _
   @Parameter var includeParseLogs: Boolean = true
-  @Parameter var dataIdDirectory: File = _
-  @Parameter var parseLogDirectory: File = _
-  @Parameter var feedDirectory: File = _
+
+  @Parameter var bundle: String = ""
+  @Parameter var downloadUrlPath: URL = _
 
 
   /**
@@ -119,19 +119,43 @@ trait Properties {
   }
 
   def getDataIdFile(): File = {
-    new File(dataIdDirectory, "/" + artifactId + "-" + version + "-dataid.ttl")
+    new File(getDataIdDirectory, "/" + finalName + "_dataid.ttl")
   }
 
   def getParseLogFile(): File = {
-    new File(parseLogDirectory, "/" + artifactId + "-" + version + "-parselog.ttl")
+    new File(getParselogDirectory, "/" + finalName + "_parselog.ttl")
   }
 
-  def getAndCreatePackageDirectory():File = {
-    val d = new File(packageDirectory, "/" + artifactId + "/" + version)
-    d.mkdirs()
-    d
+  def getDataIdDirectory: File = {
+    create(new File(pluginDirectory, "/dataid"))
   }
 
+  def getParselogDirectory: File = {
+    create(new File(pluginDirectory, "/parselog"))
+  }
+
+  def getFeedDirectory: File = {
+    create(new File(pluginDirectory, "/feed"))
+  }
+
+  def getPackageDirectory: File = {
+    create(new File(packageDirectory, "/" + artifactId + "/" + version))
+  }
+
+  def getDatafileFinal(datafile: File): File = {
+    new File(datafile.getParent, datafile.getName.replace(artifactId, finalName))
+  }
+
+  def getDatafilePackageTarget(datafile: File): File = {
+    new File(getPackageDirectory, getDatafileFinal(datafile).getName)
+  }
+
+  private def create(dir: File): File = {
+    if (!dir.exists()) {
+      dir.mkdirs()
+    }
+    dir
+  }
 
 
   /**

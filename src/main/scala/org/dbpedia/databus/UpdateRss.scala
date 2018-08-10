@@ -51,8 +51,6 @@ class UpdateRss extends AbstractMojo with Properties {
       return
     }
 
-    feedDirectory.mkdirs()
-
     val input = new SyndFeedInput
     var newFeed: SyndFeed = new SyndFeedImpl()
 
@@ -65,14 +63,14 @@ class UpdateRss extends AbstractMojo with Properties {
     }
 
     // the feedfile, where output is written
-    var newFeedFile: File = new File(feedDirectory + "/feed.xml")
+    var newFeedFile: File = new File(getFeedDirectory, "/feed.xml")
 
     // create the new entry
     var entry: SyndEntry = new SyndEntryImpl()
     var title = finalName
     entry.setTitle(finalName)
     // path to dataid
-    val dataidPath: Path = Paths.get(dataIdDirectory + "/" + artifactId + "-" + version + "-dataid.ttl")
+    val dataidPath: Path = Paths.get(getDataIdDirectory + "/" + artifactId + "-" + version + "-dataid.ttl")
     val feedPath: Path = Paths.get(mavenTargetDirectory + "/" + artifactId + "/")
     val relative = feedPath.relativize(dataidPath)
     entry.setLink(relative.toString)

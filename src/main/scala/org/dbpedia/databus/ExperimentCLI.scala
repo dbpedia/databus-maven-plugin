@@ -40,7 +40,7 @@ object ExperimentCLI {
 
   def main(args: Array[String]): Unit = {
 
-    val fileurl = new File("mammals-1.0.0-dataid.ttl").toURI.toString
+    val fileurl = new File("mammals-1.0.0_dataid.ttl").toURI.toString
 
 
     var dataIdCollect: Model = ModelFactory.createDefaultModel
@@ -49,18 +49,18 @@ object ExperimentCLI {
 
 
     var m2: Model = ModelFactory.createDefaultModel
-    m2.read(fileurl,"mammals-1.0.0-dataid.ttl", "turtle")
-    m2.write(new FileWriter("test_keep_relpath1.ttl"), "turtle")
-    m2.write(new FileWriter("test_keep_relpath2.ttl"), "turtle", "")
+    m2.read(fileurl,"mammals-1.0.0_dataid.ttl", "turtle")
+    //m2.write(new FileWriter("test_keep_relpath1.ttl"), "turtle")
+    //m2.write(new FileWriter("test_keep_relpath2.ttl"), "turtle", "")
     m2.write(new FileWriter("test_keep_relpath3.ttl"), "turtle", ".")
-    m2.write(new FileWriter("test_keep_relpath4.ttl"), "turtle", "test_keep_relpath4.ttl#")
+    //m2.write(new FileWriter("test_keep_relpath4.ttl"), "turtle", "test_keep_relpath4.ttl#")
 
     var m3: Model = ModelFactory.createDefaultModel
     m3.read(fileurl, "turtle")
-    m3.write(new FileWriter("test_keep_relpath5.ttl"), "turtle")
-    m3.write(new FileWriter("test_keep_relpath6.ttl"), "turtle", "")
+    //m3.write(new FileWriter("test_keep_relpath5.ttl"), "turtle")
+    //m3.write(new FileWriter("test_keep_relpath6.ttl"), "turtle", "")
     m3.write(new FileWriter("test_keep_relpath7.ttl"), "turtle", ".")
-    m3.write(new FileWriter("test_keep_relpath8.ttl"), "turtle", "test_keep_relpath4.ttl#")
+    //m3.write(new FileWriter("test_keep_relpath8.ttl"), "turtle", "test_keep_relpath4.ttl#")
 
     System.exit(0)
 

@@ -24,8 +24,10 @@ import java.io.{File, FileWriter}
 import java.nio.file.{CopyOption, Files}
 import java.nio.file.StandardCopyOption.REPLACE_EXISTING
 
+import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
+import org.dbpedia.databus.lib.Hash
 
 @Mojo(name = "package-export", defaultPhase = LifecyclePhase.PACKAGE)
 class PackageExport extends AbstractMojo with Properties {
@@ -39,25 +41,40 @@ class PackageExport extends AbstractMojo with Properties {
       return
     }
 
-    // for each module
-
-    // copy all files to target
+    // for each module copy all files to target
     getListOfDataFiles().foreach(datafile => {
-      val target = new File(getAndCreatePackageDirectory(), "/" + datafile.getName).toPath
-      getLog.info(target+"")
-      getLog.info(target+"")
-      Files.copy(datafile.getAbsoluteFile.toPath, target, REPLACE_EXISTING)
+      if (getDatafilePackageTarget(datafile).exists()) {
+        if (!Hash.computeHash(getDatafilePackageTarget(datafile)).equals(Hash.computeHash(datafile))) {
+          Files.copy(datafile.getAbsoluteFile.toPath, getDatafilePackageTarget(datafile).toPath, REPLACE_EXISTING)
+          getLog.info("packaged: " + getDatafilePackageTarget(datafile).getName)
+        } else {
+          getLog.info("skipped (same file): " + getDatafilePackageTarget(datafile).getName)
+        }
+
+      } else {
+        Files.copy(datafile.getAbsoluteFile.toPath, getDatafilePackageTarget(datafile).toPath, REPLACE_EXISTING)
+        getLog.info("packaged: " + getDatafilePackageTarget(datafile).getName)
+      }
+
 
     })
 
-    //var dataIdCollect: Model = ModelFactory.createDefaultModel
-
-    if (includeParseLogs) {
-      //dataIdCollect.read(getDataIdFile().toString, "turtle","file:///"+getDataIdFile().toString)
+    //Parselogs
+    if (includeParseLogs && getParseLogFile().exists()) {
+      val ptarget = new File (getPackageDirectory,getParseLogFile().getName)
+      Files.copy(getParseLogFile().toPath, ptarget.toPath, REPLACE_EXISTING)
+      getLog.info("packaged: " + ptarget.getName)
     }
-    val dataIdPackageTarget = new File(getAndCreatePackageDirectory(), "/" + getDataIdFile().getName)
-    //dataIdCollect.write(new FileWriter(dataIdpackage),"turtle", "")
-    Files.copy(getDataIdFile().toPath,dataIdPackageTarget.toPath, REPLACE_EXISTING)
+
+    // dataId files
+    var dataIdCollect: Model = ModelFactory.createDefaultModel
+    dataIdCollect.read(getDataIdFile().toURI.toString, downloadUrlPath.toString+getDataIdFile.getName,"turtle")
+    val dataIdPackageTarget = new File(getPackageDirectory, "/" + getDataIdFile().getName)
+    dataIdCollect.write(new FileWriter(dataIdPackageTarget),"turtle")
+    //Files.copy(getDataIdFile().toPath, dataIdPackageTarget.toPath, REPLACE_EXISTING)
+    getLog.info("packaged: " + dataIdPackageTarget.getName)
+
+
     getLog.info(s"package written to ${packageDirectory}")
   }
 }

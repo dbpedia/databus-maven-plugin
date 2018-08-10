@@ -63,7 +63,7 @@ object DataFileToModel {
     val modifiedDate = new SimpleDateFormat("yyyy-MM-dd").format(file.lastModified())
 
     // main uri of dataid
-    val thisResource = model.createResource("#" + file.getName)
+    val thisResource = model.createResource("#" + properties.getDatafileFinal(file).getName)
 
     /**
       * linking to other constructs

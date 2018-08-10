@@ -42,7 +42,6 @@ class TestData extends AbstractMojo with Properties {
       return
     }
 
-    parseLogDirectory.mkdirs()
     val parseLogFileWriter = new FileWriter(getParseLogFile())
 
     getListOfDataFiles().foreach(datafile => {
@@ -51,10 +50,10 @@ class TestData extends AbstractMojo with Properties {
       var details = new StringBuilder
       val df: Datafile = Datafile.init(datafile)
       var model: Model = ModelFactory.createDefaultModel
-      val thisResource = model.createResource("#" + datafile.getName)
+      val thisResource = model.createResource("#" + getDatafileFinal(datafile).getName)
 
 
-      parseLog.append(s"${datafile.getName}\n${df.mimetype}\n")
+      parseLog.append(s"${getDatafileFinal(datafile).getName}\n${df.mimetype}\n")
 
       //val config = new ParserConfig
       //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_DATATYPES, false)

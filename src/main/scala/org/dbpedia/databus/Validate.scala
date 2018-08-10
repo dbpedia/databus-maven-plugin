@@ -53,13 +53,6 @@ class Validate extends AbstractMojo with Properties {
   override def execute(): Unit = {
 
     /**
-      * setup
-       */
-    // create targetDir
-    pluginDirectory.mkdirs()
-    dataIdDirectory.mkdirs()
-
-    /**
       * validation
       */
 
