@@ -22,11 +22,11 @@
 package org.dbpedia.databus.parse
 
 import java.io._
-import java.util.concurrent.TimeUnit
+
 import org.eclipse.rdf4j.rio._
+
 import scala.collection.mutable
 import scala.io.Source
-import com.codahale.metrics.{ConsoleReporter, Meter, MetricRegistry}
 
 
 /**
@@ -85,7 +85,7 @@ object LineBasedRioDebugParser {
       baos.close()
       // parsing of batch successfull
     } catch {
-      case e: RDFParseException => {
+      case e: Exception => {
         //parsing failed somewhere, reiterate
         for (line <- batch) {
           try {
