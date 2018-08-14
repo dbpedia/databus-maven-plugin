@@ -22,11 +22,8 @@ package org.dbpedia.databus.voc
 
 import java.io.File
 
-//import org.apache.jena.riot.RDFFormat
-//import org.eclipse.rdf4j.rio.RDFFormat
 
-class Format(val mimeType: String = "UNKNOWN", val lineBased: Boolean, val rio: org.eclipse.rdf4j.rio.RDFFormat, val jena: org.apache.jena.riot.RDFFormat) {
-
+class Format(val mimeType: String = "UNKNOWN", val lineBased: Boolean = false, val rio: org.eclipse.rdf4j.rio.RDFFormat, val jena: org.apache.jena.riot.RDFFormat) {
   override def toString = s"Format($mimeType)"
 }
 

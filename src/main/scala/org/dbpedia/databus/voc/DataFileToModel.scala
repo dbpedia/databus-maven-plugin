@@ -60,9 +60,8 @@ object DataFileToModel {
       model.setNsPrefix(key, value)
     }
 
-    val modifiedDate = new SimpleDateFormat("yyyy-MM-dd").format(file.lastModified())
 
-    // main uri of dataid
+    // main uri of dataid for SingleFile
     val thisResource = model.createResource("#" + properties.getDatafileFinal(file).getName)
 
     /**
@@ -98,6 +97,7 @@ object DataFileToModel {
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "hasVersion"), model.createLiteral(properties.version))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "issued"), model.createTypedLiteral(properties.issuedDate, model.getNsPrefixURI("xsd") + "date"))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "license"), model.createResource(properties.license))
+    val modifiedDate = new SimpleDateFormat("yyyy-MM-dd").format(file.lastModified())
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "modified"), model.createTypedLiteral(modifiedDate, model.getNsPrefixURI("xsd") + "date"))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "associatedAgent"), model.createResource(properties.maintainer.toString))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "publisher"), model.createResource(properties.maintainer.toString))
@@ -112,7 +112,7 @@ object DataFileToModel {
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "byteSize"), model.createLiteral(datafile.bytes.toString))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "dataid"), model.createLiteral(datafile.fileExtension))
     //todo handle correctly, if not default
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "downloadURL"), model.createResource(file.getName))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "downloadURL"), model.createResource(properties.getDatafileFinal(file).getName))
 
     // mediatype
     val mediaType = model.createResource(model.getNsPrefixURI("dataid-mt") + datafile.mimetype.getClass.getSimpleName.replace("$", ""))

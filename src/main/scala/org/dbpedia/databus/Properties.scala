@@ -22,6 +22,7 @@ package org.dbpedia.databus
 
 import java.io.File
 import java.net.URL
+import java.util.Date
 
 import org.apache.maven.plugins.annotations.Parameter
 
@@ -143,6 +144,10 @@ trait Properties {
     create(new File(pluginDirectory, "/feed"))
   }
 
+  /**
+    * below are functions for the package-export phase
+    */
+
   def getPackageDirectory: File = {
     create(new File(packageDirectory, "/" + artifactId + "/" + version))
   }
@@ -154,6 +159,8 @@ trait Properties {
   def getDatafilePackageTarget(datafile: File): File = {
     new File(getPackageDirectory, getDatafileFinal(datafile).getName)
   }
+
+
 
   private def create(dir: File): File = {
     if (!dir.exists()) {
