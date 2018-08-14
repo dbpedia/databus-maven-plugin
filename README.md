@@ -306,6 +306,37 @@ mvn install
 
 ```
 -->
+# Troubleshooting
+## BUILD FAILURE, no mojo-descriptors found (when using `mvn install` to install the databus-maven-plugin)
+This is most likely caused by using an old maven version (observed in version `3.0.5`)
+A workaround for this would be replacing:
+```
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+	<version>3.4</version>
+</plugin>
+```
+with
+```
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+	<version>3.4</version>
+        <configuration>
+		<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+	</configuration>
+        <executions>
+		<execution>
+		        <id>mojo-descriptor</id>
+		        <goals>
+                            <goal>descriptor</goal>
+                        </goals>
+		</execution>
+	</executions>
+</plugin>
 
+``` 
+in `databus-maven-plugin/pom.xml`
 
 
