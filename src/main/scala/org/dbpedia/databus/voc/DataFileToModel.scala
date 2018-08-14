@@ -38,6 +38,7 @@ object DataFileToModel {
     "dataid" -> "http://dataid.dbpedia.org/ns/core#",
     "dataid-ld" -> "http://dataid.dbpedia.org/ns/ld#",
     "dataid-mt" -> "http://dataid.dbpedia.org/ns/mt#",
+    "dataid-pl" -> "http://dataid.dbpedia.org/ns/pl#",
     "dmp" -> "http://dataid.dbpedia.org/ns/dmp#",
     "dc" -> "http://purl.org/dc/terms/",
     "dcat" -> "http://www.w3.org/ns/dcat#",

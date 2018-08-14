@@ -51,7 +51,7 @@ class TestData extends AbstractMojo with Properties {
       val df: Datafile = Datafile.init(datafile)
       var model: Model = ModelFactory.createDefaultModel
       val thisResource = model.createResource("#" + getDatafileFinal(datafile).getName)
-
+      val prefixParse ="http://dataid.dbpedia.org/ns/pl#"
 
       parseLog.append(s"${getDatafileFinal(datafile).getName}\n${df.mimetype}\n")
 
@@ -75,11 +75,14 @@ class TestData extends AbstractMojo with Properties {
             LineBasedRioDebugParser.parse(in, rdfParser)
           }
 
-          parseLog.append(s"Lines: $lines\nTriples: $all\nValid: $good\nErrors: ${bad.size}\n")
+          thisResource.addProperty(model.createProperty(prefixParse+"lines"), lines.toString);
+          thisResource.addProperty(model.createProperty(prefixParse+"triples"), all.toString);
+          thisResource.addProperty(model.createProperty(prefixParse+"valid"), good.toString);
+          thisResource.addProperty(model.createProperty(prefixParse+"errors"), bad.size.toString);
+          //parseLog.append(s"Lines: $lines\nTriples: $all\nValid: $good\nErrors: ${bad.size}\n")
 
           if (bad.size > 0) {
             details.append(s"\n#Error details for $datafile\n#${bad.mkString("\n#")}")
-
           }
         } else {
           rdfParser = Rio.createParser(df.mimetype.rio)
@@ -87,6 +90,7 @@ class TestData extends AbstractMojo with Properties {
             RioOtherParser.parse(in, rdfParser)
           }
           parseLog.append(s"Success = $success\nErrors = $errors\n")
+
         }
       }
       else {
@@ -94,7 +98,7 @@ class TestData extends AbstractMojo with Properties {
       }
 
       // parselog
-      thisResource.addProperty(model.createProperty("parseLog"), parseLog.toString);
+      thisResource.addProperty(model.createProperty(prefixParse+"parselog"), parseLog.toString);
       model.write(parseLogFileWriter, "turtle")
       parseLogFileWriter.write(details.toString())
       getLog.info(parseLog)
