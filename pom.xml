@@ -12,8 +12,8 @@
         <encoding>UTF-8</encoding>
         <file.encoding>UTF-8</file.encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scala.version>2.11.12</scala.version>
-        <scala.compat.version>2.11</scala.compat.version>
+        <scala.version>2.12.6</scala.version>
+        <scala.compat.version>2.12</scala.compat.version>
         <!-- maven license plugin-->
         <license.inceptionYear>2018</license.inceptionYear>
         <license.organizationName>Sebastian Hellmann (on behalf of the DBpedia Association)</license.organizationName>

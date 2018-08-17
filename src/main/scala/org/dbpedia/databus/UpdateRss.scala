@@ -31,7 +31,7 @@ import com.rometools.rome.io.{SyndFeedInput, SyndFeedOutput}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 
-import scala.collection.convert.decorateAll._
+import scala.collection.JavaConverters._
 
 
 /**

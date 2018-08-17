@@ -29,8 +29,7 @@ import org.apache.jena.vocabulary.RDF
 import org.dbpedia.databus.Properties
 import org.dbpedia.databus.lib.Datafile
 
-import scala.collection.JavaConversions._
-
+import scala.collection.JavaConverters._
 
 object DataFileToModel {
 
@@ -81,7 +80,7 @@ object DataFileToModel {
 
 
     // label
-    for (label :String <- properties.labels) {
+    for (label :String <- properties.labels.asScala) {
       val split = label.split("@")
       thisResource.addProperty(
         model.getProperty(model.getNsPrefixURI("rdfs"), "label"),
