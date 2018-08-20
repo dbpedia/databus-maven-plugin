@@ -22,10 +22,6 @@ package org.dbpedia.databus
 
 import java.math.BigInteger
 
-/**
-  * Created by Markus Ackermann.
-  * No rights reserved.
-  */
 package object lib {
 
   case class RSAModulusAndExponent(modulus: BigInt, exponent: BigInt) {
