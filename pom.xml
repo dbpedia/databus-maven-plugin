@@ -218,23 +218,6 @@
                 </executions>
                 <configuration>
                     <recompileMode>incremental</recompileMode>
-                    <launchers>
-                        <launcher>
-                            <id>runner</id>
-                            <mainClass>org.dbpedia.databus.ids.Runner</mainClass>
-                            <jvmArgs>
-                                <jvmArg>-server</jvmArg>
-                                <jvmArg>-Xmx200G</jvmArg>
-                                <jvmArg>-XX:+UseConcMarkSweepGC</jvmArg>
-                                <jvmArg>-Dcom.sun.management.jmxremote=true</jvmArg>
-                                <jvmArg>-Dcom.sun.management.jmxremote.authenticate=false</jvmArg>
-                                <jvmArg>-Dcom.sun.management.jmxremote.ssl=false</jvmArg>
-                                <jvmArg>-Dcom.sun.management.jmxremote.port=9010</jvmArg>
-                                <jvmArg>-Dcom.sun.management.jmxremote.rmi.port=9011</jvmArg>
-                                <jvmArg>-Djava.rmi.server.hostname=localhost</jvmArg>
-                            </jvmArgs>
-                        </launcher>
-                    </launchers>
                 </configuration>
             </plugin>
             <plugin>
