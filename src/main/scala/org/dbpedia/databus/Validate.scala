@@ -20,15 +20,16 @@
  */
 package org.dbpedia.databus
 
-
-import java.security.interfaces.RSAPrivateCrtKey
+import org.dbpedia.databus.lib.{RSAModulusAndExponent, Sign}
 
 import org.apache.jena.rdf.model.{ModelFactory, NodeIterator, RDFNode}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-import org.dbpedia.databus.lib.{ Sign}
+import resource._
 
-import scala.collection.mutable
+import scala.collection.JavaConverters._
+
+import java.security.interfaces.RSAPrivateCrtKey
 
 
 /**
@@ -72,66 +73,71 @@ class Validate extends AbstractMojo with Properties {
     */
   def validateWebId(): Unit = {
 
+    getLog.info("Private Key File: " + privateKeyFile)
+
+    val modulusExponentFromFile = Sign.readPrivateKeyFile(privateKeyFile) match {
+
+      case rsaPrivateKey: RSAPrivateCrtKey => {
+        RSAModulusAndExponent(rsaPrivateKey.getModulus, rsaPrivateKey.getPublicExponent)
+      }
+
+      case otherKey => sys.error(s"Unexpected private key format: ${otherKey.getClass.getSimpleName}")
+    }
+
     /**
       * Read the webid
       */
-    val model = ModelFactory.createDefaultModel
-    model.read(maintainer.toString)
-    getLog.debug("Read " + model.size() + " triples from " + maintainer)
+    val webIdModel = ModelFactory.createDefaultModel
+    webIdModel.read(maintainer.toString)
+    getLog.debug("Read " + webIdModel.size() + " triples from " + maintainer)
 
 
-    val ni: NodeIterator = model.listObjectsOfProperty(model.getResource(maintainer.toString), model.getProperty("http://www.w3.org/ns/auth/cert#key"))
-    getLog.info("Private Key File: " + privateKeyFile)
-    //val fileHack: File = new File(privateKeyFile.getAbsolutePath.replace("", ""))
-    val privateKey = Sign.readPrivateKeyFile(privateKeyFile)
-    val privk: RSAPrivateCrtKey = privateKey.asInstanceOf[RSAPrivateCrtKey]
-    val modulusPrivkHex = privk.getModulus.toString(16)
-    val exponentPrivk = privk.getPublicExponent.toString()
+    val matchingKeyinWebId = managed(webIdModel.listObjectsOfProperty(webIdModel.getResource(maintainer.toString),
+      webIdModel.getProperty("http://www.w3.org/ns/auth/cert#key"))) apply { nodeIter =>
 
-    var matching:Boolean = false
-    // iterate all public keys from webid
-    while (ni.hasNext) {
-      var node: RDFNode = ni.next()
-      val exponentResource = model.listObjectsOfProperty(node.asResource(), model.getProperty("http://www.w3.org/ns/auth/cert#exponent")).next()
-      val exponentWebId = exponentResource.asLiteral().getLexicalForm
-      val modulusResource = model.listObjectsOfProperty(node.asResource(), model.getProperty("http://www.w3.org/ns/auth/cert#modulus")).next()
-      val modulusWebId = modulusResource.asLiteral().getLexicalForm
+      nodeIter.asScala find { certKey =>
 
-      // some log output
-      // TODO change to debug later
-      getLog.info("BlankNode: " + node + "")
-      getLog.info("Exponent (from webid): " + exponentWebId)
-      getLog.info("Exponent (from privk): " + exponentPrivk)
-      getLog.info("Modulus (from webid): " + modulusWebId.substring(0,30).toLowerCase+"...")
-      getLog.info("Modulus (from privk): " + modulusPrivkHex.substring(0,30)+"...")
+        val exponentOpt = Option(certKey.asResource().getProperty(
+          webIdModel.getProperty("http://www.w3.org/ns/auth/cert#exponent")))
+          .map(stmt => BigInt(stmt.getObject.asLiteral().getLexicalForm))
 
 
-      // mainly for debugging
-      if (exponentWebId.equalsIgnoreCase(exponentPrivk)) {
-        getLog.info("Exponents match")
-      } else {
-        getLog.error("Exponents do NOT match")
+        val modulusOpt = Option(certKey.asResource().getProperty(
+          webIdModel.getProperty("http://www.w3.org/ns/auth/cert#modulus")))
+          .map(stmt => BigInt(stmt.getObject.asLiteral.getLexicalForm, 16))
+
+        (exponentOpt, modulusOpt) match {
+
+          case (Some(exponent), Some(modulus)) => {
+
+            val modulusExponentFromWebId = RSAModulusAndExponent(modulus, exponent)
+
+            if(modulusExponentFromFile == modulusExponentFromWebId) {
+              getLog.info("Key with matching exponent and modulus found in WebID:\n" +
+                modulusExponentFromWebId.shortenedDescription)
+            } else {
+              getLog.debug("Ingoring key with differing exponent and modulus found in WebID:\n" +
+                modulusExponentFromWebId.shortenedDescription)
+            }
+
+            modulusExponentFromFile == modulusExponentFromWebId
+          }
+
+          case _ => {
+
+            getLog.warn("Malformed http://www.w3.org/ns/auth/cert#key resource in WebID")
+
+            false
+          }
+        }
       }
-
-      if (modulusWebId.equalsIgnoreCase(privk.getModulus.toString(16))) {
-        getLog.info("Moduli match")
-      } else {
-        getLog.error("Moduli do NOT match")
-      }
-
-      // the real condition
-      if (exponentWebId.equalsIgnoreCase(exponentPrivk) && modulusWebId.equalsIgnoreCase(privk.getModulus.toString(16))){
-        matching = true
-      }
-      //getLog.info("Modulus (from privk): " +  java.lang.Long.valueOf(privk.getModulus.toString,16))
     }
 
-    if (matching) {
+    if(matchingKeyinWebId.isDefined) {
       getLog.info("SUCCESS: Private Key validated against WebID")
     } else {
       getLog.error("FAILURE: Private Key and WebID do not match")
     }
-
   }
 
   def validateFileNames(): Unit = {
