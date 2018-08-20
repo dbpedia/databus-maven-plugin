@@ -55,7 +55,7 @@
         
         <databus.downloadUrlPath>http://akswnc7.informatik.uni-leipzig.de/data/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
         
-        <databus.publisher>https://termilion.github.io/webid.ttl#this</databus.publisher>
+        <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
         <!--privateKeyFile
 The private key file that is matched against the publisher WebID, see the tutorial suggested there.
 Note that Java/Scala only accepts DER/PKCS8 formatted files, so you might need to run:
@@ -75,11 +75,12 @@ SECURITY NOTICE:
         <!--maintainer
 The maintainer of the data release, normally the person to contact, often the same as publisher
         -->
-        <databus.maintainer>${databus.publisher}</databus.maintainer>
+        <databus.maintainer>https://termilion.github.io/webid.ttl#this</databus.maintainer>
         <!--license
 Pick one from here: http://rdflicense.linkeddata.es/
         -->
-        <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</databus.license>
+        <databus.license>http://purl.org/NET/rdflicense/cc-by3.0</databus.license>
+        
         <!--not clear if needed-->
         <databus.issuedDate>2018-08-07</databus.issuedDate>
         <!--not clear if needed-->
