@@ -108,7 +108,7 @@ class Datafile private(datafile: File) {
     * @return
     */
   private def updatePreview(lineCount: Int): Datafile = {
-
+    System.out.println("FILE"+this.datafile)
     val unshortenedPreview = for {
       inputStream <- getInputStream
       source <- managed(Source.fromInputStream(inputStream))
