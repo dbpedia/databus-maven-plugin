@@ -107,6 +107,8 @@ class Datafile private(datafile: File) {
     */
   private def updatePreview(lineCount: Int): Datafile = {
 
+
+
     val unshortenedPreview = for {
       inputStream <- getInputStream
       //source <- managed(Source.fromInputStream(inputStream))
@@ -144,6 +146,10 @@ class Datafile private(datafile: File) {
   def getInputStream(): ManagedResource[InputStream] = managed({
 
     val bis = betterfile.newInputStream.buffered
+    import java.io.InputStreamReader
+    val reader = new InputStreamReader(bis)
+    System.out.println("Encoding"+reader.getEncoding)
+
     if (isCompressed) {
       new CompressorStreamFactory()
         .createCompressorInputStream(compressionVariant, bis)
