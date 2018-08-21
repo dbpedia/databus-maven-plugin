@@ -24,7 +24,6 @@ package org.dbpedia.databus.lib
 import org.dbpedia.databus.Properties
 import org.dbpedia.databus.parse.LineBasedRioDebugParser
 import org.dbpedia.databus.voc.{ApplicationNTriples, DataFileToModel, Format, TextTurtle}
-
 import better.files.{File => BetterFile, ManagedResource => _, _}
 import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
 import org.apache.commons.compress.compressors.CompressorStreamFactory
@@ -32,8 +31,7 @@ import org.apache.jena.rdf.model.Model
 import org.eclipse.rdf4j.rio.Rio
 import resource._
 
-import scala.io.Source
-
+import scala.io.{Codec, Source}
 import java.io._
 import java.nio.file.Files
 import java.security.PrivateKey
@@ -108,10 +106,11 @@ class Datafile private(datafile: File) {
     * @return
     */
   private def updatePreview(lineCount: Int): Datafile = {
-    System.out.println("FILE"+this.datafile)
+
     val unshortenedPreview = for {
       inputStream <- getInputStream
-      source <- managed(Source.fromInputStream(inputStream))
+      //source <- managed(Source.fromInputStream(inputStream))
+      source <- managed(Source.fromInputStream(inputStream)(Codec.UTF8))
     } yield {
       source.getLines().take(lineCount).mkString("\n")
     }
