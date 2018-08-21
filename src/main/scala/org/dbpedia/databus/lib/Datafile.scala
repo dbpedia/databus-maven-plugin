@@ -144,7 +144,13 @@ class Datafile private(datafile: File) {
     * @return
     */
   def getInputStream(): ManagedResource[InputStream] = managed({
-    System.setProperty("file.encoding", "UTF-8");
+    import java.lang.reflect.Field
+    import java.nio.charset.Charset
+    System.setProperty("file.encoding", "UTF-8")
+    val charset = classOf[Charset].getDeclaredField("defaultCharset")
+    charset.setAccessible(true)
+    charset.set(null,null);
+
     val bis = betterfile.newInputStream.buffered
 
     val test = new FileInputStream(datafile)
