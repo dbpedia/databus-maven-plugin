@@ -49,11 +49,11 @@
         <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package
 * all files are copied into this directory where mvn databus:package-export is run
 -->
-		<databus.bundle>generic</databus.bundle>
+		<databus.bundle>generic-spark</databus.bundle>
 		
-        <databus.packageDirectory>${session.executionRootDirectory}/target/databus/package/${databus.bundle}</databus.packageDirectory>
+        <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${databus.bundle}</databus.packageDirectory>
         
-        <databus.downloadUrlPath>http://akswnc7.informatik.uni-leipzig.de/data/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
+        <databus.downloadUrlPath>https://downloads.dbpedia.org/repo/lts/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
         
         <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
         <!--privateKeyFile
@@ -70,7 +70,7 @@ SECURITY NOTICE:
 * The data channel you are about to create requires it to republish new versions there.
         -->
         <!--<databus.privateKeyFile>${user.home}/.m2/private_key.der</databus.privateKeyFile>-->
-        <databus.privateKeyFile>${user.home}/.m2/private_key.der</databus.privateKeyFile>
+        <databus.privateKeyFile>${user.home}/.m2/private_key_generic.der</databus.privateKeyFile>
         
         <!--maintainer
 The maintainer of the data release, normally the person to contact, often the same as publisher
