@@ -33,7 +33,6 @@ import org.eclipse.rdf4j.rio.Rio
 import resource._
 
 import scala.io.{Codec, Source}
-
 import java.io._
 import java.nio.file.Files
 import java.security.PrivateKey
