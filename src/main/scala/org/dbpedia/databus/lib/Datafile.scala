@@ -146,8 +146,10 @@ class Datafile private(datafile: File) {
   def getInputStream(): ManagedResource[InputStream] = managed({
 
     val bis = betterfile.newInputStream.buffered
+
+    val test = new FileInputStream(datafile)
     import java.io.InputStreamReader
-    val reader = new InputStreamReader(bis)
+    val reader = new InputStreamReader(test)
     System.out.println("Encoding"+reader.getEncoding)
 
     if (isCompressed) {
