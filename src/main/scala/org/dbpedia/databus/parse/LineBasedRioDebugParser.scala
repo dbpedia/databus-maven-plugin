@@ -22,11 +22,10 @@
 package org.dbpedia.databus.parse
 
 import java.io._
-
 import org.eclipse.rdf4j.rio._
 
 import scala.collection.mutable
-import scala.io.Source
+import scala.io.{Codec, Source}
 
 
 /**
@@ -43,7 +42,7 @@ object LineBasedRioDebugParser {
     var (lines, totalTriples, good, wrongTriples) = (0, 0, 0, new mutable.HashSet[String])
 
     var batch = new mutable.HashSet[String]
-    val it = Source.fromInputStream(in).getLines()
+    val it = Source.fromInputStream(in)(Codec.UTF8).getLines()
     var lc = 0
 
 

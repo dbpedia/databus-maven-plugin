@@ -32,7 +32,7 @@ import org.apache.jena.rdf.model.Model
 import org.eclipse.rdf4j.rio.Rio
 import resource._
 
-import scala.io.Source
+import scala.io.{Codec, Source}
 
 import java.io._
 import java.nio.file.Files
@@ -111,7 +111,7 @@ class Datafile private(datafile: File) {
     System.out.println("FILE"+this.datafile)
     val unshortenedPreview = for {
       inputStream <- getInputStream
-      source <- managed(Source.fromInputStream(inputStream))
+      source <- managed(Source.fromInputStream(inputStream)(Codec.UTF8))
     } yield {
       source.getLines().take(lineCount).mkString("\n")
     }
