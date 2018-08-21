@@ -144,7 +144,7 @@ class Datafile private(datafile: File) {
     * @return
     */
   def getInputStream(): ManagedResource[InputStream] = managed({
-
+    System.setProperty("file.encoding", "UTF-8");
     val bis = betterfile.newInputStream.buffered
 
     val test = new FileInputStream(datafile)
