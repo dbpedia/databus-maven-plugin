@@ -26,9 +26,6 @@ import org.dbpedia.databus.shared.RSAModulusAndExponent
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-import resource._
-
-import scala.collection.JavaConverters._
 
 import java.security.interfaces.RSAPrivateCrtKey
 
@@ -92,49 +89,9 @@ class Validate extends AbstractMojo with Properties {
     webIdModel.read(maintainer.toString)
     getLog.debug("Read " + webIdModel.size() + " triples from " + maintainer)
 
+    val matchingKeyInWebId = modulusExponentFromFile.matchAgainstWebId(webIdModel, maintainer.toString, Some(getLog))
 
-    val matchingKeyinWebId = managed(webIdModel.listObjectsOfProperty(webIdModel.getResource(maintainer.toString),
-      webIdModel.getProperty("http://www.w3.org/ns/auth/cert#key"))) apply { nodeIter =>
-
-      nodeIter.asScala find { certKey =>
-
-        val exponentOpt = Option(certKey.asResource().getProperty(
-          webIdModel.getProperty("http://www.w3.org/ns/auth/cert#exponent")))
-          .map(stmt => BigInt(stmt.getObject.asLiteral().getLexicalForm))
-
-
-        val modulusOpt = Option(certKey.asResource().getProperty(
-          webIdModel.getProperty("http://www.w3.org/ns/auth/cert#modulus")))
-          .map(stmt => BigInt(stmt.getObject.asLiteral.getLexicalForm, 16))
-
-        (exponentOpt, modulusOpt) match {
-
-          case (Some(exponent), Some(modulus)) => {
-
-            val modulusExponentFromWebId = RSAModulusAndExponent(modulus, exponent)
-
-            if(modulusExponentFromFile == modulusExponentFromWebId) {
-              getLog.info("Key with matching exponent and modulus found in WebID:\n" +
-                modulusExponentFromWebId.shortenedDescription)
-            } else {
-              getLog.debug("Ingoring key with differing exponent and modulus found in WebID:\n" +
-                modulusExponentFromWebId.shortenedDescription)
-            }
-
-            modulusExponentFromFile == modulusExponentFromWebId
-          }
-
-          case _ => {
-
-            getLog.warn("Malformed http://www.w3.org/ns/auth/cert#key resource in WebID")
-
-            false
-          }
-        }
-      }
-    }
-
-    if(matchingKeyinWebId.isDefined) {
+    if(matchingKeyInWebId.isDefined) {
       getLog.info("SUCCESS: Private Key validated against WebID")
     } else {
       getLog.error("FAILURE: Private Key and WebID do not match")
