@@ -21,6 +21,8 @@
 
 package org.dbpedia.databus.voc
 
+import org.dbpedia.databus.shared.rdf.vocab
+
 import java.io.File
 import java.text.SimpleDateFormat
 
@@ -55,11 +57,13 @@ object DataFileToModel {
 
 
   def datafile2Model(datafile: Datafile, file: File, properties: Properties): Model = {
-    var model: Model = ModelFactory.createDefaultModel
+    val model: Model = ModelFactory.createDefaultModel
     for ((key, value) <- prefixes) {
       model.setNsPrefix(key, value)
     }
 
+    val dataid = vocab.dataid.inModel(model)
+    val dcat = vocab.dcat.inModel(model)
 
     // main uri of dataid for SingleFile
     val thisResource = model.createResource("#" + properties.getDatafileFinal(file).getName)
@@ -69,14 +73,14 @@ object DataFileToModel {
       */
     val datasetResource = model.createResource( s"#${properties.finalName}")
 
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "isDistributionOf"),datasetResource)
-    datasetResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "distribution"),thisResource)
+    thisResource.addProperty(dataid.isDistributionOf,datasetResource)
+    datasetResource.addProperty(dcat.distribution,thisResource)
 
 
 
     //type properties
-    thisResource.addProperty(RDF.`type`, model.createResource(s"${model.getNsPrefixURI("dataid")}SingleFile"))
-    datasetResource.addProperty(RDF.`type`, model.createResource(s"${model.getNsPrefixURI("dataid")}Dataset"))
+    thisResource.addProperty(RDF.`type`, dataid.SingleFile)
+    datasetResource.addProperty(RDF.`type`, dataid.Dataset)
 
 
     // label
@@ -99,29 +103,28 @@ object DataFileToModel {
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "license"), model.createResource(properties.license))
     val modifiedDate = new SimpleDateFormat("yyyy-MM-dd").format(file.lastModified())
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "modified"), model.createTypedLiteral(modifiedDate, model.getNsPrefixURI("xsd") + "date"))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "associatedAgent"), model.createResource(properties.maintainer.toString))
+    thisResource.addProperty(dataid.associatedAgent, model.createResource(properties.maintainer.toString))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "publisher"), model.createResource(properties.maintainer.toString))
 
 
     // specific info about the file
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "sha256sum"), model.createLiteral(datafile.sha256sum))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "signature"), model.createLiteral(datafile.signatureBase64))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "preview"), model.createLiteral(datafile.preview))
+    thisResource.addProperty(dataid.sha256sum, model.createLiteral(datafile.sha256sum))
+    thisResource.addProperty(dataid.signature, model.createLiteral(datafile.signatureBase64))
+    thisResource.addProperty(dataid.preview, model.createLiteral(datafile.preview))
     // todo add uncompressedByteSize if possible
     //thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "uncompressedByteSize"), model.createLiteral(datafile.bytes.toString))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "byteSize"), model.createLiteral(datafile.bytes.toString))
+    thisResource.addProperty(dcat.byteSize, model.createLiteral(datafile.bytes.toString))
+    // todo review creation of this statement: the used property is not declared in dcat; looks like a slip of mind
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "dataid"), model.createLiteral(datafile.fileExtension))
     //todo handle correctly, if not default
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "downloadURL"), model.createResource(properties.getDatafileFinal(file).getName))
+    thisResource.addProperty(dcat.downloadURL, model.createResource(properties.getDatafileFinal(file).getName))
 
     // mediatype
     val mediaType = model.createResource(model.getNsPrefixURI("dataid-mt") + datafile.mimetype.getClass.getSimpleName.replace("$", ""))
     mediaType.addProperty(RDF.`type`, model.createResource(s"${model.getNsPrefixURI("dataid-mt")}MediaType"))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "mediaType"), mediaType)
-    mediaType.addProperty(model.getProperty(model.getNsPrefixURI("dataid"),
-      "mimetype"), datafile.mimetype.mimeType)
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"),
-      "compression"), datafile.compressionVariant)
+    thisResource.addProperty(dcat.mediaType, mediaType)
+    mediaType.addProperty(dataid.mimetype, datafile.mimetype.mimeType)
+    thisResource.addProperty(dataid.compression, datafile.compressionVariant)
 
 
     /*

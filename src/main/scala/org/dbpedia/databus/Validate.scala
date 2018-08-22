@@ -20,9 +20,10 @@
  */
 package org.dbpedia.databus
 
-import org.dbpedia.databus.lib.{RSAModulusAndExponent, Sign}
+import org.dbpedia.databus.lib.Sign
+import org.dbpedia.databus.shared.RSAModulusAndExponent
 
-import org.apache.jena.rdf.model.{ModelFactory, NodeIterator, RDFNode}
+import org.apache.jena.rdf.model.ModelFactory
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import resource._
