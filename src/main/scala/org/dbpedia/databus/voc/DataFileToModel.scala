@@ -115,7 +115,7 @@ object DataFileToModel {
     //thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "uncompressedByteSize"), model.createLiteral(datafile.bytes.toString))
     thisResource.addProperty(dcat.byteSize, model.createLiteral(datafile.bytes.toString))
     // todo review creation of this statement: the used property is not declared in dcat; looks like a slip of mind
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dcat"), "dataid"), model.createLiteral(datafile.fileExtension))
+    thisResource.addProperty(dcat.prop.dataid, model.createLiteral(datafile.fileExtension))
     //todo handle correctly, if not default
     thisResource.addProperty(dcat.downloadURL, model.createResource(properties.getDatafileFinal(file).getName))
 
