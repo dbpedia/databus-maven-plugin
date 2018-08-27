@@ -21,7 +21,7 @@
 package org.dbpedia.databus
 
 import org.dbpedia.databus.lib.Sign
-import org.dbpedia.databus.shared.RSAModulusAndExponent
+import org.dbpedia.databus.shared.authentification.RSAModulusAndExponent
 
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}

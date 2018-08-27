@@ -21,12 +21,14 @@
 
 package org.dbpedia.databus
 
-import java.io._
+import org.dbpedia.databus.lib.{Datafile, Sign}
 
+import com.typesafe.scalalogging.LazyLogging
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-import org.dbpedia.databus.lib.{Datafile, Sign}
+
+import java.io._
 
 
 /**
@@ -86,7 +88,7 @@ class PrepareMetadata extends AbstractMojo with Properties {
       .updateBytes()
       .updateSignature(privateKey)
 
-    var model = df.toModel(this)
+    val model = df.toModel(this)
     getLog.info(df.toString)
     dataIdCollect.add(model)
   }

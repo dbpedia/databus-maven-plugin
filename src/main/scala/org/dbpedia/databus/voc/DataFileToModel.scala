@@ -32,6 +32,7 @@ import org.dbpedia.databus.Properties
 import org.dbpedia.databus.lib.Datafile
 
 import scala.collection.JavaConverters._
+import scala.language.reflectiveCalls
 
 object DataFileToModel {
 

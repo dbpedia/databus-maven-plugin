@@ -23,6 +23,7 @@ package org.dbpedia.databus.lib
 
 import org.dbpedia.databus.Properties
 import org.dbpedia.databus.parse.LineBasedRioDebugParser
+import org.dbpedia.databus.shared.signing
 import org.dbpedia.databus.voc.{ApplicationNTriples, DataFileToModel, Format, TextTurtle}
 
 import better.files.{File => BetterFile, ManagedResource => _, _}
@@ -33,6 +34,7 @@ import org.eclipse.rdf4j.rio.Rio
 import resource._
 
 import scala.io.{Codec, Source}
+
 import java.io._
 import java.nio.file.Files
 import java.security.PrivateKey
@@ -92,7 +94,7 @@ class Datafile private(datafile: File) {
   }
 
   def updateSHA256sum(): Datafile = {
-    sha256sum = Hash.computeHash(datafile)
+    sha256sum = signing.sha256Hash(betterfile).asBytes.map("%02x" format _).mkString
     this
   }
 
@@ -128,10 +130,13 @@ class Datafile private(datafile: File) {
   }
 
   def updateSignature(privateKey: PrivateKey): Datafile = {
-    signatureBytes = Sign.sign(privateKey, datafile);
+    signatureBytes = signing.signFile(privateKey, betterfile)
+
     signatureBase64 = new String(Base64.getEncoder.encode(signatureBytes))
-    //verify
-    verified = Sign.verify(privateKey, datafile, signatureBytes)
+
+    val publicFromPrivate = Sign.publicKeyFromPrivateKey(privateKey)
+
+    verified = signing.verifyFile(publicFromPrivate, signatureBytes, betterfile)
     this
   }
 
@@ -158,9 +163,17 @@ class Datafile private(datafile: File) {
   })
 
 
-  override def toString
-
-  = s"Datafile(sha256sum=$sha256sum\nbytes=$bytes\nisArchive=$isArchive\nisCompressed=$isCompressed\ncompressionVariant=$compressionVariant\nsignatureBytes=$signatureBytes\nsignatureBase64=$signatureBase64\nverified=$verified\n})"
+  override def toString =
+    s"""
+       |Datafile(sha256sum=$sha256sum
+       |bytes=$bytes
+       |isArchive=$isArchive
+       |isCompressed=$isCompressed
+       |compressionVariant=$compressionVariant
+       |signatureBytes=${signatureBytes.map("%02X" format _).mkString}
+       |signatureBase64=$signatureBase64
+       |verified=$verified)
+     """.stripMargin
 }
 
 object Datafile {

@@ -20,14 +20,16 @@
  */
 package org.dbpedia.databus
 
-import java.io.{File, FileWriter}
-import java.nio.file.{CopyOption, Files}
-import java.nio.file.StandardCopyOption.REPLACE_EXISTING
+import org.dbpedia.databus.shared.signing
 
+import better.files._
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-import org.dbpedia.databus.lib.Hash
+
+import java.io.{File, FileWriter}
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption.REPLACE_EXISTING
 
 @Mojo(name = "package-export", defaultPhase = LifecyclePhase.PACKAGE)
 class PackageExport extends AbstractMojo with Properties {
@@ -43,8 +45,14 @@ class PackageExport extends AbstractMojo with Properties {
 
     // for each module copy all files to target
     getListOfDataFiles().foreach(datafile => {
+
       if (getDatafilePackageTarget(datafile).exists()) {
-        if (!Hash.computeHash(getDatafilePackageTarget(datafile)).equals(Hash.computeHash(datafile))) {
+
+        val targetHash = signing.sha256Hash(getDatafilePackageTarget(datafile).toScala)
+
+        val sourceHash = signing.sha256Hash(datafile.toScala)
+
+        if (targetHash == sourceHash) {
           Files.copy(datafile.getAbsoluteFile.toPath, getDatafilePackageTarget(datafile).toPath, REPLACE_EXISTING)
           getLog.info("packaged: " + getDatafilePackageTarget(datafile).getName)
         } else {
@@ -55,8 +63,6 @@ class PackageExport extends AbstractMojo with Properties {
         Files.copy(datafile.getAbsoluteFile.toPath, getDatafilePackageTarget(datafile).toPath, REPLACE_EXISTING)
         getLog.info("packaged: " + getDatafilePackageTarget(datafile).getName)
       }
-
-
     })
 
     //Parselogs
