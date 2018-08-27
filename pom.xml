@@ -149,7 +149,7 @@
         <repository>
             <id>archiva.internal</id>
             <name>Internal Release Repository</name>
-            <url>http://95.216.13.238:8081/repository/internal/</url>
+            <url>http://databus.dbpedia.org:8081/repository/internal</url>
         </repository>
     </repositories>
 
