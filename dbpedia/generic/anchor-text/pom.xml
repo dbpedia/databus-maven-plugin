@@ -5,13 +5,13 @@
     <parent>
         <artifactId>bundle</artifactId>
         <groupId>org.dbpedia.databus</groupId>
-        <version>2018.08.15</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>skos-categories</artifactId>
+    <artifactId>anchor-text</artifactId>
     <groupId>org.dbpedia</groupId>
     <packaging>jar</packaging>
-    <version>2018.08.15</version>
+    <version>1.0.0</version>
 
 
     <!--This is a module, it inherits all config properties form the parent pom.xml
@@ -33,10 +33,10 @@ You can configure here:
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
                     <labels>
-                        <label>SKOS Categories@en</label>
+                        <label>Anchor Texts@en</label>
                     </labels>
                     <datasetDescription>
-                        Information which concept is a category and how categories are related using the SKOS Vocabulary.
+                        Texts used in links to refer to Wikipedia articles from other Wikipedia articles.
                     </datasetDescription>
                 </configuration>
             </plugin>
