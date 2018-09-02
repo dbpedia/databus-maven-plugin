@@ -4,10 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.dbpedia.databus</groupId>
+    <groupId>org.dbpedia.databus.archetype</groupId>
     <artifactId>bundle</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.0.0-archetype</version>
     <modules>
         <module>add-one-dataset</module>
     </modules>
@@ -19,9 +19,9 @@
 * all files have to start with the $artifactId of the module, i.e. src/main/databus/input/$artifactId_en.nt.bz2
 
 -->
-        <databus.dataInputDirectory>src/main/databus/input</databus.dataInputDirectory>
+        <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
 		<!-- the name of the bundle, used for packageing -->
-		<databus.bundle>generic</databus.bundle>
+		<databus.bundle>bundle</databus.bundle>
 
         <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
 * all files are copied into this directory where mvn databus:package-export is run
