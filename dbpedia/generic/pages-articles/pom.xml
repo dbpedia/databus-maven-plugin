@@ -5,13 +5,13 @@
     <parent>
         <artifactId>bundle</artifactId>
         <groupId>org.dbpedia.databus</groupId>
-        <version>2018.08.15</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>skos-categories</artifactId>
+    <artifactId>pages-articles</artifactId>
     <groupId>org.dbpedia</groupId>
     <packaging>jar</packaging>
-    <version>2018.08.15</version>
+    <version>1.0.0</version>
 
 
     <!--This is a module, it inherits all config properties form the parent pom.xml
@@ -33,10 +33,10 @@ You can configure here:
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
                     <labels>
-                        <label>SKOS Categories@en</label>
+                        <label>Page Ids@en</label>
                     </labels>
                     <datasetDescription>
-                        Information which concept is a category and how categories are related using the SKOS Vocabulary.
+                        Dataset linking a DBpedia resource to the page ID of the Wikipedia article the data was extracted from.
                     </datasetDescription>
                 </configuration>
             </plugin>
