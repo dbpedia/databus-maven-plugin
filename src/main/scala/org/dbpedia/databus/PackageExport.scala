@@ -74,6 +74,7 @@ class PackageExport extends AbstractMojo with Properties {
 
     // dataId files
     var dataIdCollect: Model = ModelFactory.createDefaultModel
+    // resolving relative URIs into downloadURLs
     dataIdCollect.read(getDataIdFile().toURI.toString, downloadUrlPath.toString+getDataIdFile.getName,"turtle")
     val dataIdPackageTarget = new File(getPackageDirectory, "/" + getDataIdFile().getName)
     dataIdCollect.write(new FileWriter(dataIdPackageTarget),"turtle")
