@@ -25,7 +25,6 @@ import org.dbpedia.databus.Properties
 import org.dbpedia.databus.parse.LineBasedRioDebugParser
 import org.dbpedia.databus.shared.signing
 import org.dbpedia.databus.voc.{ApplicationNTriples, DataFileToModel, Format, TextTurtle}
-
 import better.files.{File => BetterFile, ManagedResource => _, _}
 import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
 import org.apache.commons.compress.compressors.CompressorStreamFactory
@@ -34,8 +33,8 @@ import org.eclipse.rdf4j.rio.Rio
 import resource._
 
 import scala.io.{Codec, Source}
-
 import java.io._
+import java.nio.charset.MalformedInputException
 import java.nio.file.Files
 import java.security.PrivateKey
 import java.util.Base64
@@ -63,25 +62,24 @@ class Datafile private(datafile: File) {
 
   var preview: String = ""
 
-  def getName(): String ={
+  def getName(): String = {
     datafile.getName
   }
 
 
-
-  def toModel( props: Properties): Model = {
+  def toModel(props: Properties): Model = {
     DataFileToModel.datafile2Model(this, datafile, props)
   }
 
   private def updateMimetype(): Datafile = {
-    val (ext, mt )= Format.detectMimetypeByFileExtension(datafile)
+    val (ext, mt) = Format.detectMimetypeByFileExtension(datafile)
     mimetype = mt
 
     // downgrade turtle to ntriple, if linebased
-    if(mt == TextTurtle){
+    if (mt == TextTurtle) {
       val baos: ByteArrayInputStream = new ByteArrayInputStream(preview.getBytes);
-      val (a,b,c,d) = LineBasedRioDebugParser.parse(baos,Rio.createParser(ApplicationNTriples.rio))
-      if(d.size==0){
+      val (a, b, c, d) = LineBasedRioDebugParser.parse(baos, Rio.createParser(ApplicationNTriples.rio))
+      if (d.size == 0) {
         mimetype = ApplicationNTriples
       }
     }
@@ -108,12 +106,19 @@ class Datafile private(datafile: File) {
     */
   private def updatePreview(lineCount: Int): Datafile = {
 
-    val unshortenedPreview = for {
-      inputStream <- getInputStream
-      source <- managed(Source.fromInputStream(inputStream)(Codec.UTF8))
-    } yield {
-      source.getLines().take(lineCount).mkString("\n")
+    val unshortenedPreview = try {
+      for {
+
+        inputStream <- getInputStream
+        source <- managed(Source.fromInputStream(inputStream)(Codec.UTF8))
+
+      } yield {
+        source.getLines().take(lineCount).mkString("\n")
+      }
+    } catch {
+      case e: MalformedInputException => managed("binary")
     }
+    //recoverWith {case e:MalformedInputException => "binary"}
 
     def maxLength = lineCount * 500
 
