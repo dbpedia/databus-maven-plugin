@@ -5,7 +5,7 @@
     <parent>
         <artifactId>bundle</artifactId>
         <groupId>org.dbpedia.databus.archetype</groupId>
-        <version>1.0.0-ARCHETYPE</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>add-one-dataset</artifactId>

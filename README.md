@@ -19,17 +19,20 @@ The plugin provides the following features:
    * [Terminology](#terminology)
    * [Quickstart](#quickstart)
       * [Run an example](#run-an-example)
-      * [Create your own (how the example was created)](#create-your-own-how-the-example-was-created)
-         * [Step 1: Deploy archetypes into your local repository](#step-1-deploy-archetypes-into-your-local-repository)
-         * [Step 2:](#step-2)
-         * [Step 3](#step-3)
    * [License and Contributions](#license-and-contributions)
       * [Development rules](#development-rules)
    * [Phases](#phases)
    * [Usage](#usage)
    * [Documentation of available plugins](#documentation-of-available-plugins)
+   * [Configuration](#configuration)
+      * [File setup and conventions](#file-setup-and-conventions)
+      * [Generate a release configuration with an archetype](#generate-a-release-configuration-with-an-archetype)
+         * [Install databus archetype](#install-databus-archetype)
+         * [Instantiate a new project](#instantiate-a-new-project)
+   * [Troubleshooting](#troubleshooting)
+      * [BUILD FAILURE, no mojo-descriptors found (when using mvn install to install the databus-maven-plugin)](#build-failure-no-mojo-descriptors-found-when-using-mvn-install-to-install-the-databus-maven-plugin)
 
-<!-- Added by: shellmann, at: 2018-08-10T13:32+02:00 -->
+<!-- Added by: shellmann, at: 2018-09-03T11:30+02:00 -->
 
 <!--te-->
 # Requirements
@@ -144,7 +147,7 @@ BUNDLEARTIFACTID=animals
 # configure list of datasets/artifacts to be created
 DATASETARTIFACTID="mammals birds fish"
 
-mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus.archetype	-DgroupId=$GROUPID -DartifactId=$BUNDLEARTIFACTID -Dversion=$VERSION -DinteractiveMode=false
+mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus.archetype -DgroupId=$GROUPID -DartifactId=$BUNDLEARTIFACTID -Dversion=$VERSION -DinteractiveMode=false
 
 ###########################
 # Generate datasets/modules 
@@ -152,22 +155,22 @@ mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-arc
 # go into the bundle
 cd $BUNDLEARTIFACTID
 
-for i in `${DATASETARTIFACTID}` ; do 
-	mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=add-oned-dataset-archetype -DarchetypeGroupId=org.dbpedia.databus.archetype	-DgroupId=$GROUPID -DartifactId=$i -Dversion=$VERSION -DinteractiveMode=false
+for i in ${DATASETARTIFACTID} ; do 
+	mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=add-one-dataset-archetype -DarchetypeGroupId=org.dbpedia.databus.archetype -DgroupId=$GROUPID -DartifactId=$i -Dversion=$VERSION -DinteractiveMode=false
+	# some clean up, since archetype does not set parent automatically  
+	# TODO we are trying to figure out how to automate this
+	sed -i "s|<artifactId>bundle</artifactId>|<artifactId>$BUNDLEARTIFACTID</artifactId>|" */pom.xml
+	sed -i "s|<groupId>org.dbpedia.databus.archetype</groupId>|<groupId>$GROUPID</groupId>|" */pom.xml
+	sed -i "s|<version>1.0.0</version>|<version>$VERSION</version>|" */pom.xml
 done
 
-# some clean up, since archetype does not set parent automatically  
-# TODO we are trying to figure out how to automate this
-for i in `${DATASETARTIFACTID}` ; do 
-	sed 's|<artifactId>bundle</artifactId>|<artifactId>$BUNDLEARTIFACTID</artifactId>|' $i/pom.xml
-	sed 's|<groupId>org.dbpedia.databus</groupId>|<groupId>$GROUPID</groupId>|' $i/pom.xml
-done
+
 
 # delete add-one-dataset 
 rm -r add-one-dataset
 sed -i  's|<module>add-one-dataset</module>||' pom.xml
 
-# wipe the example files
+# wipe the example data files
 rm */src/main/databus/$VERSION/*
 ```
 

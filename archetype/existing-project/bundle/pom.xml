@@ -7,7 +7,7 @@
     <groupId>org.dbpedia.databus.archetype</groupId>
     <artifactId>bundle</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-archetype</version>
+    <version>1.0.0</version>
     <modules>
         <module>add-one-dataset</module>
     </modules>
