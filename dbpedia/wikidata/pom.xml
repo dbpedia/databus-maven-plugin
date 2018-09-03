@@ -16,13 +16,13 @@
 -->
         <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
 		<!-- the name of the bundle, used for packageing -->
-		<databus.bundle>bundle</databus.bundle>
+		<databus.bundle>wikidata</databus.bundle>
 
         <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
 * all files are copied into this directory where mvn databus:package-export is run
 -->
-        <databus.packageDirectory>${session.executionRootDirectory}/target/databus/package/${databus.bundle}</databus.packageDirectory>
-        
+        <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/dev/${databus.bundle}</databus.packageDirectory>
+
          <!-- downloadUrlPath 
 Configure downloadUrlPath, where the dataset will be deployed:
 DBpedia will publish 4 more bundles with dozens of artifacts and new versions at regular intervals, our downloadurl looks like this:
@@ -30,9 +30,9 @@ DBpedia will publish 4 more bundles with dozens of artifacts and new versions at
 We recommend to do the same, as you can add more bundles and datasets later.
 
 -->
-		<databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
+		<databus.downloadUrlPath>http://downloads.dbpedia.org/repo/dev/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
         
-        <databus.publisher>http://kurzum.net/dev-dummy.ttl#this</databus.publisher>
+        <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
         <!--privateKeyFile
 The private key file that is matched against the publisher WebID, see the tutorial suggested there.
 Note that Java/Scala only accepts DER/PKCS8 formatted files, so you might need to run:
@@ -47,12 +47,12 @@ SECURITY NOTICE:
 * The data channel you are about to create requires it to republish new versions there.
         -->
         <!--<databus.privateKeyFile>${user.home}/.m2/private_key.der</databus.privateKeyFile>-->
-        <databus.privateKeyFile>private_key_dev_dummy.der</databus.privateKeyFile>
+        <databus.privateKeyFile>${user.home}/.m2/private_key_generic.der</databus.privateKeyFile>
 
         <!--maintainer
 The maintainer of the data release, normally the person to contact, often the same as publisher
         -->
-        <databus.maintainer>${databus.publisher}</databus.maintainer>
+        <databus.maintainer>https://alismayilov.github.io/webid-ali.ttl#this</databus.maintainer>
         <!--license
 Pick one from here: http://rdflicense.linkeddata.es/
         -->
