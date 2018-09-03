@@ -185,7 +185,7 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
     <module>wikidata-sameas-all-wikis</module>
     <module>wikidata-sameas-external</module>
     <module>wikidata-sameas-wikidata</module>
-    <module>wikidata-template-redirects.obj</module>
+    <module>wikidata-template-redirects</module>
     <module>wikidata-transitive-redirects</module>
     <module>wikidata-wikidata-duplicate-iri-split</module>
     <module>wikidata-wikidata-rmapping-errors</module>
