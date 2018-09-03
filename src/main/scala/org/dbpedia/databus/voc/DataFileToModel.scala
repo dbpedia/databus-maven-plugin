@@ -22,14 +22,14 @@
 package org.dbpedia.databus.voc
 
 import org.dbpedia.databus.shared.rdf.vocab
-
 import java.io.File
 import java.text.SimpleDateFormat
 
-import org.apache.jena.rdf.model.{Model, ModelFactory}
+import org.apache.jena.rdf.model.{Model, ModelFactory, Resource}
 import org.apache.jena.vocabulary.RDF
 import org.dbpedia.databus.Properties
 import org.dbpedia.databus.lib.Datafile
+import org.dbpedia.databus.shared.rdf.vocab.RDFNamespaceInModel
 
 import scala.collection.JavaConverters._
 import scala.language.reflectiveCalls
@@ -73,11 +73,8 @@ object DataFileToModel {
       * linking to other constructs
       */
     val datasetResource = model.createResource( s"#${properties.finalName}")
-
     thisResource.addProperty(dataid.isDistributionOf,datasetResource)
     datasetResource.addProperty(dcat.distribution,thisResource)
-
-
 
     //type properties
     thisResource.addProperty(RDF.`type`, dataid.SingleFile)
@@ -95,20 +92,12 @@ object DataFileToModel {
 
     }
 
-    //basic properties
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "description"), model.createLiteral(properties.datasetDescription))
-    // todo add version number, but this is a dataid issue
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "conformsTo"),model.createResource(model.getNsPrefixURI("dataid")))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "hasVersion"), model.createLiteral(properties.version))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "issued"), model.createTypedLiteral(properties.issuedDate, model.getNsPrefixURI("xsd") + "date"))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "license"), model.createResource(properties.license))
-    val modifiedDate = new SimpleDateFormat("yyyy-MM-dd").format(file.lastModified())
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "modified"), model.createTypedLiteral(modifiedDate, model.getNsPrefixURI("xsd") + "date"))
-    thisResource.addProperty(dataid.associatedAgent, model.createResource(properties.maintainer.toString))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "publisher"), model.createResource(properties.maintainer.toString))
+    addBasicPropertiesToResource( properties, model, dataid, thisResource)
 
 
     // specific info about the file
+    val modifiedDate = new SimpleDateFormat("yyyy-MM-dd").format(file.lastModified())
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "modified"), model.createTypedLiteral(modifiedDate, model.getNsPrefixURI("xsd") + "date"))
     thisResource.addProperty(dataid.sha256sum, model.createLiteral(datafile.sha256sum))
     thisResource.addProperty(dataid.signature, model.createLiteral(datafile.signatureBase64))
     thisResource.addProperty(dataid.preview, model.createLiteral(datafile.preview))
@@ -129,42 +118,20 @@ object DataFileToModel {
     mediaType.addProperty(dataid.mimetype, datafile.mimetype.mimeType)
     thisResource.addProperty(dataid.compression, datafile.compressionVariant)
 
-
-    /*
-    dataid-mt:MediaType_turtle_x-bzip2
-        a                      dataid:MediaType ;
-        dataid:innerMediaType  dataid:MediaType_turtle ;
-        dataid:typeExtension   ".bz2" ;
-        dataid:typeTemplate    "application/x-bzip2" ;
-        dc:conformsTo          <http://dataid.dbpedia.org/ns/core> .
-     */
-    /*
-    <http://dbpedia.org/dataset/article_categories?lang=en&dbpv=2016-10&file=article_categories_en.tql.bz2>
-        a                            dataid:SingleFile ;
-
-
-        rdfs:label                   "Article Categories"@en , "core-i18n/en/article_categories_en.tql.bz2" ;
-        dataid:associatedAgent       <http://wiki.dbpedia.org/dbpedia-association> ;
-        dataid:checksum              <http://dbpedia.org/dataset/article_categories?lang=en&dbpv=2016-10&file=article_categories_en.tql.bz2&checksum=md5> ;
-        dataid:isDistributionOf      <http://dbpedia.org/dataset/article_categories?lang=en&dbpv=2016-10> ;
-        dataid:latestVersion         <http://dbpedia.org/dataset/article_categories?lang=en&dbpv=2016-10&file=article_categories_en.tql.bz2> ;
-        dataid:preview               <http://downloads.dbpedia.org/preview.php?file=2016-10_sl_core-i18n_sl_en_sl_article_categories_en.tql.bz2> ;
-        dataid:uncompressedByteSize  6558796473 ;
-        dc:conformsTo                <http://dataid.dbpedia.org/ns/core> ;
-        dc:description               "Links from concepts to categories using the SKOS vocabulary."@en ;
-        dc:hasVersion                <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?version=1.0.0> ;
-        dc:issued                    "2017-07-01"^^xsd:date ;
-        dc:license                   <http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0> ;
-        dc:modified                  "2017-07-06"^^xsd:date ;
-        dc:publisher                 <http://wiki.dbpedia.org/dbpedia-association> ;
-        dc:title                     "Article Categories"@en ;
-        dcat:byteSize                396463888 ;
-        dcat:downloadURL             <http://downloads.dbpedia.org/2016-10/core-i18n/en/article_categories_en.tql.bz2> ;
-        dcat:mediaType               dataid-mt:MediaType_n-quads_x-bzip2 .
-     */
     model
 
 
   }
 
+  def addBasicPropertiesToResource( properties: Properties, model: Model, dataid: AnyRef with RDFNamespaceInModel with vocab.DataIdVocab, thisResource: Resource) = {
+    //basic properties
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "description"), model.createLiteral(properties.datasetDescription))
+    // todo add version number, but this is a dataid issue
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "conformsTo"), model.createResource(model.getNsPrefixURI("dataid")))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "hasVersion"), model.createLiteral(properties.version))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "issued"), model.createTypedLiteral(properties.issuedDate, model.getNsPrefixURI("xsd") + "date"))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "license"), model.createResource(properties.license))
+     thisResource.addProperty(dataid.associatedAgent, model.createResource(properties.maintainer.toString))
+    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "publisher"), model.createResource(properties.maintainer.toString))
+  }
 }

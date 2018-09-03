@@ -22,13 +22,15 @@
 package org.dbpedia.databus
 
 import org.dbpedia.databus.lib.{Datafile, Sign}
-
-import com.typesafe.scalalogging.LazyLogging
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-
 import java.io._
+
+import org.dbpedia.databus.shared.rdf.vocab
+import org.dbpedia.databus.voc.DataFileToModel
+
+
 
 
 /**
@@ -71,6 +73,10 @@ class PrepareMetadata extends AbstractMojo with Properties {
     // write the model to target
     if(!dataIdCollect.isEmpty) {
       val datasetResource = dataIdCollect.createResource( s"#${finalName}")
+      val dataid = vocab.dataid.inModel(dataIdCollect)
+      DataFileToModel.addBasicPropertiesToResource( this, dataIdCollect, dataid, datasetResource)
+
+
       datasetResource.addProperty(dataIdCollect.createProperty("todonote"), "we are still refactoring code for dataid creation, much more information will be available at this resource later")
       var db = getDataIdFile()
       dataIdCollect.write(new FileWriter(db), "turtle")
