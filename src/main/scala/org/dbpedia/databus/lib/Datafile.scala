@@ -49,7 +49,7 @@ class Datafile private(datafile: File) {
   lazy val betterfile = BetterFile(datafile.toPath)
 
   var mimetype: Format = _
-  var fileExtension: String = ""
+  var formatExtension: String = ""
 
   var sha256sum: String = ""
   var bytes: Long = _
@@ -89,7 +89,7 @@ class Datafile private(datafile: File) {
     }
 
 
-    fileExtension = ext
+    formatExtension = ext
     this
   }
 

@@ -116,7 +116,9 @@ object DataFileToModel {
     //thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "uncompressedByteSize"), model.createLiteral(datafile.bytes.toString))
     thisResource.addProperty(dcat.byteSize, model.createLiteral(datafile.bytes.toString))
     // todo review creation of this statement: the used property is not declared in dcat; looks like a slip of mind
-    thisResource.addProperty(dcat.prop.dataid, model.createLiteral(datafile.fileExtension))
+    // sh: it is a dataid property. However, dataid modeled it as a property of the mimetype, which is the wrong place
+    // files have one format extension and maybe one compressionextension and mimetypes have a list of likely extensions
+    thisResource.addProperty(dataid.prop.formatExtension, model.createLiteral(datafile.formatExtension))
     //todo handle correctly, if not default
     thisResource.addProperty(dcat.downloadURL, model.createResource(properties.getDatafileFinal(file).getName))
 
