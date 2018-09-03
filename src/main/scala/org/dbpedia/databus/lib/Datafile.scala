@@ -46,8 +46,6 @@ import java.util.Base64
   */
 class Datafile private(datafile: File) {
 
-  lazy val betterfile = BetterFile(datafile.toPath)
-
   var mimetype: Format = _
   var formatExtension: String = ""
 
@@ -94,7 +92,7 @@ class Datafile private(datafile: File) {
   }
 
   def updateSHA256sum(): Datafile = {
-    sha256sum = signing.sha256Hash(betterfile).asBytes.map("%02x" format _).mkString
+    sha256sum = signing.sha256Hash(datafile.toScala).asBytes.map("%02x" format _).mkString
     this
   }
 
@@ -130,13 +128,13 @@ class Datafile private(datafile: File) {
   }
 
   def updateSignature(privateKey: PrivateKey): Datafile = {
-    signatureBytes = signing.signFile(privateKey, betterfile)
+    signatureBytes = signing.signFile(privateKey, datafile.toScala)
 
     signatureBase64 = new String(Base64.getEncoder.encode(signatureBytes))
 
     val publicFromPrivate = Sign.publicKeyFromPrivateKey(privateKey)
 
-    verified = signing.verifyFile(publicFromPrivate, signatureBytes, betterfile)
+    verified = signing.verifyFile(publicFromPrivate, signatureBytes, datafile.toScala)
     this
   }
 
@@ -148,7 +146,7 @@ class Datafile private(datafile: File) {
     */
   def getInputStream(): ManagedResource[InputStream] = managed({
 
-    val bis = betterfile.newInputStream.buffered
+    val bis = datafile.toScala.newInputStream.buffered
     if (isCompressed) {
       new CompressorStreamFactory()
         .createCompressorInputStream(compressionVariant, bis)
