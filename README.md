@@ -68,54 +68,6 @@ modify output folder
 `mvn databus:package-export -Ddatabus.packageDirectory="/var/www/mydata.org/datareleases"` 
 
 
-## Create your own (how the example was created)
-Maven provides a template called archetype. We provide two such templates:
-* `bundle-archetype` generates a bundle with one dataset (called add-one-dataset)
-* `add-one-dataset-archetype` adds a module to an existing bundle
-### Step 1: Deploy archetypes into your local repository
-```
-cd archetype/existing-projects
-./deploy.sh
-```
-`deploy.sh` runs mvn install on bundle and bundle/add-one-dataset 
-
-### Step 2:
-configure -DgroupId -DartifactId -Dversion
-```
-mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus \
-	-DgroupId=org.example -DartifactId="animals" -Dversion="1.0.0" -DinteractiveMode=false
-```
-
-go into the bundle
-
-`cd animals` 
-
-generate a new module "mamals"
-```
-mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=add-one-dataset-archetype -DarchetypeGroupId=org.dbpedia.databus \
-	-DgroupId=org.example -DartifactId=mammals -Dversion="1.0.0" -DinteractiveMode=false
-```
-
-HOTFIX: adjust mammals/pom.xml and fix the <parent>
-(we will try to create an archetype that does it automatically in the future)
-replace `<artifactId>bundle</artifactId>` with `<artifactId>animals</artifactId>` 
-replace `<groupId>org.dbpedia.databus</groupId>` with `<groupId>org.example</groupId>` 
-
-
-add as many other datasets in the same way
-(optional) remove the example dataset folder and the module
-```
-rm -r add-one-dataset
-sed -i  's|<module>add-one-dataset</module>||' pom.xml
-```
-
-start editing the pom.xml in animals and the subfolders
-remove the example files under src/main/databus/input
-copy your data in the modules/subfolders into src/main/databus/input
-file names need to start with the artifactId 
-### Step 3
-`mvn databus:metadata databus:package-export`
-
 
 # License and Contributions
 License of the software is AGPL with intended copyleft. We expect that you spend your best effort to commit upstream to make this tool better or at least that your extensions are made available again. 
@@ -152,6 +104,75 @@ Once you have downloaded the pom.xml from this project and configured it properl
 
 # Documentation of available plugins
 user contributed plugins
+
+# Configuration
+
+## File setup and conventions
+
+## Generate a release configuration with an archetype
+ Note: For datasets with few artifacts, you can also copy the example and adjust it
+
+We provide a Maven Archetype for easy and automatic project setup. In short, Archetype is a Maven project templating toolkit: https://maven.apache.org/guides/introduction/introduction-to-archetypes.html 
+The template is created from an existing project, found in `archetype/existing-projects`. Variables are replaced upon instantiation. 
+
+### Install databus archetype 
+We provide two archetype templates:
+* `bundle-archetype` generates a bundle with one dataset (called add-one-dataset)
+* `add-one-dataset-archetype` adds a module to an existing bundle
+
+The archetype needs to be installed into the local maven repo:
+```
+git clone https://github.com/dbpedia/databus-maven-plugin.git
+cd databus-maven-plugin/archetype/existing-projects
+./deploy.sh
+```
+`deploy.sh` runs `mvn archetype:create-from-project` and `mvn install` on bundle and bundle/add-one-dataset 
+
+### Instantiate a new project
+With the archetype you can create one bundle with arbitrarily many datasets/artifacts. Here is how:
+
+```
+#####################
+# Generate the bundle
+#####################
+# version number of bundle
+VERSION=2018.08.15
+# domain 
+GROUPID=org.example.data
+# bundle artifactid
+BUNDLEARTIFACTID=animals
+# configure list of datasets/artifacts to be created
+DATASETARTIFACTID="mammals birds fish"
+
+mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus.archetype	-DgroupId=$GROUPID -DartifactId=$BUNDLEARTIFACTID -Dversion=$VERSION -DinteractiveMode=false
+
+###########################
+# Generate datasets/modules 
+###########################
+# go into the bundle
+cd $BUNDLEARTIFACTID
+
+for i in `${DATASETARTIFACTID}` ; do 
+	mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=add-oned-dataset-archetype -DarchetypeGroupId=org.dbpedia.databus.archetype	-DgroupId=$GROUPID -DartifactId=$i -Dversion=$VERSION -DinteractiveMode=false
+done
+
+# some clean up, since archetype does not set parent automatically  
+# TODO we are trying to figure out how to automate this
+for i in `${DATASETARTIFACTID}` ; do 
+	sed 's|<artifactId>bundle</artifactId>|<artifactId>$BUNDLEARTIFACTID</artifactId>|' $i/pom.xml
+	sed 's|<groupId>org.dbpedia.databus</groupId>|<groupId>$GROUPID</groupId>|' $i/pom.xml
+done
+
+# delete add-one-dataset 
+rm -r add-one-dataset
+sed -i  's|<module>add-one-dataset</module>||' pom.xml
+
+# wipe the example files
+rm */src/main/databus/$VERSION/*
+```
+
+
+
 <!--
 # Problem
 Publishing data on the web in a de-centralised manner is the grand vision of the Semantic Web. However, decentralisation comes with its problems. Putting data files on your web server and creating a landing page to describe this data, just goes a short way. Humans can read the landing page and use the right-click save-as to download the files. Crawlers can discover links and can download the files automatically, but have no understanding of the context, publisher, version or other metadata of the files, making its usage limited. 
