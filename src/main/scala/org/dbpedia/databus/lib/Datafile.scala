@@ -39,6 +39,7 @@ import java.nio.file.Files
 import java.security.PrivateKey
 import java.util.Base64
 
+
 /**
   * a simple dao to collect all values for a file
   * private constructor, must be called with init to handle compression detection
@@ -106,8 +107,7 @@ class Datafile private(datafile: File) {
     */
   private def updatePreview(lineCount: Int): Datafile = {
 
-    val unshortenedPreview = try {
-      for {
+    val unshortenedPreview = for {
 
         inputStream <- getInputStream
         source <- managed(Source.fromInputStream(inputStream)(Codec.UTF8))
@@ -115,10 +115,6 @@ class Datafile private(datafile: File) {
       } yield {
         source.getLines().take(lineCount).mkString("\n")
       }
-    } catch {
-      case e: MalformedInputException => managed("binary")
-    }
-    //recoverWith {case e:MalformedInputException => "binary"}
 
     def maxLength = lineCount * 500
 
