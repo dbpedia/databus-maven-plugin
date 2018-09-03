@@ -52,7 +52,7 @@ class PackageExport extends AbstractMojo with Properties {
 
         val sourceHash = signing.sha256Hash(datafile.toScala)
 
-        if (targetHash == sourceHash) {
+        if (targetHash != sourceHash) {
           Files.copy(datafile.getAbsoluteFile.toPath, getDatafilePackageTarget(datafile).toPath, REPLACE_EXISTING)
           getLog.info("packaged: " + getDatafilePackageTarget(datafile).getName)
         } else {
