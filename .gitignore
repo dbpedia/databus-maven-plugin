@@ -5,3 +5,5 @@ README.md.orig.*
 README.md.toc.*
 pom.xml.versionsBackup
 dbpedia/generic/*/src/
+dbpedia/wikidata/*/src/
+log.txt
