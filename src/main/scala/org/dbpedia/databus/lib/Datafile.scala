@@ -39,6 +39,8 @@ import java.nio.file.Files
 import java.security.PrivateKey
 import java.util.Base64
 
+import scala.util.{Failure, Success, Try}
+
 
 /**
   * a simple dao to collect all values for a file
@@ -113,16 +115,18 @@ class Datafile private(datafile: File) {
         source <- managed(Source.fromInputStream(inputStream)(Codec.UTF8))
 
       } yield {
-        source.getLines().take(lineCount).mkString("\n")
+        Try (source.getLines().take(lineCount).mkString("\n"))
       }
 
     def maxLength = lineCount * 500
 
     preview = unshortenedPreview apply {
 
-      case tooLong if tooLong.size > maxLength => tooLong.substring(0, maxLength)
+      case Success(tooLong)if tooLong.size > maxLength => tooLong.substring(0, maxLength)
 
-      case shortEnough => shortEnough
+      case Success(shortEnough) => shortEnough
+
+      case Failure(mie: MalformedInputException) => "[binary data - no preview]"
     }
 
     this
