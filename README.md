@@ -39,7 +39,7 @@ The plugin provides the following features:
 # Usage 
 
 ## How to make a release 
-Once the project is configured properly [see Configuration](#configuration), releasing a new version is very easy.
+Once the project is configured properly [see Configuration](#configuration)
 
 
 
@@ -144,9 +144,8 @@ cd databus-maven-plugin/archetype/existing-projects
 With the archetype you can create one bundle with arbitrarily many datasets/artifacts. Here is how:
 
 ```
-#####################
 # Generate the bundle
-#####################
+
 # version number of bundle
 VERSION=2018.08.15
 # domain 
@@ -158,9 +157,8 @@ DATASETARTIFACTID="mammals birds fish"
 
 mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus.archetype -DgroupId=$GROUPID -DartifactId=$BUNDLEARTIFACTID -Dversion=$VERSION -DinteractiveMode=false
 
-###########################
 # Generate datasets/modules 
-###########################
+
 # go into the bundle
 cd $BUNDLEARTIFACTID
 
