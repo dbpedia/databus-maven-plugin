@@ -43,7 +43,7 @@
 * copy/move all your datafiles in the respective modules
 * all files have to start with the animals of the module, i.e. src/main/databus/input/animals_en.nt.bz2
 -->
-        <databus.dataInputDirectory>src/main/databus/${version}</databus.dataInputDirectory>
+        <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
 
 
         <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package
