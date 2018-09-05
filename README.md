@@ -35,6 +35,23 @@ The plugin provides the following features:
 <!-- Added by: shellmann, at: 2018-09-03T11:30+02:00 -->
 
 <!--te-->
+
+# Usage 
+
+## How to make a release 
+Once the project is configured properly [see Configuration](#configuration), releasing a new version is very easy.
+
+
+
+As a preparation, you will need to copy all data into `src/main/databus/${version}` (as configured in `<databus.dataInputDirectory>`)
+
+```
+
+
+
+
+
+
 # Requirements
 Databus maven plugin philosophy:
 *  enforces as few requirements as possible on how you handle your data (wide applicability)
@@ -72,14 +89,6 @@ modify output folder
 
 
 
-# License and Contributions
-License of the software is AGPL with intended copyleft. We expect that you spend your best effort to commit upstream to make this tool better or at least that your extensions are made available again. 
-Any contribution will be merged under the copyright of the DBpedia Association. 
-## Development rules
-* All paths are configured in Properties.scala, which is a trait for the Mojos (Maven Plugin classes), please handle all paths there
-* Datafile.scala is a quasi decorator for files, use getInputStream to open any file
-* Use the issue tracker, do branches instead of forks (we can give access), we will merge with master
-* Document options in the archetype pom and here
 
 # Phases
 Below we are listing all the phases, that are relevant and describe how the databus-maven-plugin hooks into the maven lifecycle. Not all phases are used, see the [complete reference](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference)
@@ -174,6 +183,16 @@ sed -i  's|<module>add-one-dataset</module>||' pom.xml
 rm */src/main/databus/$VERSION/*
 ```
 
+# Development 
+
+## License
+License of the software is AGPL with intended copyleft. We expect that you spend your best effort to commit upstream to make this tool better or at least that your extensions are made available again. 
+Any contribution will be merged under the copyright of the DBpedia Association. 
+## Development rules
+* All paths are configured in Properties.scala, which is a trait for the Mojos (Maven Plugin classes), please handle all paths there
+* Datafile.scala is a quasi decorator for files, use getInputStream to open any file
+* Use the issue tracker, do branches instead of forks (we can give access), we will merge with master
+* Document options in the archetype pom and here
 
 
 <!--
