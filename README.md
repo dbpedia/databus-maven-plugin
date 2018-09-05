@@ -45,8 +45,6 @@ Once the project is configured properly [see Configuration](#configuration)
 
 As a preparation, you will need to copy all data into `src/main/databus/${version}` (as configured in `<databus.dataInputDirectory>`)
 
-```
-
 
 
 
