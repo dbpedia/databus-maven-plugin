@@ -187,8 +187,8 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
     <module>wikidata-sameas-wikidata</module>
     <module>wikidata-template-redirects</module>
     <module>wikidata-transitive-redirects</module>
-    <module>wikidata-wikidata-duplicate-iri-split</module>
-    <module>wikidata-wikidata-rmapping-errors</module>
-    <module>wikidata-wikidata-type-like-statements</module>
+    <module>wikidata-debug-duplicate-iri-split</module>
+    <module>wikidata-debug-rmapping-errors</module>
+    <module>wikidata-debug-type-like-statements</module>
   </modules>
 </project>
