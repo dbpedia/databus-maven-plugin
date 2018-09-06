@@ -21,7 +21,7 @@
         <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
 * all files are copied into this directory where mvn databus:package-export is run
 -->
-        <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/dev/${databus.bundle}</databus.packageDirectory>
+        <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${databus.bundle}</databus.packageDirectory>
 
          <!-- downloadUrlPath 
 Configure downloadUrlPath, where the dataset will be deployed:
@@ -30,7 +30,7 @@ DBpedia will publish 4 more bundles with dozens of artifacts and new versions at
 We recommend to do the same, as you can add more bundles and datasets later.
 
 -->
-		<databus.downloadUrlPath>http://downloads.dbpedia.org/repo/dev/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
+		<databus.downloadUrlPath>http://downloads.dbpedia.org/repo/lts/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
         
         <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
         <!--privateKeyFile
