@@ -81,16 +81,7 @@ object DataFileToModel {
     datasetResource.addProperty(RDF.`type`, dataid.Dataset)
 
 
-    // label
-    for (label :String <- properties.labels.asScala) {
-      val split = label.split("@")
-      thisResource.addProperty(
-        model.getProperty(model.getNsPrefixURI("rdfs"), "label"),
-        model.createLiteral(split.head, split.last))
-      thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"),
-        "title"), model.createLiteral(split.head, split.last))
 
-    }
 
     addBasicPropertiesToResource( properties, model, dataid, thisResource)
 
@@ -124,6 +115,18 @@ object DataFileToModel {
   }
 
   def addBasicPropertiesToResource( properties: Properties, model: Model, dataid: AnyRef with RDFNamespaceInModel with vocab.DataIdVocab, thisResource: Resource) = {
+
+    // label
+    for (label :String <- properties.labels.asScala) {
+      val split = label.split("@")
+      thisResource.addProperty(
+        model.getProperty(model.getNsPrefixURI("rdfs"), "label"),
+        model.createLiteral(split.head, split.last))
+      thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"),
+        "title"), model.createLiteral(split.head, split.last))
+
+    }
+
     //basic properties
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "description"), model.createLiteral(properties.datasetDescription))
     // todo add version number, but this is a dataid issue
