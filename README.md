@@ -14,25 +14,30 @@ The plugin provides the following features:
 <!--ts-->
    * [Databus Maven Plugin](#databus-maven-plugin)
    * [Table of Contents](#table-of-contents)
-   * [Requirements](#requirements)
-      * [Technical requirements](#technical-requirements)
-   * [Terminology](#terminology)
-   * [Quickstart](#quickstart)
-      * [Run an example](#run-an-example)
-   * [License and Contributions](#license-and-contributions)
-      * [Development rules](#development-rules)
-   * [Phases](#phases)
+   * [Bundle, dataset, distribution](#bundle-dataset-distribution)
+      * [Terminology](#terminology)
+      * [Relation to Maven](#relation-to-maven)
+      * [Versioning](#versioning)
+      * [Files &amp; folders](#files--folders)
+         * [(Important) File input path](#important-file-input-path)
+         * [(Important) File copying](#important-file-copying)
    * [Usage](#usage)
-   * [Documentation of available plugins](#documentation-of-available-plugins)
+      * [How to make a release](#how-to-make-a-release)
+         * [Github setup](#github-setup)
+      * [Change version of the whole bundle](#change-version-of-the-whole-bundle)
+   * [Run the example](#run-the-example)
    * [Configuration](#configuration)
       * [File setup and conventions](#file-setup-and-conventions)
       * [Generate a release configuration with an archetype](#generate-a-release-configuration-with-an-archetype)
          * [Install databus archetype](#install-databus-archetype)
          * [Instantiate a new project](#instantiate-a-new-project)
+   * [Development](#development)
+      * [License](#license)
+      * [Development rules](#development-rules)
    * [Troubleshooting](#troubleshooting)
       * [BUILD FAILURE, no mojo-descriptors found (when using mvn install to install the databus-maven-plugin)](#build-failure-no-mojo-descriptors-found-when-using-mvn-install-to-install-the-databus-maven-plugin)
 
-<!-- Added by: shellmann, at: 2018-09-03T11:30+02:00 -->
+<!-- Added by: shellmann, at: 2018-09-07T15:29+02:00 -->
 
 <!--te-->
 
