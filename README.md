@@ -9,7 +9,7 @@ The tool has the following features:
 * auto-detect compression
 * private key signature, sha256sum and provenance (WebID) generation
 * generation of metadata compatible to:
- * RSS feeds
+  * RSS feeds
 
 ## Roadmap
 We are planning the following features:
