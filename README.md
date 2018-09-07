@@ -36,84 +36,119 @@ The plugin provides the following features:
 
 <!--te-->
 
+# Bundle, dataset, distribution
+In this section, we will describe the basic terminology and how they relate to Maven. 
+
+## Terminology
+* Dataset - a dataset is a bunch of files that have a common description. The fact that they can be described together shows an inherent coherence and that they belong together. Other than this criteria, it is quite arbitrary how datasets are defined, so this is a pragmatical approach, i.e. there is no need to duplicate documentation, i.e. have several datasets with the same description or subspecialisation, i.e. this dataset is about X, but some files are about Y
+** the databus maven plugin *requires that all files of a dataset start with the datasetname* 
+* Distribution - one file of a dataset
+* Formatvariance - a dataset can have files in different formats. Format variance is abstracted quite well, different distributions are created with same metadata except for the format field
+* Compression variance - compression is handled separatedly from format, i.e. the same format can be compressed in different ways
+* Contentvariance of a dataset - besides the format variance a dataset can have a certain degree of content variance. This normally determines how the dataset is distributed over the files. The easiest example is DBpedia, where each dataset contains all Wikipedia languages, so in this case contentvariance is the language. The data could also be differentiated by type, e.g. a company dataset that produces a distribution for each organsiation form (non-profit, company, etc). As a guideline, contentvariance can be choosen arbitrarily and the only criteria is whether there are some use cases, where users would only want part of the dataset, otherwise merging into one big file is fine. 
+* Bundle - a collection of datasets released together. Also a pragmatic definition. The framework here will not work well, if you combine datasets with different release cycles and metadata in the same bundle, e.g. some daily, some monthyl or metadata variance different publishers or versioning systems.
+
+## Relation to Maven
+Maven was established to automate software builds and release them (mostly Java). A major outcome of the ALIGNED project (http://aligned-project.eu/) was to establish which parts of data releases can be captured by Maven. Here is a practical summary:
+
+Maven uses a Parent POM (Project Object Model) to define software project. The POM is saved in a file called `pom.xml`. Each project can have multiple `modules` where the code resides. These modules refer to the parent pom and inherit any values unless they are overwritten. While in software the programming language defines a complex structure which has to be followed, in data everything is fantasy ecxept for the concrete file as it provides a clearly defined thing. Hence the model imposed for the databus is simpler than for software:
+* Bundle relates to the Parent POM and inherits its metadata to the modules/datasets
+* Datasets are modules and receive their metadata from the bundle/parent pom (and can extend or override it)
+* Distributions are the files of the dataset and are under normally stored in `src/main/databus/${version}/` for each module
+* Each dataset/module has its own artifactid, the distributions/files must start with the artifactid
+
+
+## Versioning
+Changes in software can be tracked very well and manual versioning can be given. Data behaves two-fold: Schematic information, e.g. schema definitions, taxonomy and ontologies can be versioned like software. The data itself follows pareto-efficiency: The first 80% need 20% of effort, the last 20% need 80%. Fixing the last error in data is extremely expensive. Hence, we recommend using a time-based version, i.e. YEAR.MONTH.DAY in the format YYYY.MM.DD (alphabetical sortable). Another possibility is to align the version number to either :
+1. the software version used to create it (as a consequence the software version needs to be incremented for each data release)
+2. the ontology version IFF the ontology is contained in the bundle and versioned like software
+
+## Files & folders
+Per default 
+```
+${bundle}/ 
++-- pom.xml (parent pom with bundle metadata and ${version}, all artifactids are listed as `<modules>` )
++-- ${artifactid1}/ (module with artifactid as datasetname)
+|	+-- pom.xml (dataset metadata)
+|   +-- src/main/databus/${version}/
+|   |   *-- ${artifactid1}_cvar1.nt (distribution, content variance 1, formatvariance nt, compressionvariant none)
+|   |   *-- ${artifactid1}_cvar1.csv (distribution, content variance 1, formatvariance csv, compressionvariant none)
+|   |   *-- ${artifactid1}_cvar1.csv.bz2 (distribution, content variance 1, formatvariance csv, compressionvariant bzip)
+|   |   *-- ${artifactid1}_cvar2.ttl
+|   |   *-- ${artifactid1}_cvar2.csv
+```
+An example is given in the example folder of this repo.
+
+### (Important) File input path
+The file input path is `src/main/databus/${version}/` per default, relative to the module.
+This path can be configured in the parent pom.xml using the `<databus.dataInputDirectory>` parameter. Absolute paths are allowed. 
+
+### (Important) File copying
+During the maven build process, the code is normally duplicated 6-7 times. For each module, the code is first copied and compiled in the `target/classes` folder and then copied and compressed again in a .jar file. All this is then copied again. 
+The databus-maven-plugin behaves different: 
+* the `target/databus` folder is used to assemble metadata (which is not large)
+* `mvn clean` deletes the target folder and will only delete the generated metadata
+* no input data is copied into the `target` folder, i.e. the process does not duplicate data due to storage reasons
+* `mvn databus:package-export` will copy the files to an external location as given in `<databus.packageDirectory>`.
+ 
+
 # Usage 
 
 ## How to make a release 
-Once the project is configured properly [see Configuration](#configuration)
+Once the project is configured properly [see Configuration](#configuration) releases are easy to generate and update. 
+The only technical requirement for usage is Maven3 `sudo apt-get install maven`
+We regularly deploy the plugin to our archiva at http://databus.dbpedia.org:8081/, later Maven Central.
+Maven will automatically install the plugin (Note that the archetype for configuration has to be installed manually at the moment )
+We assume that you have set up the private key, the WebId and the data resides in `src/main/databus/${version}/` and the pom.xml are configured properly.
 
-
-
-As a preparation, you will need to copy all data into `src/main/databus/${version}` (as configured in `<databus.dataInputDirectory>`)
-
-
-
-
-
-
-# Requirements
-Databus maven plugin philosophy:
-*  enforces as few requirements as possible on how you handle your data (wide applicability)
-*  automate the data release process as much as possible (medium effort to learn and setup, great time-saver afterwards)
-
-
-Strict minimal requirements:
-* WebID/Private key: in order to guarantee clear provenance
-* (under discussion) Same-Origin-Policy: metadata files are required to be published under the same domain as the data, i.e. no third-party rebranding of already published data
-* (under discussion) dataid uses relative path and assumes the file lies in the same folder
-
-## Technical requirements
-* Maven 3 `sudo apt-get install maven`
-* Java 1.7
-
-# Terminology
-* Dataset (handled as a maven module): we define a dataset as a collection of files with the same starting prefix ($artifactId). These files normally contain the same or similar kind of data with some variants, e.g. different languages (contenvariant) and formats
-* Bundle (handled as parent pom): a collection of datasets (modules) released together, mainly for practical purposes, e.g. they have the same metadata, i.e. publisher, version number, etc. 
-Note that the distinction between dataset and bundle is up to the creator, we only require that all files in a dataset start with the same prefix, i.e. the artifactid
-
-# Quickstart
-clone the repository
 ```
+# deleting any previously generated metadata
+mvn clean 
+
+# validate setup of private key/webid
+mvn databus:validate
+
+# validate syntax of rdf data, generated parselogs in target/databus/parselogs
+# Note: this is a resource intensive step. It can be skipped (-DskipTests=true)
+mvn databus:test-data
+
+# generate metadata in target/databus/dataid
+mvn databus:metadata
+
+# export the release to a local directory as given in <databus.packageDirectory>
+# copies data from src, metadata and parselogs from data
+mvn databus:package-export
+
+# output folder or any parameter can be set on the fly 
+mvn databus:package-export -Ddatabus.packageDirectory="/var/www/mydata.org/datareleases"
+
+
+```
+
+
+### Github setup
+The pom.xml can be versioned via GitHub as we do for `dbpedia` (see folder). Add the following to `.gitignore` to exclude data from being committed to git:
+`${bundlefolder}/*/*/src/`
+
+## Change version of the whole bundle
+`mvn versions:set -DnewVersion=2018.08.15`
+
+
+# Run the example
+There are working examples in the example folder, which you can copy and adapt
+
+```
+# clone the repository
 git clone https://github.com/dbpedia/databus-maven-plugin.git
 cd databus-maven-plugin
+cd example/animals
+
+# validate, parse, generate metadata and package
+mvn databus:validate databus:test-data databus:metadata databus:package-export
+
 ```
-## Run an example 
-There are working examples in the example folder, which you can copy and adapt
-`cd example/animals`
-validate, parse, generate metadata and package
-`mvn databus:validate databus:test-data databus:metadata databus:package-export`
-
-modify output folder
-`mvn databus:package-export -Ddatabus.packageDirectory="/var/www/mydata.org/datareleases"` 
 
 
-
-
-# Phases
-Below we are listing all the phases, that are relevant and describe how the databus-maven-plugin hooks into the maven lifecycle. Not all phases are used, see the [complete reference](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference)
-
-Phase | Goal | Description 
---- | --- | ---
-validate|`databus:validate`|validate the project is correct and all necessary information is available, especially check the WebId and the private key
-generate-resources|not yet implemented|Download the data dependencies
-compile| none |compile the source code of the project
-  |`exec` | The software has to be executed between compile and test in order to produce the data
-test|`databus:test-data` | Parses all data files to check for correctness, generates a parselog for inclusion in the package. `-DskipTests=true` skips this phase, as it requires some time to run
-prepare-package|`databus:metadata`|Analyses each file and prepares the metadata
-prepare-package|`databus:rss`|TODO Not implemented yet
-package| |take the compiled code and package it in its distributable format
-verify| |run any checks on results of integration tests to ensure quality criteria are met
-install| |install the package into the local repository, for use as a dependency in other projects locally
-deploy| |done in the build environment, copies the final package to the remote repository for sharing with other developers and projects.
-
-# Usage
-
-The configuration is documented in the example pom.xml: https://github.com/dbpedia/databus-maven-plugin/blob/master/example/animals/pom.xml
-
-Once you have downloaded the pom.xml from this project and configured it properly, you can use the maven commands as specified in the phases, e.g. `mvn databus:validate`, `mvn databus:test-data`, `mvn databus:metadata`, `mvn databus:package-export`
-
-
-# Documentation of available plugins
-user contributed plugins
 
 # Configuration
 
@@ -192,6 +227,38 @@ Any contribution will be merged under the copyright of the DBpedia Association.
 
 
 <!--
+
+
+
+# Phases
+Below we are listing all the phases, that are relevant and describe how the databus-maven-plugin hooks into the maven lifecycle. Not all phases are used, see the [complete reference](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Lifecycle_Reference)
+
+Phase | Goal | Description 
+--- | --- | ---
+validate|`databus:validate`|validate the project is correct and all necessary information is available, especially check the WebId and the private key
+generate-resources|not yet implemented|Download the data dependencies
+compile| none |compile the source code of the project
+  |`exec` | The software has to be executed between compile and test in order to produce the data
+test|`databus:test-data` | Parses all data files to check for correctness, generates a parselog for inclusion in the package. `-DskipTests=true` skips this phase, as it requires some time to run
+prepare-package|`databus:metadata`|Analyses each file and prepares the metadata
+prepare-package|`databus:rss`|TODO Not implemented yet
+package| |take the compiled code and package it in its distributable format
+verify| |run any checks on results of integration tests to ensure quality criteria are met
+install| |install the package into the local repository, for use as a dependency in other projects locally
+deploy| |done in the build environment, copies the final package to the remote repository for sharing with other developers and projects.
+
+# Usage
+
+The configuration is documented in the example pom.xml: https://github.com/dbpedia/databus-maven-plugin/blob/master/example/animals/pom.xml
+
+Once you have downloaded the pom.xml from this project and configured it properly, you can use the maven commands as specified in the phases, e.g. `mvn databus:validate`, `mvn databus:test-data`, `mvn databus:metadata`, `mvn databus:package-export`
+
+
+# Documentation of available plugins
+user contributed plugins
+
+
+
 # Problem
 Publishing data on the web in a de-centralised manner is the grand vision of the Semantic Web. However, decentralisation comes with its problems. Putting data files on your web server and creating a landing page to describe this data, just goes a short way. Humans can read the landing page and use the right-click save-as to download the files. Crawlers can discover links and can download the files automatically, but have no understanding of the context, publisher, version or other metadata of the files, making its usage limited. 
 
