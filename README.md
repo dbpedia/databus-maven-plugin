@@ -1,11 +1,31 @@
 # Databus Maven Plugin
 Aligning data and software lifecycle with Maven
-The plugin provides the following features:
-* Maven is a widely used software build automation tool; triggered by the ever-growing importance of data you can now integrate data seamlessly into your software lifecycle with this plugin, i.e. 
-  1. import data to be used by the software automatically
-  2. compile and run the software as usual, producing new data as output
-  3. republish that data on the web and the databus (for other to discover and use with this plugin)
-* the plugin can also be used as a *standalone version*, i.e. if you just have a folder with data that you want to publish
+
+The plugin was developed to use the features of the Maven software build automation tool for data releases and metadata generation.
+The tool has the following features:
+* once configured properly (1-3 hours), data can be released and released systematically in minutes
+* auto-detect RDF formats with syntax validation 
+* RDF is NOT a requirement, any data can be released (binary, csv, xml), however with RDF the tool has more features
+* auto-detect compression
+* private key signature, sha256sum and provenance (WebID) generation
+* generation of metadata compatible to:
+ * RSS feeds
+
+## Roadmap
+We are planning the following features:
+* DCAT and DCAT-AP interoperability
+* FAIR Data principles
+* automatic generation of H2020 EU Data Management Plan Deliverables 
+ * feature exists, but is not yet integrated:
+ * https://wiki.dbpedia.org/use-cases/data-management-plan-extension-dataid
+* automatic upload of metadata to other repositories:
+ * http://lod-cloud.net
+ * CKAN
+ * RE3
+ 
+ Did we forget something? suggest more interoperability in the issue tracker: https://github.com/dbpedia/databus-maven-plugin/issues
+
+
 
 
 
@@ -13,6 +33,7 @@ The plugin provides the following features:
 # Table of Contents
 <!--ts-->
    * [Databus Maven Plugin](#databus-maven-plugin)
+      * [Roadmap](#roadmap)
    * [Table of Contents](#table-of-contents)
    * [Bundle, dataset, distribution](#bundle-dataset-distribution)
       * [Terminology](#terminology)
@@ -37,7 +58,7 @@ The plugin provides the following features:
    * [Troubleshooting](#troubleshooting)
       * [BUILD FAILURE, no mojo-descriptors found (when using mvn install to install the databus-maven-plugin)](#build-failure-no-mojo-descriptors-found-when-using-mvn-install-to-install-the-databus-maven-plugin)
 
-<!-- Added by: shellmann, at: 2018-09-07T15:29+02:00 -->
+<!-- Added by: shellmann, at: 2018-09-07T15:42+02:00 -->
 
 <!--te-->
 
@@ -46,7 +67,7 @@ In this section, we will describe the basic terminology and how they relate to M
 
 ## Terminology
 * Dataset - a dataset is a bunch of files that have a common description. The fact that they can be described together shows an inherent coherence and that they belong together. Other than this criteria, it is quite arbitrary how datasets are defined, so this is a pragmatical approach, i.e. there is no need to duplicate documentation, i.e. have several datasets with the same description or subspecialisation, i.e. this dataset is about X, but some files are about Y
-** the databus maven plugin *requires that all files of a dataset start with the datasetname* 
+  * the databus maven plugin *requires that all files of a dataset start with the datasetname* 
 * Distribution - one file of a dataset
 * Formatvariance - a dataset can have files in different formats. Format variance is abstracted quite well, different distributions are created with same metadata except for the format field
 * Compression variance - compression is handled separatedly from format, i.e. the same format can be compressed in different ways
