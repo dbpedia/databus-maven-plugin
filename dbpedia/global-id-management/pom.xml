@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.dbpedia.databus.input-id-management</groupId>
-    <artifactId>input-id-management</artifactId>
+    <groupId>org.dbpedia.databus.global-id-management</groupId>
+    <artifactId>global-id-management</artifactId>
     <packaging>pom</packaging>
     <version>2018.09.01</version>
 
@@ -11,7 +11,7 @@
         <!--dataDirectory DEFAULT: src/main/databus/input
 * input folder for data
 * copy/move all your datafiles in the respective modules
-* all files have to start with the input-id-management of the module, i.e. src/main/databus/input/$artifactId_en.nt.bz2
+* all files have to start with the global-id-management of the module, i.e. src/main/databus/input/$artifactId_en.nt.bz2
 
 -->
         <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
