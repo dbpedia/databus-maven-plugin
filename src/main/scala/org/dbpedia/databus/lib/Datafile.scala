@@ -25,6 +25,7 @@ import org.dbpedia.databus.Properties
 import org.dbpedia.databus.parse.LineBasedRioDebugParser
 import org.dbpedia.databus.shared.signing
 import org.dbpedia.databus.voc.{ApplicationNTriples, DataFileToModel, Format, TextTurtle}
+
 import better.files.{File => BetterFile, ManagedResource => _, _}
 import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
 import org.apache.commons.compress.compressors.CompressorStreamFactory
@@ -33,13 +34,13 @@ import org.eclipse.rdf4j.rio.Rio
 import resource._
 
 import scala.io.{Codec, Source}
+import scala.util.{Failure, Success, Try}
+
 import java.io._
 import java.nio.charset.MalformedInputException
 import java.nio.file.Files
 import java.security.PrivateKey
 import java.util.Base64
-
-import scala.util.{Failure, Success, Try}
 
 
 /**
@@ -115,14 +116,14 @@ class Datafile private(datafile: File) {
         source <- managed(Source.fromInputStream(inputStream)(Codec.UTF8))
 
       } yield {
-        Try (source.getLines().take(lineCount).mkString("\n"))
-      }
+        Try(source.getLines().take(lineCount).mkString("\n"))
+    }
 
     def maxLength = lineCount * 500
 
     preview = unshortenedPreview apply {
 
-      case Success(tooLong)if tooLong.size > maxLength => tooLong.substring(0, maxLength)
+      case Success(tooLong) if tooLong.size > maxLength => tooLong.substring(0, maxLength)
 
       case Success(shortEnough) => shortEnough
 

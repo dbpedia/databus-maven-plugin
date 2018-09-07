@@ -20,15 +20,17 @@
  */
 package org.dbpedia.databus
 
-import java.io.{File, FileWriter}
+import org.dbpedia.databus.lib.Datafile
+import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
+import org.dbpedia.databus.voc.UNKNOWN
 
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-import org.dbpedia.databus.lib.{Datafile}
-import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
-import org.dbpedia.databus.voc.UNKNOWN
-import org.eclipse.rdf4j.rio.{RDFFormat, RDFParser, Rio}
+import org.eclipse.rdf4j.rio.{RDFParser, Rio}
+
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 
 @Mojo(name = "test-data", defaultPhase = LifecyclePhase.TEST)
 class TestData extends AbstractMojo with Properties {
@@ -42,7 +44,7 @@ class TestData extends AbstractMojo with Properties {
       return
     }
 
-    val parseLogFileWriter = new FileWriter(getParseLogFile())
+    val parseLogFileWriter = Files.newBufferedWriter(getDataIdFile().toPath, StandardCharsets.UTF_8)
 
     getListOfDataFiles().foreach(datafile => {
 
