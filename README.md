@@ -6,7 +6,7 @@ The tool has the following features:
 * once configured properly (1-3 hours), data can be released and released systematically in minutes
 * auto-detect RDF formats with syntax validation 
 * RDF is NOT a requirement, any data can be released (binary, csv, xml), however with RDF the tool has more features
-* auto-detect compression
+* auto-detect compression variant
 * private key signature, sha256sum and provenance (WebID) generation
 * generation of metadata compatible to:
   * RSS feeds
@@ -16,12 +16,12 @@ We are planning the following features:
 * DCAT and DCAT-AP interoperability
 * FAIR Data principles
 * automatic generation of H2020 EU Data Management Plan Deliverables 
- * feature exists, but is not yet integrated:
- * https://wiki.dbpedia.org/use-cases/data-management-plan-extension-dataid
+  * feature exists, but is not yet integrated:
+  * https://wiki.dbpedia.org/use-cases/data-management-plan-extension-dataid
 * automatic upload of metadata to other repositories:
- * http://lod-cloud.net
- * CKAN
- * RE3
+  * http://lod-cloud.net
+  * CKAN
+  * RE3
  
  Did we forget something? suggest more interoperability in the issue tracker: https://github.com/dbpedia/databus-maven-plugin/issues
 
@@ -67,7 +67,7 @@ In this section, we will describe the basic terminology and how they relate to M
 
 ## Terminology
 * Dataset - a dataset is a bunch of files that have a common description. The fact that they can be described together shows an inherent coherence and that they belong together. Other than this criteria, it is quite arbitrary how datasets are defined, so this is a pragmatical approach, i.e. there is no need to duplicate documentation, i.e. have several datasets with the same description or subspecialisation, i.e. this dataset is about X, but some files are about Y
-  * the databus maven plugin *requires that all files of a dataset start with the datasetname* 
+   * the databus maven plugin *requires that all files of a dataset start with the datasetname* 
 * Distribution - one file of a dataset
 * Formatvariance - a dataset can have files in different formats. Format variance is abstracted quite well, different distributions are created with same metadata except for the format field
 * Compression variance - compression is handled separatedly from format, i.e. the same format can be compressed in different ways
