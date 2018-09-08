@@ -1,0 +1,37 @@
+prefix dct: <http://purl.org/dc/terms/>
+prefix dc: <http://purl.org/dc/elements/1.1/>
+prefix : <http://purl.org/rss/1.0>
+prefix dataid: <http://dataid.dbpedia.org/ns/core#> 
+prefix dcat:  <http://www.w3.org/ns/dcat#> 
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+CONSTRUCT {
+<http://example.rss>
+    a :channel ;
+    :title "Test RSS Feed" ;
+    :link <http://example.rss> ;
+    :description "Dependent on the input data or the where condition ( here all datasets with alimayilov )" .
+?dataid
+    a :item ;
+    :title ?title ;
+    :link ?dataid ;
+    :description ?description ;
+    dc:date ?date ;
+    dc:license ?license ;
+    dc:hasVersion ?version .
+}
+WHERE {
+    ?dataid a dataid:Dataset ;
+        dataid:associatedAgent <https://alismayilov.github.io/webid-ali.ttl#this> ;   
+        dct:title ?title ;
+        dct:description ?description ;
+        dct:issued ?date ;
+        dct:license ?license ;
+        dct:hasVersion ?version .
+    Filter Not Exists {
+        ?dataidAltVersion a dataid:Dataset ;
+            dct:title ?title ; 
+            dct:description ?description ; 
+            dct:hasVersion ?version2 .
+        FILTER ( ?dataidAltVersion != ?dataid && ?version2 > ?version )
+    }
+}
