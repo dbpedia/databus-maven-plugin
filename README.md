@@ -72,7 +72,7 @@ In this section, we will describe the basic terminology and how they relate to M
 * Formatvariance - a dataset can have files in different formats. Format variance is abstracted quite well, different distributions are created with same metadata except for the format field
 * Compression variance - compression is handled separatedly from format, i.e. the same format can be compressed in different ways
 * Contentvariance of a dataset - besides the format variance a dataset can have a certain degree of content variance. This normally determines how the dataset is distributed over the files. The easiest example is DBpedia, where each dataset contains all Wikipedia languages, so in this case contentvariance is the language. The data could also be differentiated by type, e.g. a company dataset that produces a distribution for each organsiation form (non-profit, company, etc). As a guideline, contentvariance can be choosen arbitrarily and the only criteria is whether there are some use cases, where users would only want part of the dataset, otherwise merging into one big file is fine. 
-* Bundle - a collection of datasets released together. Also a pragmatic definition. The framework here will not work well, if you combine datasets with different release cycles and metadata in the same bundle, e.g. some daily, some monthyl or metadata variance different publishers or versioning systems.
+* Bundle - a collection of datasets released together. Also a pragmatic definition. The framework here will not work well, if you combine datasets with different release cycles and metadata in the same bundle, e.g. some daily, some monthly or metadata variance different publishers or versioning systems.
 
 ## Relation to Maven
 Maven was established to automate software builds and release them (mostly Java). A major outcome of the ALIGNED project (http://aligned-project.eu/) was to establish which parts of data releases can be captured by Maven. Here is a practical summary:
@@ -80,14 +80,14 @@ Maven was established to automate software builds and release them (mostly Java)
 Maven uses a Parent POM (Project Object Model) to define software project. The POM is saved in a file called `pom.xml`. Each project can have multiple `modules` where the code resides. These modules refer to the parent pom and inherit any values unless they are overwritten. While in software the programming language defines a complex structure which has to be followed, in data everything is fantasy ecxept for the concrete file as it provides a clearly defined thing. Hence the model imposed for the databus is simpler than for software:
 * Bundle relates to the Parent POM and inherits its metadata to the modules/datasets
 * Datasets are modules and receive their metadata from the bundle/parent pom (and can extend or override it)
-* Distributions are the files of the dataset and are under normally stored in `src/main/databus/${version}/` for each module
+* Distributions are the files of the dataset and are normally stored in `src/main/databus/${version}/` for each module
 * Each dataset/module has its own artifactid, the distributions/files must start with the artifactid
 
 
 ## Versioning
-Changes in software can be tracked very well and manual versioning can be given. Data behaves two-fold: Schematic information, e.g. schema definitions, taxonomy and ontologies can be versioned like software. The data itself follows pareto-efficiency: The first 80% need 20% of effort, the last 20% need 80%. Fixing the last error in data is extremely expensive. Hence, we recommend using a time-based version, i.e. YEAR.MONTH.DAY in the format YYYY.MM.DD (alphabetical sortable). Another possibility is to align the version number to either :
+Changes in software can be tracked very well and manual versioning can be given. Data behaves two-fold: Schematic information, e.g. schema definitions, taxonomy and ontologies can be versioned like software. The data itself follows pareto-efficiency: The first 80% need 20% of effort, the last 20% need 80%. Fixing the last error in data is extremely expensive. Hence, we recommend using a time-based version, i.e. YEAR.MONTH.DAY in the format YYYY.MM.DD (alphabetical sortable). Another possibility is to align the version number to either:
 1. the software version used to create it (as a consequence the software version needs to be incremented for each data release)
-2. the ontology version IFF the ontology is contained in the bundle and versioned like software
+2. the ontology version if and only if the ontology is contained in the bundle and versioned like software
 
 ## Files & folders
 Per default 
@@ -95,13 +95,13 @@ Per default
 ${bundle}/ 
 +-- pom.xml (parent pom with bundle metadata and ${version}, all artifactids are listed as `<modules>` )
 +-- ${artifactid1}/ (module with artifactid as datasetname)
-|	+-- pom.xml (dataset metadata)
+|   +-- pom.xml (dataset metadata)
 |   +-- src/main/databus/${version}/
 |   |   *-- ${artifactid1}_cvar1.nt (distribution, content variance 1, formatvariance nt, compressionvariant none)
 |   |   *-- ${artifactid1}_cvar1.csv (distribution, content variance 1, formatvariance csv, compressionvariant none)
 |   |   *-- ${artifactid1}_cvar1.csv.bz2 (distribution, content variance 1, formatvariance csv, compressionvariant bzip)
-|   |   *-- ${artifactid1}_cvar2.ttl
-|   |   *-- ${artifactid1}_cvar2.csv
+|   |   *-- ${artifactid1}_cvar2.ttl (distribution, content variance 2, formatvariance ttl, compressionvariant none)
+|   |   *-- ${artifactid1}_cvar2.csv (distribution, content variance 2, formatvariance csv, compressionvariant none)
 ```
 An example is given in the example folder of this repo.
 
