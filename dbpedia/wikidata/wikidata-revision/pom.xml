@@ -31,9 +31,9 @@ You can configure here:
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
                     <labels>
-                        <label>Infobox Properties@en</label>
+                        <label>Wikidata Revision@en</label>
                     </labels>
-                    <datasetDescription>Extracted Data from the Wikipedia Article-Infoboxes</datasetDescription>
+                    <datasetDescription>The revision information of the Wikidata article the information was extracted from.</datasetDescription>
                 </configuration>
             </plugin>
         </plugins>

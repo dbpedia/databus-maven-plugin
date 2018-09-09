@@ -31,9 +31,9 @@ You can configure here:
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
                     <labels>
-                        <label>Infobox Properties@en</label>
+                        <label>Wikidata Instance Types@en</label>
                     </labels>
-                    <datasetDescription>Extracted Data from the Wikipedia Article-Infoboxes</datasetDescription>
+                    <datasetDescription>Contains triples of the form $object rdf:type $class from the mapping-based extraction.</datasetDescription>
                 </configuration>
             </plugin>
         </plugins>

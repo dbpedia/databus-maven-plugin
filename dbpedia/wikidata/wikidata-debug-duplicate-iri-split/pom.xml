@@ -31,9 +31,9 @@ You can configure here:
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
                     <labels>
-                        <label>Debug information about duplicate IRIs@en</label>
+                        <label>Wikidata Debug Duplicate IRI Split@en</label>
                     </labels>
-                    <datasetDescription>no description yet</datasetDescription>
+                    <datasetDescription>Debug information about duplicate IRIs</datasetDescription>
                 </configuration>
             </plugin>
         </plugins>

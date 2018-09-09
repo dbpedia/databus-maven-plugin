@@ -31,9 +31,9 @@ You can configure here:
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
                     <labels>
-                        <label>Infobox Properties@en</label>
+                        <label>Mappingbased Objects@en</label>
                     </labels>
-                    <datasetDescription>Extracted Data from the Wikipedia Article-Infoboxes</datasetDescription>
+                    <datasetDescription>High-quality data extracted from Infoboxes using the mapping-based extraction (Object properties only).</datasetDescription>
                 </configuration>
             </plugin>
         </plugins>
