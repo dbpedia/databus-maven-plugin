@@ -31,9 +31,9 @@ You can configure here:
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
                     <labels>
-                        <label>Infobox Properties@en</label>
+                        <label>Wikidata SameAs All Wikis@en</label>
                     </labels>
-                    <datasetDescription>Extracted Data from the Wikipedia Article-Infoboxes</datasetDescription>
+                    <datasetDescription>sameas for all wikis</datasetDescription>
                 </configuration>
             </plugin>
         </plugins>

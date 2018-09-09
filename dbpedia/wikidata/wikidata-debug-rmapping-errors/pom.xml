@@ -31,9 +31,9 @@ You can configure here:
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
                     <labels>
-                        <label>Debug info about R2R mappings@en</label>
+                        <label>Wikidata Debug Mapping Errors@en</label>
                     </labels>
-                    <datasetDescription>no description yet</datasetDescription>
+                    <datasetDescription>Debug info about R2R mappings</datasetDescription>
                 </configuration>
             </plugin>
         </plugins>

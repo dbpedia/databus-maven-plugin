@@ -31,9 +31,9 @@ You can configure here:
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
                     <labels>
-                        <label>Infobox Properties@en</label>
+                        <label>Wikidata Page IDs@en</label>
                     </labels>
-                    <datasetDescription>Extracted Data from the Wikipedia Article-Infoboxes</datasetDescription>
+                    <datasetDescription>Dataset linking a DBpedia resource to the page ID of the Wikidata page the data was extracted from.</datasetDescription>
                 </configuration>
             </plugin>
         </plugins>
