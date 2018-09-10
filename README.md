@@ -11,6 +11,10 @@ The tool has the following features:
 * generation of metadata compatible to:
   * RSS feeds
 
+## Metadata Standards
+DBpedia's DataID fulfills 31 of 35 Best Practices from the Data on the Web Best Practices Working Group
+![DWBP Implementation Report Summary](https://raw.githubusercontent.com/dbpedia/databus-maven-plugin/master/DWBP.png)
+
 ## Roadmap
 We are planning the following features:
 * DCAT and DCAT-AP interoperability
