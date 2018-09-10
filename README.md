@@ -12,7 +12,8 @@ The tool has the following features:
   * RSS feeds
 
 ## Metadata Standards
-DBpedia's DataID fulfills 31 of 35 Best Practices from the Data on the Web Best Practices Working Group
+DBpedia's DataID fulfills 31 of 35 Best Practices from the Data on the Web Best Practices Working Group cf. http://w3c.github.io/dwbp/dwbp-implementation-report.html 
+<img src="https://raw.githubusercontent.com/dbpedia/databus-maven-plugin/master/DWBP.png" ></img>
 ![DWBP Implementation Report Summary](https://raw.githubusercontent.com/dbpedia/databus-maven-plugin/master/DWBP.png)
 
 ## Roadmap
