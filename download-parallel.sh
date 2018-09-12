@@ -40,6 +40,4 @@ collect_links_and_sinks() {
     done
 }
 
-echo "||$process_link_cmd||"
-
 collect_links_and_sinks $* | parallel "$process_link_cmd"
