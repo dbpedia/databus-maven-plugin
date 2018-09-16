@@ -450,6 +450,7 @@ mvn install
 Possible reason: we have installed a dev archiva for now. Depending on your org's network configuration, code might only be accepted from Maven Central and local/allowed maven repos.
 * `[WARNING] The POM for org.dbpedia.databus:databus-maven-plugin:jar:1.0-SNAPSHOT is missing, no dependency information available`
 * `Could not resolve dependencies for project org.dbpedia.databus:databus-maven-plugin:maven-plugin:1.0-SNAPSHOT: Failure to find org.dbpedia.databus:databus-shared-lib:jar:0.1.4`
+
 Can potentially fixed by locally installing the shared-lib:
 * Download Jar: http://databus.dbpedia.org:8081/#artifact-details-download-content/org.dbpedia.databus/databus-shared-lib/0.1.4
 * Install dependency: https://maven.apache.org/guides/mini/guide-3rd-party-jars-local.html
