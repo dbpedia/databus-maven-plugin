@@ -445,6 +445,18 @@ mvn install
 ```
 -->
 # Troubleshooting
+## Download from http://databus.dbpedia.org:8081/repository/ fails, no dependency information available
+Possible reason: we have installed a dev archiva for now. Depending on your org's network configuration, code might only be accepted from Maven Central and local/allowed maven repos.
+* `[WARNING] The POM for org.dbpedia.databus:databus-maven-plugin:jar:1.0-SNAPSHOT is missing, no dependency information available`
+* `Could not resolve dependencies for project org.dbpedia.databus:databus-maven-plugin:maven-plugin:1.0-SNAPSHOT: Failure to find org.dbpedia.databus:databus-shared-lib:jar:0.1.4`
+Can potentially fixed by locally installing the shared-lib:
+* Download Jar: http://databus.dbpedia.org:8081/#artifact-details-download-content/org.dbpedia.databus/databus-shared-lib/0.1.4
+* Install dependency: https://maven.apache.org/guides/mini/guide-3rd-party-jars-local.html
+
+Then clone the repo and run `mvn install` which will install the databus-maven-plugin locally
+
+
+
 ## BUILD FAILURE, no mojo-descriptors found (when using `mvn install` to install the databus-maven-plugin)
 This is most likely caused by using an old maven version (observed in version `3.0.5`)
 A workaround for this would be replacing:
