@@ -1,3 +1,5 @@
+**Discuss** via Slack  #releases: https://dbpedia.slack.com/messages/CBLRV788K/details/
+
 # Databus Maven Plugin
 Aligning data and software lifecycle with Maven
 
