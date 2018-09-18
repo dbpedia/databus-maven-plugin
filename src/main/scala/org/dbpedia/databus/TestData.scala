@@ -20,17 +20,16 @@
  */
 package org.dbpedia.databus
 
-import org.dbpedia.databus.lib.Datafile
-import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
-import org.dbpedia.databus.voc.UNKNOWN
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
+import org.dbpedia.databus.lib.Datafile
+import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
+import org.dbpedia.databus.voc.UNKNOWN
 import org.eclipse.rdf4j.rio.{RDFParser, Rio}
-
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
 
 @Mojo(name = "test-data", defaultPhase = LifecyclePhase.TEST)
 class TestData extends AbstractMojo with Properties {
@@ -84,7 +83,7 @@ class TestData extends AbstractMojo with Properties {
           //parseLog.append(s"Lines: $lines\nTriples: $all\nValid: $good\nErrors: ${bad.size}\n")
 
           if (bad.size > 0) {
-            details.append(s"\n#Error details for $datafile\n#${bad.mkString("\n#")}")
+            details.append(s"\n#Error details for $datafile\n#${bad.mkString("\n#")}\n")
           }
         } else {
           rdfParser = Rio.createParser(df.mimetype.rio)
