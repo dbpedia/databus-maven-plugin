@@ -66,7 +66,7 @@ class TestData extends AbstractMojo with Properties {
       var rdfParser: RDFParser = null
       //rdfParser.setParserConfig(config)
 
-      if (df.mimetype != UNKNOWN) {
+      if (!(df.mimetype.rio eq null)) {
 
         if (df.mimetype.lineBased) {
           rdfParser = Rio.createParser(df.mimetype.rio)

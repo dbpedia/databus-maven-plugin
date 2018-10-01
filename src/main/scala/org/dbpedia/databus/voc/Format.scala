@@ -30,25 +30,28 @@ class Format(val mimeType: String = "UNKNOWN", val lineBased: Boolean = false, v
 
 object Format {
 
-  def detectMimetypeByFileExtension(datafile: File): (String, Format) = {
-    val knownExt = Set(".nt", ".ttl", ".tql", ".nq", ".rdf")
-    var x = ""
+  lazy val knownFormats = Map(
+    ".nt" -> ApplicationNTriples,
+    ".ttl" -> TextTurtle,
+    ".tql" -> ApplicationNQuad,
+    ".nq" -> ApplicationNQuad,
+    ".rdf" -> ApplicationRDFXML,
+    ".csv" -> TextCSV,
+    ".tsv" -> TextTabSeparatedValues
+  )
 
-    for (key <- knownExt) {
-      if (datafile.getName.contains(key)) {
-        x = key
-      }
-    }
-    x match {
-      case ".nt" => (x, ApplicationNTriples)
-      case ".ttl" => (x, TextTurtle)
-      case ".tql" => (x, ApplicationNQuad)
-      case ".nq" => (x, ApplicationNQuad)
-      case ".rdf" => (x, ApplicationRDFXML)
-      case _ => (x, UNKNOWN)
+
+  def detectMimetypeByFileExtension(datafile: File): (String, Format) = {
+
+    val extensionMatch = knownFormats find { case (ext, _) => datafile.getName.contains(ext) }
+
+    extensionMatch match {
+
+      case Some(matchedExtAndFormat) => matchedExtAndFormat
+
+      case None => ("", UNKNOWN)
     }
   }
-
 }
 
 // line base
@@ -61,6 +64,10 @@ object ApplicationNQuad extends Format("application/n-quads", true, org.eclipse.
 object TextTurtle extends Format("text/turtle", false, org.eclipse.rdf4j.rio.RDFFormat.TURTLE, org.apache.jena.riot.RDFFormat.TURTLE) {}
 
 object ApplicationRDFXML extends Format("application/rdf+xml", false, org.eclipse.rdf4j.rio.RDFFormat.RDFXML, org.apache.jena.riot.RDFFormat.RDFXML) {}
+
+object TextCSV extends Format(mimeType = "text/csv", lineBased = true, null, null)
+
+object TextTabSeparatedValues extends Format("text/tab-separated-values", lineBased = true, null, null)
 
 object UNKNOWN extends Format("UNKNOWN", false, null, null) {}
 
