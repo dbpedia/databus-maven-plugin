@@ -22,7 +22,6 @@
 package org.dbpedia.databus
 
 import org.dbpedia.databus.lib.{Datafile, Sign}
-import org.dbpedia.databus.shared.rdf.vocab
 import org.dbpedia.databus.voc.DataFileToModel
 
 import better.files.{File => _, _}
@@ -75,8 +74,7 @@ class PrepareMetadata extends AbstractMojo with Properties {
     // write the model to target
     if(!dataIdCollect.isEmpty) {
       val datasetResource = dataIdCollect.createResource( s"#${finalName}")
-      val dataid = vocab.dataid.inModel(dataIdCollect)
-      DataFileToModel.addBasicPropertiesToResource( this, dataIdCollect, dataid, datasetResource)
+      DataFileToModel.addBasicPropertiesToResource( this, dataIdCollect, datasetResource)
 
 
       datasetResource.addProperty(dataIdCollect.createProperty("todonote"), "we are still refactoring code for dataid creation, much more information will be available at this resource later")
@@ -91,8 +89,7 @@ class PrepareMetadata extends AbstractMojo with Properties {
   def processFile(datafile: File, dataIdCollect: Model): Unit = {
     getLog.info(s"found file ${datafile.getCanonicalPath}")
     val df: Datafile = Datafile.init(datafile)
-    val privateKey = Sign.readPrivateKeyFile(privateKeyFile)
-
+    val privateKey = Sign.readPrivateKeyFile(privateKeyFile.toScala)
 
     df
       .updateSHA256sum()

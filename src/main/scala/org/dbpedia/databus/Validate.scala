@@ -23,6 +23,7 @@ package org.dbpedia.databus
 import org.dbpedia.databus.lib.Sign
 import org.dbpedia.databus.shared.authentification.RSAModulusAndExponent
 
+import better.files._
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
@@ -73,7 +74,7 @@ class Validate extends AbstractMojo with Properties {
 
     getLog.info("Private Key File: " + privateKeyFile)
 
-    val modulusExponentFromFile = Sign.readPrivateKeyFile(privateKeyFile) match {
+    val modulusExponentFromFile = Sign.readPrivateKeyFile(privateKeyFile.toScala) match {
 
       case rsaPrivateKey: RSAPrivateCrtKey => {
         RSAModulusAndExponent(rsaPrivateKey.getModulus, rsaPrivateKey.getPublicExponent)

@@ -38,7 +38,6 @@ import org.apache.maven.plugins.annotations.Parameter
   */
 trait Properties {
 
-
   /**
     * Project vars given by Maven
     */
@@ -88,6 +87,7 @@ trait Properties {
 
   @Parameter var bundle: String = ""
   @Parameter var downloadUrlPath: URL = _
+  @Parameter(defaultValue = "true") var allowOverwriteOnDeploy: Boolean = _
   @Parameter var feedFrom: String = ""
 
 
@@ -99,6 +99,7 @@ trait Properties {
   // read privatekeyfiles in hash and signs searches in the parent folder using ../
   // works for now, but could fail
   @Parameter var privateKeyFile: File = _
+  @Parameter var pkcs12File: File = _
 
   @Parameter var maintainer: URL = _
   @Parameter var publisher: URL = _

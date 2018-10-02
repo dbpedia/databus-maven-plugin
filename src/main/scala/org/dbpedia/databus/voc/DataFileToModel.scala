@@ -21,18 +21,18 @@
 
 package org.dbpedia.databus.voc
 
-import org.dbpedia.databus.shared.rdf.vocab
-import java.io.File
-import java.text.SimpleDateFormat
+import org.dbpedia.databus.Properties
+import org.dbpedia.databus.lib.Datafile
+import org.dbpedia.databus.shared.rdf.vocab._
 
 import org.apache.jena.rdf.model.{Model, ModelFactory, Resource}
 import org.apache.jena.vocabulary.RDF
-import org.dbpedia.databus.Properties
-import org.dbpedia.databus.lib.Datafile
-import org.dbpedia.databus.shared.rdf.vocab.RDFNamespaceInModel
 
 import scala.collection.JavaConverters._
 import scala.language.reflectiveCalls
+
+import java.io.File
+import java.text.SimpleDateFormat
 
 object DataFileToModel {
 
@@ -58,13 +58,11 @@ object DataFileToModel {
 
 
   def datafile2Model(datafile: Datafile, file: File, properties: Properties): Model = {
-    val model: Model = ModelFactory.createDefaultModel
+    implicit val model: Model = ModelFactory.createDefaultModel
     for ((key, value) <- prefixes) {
       model.setNsPrefix(key, value)
     }
 
-    val dataid = vocab.dataid.inModel(model)
-    val dcat = vocab.dcat.inModel(model)
 
     // main uri of dataid for SingleFile
     val thisResource = model.createResource("#" + properties.getDatafileFinal(file).getName)
@@ -83,7 +81,7 @@ object DataFileToModel {
 
 
 
-    addBasicPropertiesToResource( properties, model, dataid, thisResource)
+    addBasicPropertiesToResource( properties, model, thisResource)
 
 
     // specific info about the file
@@ -114,7 +112,9 @@ object DataFileToModel {
 
   }
 
-  def addBasicPropertiesToResource( properties: Properties, model: Model, dataid: AnyRef with RDFNamespaceInModel with vocab.DataIdVocab, thisResource: Resource) = {
+  def addBasicPropertiesToResource( properties: Properties, model: Model, thisResource: Resource) = {
+
+    implicit def vocabModel = model
 
     // label
     for (label :String <- properties.labels.asScala) {

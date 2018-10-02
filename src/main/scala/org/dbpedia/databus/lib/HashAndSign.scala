@@ -20,11 +20,11 @@
  */
 package org.dbpedia.databus.lib
 
-import java.io.{BufferedInputStream, File, FileInputStream}
-import java.nio.file.Files
+import better.files._
+
 import java.security._
 import java.security.interfaces.RSAPrivateCrtKey
-import java.security.spec.{PKCS8EncodedKeySpec, RSAPublicKeySpec, X509EncodedKeySpec}
+import java.security.spec.{PKCS8EncodedKeySpec, RSAPublicKeySpec}
 
 object Sign {
 
@@ -34,29 +34,12 @@ object Sign {
     * @param privateKeyFile
     * @return
     */
-  def readPrivateKeyFile(privateKeyFile: File, origPath: Option[File] = None): PrivateKey = {
+  def readPrivateKeyFile(privateKeyFile: File): PrivateKey = {
 
-    if(privateKeyFile.isFile) {
-
-      val keyBytes = Files.readAllBytes(privateKeyFile.toPath)
-      val keySpec = new PKCS8EncodedKeySpec(keyBytes)
-      val keyFactory = KeyFactory.getInstance("RSA")
-      keyFactory.generatePrivate(keySpec)
-    } else {
-
-      origPath match {
-
-        case Some(origPath) => sys.error("Unable to find the private key file at " +
-          s"'${origPath.getPath}' or '${privateKeyFile.getPath}'")
-
-        case None => {
-
-          val parentDirPath = new File(privateKeyFile.getParentFile.getParentFile, privateKeyFile.getName)
-
-          readPrivateKeyFile(parentDirPath, Some(privateKeyFile))
-        }
-      }
-    }
+    val resolvedPath = findFileMaybeInParent(privateKeyFile)
+    val keySpec = new PKCS8EncodedKeySpec(resolvedPath.byteArray)
+    val keyFactory = KeyFactory.getInstance("RSA")
+    keyFactory.generatePrivate(keySpec)
   }
 
   def publicKeyFromPrivateKey(privateKey: PrivateKey) = {

@@ -49,6 +49,7 @@ SECURITY NOTICE:
         <!--<databus.privateKeyFile>${user.home}/.m2/private_key.der</databus.privateKeyFile>-->
         <databus.privateKeyFile>private_key_dev_dummy.der</databus.privateKeyFile>
 
+        <databus.pkcs12File>test-cert-bundle.p12</databus.pkcs12File>
         <!--maintainer
 The maintainer of the data release, normally the person to contact, often the same as publisher
         -->
@@ -152,11 +153,29 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                     <maintainer>${databus.maintainer}</maintainer>
                     <license>${databus.license}</license>
                     <privateKeyFile>${databus.privateKeyFile}</privateKeyFile>
+                    <pkcs12File>${databus.pkcs12File}</pkcs12File>
 
                     <issuedDate>${databus.issuedDate}</issuedDate>
                     <modifiedDate>${databus.modifiedDate}</modifiedDate>
 
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>0.3.1</version>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <property>databus.rootProjectDir</property>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
