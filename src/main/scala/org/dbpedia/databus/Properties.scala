@@ -88,6 +88,7 @@ trait Properties {
   @Parameter var bundle: String = ""
   @Parameter var downloadUrlPath: URL = _
   @Parameter(defaultValue = "true") var allowOverwriteOnDeploy: Boolean = _
+  @Parameter(defaultValue = "false") var deployToTestRepo: Boolean = _
   @Parameter var feedFrom: String = ""
 
 

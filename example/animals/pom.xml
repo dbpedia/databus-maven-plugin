@@ -121,6 +121,13 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                             <goal>metadata</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>deploy-dataid</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <configuration>
 
@@ -154,6 +161,7 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                     <license>${databus.license}</license>
                     <privateKeyFile>${databus.privateKeyFile}</privateKeyFile>
                     <pkcs12File>${databus.pkcs12File}</pkcs12File>
+                    <deployToTestRepo>true</deployToTestRepo>
 
                     <issuedDate>${databus.issuedDate}</issuedDate>
                     <modifiedDate>${databus.modifiedDate}</modifiedDate>

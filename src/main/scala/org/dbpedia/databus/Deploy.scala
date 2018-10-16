@@ -32,10 +32,6 @@ import org.scalactic.TypeCheckedTripleEquals._
 import resource._
 
 
-// not sure if needed
-//import org.apache.http.client.methods.HttpGet
-//import org.scalatra.test.scalatest.ScalatraFlatSpec
-
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY)
 class Deploy extends AbstractMojo with Properties {
 
@@ -66,7 +62,9 @@ class Deploy extends AbstractMojo with Properties {
 
     val pkcs12FileResolved = lib.findFileMaybeInParent(pkcs12File.toScala)
 
-    val response = DataIdUpload.upload("https://databus.dbpedia.org/repo/dataid/upload",
+    val repoPathSegement = if(deployToTestRepo) "testrepo" else "repo"
+
+    val response = DataIdUpload.upload(s"https://databus.dbpedia.org/$repoPathSegement/dataid/upload",
       dataIdWithResolvedIRIsPath, pkcs12FileResolved, downloadLocation, allowOverwriteOnDeploy)
 
     requireState(response.code === 200,
