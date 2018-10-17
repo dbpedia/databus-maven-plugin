@@ -153,10 +153,11 @@ mvn databus:metadata
 # copies data from src, metadata and parselogs from data
 mvn databus:package-export
 
+# submit/upload the generated metadata to the databus metadata repository
+mvn databus:deploy
+
 # output folder or any parameter can be set on the fly 
 mvn databus:package-export -Ddatabus.packageDirectory="/var/www/mydata.org/datareleases"
-
-
 ```
 
 
