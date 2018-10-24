@@ -79,6 +79,6 @@ class PackageExport extends AbstractMojo with Properties {
 
     getLog.info("packaged:  " + dataIdPackageTarget.name)
 
-    getLog.info(s"package written to ${packageDirectory} [modified]")
+    getLog.info(s"package written to ${packageDirectory}")
   }
 }
