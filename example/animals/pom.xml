@@ -50,6 +50,8 @@ SECURITY NOTICE:
         <databus.privateKeyFile>private_key_dev_dummy.der</databus.privateKeyFile>
 
         <databus.pkcs12File>test-cert-bundle.p12</databus.pkcs12File>
+
+        <databus.deployToTestRepo>true</databus.deployToTestRepo>
         <!--maintainer
 The maintainer of the data release, normally the person to contact, often the same as publisher
         -->
@@ -161,11 +163,26 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                     <license>${databus.license}</license>
                     <privateKeyFile>${databus.privateKeyFile}</privateKeyFile>
                     <pkcs12File>${databus.pkcs12File}</pkcs12File>
-                    <deployToTestRepo>true</deployToTestRepo>
+                    <deployToTestRepo>${databus.deployToTestRepo}</deployToTestRepo>
 
                     <issuedDate>${databus.issuedDate}</issuedDate>
                     <modifiedDate>${databus.modifiedDate}</modifiedDate>
 
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
             <plugin>
