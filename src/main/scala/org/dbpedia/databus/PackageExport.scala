@@ -20,6 +20,7 @@
  */
 package org.dbpedia.databus
 
+import org.dbpedia.databus.lib._
 import org.dbpedia.databus.shared.signing
 
 import better.files._
@@ -38,7 +39,7 @@ class PackageExport extends AbstractMojo with Properties {
   @throws[MojoExecutionException]
   override def execute(): Unit = {
     //skip the parent module
-    if (isParent()) {
+    if(isParent()) {
       getLog.info("skipping parent module")
       return
     }
@@ -46,13 +47,13 @@ class PackageExport extends AbstractMojo with Properties {
     // for each module copy all files to target
     getListOfDataFiles().foreach(datafile => {
 
-      if (getDatafilePackageTarget(datafile).exists()) {
+      if(getDatafilePackageTarget(datafile).exists()) {
 
         val targetHash = signing.sha256Hash(getDatafilePackageTarget(datafile).toScala)
 
         val sourceHash = signing.sha256Hash(datafile.toScala)
 
-        if (targetHash != sourceHash) {
+        if(targetHash != sourceHash) {
           Files.copy(datafile.getAbsoluteFile.toPath, getDatafilePackageTarget(datafile).toPath, REPLACE_EXISTING)
           getLog.info("packaged: " + getDatafilePackageTarget(datafile).getName)
         } else {
@@ -66,22 +67,18 @@ class PackageExport extends AbstractMojo with Properties {
     })
 
     //Parselogs
-    if (includeParseLogs && getParseLogFile().exists()) {
-      val ptarget = new File (getPackageDirectory,getParseLogFile().getName)
-      Files.copy(getParseLogFile().toPath, ptarget.toPath, REPLACE_EXISTING)
-      getLog.info("packaged: " + ptarget.getName)
+    if(includeParseLogs && getParseLogFile().exists()) {
+      val packageTarget = getPackageDirectory.toScala / getParseLogFile().getName
+      getParseLogFile().toScala.copyTo(packageTarget, true)
+      getLog.info("packaged: " + packageTarget.name)
     }
 
-    // dataId files
-    var dataIdCollect: Model = ModelFactory.createDefaultModel
-    // resolving relative URIs into downloadURLs
-    dataIdCollect.read(getDataIdFile().toURI.toString, downloadUrlPath.toString+getDataIdFile.getName,"turtle")
-    val dataIdPackageTarget = new File(getPackageDirectory, "/" + getDataIdFile().getName)
-    dataIdCollect.write(new FileWriter(dataIdPackageTarget),"turtle")
-    //Files.copy(getDataIdFile().toPath, dataIdPackageTarget.toPath, REPLACE_EXISTING)
-    getLog.info("packaged: " + dataIdPackageTarget.getName)
+    val baseResolvedDataId = resolveBaseForRDFFile(dataIdFile, dataIdDownloadLocation)
 
+    dataIdPackageTarget.writeByteArray(baseResolvedDataId)
 
-    getLog.info(s"package written to ${packageDirectory}")
+    getLog.info("packaged:  " + dataIdPackageTarget.name)
+
+    getLog.info(s"package written to ${packageDirectory} [modified]")
   }
 }

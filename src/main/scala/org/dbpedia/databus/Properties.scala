@@ -20,11 +20,11 @@
  */
 package org.dbpedia.databus
 
+import better.files.{File => _, _}
+import org.apache.maven.plugins.annotations.Parameter
+
 import java.io.File
 import java.net.URL
-import java.util.Date
-
-import org.apache.maven.plugins.annotations.Parameter
 
 
 /**
@@ -122,9 +122,13 @@ trait Properties {
     packaging.equals("pom")
   }
 
-  def getDataIdFile(): File = {
-    new File(getDataIdDirectory, "/" + finalName + "_dataid.ttl")
-  }
+  def getDataIdFile(): File = dataIdFile.toJava
+
+  def dataIdFile = getDataIdDirectory.toScala / s"${finalName}_dataid.ttl"
+
+  def dataIdPackageTarget = packageSubdirectory / dataIdFile.name
+
+  def dataIdDownloadLocation = downloadUrlPath.toString + getDataIdFile.getName
 
   def getParseLogFile(): File = {
     new File(getParselogDirectory, "/" + finalName + "_parselog.ttl")
@@ -150,9 +154,9 @@ trait Properties {
     * below are functions for the package-export phase
     */
 
-  def getPackageDirectory: File = {
-    create(new File(packageDirectory, "/" + artifactId + "/" + version))
-  }
+  def getPackageDirectory: File = packageSubdirectory.toJava
+
+  def packageSubdirectory = (packageDirectory.toScala / artifactId / version).createDirectories()
 
   def getDatafileFinal(datafile: File): File = {
     new File(datafile.getParent, datafile.getName.replace(artifactId, finalName))

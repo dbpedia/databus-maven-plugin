@@ -21,6 +21,11 @@
 package org.dbpedia.databus
 
 import better.files._
+import org.apache.jena.rdf.model.{Model, ModelFactory}
+import org.apache.jena.riot.{Lang => RDFLang, RDFLanguages}
+import resource.managed
+
+import java.io.ByteArrayOutputStream
 
 package object lib {
 
@@ -46,5 +51,24 @@ package object lib {
     }
 
     innerRecursion(file, None)
+  }
+
+  /**
+    * Warning: This method holds the effectively the input RDF from the file in memory in two different
+    * representations. Use it only for small RDF files!
+    *
+    */
+  def resolveBaseForRDFFile(sourceFile: File, base: String, rdfLang: RDFLang = RDFLanguages.TURTLE) = {
+
+    val dataIdSink = new ByteArrayOutputStream(sourceFile.size.toInt)
+
+    (managed(sourceFile.newInputStream.buffered) and managed(dataIdSink)) apply { case (inStream, outStream) =>
+
+      val dataIdModel: Model = ModelFactory.createDefaultModel
+      dataIdModel.read(inStream, base, RDFLanguages.strLangTurtle)
+      dataIdModel.write(outStream, RDFLanguages.strLangTurtle)
+    }
+
+    dataIdSink.toByteArray
   }
 }

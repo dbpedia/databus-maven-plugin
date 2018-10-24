@@ -21,6 +21,7 @@
 package org.dbpedia.databus
 
 import org.dbpedia.databus.shared._
+import org.dbpedia.databus.lib._
 
 import better.files._
 import org.apache.jena.rdf.model.{Model, ModelFactory}
@@ -31,10 +32,11 @@ import org.scalactic.Requirements._
 import org.scalactic.TypeCheckedTripleEquals._
 import resource._
 
+import java.io.ByteArrayOutputStream
+
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY)
 class Deploy extends AbstractMojo with Properties {
-
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
@@ -44,34 +46,36 @@ class Deploy extends AbstractMojo with Properties {
       return
     }
 
-    val dataIdWithResolvedIRIsPath = (getPackageDirectory.toScala / getDataIdFile().getName)
+    val repoPathSegement = if(deployToTestRepo) "testrepo" else "repo"
 
-    val downloadLocation = downloadUrlPath.toString + getDataIdFile.getName
-
-    // resolving relative URIs into downloadURLs
-    def dataIdSource = getDataIdFile().toScala.newInputStream
-
-    def dataIdSink = dataIdWithResolvedIRIsPath.newOutputStream
-
-    (managed(dataIdSource) and managed(dataIdSink)) apply { case (inStream, outStream) =>
-
-      val dataIdModel: Model = ModelFactory.createDefaultModel
-      dataIdModel.read(inStream, downloadLocation, RDFLanguages.strLangTurtle)
-      dataIdModel.write(outStream, RDFLanguages.strLangTurtle)
-    }
+    val uploadEndpointIRI = s"https://databus.dbpedia.org/$repoPathSegement/dataid/upload"
 
     val pkcs12FileResolved = lib.findFileMaybeInParent(pkcs12File.toScala)
 
-    val repoPathSegement = if(deployToTestRepo) "testrepo" else "repo"
+    val response = if(dataIdPackageTarget.isRegularFile && dataIdPackageTarget.nonEmpty) {
 
-    val response = DataIdUpload.upload(s"https://databus.dbpedia.org/$repoPathSegement/dataid/upload",
-      dataIdWithResolvedIRIsPath, pkcs12FileResolved, downloadLocation, allowOverwriteOnDeploy)
+      // if there is a (base-resolved) DataId Turtle file in the package directory, attempt to upload that one
+      DataIdUpload.upload(uploadEndpointIRI, dataIdPackageTarget, pkcs12FileResolved,
+        dataIdDownloadLocation, allowOverwriteOnDeploy)
+    } else {
+
+      //else resolve the base in-memory and upload that
+      val baseResolvedDataId = resolveBaseForRDFFile(dataIdFile, dataIdDownloadLocation)
+
+      getLog.warn(s"Did not find expected DataId file '${dataIdPackageTarget.pathAsString}' from " +
+        "databus:package-export goal. Uploading a DataId prepared in-memory.")
+
+      DataIdUpload.upload(uploadEndpointIRI, baseResolvedDataId, pkcs12FileResolved,
+        dataIdDownloadLocation, allowOverwriteOnDeploy)
+    }
 
     requireState(response.code === 200,
       s"""
-         |The repository service refused to upload the DataId document ${dataIdWithResolvedIRIsPath.pathAsString}:
+         |The repository service refused to upload the DataId document ${dataIdFile.pathAsString}:
          |HTTP response code: ${response.code}
          |message from service:\n${response.body}
        """.stripMargin)
+
+    getLog.info(s"upload of DataId succeeded for artifact '$artifactId'")
   }
 }
