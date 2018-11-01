@@ -119,12 +119,12 @@
             <version>1.11.1</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.maven/maven-project -->
+        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.apache.maven/maven-project &ndash;&gt;
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-project</artifactId>
             <version>3.0-alpha-2</version>
-        </dependency>
+        </dependency>-->
 
         <!-- for better file and resource handling -->
         <dependency>
