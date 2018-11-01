@@ -21,15 +21,16 @@
 package org.dbpedia.databus
 
 import better.files._
+import com.typesafe.scalalogging.LazyLogging
 import org.apache.jena.rdf.model.{Model, ModelFactory}
-import org.apache.jena.riot.{Lang => RDFLang, RDFLanguages}
+import org.apache.jena.riot.{RDFLanguages, Lang => RDFLang}
 import resource.managed
 
 import java.io.ByteArrayOutputStream
 
-package object lib {
+package object lib extends LazyLogging {
 
-  def findFileMaybeInParent(file: File): File = {
+  def findFileMaybeInParent(file: File, fileDescription: String): File = {
 
     def innerRecursion(file: File, origPath: Option[File]): File = {
 
@@ -37,7 +38,7 @@ package object lib {
 
         origPath match {
 
-          case Some(origPath) => sys.error("Unable to find the private key file at " +
+          case Some(origPath) => sys.error(s"Unable to find $fileDescription at " +
             s"'${origPath.pathAsString}' or '${file.pathAsString}'")
 
           case None => {

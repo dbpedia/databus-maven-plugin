@@ -21,7 +21,7 @@
 
 package org.dbpedia.databus
 
-import org.dbpedia.databus.lib.{Datafile, Sign}
+import org.dbpedia.databus.lib.Datafile
 import org.dbpedia.databus.voc.DataFileToModel
 
 import better.files.{File => _, _}
@@ -50,7 +50,7 @@ import java.io._
   *
   */
 @Mojo(name = "metadata", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
-class PrepareMetadata extends AbstractMojo with Properties {
+class PrepareMetadata extends AbstractMojo with Properties with Locations with SigningHelpers {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
@@ -89,12 +89,11 @@ class PrepareMetadata extends AbstractMojo with Properties {
   def processFile(datafile: File, dataIdCollect: Model): Unit = {
     getLog.info(s"found file ${datafile.getCanonicalPath}")
     val df: Datafile = Datafile.init(datafile)
-    val privateKey = Sign.readPrivateKeyFile(privateKeyFile.toScala)
 
     df
       .updateSHA256sum()
       .updateBytes()
-      .updateSignature(privateKey)
+      .updateSignature(singleKeyPairFromPKCS12)
 
     val model = df.toModel(this)
     getLog.info(df.toString)

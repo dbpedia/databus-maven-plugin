@@ -20,15 +20,12 @@
  */
 package org.dbpedia.databus
 
-import org.dbpedia.databus.lib.Sign
 import org.dbpedia.databus.shared.authentification.RSAModulusAndExponent
 
-import better.files._
+import com.typesafe.scalalogging.LazyLogging
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-
-import java.security.interfaces.RSAPrivateCrtKey
 
 
 /**
@@ -41,7 +38,7 @@ import java.security.interfaces.RSAPrivateCrtKey
   *
   */
 @Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE)
-class Validate extends AbstractMojo with Properties {
+class Validate extends AbstractMojo with Properties with Locations with SigningHelpers with LazyLogging {
 
 
   /**
@@ -72,16 +69,13 @@ class Validate extends AbstractMojo with Properties {
     */
   def validateWebId(): Unit = {
 
-    getLog.info("Private Key File: " + privateKeyFile)
+    getLog.debug("PKCS12 bundle: " + locations.pkcs12File.pathAsString)
 
-    val modulusExponentFromFile = Sign.readPrivateKeyFile(privateKeyFile.toScala) match {
+    def keyPair = singleKeyPairFromPKCS12
 
-      case rsaPrivateKey: RSAPrivateCrtKey => {
-        RSAModulusAndExponent(rsaPrivateKey.getModulus, rsaPrivateKey.getPublicExponent)
-      }
+    val modulusExponentFromPKCS12 =
+      RSAModulusAndExponent(keyPair.privateKey.getModulus, keyPair.publicKey.getPublicExponent)
 
-      case otherKey => sys.error(s"Unexpected private key format: ${otherKey.getClass.getSimpleName}")
-    }
 
     /**
       * Read the webid
@@ -90,7 +84,7 @@ class Validate extends AbstractMojo with Properties {
     webIdModel.read(maintainer.toString)
     getLog.debug("Read " + webIdModel.size() + " triples from " + maintainer)
 
-    val matchingKeyInWebId = modulusExponentFromFile.matchAgainstWebId(webIdModel, maintainer.toString, Some(getLog))
+    val matchingKeyInWebId = modulusExponentFromPKCS12.matchAgainstWebId(webIdModel, maintainer.toString, Some(getLog))
 
     if(matchingKeyInWebId.isDefined) {
       getLog.info("SUCCESS: Private Key validated against WebID")
@@ -135,5 +129,3 @@ class Validate extends AbstractMojo with Properties {
   }
 
 }
-
-

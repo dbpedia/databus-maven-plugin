@@ -23,6 +23,7 @@ package org.dbpedia.databus.lib
 
 import org.dbpedia.databus.Properties
 import org.dbpedia.databus.parse.LineBasedRioDebugParser
+import org.dbpedia.databus.shared.authentification.RSAKeyPair
 import org.dbpedia.databus.shared.signing
 import org.dbpedia.databus.voc.{ApplicationNTriples, DataFileToModel, Format, TextTurtle}
 
@@ -133,14 +134,13 @@ class Datafile private(datafile: File) {
     this
   }
 
-  def updateSignature(privateKey: PrivateKey): Datafile = {
-    signatureBytes = signing.signFile(privateKey, datafile.toScala)
+  def updateSignature(keyPair: RSAKeyPair): Datafile = {
+
+    signatureBytes = signing.signFile(keyPair.privateKey, datafile.toScala)
 
     signatureBase64 = new String(Base64.getEncoder.encode(signatureBytes))
 
-    val publicFromPrivate = Sign.publicKeyFromPrivateKey(privateKey)
-
-    verified = signing.verifyFile(publicFromPrivate, signatureBytes, datafile.toScala)
+    verified = signing.verifyFile(keyPair.publicKey, signatureBytes, datafile.toScala)
     this
   }
 
@@ -231,6 +231,4 @@ object Datafile {
 
     df
   }
-
-
 }

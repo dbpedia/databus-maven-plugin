@@ -15,7 +15,7 @@
 
 -->
         <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
-		<!-- the name of the bundle, used for packageing -->
+		<!-- the name of the bundle, used for packaging -->
 		<databus.bundle>bundle</databus.bundle>
 
         <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
@@ -33,22 +33,19 @@ We recommend to do the same, as you can add more bundles and datasets later.
 		<databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
         
         <databus.publisher>http://kurzum.net/dev-dummy.ttl#this</databus.publisher>
-        <!--privateKeyFile
-The private key file that is matched against the publisher WebID, see the tutorial suggested there.
-Note that Java/Scala only accepts DER/PKCS8 formatted files, so you might need to run:
-$ openssl pkcs8 -topk8 -inform PEM -outform DER -in private_key.pem -out private_key.der -nocrypt
+        <!--pkcs12File
+The PKCS12 bundle providing the cryptographic identity information associated to the WebID of the
+agent operating the databus plugin. This bundle should combine the X509 certificate and the private
+RSA key for the corresponding WebID.
 We recommend putting the file in ~/.m2 next to the settings.xml (Maven user dir):
 ```
-<privateKeyFile>${user.home}/.m2/private_key.der</privateKeyFile>
+<databus.pkcs12File>${user.home}/.m2/webid_bundle.p12</databus.pkcs12File>
 ```
 SECURITY NOTICE:
-* Protect your private key file, do not loose, do not send over network
-* chmod 700
-* The data channel you are about to create requires it to republish new versions there.
-        -->
-        <!--<databus.privateKeyFile>${user.home}/.m2/private_key.der</databus.privateKeyFile>-->
-        <databus.privateKeyFile>private_key_dev_dummy.der</databus.privateKeyFile>
-
+* Protect your private key file, do not loose it, do not send it over (unencrypted) network
+* Limit access to this file to your own user: chmod 700 $HOME/.m2/webid_bundle.p12
+-->
+        <!--<databus.pkcs12File>${user.home}/.m2/webid_bundle.p12</databus.pkcs12File>-->
         <databus.pkcs12File>test-cert-bundle.p12</databus.pkcs12File>
 
         <databus.deployToTestRepo>true</databus.deployToTestRepo>
@@ -100,7 +97,7 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
             <plugin>
                 <groupId>org.dbpedia.databus</groupId>
                 <artifactId>databus-maven-plugin</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.1-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>validate</id>
@@ -121,6 +118,13 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>metadata</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>package-export</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package-export</goal>
                         </goals>
                     </execution>
                     <execution>
@@ -161,7 +165,6 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                     <publisher>${databus.publisher}</publisher>
                     <maintainer>${databus.maintainer}</maintainer>
                     <license>${databus.license}</license>
-                    <privateKeyFile>${databus.privateKeyFile}</privateKeyFile>
                     <pkcs12File>${databus.pkcs12File}</pkcs12File>
                     <deployToTestRepo>${databus.deployToTestRepo}</deployToTestRepo>
 

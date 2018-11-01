@@ -36,7 +36,7 @@ import java.io.ByteArrayOutputStream
 
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY)
-class Deploy extends AbstractMojo with Properties {
+class Deploy extends AbstractMojo with Properties with Locations {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
@@ -50,13 +50,10 @@ class Deploy extends AbstractMojo with Properties {
 
     val uploadEndpointIRI = s"https://databus.dbpedia.org/$repoPathSegement/dataid/upload"
 
-    val pkcs12FileResolved = lib.findFileMaybeInParent(pkcs12File.toScala)
-
     val response = if(dataIdPackageTarget.isRegularFile && dataIdPackageTarget.nonEmpty) {
 
       // if there is a (base-resolved) DataId Turtle file in the package directory, attempt to upload that one
-      DataIdUpload.upload(uploadEndpointIRI, dataIdPackageTarget, pkcs12FileResolved,
-        dataIdDownloadLocation, allowOverwriteOnDeploy)
+      DataIdUpload.upload(uploadEndpointIRI, dataIdPackageTarget, locations.pkcs12File, dataIdDownloadLocation, allowOverwriteOnDeploy)
     } else {
 
       //else resolve the base in-memory and upload that
@@ -65,7 +62,7 @@ class Deploy extends AbstractMojo with Properties {
       getLog.warn(s"Did not find expected DataId file '${dataIdPackageTarget.pathAsString}' from " +
         "databus:package-export goal. Uploading a DataId prepared in-memory.")
 
-      DataIdUpload.upload(uploadEndpointIRI, baseResolvedDataId, pkcs12FileResolved,
+      DataIdUpload.upload(uploadEndpointIRI, baseResolvedDataId, locations.pkcs12File,
         dataIdDownloadLocation, allowOverwriteOnDeploy)
     }
 

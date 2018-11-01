@@ -43,19 +43,19 @@ trait Properties {
     */
 
   @Parameter(defaultValue = "${project.artifactId}", readonly = true)
-  val artifactId: String = ""
+  val artifactId: String = null
 
   @Parameter(defaultValue = "${project.version}", readonly = true)
-  val version: String = ""
+  val version: String = null
 
   @Parameter(defaultValue = "${project.packaging}", readonly = true)
-  val packaging: String = ""
+  val packaging: String = null
 
   @Parameter(defaultValue = "${project.build.directory}", readonly = true)
-  var mavenTargetDirectory: File = _
+  val mavenTargetDirectory: File = null
 
   @Parameter(defaultValue = "${project.build.finalName}", readonly = true)
-  var finalName: String = _
+  val finalName: String = null
 
   // not usable, needs to set explicitly in the pom.xml of modules to be queried
   // @Parameter(defaultValue = "${parent.relativePath}", readonly = true)
@@ -77,19 +77,19 @@ trait Properties {
     * Note that these are also created in Validate
     */
 
-  @Parameter var dataInputDirectory: File = _
-  @Parameter var packageDirectory: File = _
+  @Parameter val dataInputDirectory: File = null
+  @Parameter val packageDirectory: File = null
 
-  @Parameter var dataDependencyDirectory: File = _
+  @Parameter val dataDependencyDirectory: File = null
 
-  @Parameter var pluginDirectory: File = _
-  @Parameter var includeParseLogs: Boolean = true
+  @Parameter val pluginDirectory: File = null
+  @Parameter val includeParseLogs: Boolean = true
 
-  @Parameter var bundle: String = ""
-  @Parameter var downloadUrlPath: URL = _
-  @Parameter(defaultValue = "true") var allowOverwriteOnDeploy: Boolean = _
-  @Parameter(defaultValue = "false") var deployToTestRepo: Boolean = _
-  @Parameter var feedFrom: String = ""
+  @Parameter val bundle: String = null
+  @Parameter val downloadUrlPath: URL = null
+  @Parameter val allowOverwriteOnDeploy: Boolean = true
+  @Parameter val deployToTestRepo: Boolean = false
+  @Parameter val feedFrom: String = null
 
 
   /**
@@ -99,15 +99,14 @@ trait Properties {
   //TODO the absolute path here is different for parent and modules the function
   // read privatekeyfiles in hash and signs searches in the parent folder using ../
   // works for now, but could fail
-  @Parameter var privateKeyFile: File = _
-  @Parameter var pkcs12File: File = _
+  @Parameter val pkcs12File: File = null
 
-  @Parameter var maintainer: URL = _
-  @Parameter var publisher: URL = _
-  @Parameter val license: String = ""
-  @Parameter val downloadURL: String = ""
-  @Parameter val issuedDate: String = ""
-  @Parameter val modifiedDate: String = ""
+  @Parameter val maintainer: URL = null
+  @Parameter val publisher: URL = null
+  @Parameter val license: String = null
+  @Parameter val downloadURL: String = null
+  @Parameter val issuedDate: String = null
+  @Parameter val modifiedDate: String = null
 
 
   /**
@@ -135,7 +134,7 @@ trait Properties {
   }
 
   def getFeedFile(): File = {
-    new File(getFeedDirectory,"/"+ finalName + "_feed.xml")
+    new File(getFeedDirectory, "/" + finalName + "_feed.xml")
   }
 
   def getDataIdDirectory: File = {
@@ -166,10 +165,8 @@ trait Properties {
     new File(getPackageDirectory, getDatafileFinal(datafile).getName)
   }
 
-
-
   private def create(dir: File): File = {
-    if (!dir.exists()) {
+    if(!dir.exists()) {
       dir.mkdirs()
     }
     dir
@@ -187,8 +184,7 @@ trait Properties {
     */
   def getListOfDataFiles(): List[File] = {
 
-
-    if (dataInputDirectory.exists && dataInputDirectory.isDirectory) {
+    if(dataInputDirectory.exists && dataInputDirectory.isDirectory) {
       dataInputDirectory.listFiles
         .filter(_.isFile)
         .filter(_.getName.startsWith(artifactId))
@@ -199,6 +195,4 @@ trait Properties {
       List[File]()
     }
   }
-
-
 }
