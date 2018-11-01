@@ -20,15 +20,15 @@
         <license.licenseName>agpl_v3</license.licenseName>
         <!-- github server corresponds to entry in ~/.m2/settings.xml -->
         <github.global.server>github</github.global.server>
-        <rdf4j.version>2.3.2</rdf4j.version>
-        <maven.plugin.tools.version>3.5.2</maven.plugin.tools.version>
+        <rdf4j.version>2.4.1</rdf4j.version>
+        <maven.plugin.tools.version>3.6.0</maven.plugin.tools.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.dbpedia.databus</groupId>
             <artifactId>databus-shared-lib</artifactId>
-            <version>0.2.1</version>
+            <version>0.2.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -61,14 +61,14 @@
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>apache-jena-libs</artifactId>
-            <version>3.8.0</version>
+            <version>3.9.0</version>
             <type>pom</type>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.17</version>
+            <version>1.18</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-api -->
@@ -116,13 +116,7 @@
         <dependency>
             <groupId>com.rometools</groupId>
             <artifactId>rome</artifactId>
-            <version>1.11.0</version>
-        </dependency>
-        <!-- needed for rome -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.5</version>
+            <version>1.11.1</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.maven/maven-project -->
@@ -136,7 +130,7 @@
         <dependency>
             <groupId>com.github.pathikrit</groupId>
             <artifactId>better-files_${scala.compat.version}</artifactId>
-            <version>3.5.0</version>
+            <version>3.6.0</version>
         </dependency>
         <dependency>
             <groupId>com.jsuereth</groupId>
@@ -151,7 +145,7 @@
         <dependency> <!-- required for scalactic -->
             <groupId>org.scala-lang.modules</groupId>
             <artifactId>scala-xml_${scala.compat.version}</artifactId>
-            <version>1.1.0</version>
+            <version>1.1.1</version>
         </dependency>
     </dependencies>
 
@@ -277,6 +271,11 @@
                         <dependencyConvergence/>
                     </rules>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.7</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

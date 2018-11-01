@@ -27,7 +27,7 @@ import org.dbpedia.databus.shared.authentification.RSAKeyPair
 import org.dbpedia.databus.shared.signing
 import org.dbpedia.databus.voc.{ApplicationNTriples, DataFileToModel, Format, TextTurtle}
 
-import better.files.{File => BetterFile, ManagedResource => _, _}
+import better.files.{File => BetterFile, _}
 import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
 import org.apache.commons.compress.compressors.CompressorStreamFactory
 import org.apache.jena.rdf.model.Model
