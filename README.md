@@ -494,4 +494,11 @@ with
 ``` 
 in `databus-maven-plugin/pom.xml`
 
-
+## UTF-8 - Encoding Errors in the produced data
+On Unix: 
+run: `grep "LC_ALL" .*` in your /root/ directory and make sure
+```
+.bash_profile:export LC_ALL=en_US.UTF-8
+.bashrc:export LC_ALL=en_US.UTF-8
+```
+is set.
