@@ -16,7 +16,7 @@ The tool has the following features:
 ## Metadata Standards
 DBpedia's DataID fulfills 31 of 35 Best Practices from the W3C Data on the Web Best Practices Working Group, cf. [implementation report](http://w3c.github.io/dwbp/dwbp-implementation-report.html) 
 
-<img title="DWBP Implementation Report Summary" width="400" src="https://raw.githubusercontent.com/dbpedia/databus-maven-plugin/master/DWBP.png" ></img>
+<img title="DWBP Implementation Report Summary" width="400" src="https://raw.githubusercontent.com/dbpedia/databus-maven-plugin/master/DWBP.png" >
 
 
 ## Roadmap
