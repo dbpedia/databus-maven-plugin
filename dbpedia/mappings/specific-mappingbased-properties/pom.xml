@@ -33,7 +33,11 @@ You can configure here:
                     <labels>
                         <label>Infobox Properties@en</label>
                     </labels>
-                    <datasetDescription>Infobox data from the mapping-based extraction, using units of measurement more convenient for the resource type, e.g. square kilometres instead of square metres for the area of a city.</datasetDescription>
+                    <datasetDescription>
+                        Infobox data from the mapping-based extraction, using units of measurement more convenient for the resource type, e.g. square kilometres instead of square metres for the area of a city, gathered using the mappings from http://mappings.dbpedia.org/.
+                        This data was extracted from the wikipedia-dumps available on https://dumps.wikimedia.org/ using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework. 
+                        For more information on how these datasets were generated, please visit http://dev.dbpedia.org/Extraction%20Workflow.
+                    </datasetDescription>
                 </configuration>
             </plugin>
         </plugins>

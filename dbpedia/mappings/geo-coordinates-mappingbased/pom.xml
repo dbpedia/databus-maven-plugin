@@ -36,7 +36,9 @@ You can configure here:
                         <label>Geo Coordinates Mappingbased@en</label>
                     </labels>
                     <datasetDescription>
-                        Geographic coordinates extracted from Wikipedia originating from mapped infoboxes in the mappings wiki
+                        Contains geographic coordinates from the Wikipedia Infoboxes, gathered by the mapping-based extraction, using the mappings from http://mappings.dbpedia.org/.
+                        This data was extracted from the wikipedia-dumps available on https://dumps.wikimedia.org/ using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework. 
+                        For more information on how these datasets were generated, please visit http://dev.dbpedia.org/Extraction%20Workflow.
                     </datasetDescription>
                 </configuration>
             </plugin>

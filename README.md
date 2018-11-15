@@ -16,7 +16,7 @@ The tool has the following features:
 ## Metadata Standards
 DBpedia's DataID fulfills 31 of 35 Best Practices from the W3C Data on the Web Best Practices Working Group, cf. [implementation report](http://w3c.github.io/dwbp/dwbp-implementation-report.html) 
 
-<img title="DWBP Implementation Report Summary" width="400" src="https://raw.githubusercontent.com/dbpedia/databus-maven-plugin/master/DWBP.png" ></img>
+<img title="DWBP Implementation Report Summary" width="400" src="https://raw.githubusercontent.com/dbpedia/databus-maven-plugin/master/DWBP.png" >
 
 
 ## Roadmap
@@ -494,4 +494,11 @@ with
 ``` 
 in `databus-maven-plugin/pom.xml`
 
-
+## UTF-8 - Encoding Errors in the produced data
+On Unix: 
+run: `grep "LC_ALL" .*` in your /root/ directory and make sure
+```
+.bash_profile:export LC_ALL=en_US.UTF-8
+.bashrc:export LC_ALL=en_US.UTF-8
+```
+is set.
