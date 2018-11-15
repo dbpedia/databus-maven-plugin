@@ -6,7 +6,7 @@
         <version>2018.10.01</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>wikidata-page-length</artifactId>
+    <artifactId>wikidata-mappingbased-properties</artifactId>
     <groupId>org.dbpedia.databus.wikidata</groupId>
     <packaging>jar</packaging>
     <version>2018.10.01</version>
@@ -31,9 +31,9 @@ You can configure here:
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
                     <labels>
-                        <label>Wikidata Page Lenght@en</label>
+                        <label>Wikidata Mappingbased Properties Reified@en</label>
                     </labels>
-                    <datasetDescription>Numbers of characters contained in a Wikidata article's source.</datasetDescription>
+                    <datasetDescription>Mappingbased Property triples given an identifier and split into 4 seperate triples so additional data can be added.</datasetDescription>
                 </configuration>
             </plugin>
         </plugins>

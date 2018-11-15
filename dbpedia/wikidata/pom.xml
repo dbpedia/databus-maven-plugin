@@ -5,7 +5,37 @@
     <groupId>org.dbpedia.databus.wikidata</groupId>
     <artifactId>wikidata</artifactId>
     <packaging>pom</packaging>
-    <version>2018.08.01</version>
+    <version>2018.10.01</version>
+
+    <modules>
+        <module>wikidata-alias</module>
+        <module>wikidata-description</module>
+        <module>wikidata-geo-coordinates</module>
+        <module>wikidata-images</module>
+        <module>wikidata-instance-types</module>
+        <module>wikidata-instance-types-transitive</module>
+        <module>wikidata-labels</module>
+        <module>wikidata-mappingbased-literals</module>
+        <module>wikidata-mappingbased-objects</module>
+        <module>wikidata-mappingbased-properties</module>
+        <module>wikidata-ontology-subclassof</module>
+        <module>wikidata-page-ids</module>
+        <module>wikidata-page-length</module>
+        <module>wikidata-properties</module>
+        <module>wikidata-raw</module>
+        <module>wikidata-redirects</module>
+        <module>wikidata-references</module>
+        <module>wikidata-revision-ids</module>
+        <module>wikidata-revision-uris</module>
+        <module>wikidata-sameas-all-wikis</module>
+        <module>wikidata-sameas-external</module>
+        <module>wikidata-sameas-wikidata</module>
+        <module>wikidata-template-redirects</module>
+        <module>wikidata-transitive-redirects</module>
+        <module>wikidata-debug-duplicate-iri-split</module>
+        <module>wikidata-debug-rmapping-errors</module>
+        <module>wikidata-debug-type-like-statements</module>
+    </modules>
 
     <properties>
         <!--dataDirectory DEFAULT: src/main/databus/input
@@ -49,6 +79,10 @@ SECURITY NOTICE:
         <!--<databus.privateKeyFile>${user.home}/.m2/private_key.der</databus.privateKeyFile>-->
         <databus.privateKeyFile>${user.home}/.m2/private_key_generic.der</databus.privateKeyFile>
 
+        <databus.pkcs12File>${user.home}/.m2/test-cert-bundle.p12</databus.pkcs12File>
+
+        <databus.deployToTestRepo>false</databus.deployToTestRepo>
+
         <!--maintainer
 The maintainer of the data release, normally the person to contact, often the same as publisher
         -->
@@ -58,9 +92,9 @@ Pick one from here: http://rdflicense.linkeddata.es/
         -->
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</databus.license>
         <!--not clear if needed, using today at the moment-->
-        <databus.issuedDate>2018-08-01</databus.issuedDate>
+        <databus.issuedDate>2018-10-01</databus.issuedDate>
         <!--not clear if needed, read from file at the moment-->
-        <databus.modifiedDate>2018-08-03</databus.modifiedDate>
+        <databus.modifiedDate>2018-10-22</databus.modifiedDate>
 
 
         <!--publisher
@@ -120,6 +154,20 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                             <goal>metadata</goal>
                         </goals>
                     </execution>
+                    <execution>
+                    <id>package-export</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>package-export</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>deploy-dataid</id>
+                    <phase>deploy</phase>
+                    <goals>
+                        <goal>deploy</goal>
+                    </goals>
+                </execution>
                 </executions>
                 <configuration>
 
@@ -152,43 +200,27 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                     <maintainer>${databus.maintainer}</maintainer>
                     <license>${databus.license}</license>
                     <privateKeyFile>${databus.privateKeyFile}</privateKeyFile>
+                    <pkcs12File>${databus.pkcs12File}</pkcs12File>
+                    <deployToTestRepo>${databus.deployToTestRepo}</deployToTestRepo>
 
                     <issuedDate>${databus.issuedDate}</issuedDate>
                     <modifiedDate>${databus.modifiedDate}</modifiedDate>
-
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
-
-  <modules>
-    
-    <module>wikidata-alias</module>
-    <module>wikidata-description</module>
-    <module>wikidata-geo-coordinates</module>
-    <module>wikidata-images</module>
-    <module>wikidata-instance-types</module>
-    <module>wikidata-labels</module>
-    <module>wikidata-mappingbased-literals</module>
-    <module>wikidata-mappingbased-objects</module>
-    <module>wikidata-mappingbased-properties-reified</module>
-    <module>wikidata-ontology-subclassof</module>
-    <module>wikidata-page-ids</module>
-    <module>wikidata-page-length</module>
-    <module>wikidata-pages-articles</module>
-    <module>wikidata-properties</module>
-    <module>wikidata-raw</module>
-    <module>wikidata-redirects</module>
-    <module>wikidata-references</module>
-    <module>wikidata-revision</module>
-    <module>wikidata-sameas-all-wikis</module>
-    <module>wikidata-sameas-external</module>
-    <module>wikidata-sameas-wikidata</module>
-    <module>wikidata-template-redirects</module>
-    <module>wikidata-transitive-redirects</module>
-    <module>wikidata-debug-duplicate-iri-split</module>
-    <module>wikidata-debug-rmapping-errors</module>
-    <module>wikidata-debug-type-like-statements</module>
-  </modules>
 </project>
