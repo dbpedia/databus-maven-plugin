@@ -1,6 +1,6 @@
 **Discuss** via Slack  #releases: <a href="https://dbpedia.slack.com/messages/CBLRV788K/details/" target="_blank">dbpedia.slack.org</a>
 
-# Databus Maven Plugin
+# Databus Maven Plugin [![Build Status](https://travis-ci.org/dbpedia/databus-maven-plugin.svg?branch=master)](https://travis-ci.org/dbpedia/databus-maven-plugin)
 Aligning data and software lifecycle with Maven
 
 The plugin was developed to use the features of the Maven software build automation tool for data releases and metadata generation.
