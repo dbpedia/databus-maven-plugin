@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>${groupId}</groupId>
+    <artifactId>${artifactId}</artifactId>
+    <packaging>pom</packaging>
+    <version>${version}</version>
+
+    <modules>
+        <module>$databus-artifact-name</module>
+    </modules>
+
+    <properties>
+        <!--dataDirectory DEFAULT: src/main/databus/input
+* input folder for data
+* copy/move all your datafiles in the respective modules
+* all files have to start with the $artifactId of the module, i.e. src/main/databus/input/$artifactId_en.nt.bz2
+
+-->
+        <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
+		<!-- the name of the bundle, used for packaging -->
+		<databus.bundle>${artifactId}</databus.bundle>
+
+        <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
+* all files are copied into this directory where mvn databus:package-export is run
+-->
+        <databus.packageDirectory>${session.executionRootDirectory}/target/databus/package/${databus.bundle}</databus.packageDirectory>
+        
+         <!-- downloadUrlPath 
+Configure downloadUrlPath, where the dataset will be deployed:
+DBpedia will publish 4 more bundles with dozens of artifacts and new versions at regular intervals, our downloadurl looks like this:
+<databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
+We recommend to do the same, as you can add more bundles and datasets later.
+
+-->
+		<databus.downloadUrlPath>$databus-download-url-path</databus.downloadUrlPath>
+        
+        <databus.publisher>$databus-publisher</databus.publisher>
+        <!--pkcs12File
+The PKCS12 bundle providing the cryptographic identity information associated to the WebID of the
+agent operating the databus plugin. This bundle should combine the X509 certificate and the private
+RSA key for the corresponding WebID.
+We recommend putting the file in ~/.m2 next to the settings.xml (Maven user dir):
+```
+<databus.pkcs12File>${user.home}/.m2/webid_bundle.p12</databus.pkcs12File>
+```
+SECURITY NOTICE:
+* Protect your private key file, do not loose it, do not send it over (unencrypted) network
+* Limit access to this file to your own user: chmod 700 $HOME/.m2/webid_bundle.p12
+-->
+        <databus.pkcs12File>$databus-pkcs12-file</databus.pkcs12File>
+
+        <!--maintainer
+The maintainer of the data release, normally the person to contact, often the same as publisher
+        -->
+        <databus.maintainer>${databus.publisher}</databus.maintainer>
+        <!--license
+Pick one from here: http://rdflicense.linkeddata.es/
+        -->
+        <databus.license>$databus-license</databus.license>
+
+#if($databus-issued-date == "undefined")
+        <!--<databus.issuedDate>[set date here]</databus.issuedDate>--> <!--using today if undefinded-->
+#else
+        <databus.issuedDate>$databus-issued-date</databus.issuedDate> <!--using today if undefinded-->
+#end
+
+#if($databus-modified-date == "undefined")
+        <!--<databus.modifiedDate>[set date here]</databus.modifiedDate>--> <!--using today if undefinded-->
+#else
+        <databus.modifiedDate>$databus-modified-date</databus.modifiedDate> <!--using today if undefinded-->
+#end
+
+        <!--publisher
+refers to the WebID that does the publication on the web and on the databus
+This one is matched against the private key file (next option)
+Please read on https://github.com/dbpedia/webid how to create such file
+We include a dev-dummy webid file here, please don't use it for publishing, use your own
+-->
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--dataDependencyDirectory
+NOT IMPLEMENTED YET - This directory will be used to store any files downloaded from the databus as input for your tool
+        -->
+        <databus.dataDependencyDirectory>NOT-IMPLEMENTED-YET</databus.dataDependencyDirectory>
+
+    </properties>
+
+    <!-- we will move to maven central soon, this is the dev maven repo-->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>archiva.internal</id>
+            <name>Internal Release Repository</name>
+            <url>http://databus.dbpedia.org:8081/repository/internal</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>archiva.snapshots</id>
+            <name>Internal Snapshot Repository</name>
+            <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.dbpedia.databus</groupId>
+                <artifactId>databus-maven-plugin</artifactId>
+                <version>1.1-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-data</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test-data</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>metadata</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>metadata</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>package-export</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package-export</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>deploy-dataid</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+
+                    <!--DO NOT EDIT HERE, unless you know what you are doing, We recommend changing the properties above-->
+
+                    <!--pluginDirectory Default: ${project.build.directory}/databus
+* all the generated files will be written here, i.e. parselogs, dataids, feeds
+* the path is relative to the module, i.e. target/databus/
+* `mvn clean` will delete all `target` folders in your project
+-->
+                    <pluginDirectory>${project.build.directory}/databus</pluginDirectory>
+
+                    <!--includeParseLogs DEFAULT: true
+            The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
+            We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
+                     -->
+                    <includeParseLogs>true</includeParseLogs>
+
+                    <!-- feedFrom
+                        existing feed file, feed url, or empty
+                        if empty: creates the channel based on the pom properties and use old feed from feedDirectory/feed.xml if exists
+                        TODO add property above
+                     -->
+                    <feedFrom></feedFrom>
+                    <dataInputDirectory>${databus.dataInputDirectory}</dataInputDirectory>
+                    <packageDirectory>${databus.packageDirectory}</packageDirectory>
+                    <bundle>${databus.bundle}</bundle>
+                    <downloadUrlPath>${databus.downloadUrlPath}</downloadUrlPath>
+                    <publisher>${databus.publisher}</publisher>
+                    <maintainer>${databus.maintainer}</maintainer>
+                    <license>${databus.license}</license>
+                    <pkcs12File>${databus.pkcs12File}</pkcs12File>
+                    <deployToTestRepo>${databus.deployToTestRepo}</deployToTestRepo>
+
+                    <issuedDate>${databus.issuedDate}</issuedDate>
+                    <modifiedDate>${databus.modifiedDate}</modifiedDate>
+
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

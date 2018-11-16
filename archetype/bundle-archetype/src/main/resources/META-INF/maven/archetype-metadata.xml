@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-descriptor xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0 http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd" name="bundle"
+    xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <requiredProperties>
+    <requiredProperty key="databus-artifact-name" />
+    <requiredProperty key="databus-download-url-path"/>
+    <requiredProperty key="databus-license">
+      <defaultValue>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="databus-issued-date">
+      <defaultValue>undefined</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="databus-modified-date">
+      <defaultValue>undefined</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="databus-publisher">
+      <defaultValue>https://neradis.github.io/test-id.ttl#this</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="databus-pkcs12-file">
+      <defaultValue>test-id.p12</defaultValue>
+    </requiredProperty>
+  </requiredProperties>
+  <fileSets>
+    <fileSet encoding="UTF-8">
+      <directory></directory>
+      <includes>
+        <include>test-id.p12</include>
+        <include>**/*.bz2</include>
+      </includes>
+    </fileSet>
+    <fileSet encoding="UTF-8" filtered="true">
+      <directory></directory>
+      <includes>
+        <include>*/pom.xml</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</archetype-descriptor>
