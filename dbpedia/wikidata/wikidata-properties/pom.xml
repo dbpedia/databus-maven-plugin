@@ -33,7 +33,7 @@ You can configure here:
                     <labels>
                         <label>Wikidata Properties@en</label>
                     </labels>
-                    <datasetDescription>Wikidata Properties</datasetDescription>
+                    <datasetDescription>Wikidata property URIs as subject and dbo:alias to their labels</datasetDescription>
                 </configuration>
             </plugin>
         </plugins>
