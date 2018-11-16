@@ -60,7 +60,7 @@ DBpedia will publish 4 more bundles with dozens of artifacts and new versions at
 We recommend to do the same, as you can add more bundles and datasets later.
 
 -->
-		<databus.downloadUrlPath>http://downloads.dbpedia.org/repo/lts/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
+		<databus.downloadUrlPath>https://downloads.dbpedia.org/repo/lts/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
         
         <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
         <!--privateKeyFile
