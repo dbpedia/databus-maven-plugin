@@ -1,0 +1,423 @@
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+    
+	<modelVersion>4.0.0</modelVersion>
+	
+
+    
+	<groupId>org.dbpedia.databus.generic-spark</groupId>
+	
+    
+	<artifactId>generic-spark-diff</artifactId>
+	
+    
+	<packaging>pom</packaging>
+	
+    
+	<version>2018.08.15</version>
+	
+    
+	<modules>
+		
+      
+		<module>article-categories-diff</module>
+		
+		  
+		<module>article-templates-diff</module>
+		
+		  
+		<module>article-templates-nested-diff</module>
+		
+		  
+		<module>category-labels-diff</module>
+		
+	  	
+		<module>commons-page-links-diff</module>
+		
+		  
+		<module>disambiguations-diff</module>
+		
+		  
+		<module>external-links-diff</module>
+		
+  		
+		<module>french-population-diff</module>
+		
+		
+		<module>geo-coordinates-diff</module>
+		
+		
+		<module>homepages-diff</module>
+		
+		
+		<module>infobox-properties-diff</module>
+		
+		
+		<module>infobox-property-definitions-diff</module>
+		
+		
+		<module>interlanguage-links-diff</module>
+		
+      
+		<module>labels-diff</module>
+		
+		
+		<module>out-degree-diff</module>
+		
+		
+		<module>page-ids-diff</module>
+		
+		
+		<module>page-length-diff</module>
+		
+		
+		<module>page-links-diff</module>
+		
+		
+		<module>persondata-diff</module>
+		
+		
+		<module>pnd-diff</module>
+		
+		
+		<module>redirects-diff</module>
+		
+		
+		<module>revision-ids-diff</module>
+		
+		
+		<module>revision-uris-diff</module>
+		
+		
+		<module>skos-categories-diff</module>
+		
+		
+		<module>topical-concepts-diff</module>
+		
+		
+		<module>wikipedia-links-diff</module>
+		
+    
+	</modules>
+	
+
+    
+	<properties>
+		
+        
+		<!--dataDirectory DEFAULT: src/main/databus/input
+* input folder for data
+* copy/move all your datafiles in the respective modules
+* all files have to start with the animals of the module, i.e. src/main/databus/input/animals_en.nt.bz2
+-->
+		
+        
+		<databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
+		
+
+
+        
+		<!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package
+* all files are copied into this directory where mvn databus:package-export is run
+-->
+		
+		
+		<databus.bundle>generic-spark</databus.bundle>
+		
+		
+        
+		<databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${databus.bundle}</databus.packageDirectory>
+		
+        
+        
+		<databus.downloadUrlPath>https://downloads.dbpedia.org/repo/lts/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
+		
+        
+        
+		<databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
+		
+        
+		<!--privateKeyFile
+The private key file that is matched against the publisher WebID, see the tutorial suggested there.
+Note that Java/Scala only accepts DER/PKCS8 formatted files, so you might need to run:
+$ openssl pkcs8 -topk8 -inform PEM -outform DER -in private_key.pem -out private_key.der -nocrypt
+We recommend putting the file in ~/.m2 next to the settings.xml (Maven user dir):
+```
+<privateKeyFile>${user.home}/.m2/private_key.der</privateKeyFile>
+```
+SECURITY NOTICE:
+* Protect your private key file, do not loose, do not send over network
+* chmod 700
+* The data channel you are about to create requires it to republish new versions there.
+        -->
+		
+        
+		<!--<databus.privateKeyFile>${user.home}/.m2/private_key.der</databus.privateKeyFile>-->
+		
+        
+		<databus.privateKeyFile>${user.home}/.m2/private_key_generic.der</databus.privateKeyFile>
+		
+        
+        
+		<!--maintainer
+The maintainer of the data release, normally the person to contact, often the same as publisher
+        -->
+		
+        
+		<databus.maintainer>https://termilion.github.io/webid.ttl#this</databus.maintainer>
+		
+        
+		<!--license
+Pick one from here: http://rdflicense.linkeddata.es/
+        -->
+		
+        
+		<databus.license>http://purl.org/NET/rdflicense/cc-by3.0</databus.license>
+		
+        
+        
+		<!--not clear if needed-->
+		
+        
+		<databus.issuedDate>2018-08-07</databus.issuedDate>
+		
+        
+		<!--not clear if needed-->
+		
+        
+		<databus.modifiedDate>2018-08-10</databus.modifiedDate>
+		
+        
+
+        
+		<!--publisher
+refers to the WebID that does the publication on the web and on the databus
+This one is matched against the private key file (next option)
+Please read on https://github.com/dbpedia/webid how to create such file
+We include a dev-dummy webid file here, please don't use it for publishing, use your own
+-->
+		
+        
+        
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		
+        
+		<!--dataDependencyDirectory
+NOT IMPLEMENTED YET - This directory will be used to store any files downloaded from the databus as input for your tool
+        -->
+		
+        
+		<databus.dataDependencyDirectory>NOT-IMPLEMENTED-YET</databus.dataDependencyDirectory>
+		
+
+    
+	</properties>
+	
+
+    
+	<!-- we will move to maven central soon, this is the dev maven repo-->
+	
+    
+	<pluginRepositories>
+		
+        
+		<pluginRepository>
+			
+            
+			<id>archiva.internal</id>
+			
+            
+			<name>Internal Release Repository</name>
+			
+            
+			<url>http://databus.dbpedia.org:8081/repository/internal</url>
+			
+        
+		</pluginRepository>
+		
+        
+		<pluginRepository>
+			
+            
+			<id>archiva.snapshots</id>
+			
+            
+			<name>Internal Snapshot Repository</name>
+			
+            
+			<url>http://databus.dbpedia.org:8081/repository/snapshots</url>
+			
+        
+		</pluginRepository>
+		
+    
+	</pluginRepositories>
+	
+
+    
+	<build>
+		
+        
+		<plugins>
+			
+            
+			<plugin>
+				
+                
+				<groupId>org.dbpedia.databus</groupId>
+				
+                
+				<artifactId>databus-maven-plugin</artifactId>
+				
+                
+				<version>1.0-SNAPSHOT</version>
+				
+                
+				<executions>
+					
+                    
+					<execution>
+						
+                        
+						<id>validate</id>
+						
+                        
+						<phase>validate</phase>
+						
+                        
+						<goals>
+							
+                            
+							<goal>validate</goal>
+							
+                        
+						</goals>
+						
+                    
+					</execution>
+					
+                     
+					<execution>
+						
+                        
+						<id>test-data</id>
+						
+                        
+						<phase>test</phase>
+						
+                        
+						<goals>
+							
+                            
+							<goal>test-data</goal>
+							
+                        
+						</goals>
+						
+                    
+					</execution>
+					
+                    
+					<execution>
+						
+                        
+						<id>metadata</id>
+						
+                        
+						<phase>prepare-package</phase>
+						
+                        
+						<goals>
+							
+                            
+							<goal>metadata</goal>
+							
+                        
+						</goals>
+						
+                    
+					</execution>
+					
+                
+				</executions>
+				
+                
+				<configuration>
+					
+
+                    
+					<!--DO NOT EDIT HERE, unless you know what you are doing, We recommend changing the properties above-->
+					
+
+                    
+					<!--pluginDirectory Default: ${project.build.directory}/databus
+* all the generated files will be written here, i.e. parselogs, dataids, feeds
+* the path is relative to the module, i.e. target/databus/
+* `mvn clean` will delete all `target` folders in your project
+-->
+					
+                    
+					<pluginDirectory>${project.build.directory}/databus</pluginDirectory>
+					
+
+                    
+					<!--includeParseLogs DEFAULT: true
+            The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
+            We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
+                     -->
+					
+					
+					<includeParseLogs>true</includeParseLogs>
+					
+					
+					<dataInputDirectory>${databus.dataInputDirectory}</dataInputDirectory>
+					
+                    
+					<packageDirectory>${databus.packageDirectory}</packageDirectory>
+					
+                    
+					<bundle>${databus.bundle}</bundle>
+					
+                    
+					<downloadUrlPath>${databus.downloadUrlPath}</downloadUrlPath>
+					
+                    
+					<publisher>${databus.publisher}</publisher>
+					
+                    
+					<maintainer>${databus.maintainer}</maintainer>
+					
+                    
+					<license>${databus.license}</license>
+					
+                    
+					<privateKeyFile>${databus.privateKeyFile}</privateKeyFile>
+					
+
+                    
+					<issuedDate>${databus.issuedDate}</issuedDate>
+					
+                    
+					<modifiedDate>${databus.modifiedDate}</modifiedDate>
+					
+
+
+
+                
+				</configuration>
+				
+            
+			</plugin>
+			
+        
+		</plugins>
+		
+    
+	</build>
+	
+
+
+
+</project>
+

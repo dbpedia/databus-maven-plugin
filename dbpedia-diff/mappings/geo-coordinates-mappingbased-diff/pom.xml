@@ -1,0 +1,99 @@
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+    
+	<parent>
+		
+        
+		<artifactId>mappings-diff</artifactId>
+		
+        
+		<groupId>org.dbpedia.databus.mappings</groupId>
+		
+        
+		<version>2018.10.16</version>
+		
+    
+	</parent>
+	
+    
+	<modelVersion>4.0.0</modelVersion>
+	
+    
+	<artifactId>geo-coordinates-mappingbased-diff</artifactId>
+	
+    
+	<groupId>org.dbpedia</groupId>
+	
+    
+	<packaging>jar</packaging>
+	
+    
+	<version>2018.10.16</version>
+	
+
+
+    
+	<!--This is a module, it inherits all config properties form the parent pom.xml
+You can configure here:
+* the artifactId, please also change <module> in parent pom.xml
+* the labels for your dataset (Everything behind the @ is used as language tag):
+<labels>
+    <label>Name in English@en</label>
+    <label>Name in French@fr</label>
+    ...
+</labels>
+* the description
+-->
+	
+
+    
+	<build>
+		
+        
+		<plugins>
+			
+            
+			<plugin>
+				
+                
+				<groupId>org.dbpedia.databus</groupId>
+				
+                
+				<artifactId>databus-maven-plugin</artifactId>
+				
+                
+				<configuration>
+					
+                    
+					<labels>
+						
+                        
+						<label>Geo Coordinates Mappingbased-diff@en</label>
+						
+                    
+					</labels>
+					
+                    
+					<datasetDescription>The diffs to 
+                        Contains geographic coordinates from the Wikipedia Infoboxes, gathered by the mapping-based extraction, using the mappings from http://mappings.dbpedia.org/.
+                        This data was extracted from the wikipedia-dumps available on https://dumps.wikimedia.org/ using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework. 
+                        For more information on how these datasets were generated, please visit http://dev.dbpedia.org/Extraction%20Workflow.
+                    </datasetDescription>
+					
+                
+				</configuration>
+				
+            
+			</plugin>
+			
+        
+		</plugins>
+		
+    
+	</build>
+	
+
+
+</project>
+
