@@ -25,7 +25,7 @@
         <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
 * all files are copied into this directory where mvn databus:package-export is run
 -->
-        <databus.packageDirectory>${session.executionRootDirectory}/target/databus/package/${databus.bundle}</databus.packageDirectory>
+        <databus.packageDirectory>$databus-package-directory</databus.packageDirectory>
         
          <!-- downloadUrlPath 
 Configure downloadUrlPath, where the dataset will be deployed:
