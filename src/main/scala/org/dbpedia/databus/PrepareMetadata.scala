@@ -32,8 +32,6 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import java.io._
 
 
-
-
 /**
   * Analyse release data files
   *
@@ -63,7 +61,6 @@ class PrepareMetadata extends AbstractMojo with Properties with Locations with S
     var dataIdCollect: Model = ModelFactory.createDefaultModel
 
 
-
     getLog.info(s"looking for data files in: ${dataInputDirectory.getCanonicalPath}")
     getListOfDataFiles().foreach(datafile => {
       processFile(datafile, dataIdCollect)
@@ -72,12 +69,37 @@ class PrepareMetadata extends AbstractMojo with Properties with Locations with S
 
 
     // write the model to target
-    if(!dataIdCollect.isEmpty) {
-      val datasetResource = dataIdCollect.createResource( s"#${finalName}")
-      DataFileToModel.addBasicPropertiesToResource( this, dataIdCollect, datasetResource)
+    if (!dataIdCollect.isEmpty) {
+      val datasetResource = dataIdCollect.createResource(s"#${finalName}")
+      DataFileToModel.addBasicPropertiesToResource(this, dataIdCollect, datasetResource)
 
+      //adding todonote
+      datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#todonote"), "we are still refactoring code for dataid creation, much more information will be available at this resource later")
 
-      datasetResource.addProperty(dataIdCollect.createProperty("todonote"), "we are still refactoring code for dataid creation, much more information will be available at this resource later")
+      // add dataset metadata
+      // retrieve User Account Name
+      var userAccounts: Model = ModelFactory.createDefaultModel
+      userAccounts.read("https://raw.githubusercontent.com/dbpedia/accounts/master/accounts.ttl", "turtle")
+      var publisherResource = userAccounts.getResource(publisher.toString)
+      var account = publisherResource.getProperty(userAccounts.getProperty("http://xmlns.com/foaf/0.1/account"))
+
+      if (publisher == null || account == null) {
+        datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#bundle"),
+          dataIdCollect.createResource("http://dataid.dbpedia.org/ns/core#ACCOUNTNEEDED"))
+        datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#artifact"),
+          dataIdCollect.createResource("http://dataid.dbpedia.org/ns/core#ACCOUNTNEEDED"))
+
+      } else {
+        datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#bundle"),
+          dataIdCollect.createResource(s"${account.getResource.getURI}/${bundle}"))
+        datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#artifact"),
+          dataIdCollect.createResource(s"${account.getResource.getURI}/${bundle}/${artifactId}"))
+
+      }
+
+      //datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#bundle"))
+      //datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#artifact"))
+      //datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#artifact"))
 
       getDataIdFile().toScala.outputStream.foreach { os =>
 

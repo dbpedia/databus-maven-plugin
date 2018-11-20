@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat
 object DataFileToModel {
 
   val prefixes = Map(
+    "databus" -> "https://databus.dbpedia.org/",
     "dataid" -> "http://dataid.dbpedia.org/ns/core#",
     "dataid-ld" -> "http://dataid.dbpedia.org/ns/ld#",
     "dataid-mt" -> "http://dataid.dbpedia.org/ns/mt#",
@@ -134,7 +135,7 @@ object DataFileToModel {
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "hasVersion"), model.createLiteral(properties.version))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "issued"), model.createTypedLiteral(properties.issuedDate, model.getNsPrefixURI("xsd") + "date"))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "license"), model.createResource(properties.license))
-     thisResource.addProperty(dataid.associatedAgent, model.createResource(properties.maintainer.toString))
+     thisResource.addProperty(dataid.associatedAgent, model.createResource(properties.publisher.toString))
     thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "publisher"), model.createResource(properties.maintainer.toString))
   }
 }
