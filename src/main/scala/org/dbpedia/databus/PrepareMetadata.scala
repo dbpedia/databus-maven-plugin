@@ -22,12 +22,16 @@
 package org.dbpedia.databus
 
 import org.dbpedia.databus.lib.Datafile
+import org.dbpedia.databus.shared.rdf.conversions._
+import org.dbpedia.databus.shared.rdf.vocab._
 import org.dbpedia.databus.voc.DataFileToModel
 
 import better.files.{File => _, _}
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
+
+import scala.language.reflectiveCalls
 
 import java.io._
 
@@ -48,17 +52,17 @@ import java.io._
   *
   */
 @Mojo(name = "metadata", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
-class PrepareMetadata extends AbstractMojo with Properties with Locations with SigningHelpers {
+class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
     //skip the parent module
-    if (isParent()) {
+    if(isParent()) {
       getLog.info("skipping parent module")
       return
     }
 
-    var dataIdCollect: Model = ModelFactory.createDefaultModel
+    val dataIdCollect: Model = ModelFactory.createDefaultModel
 
 
     getLog.info(s"looking for data files in: ${dataInputDirectory.getCanonicalPath}")
@@ -69,37 +73,42 @@ class PrepareMetadata extends AbstractMojo with Properties with Locations with S
 
 
     // write the model to target
-    if (!dataIdCollect.isEmpty) {
-      val datasetResource = dataIdCollect.createResource(s"#${finalName}")
-      DataFileToModel.addBasicPropertiesToResource(this, dataIdCollect, datasetResource)
-
-      //adding todonote
-      datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#todonote"), "we are still refactoring code for dataid creation, much more information will be available at this resource later")
+    if(!dataIdCollect.isEmpty) {
 
       // add dataset metadata
       // retrieve User Account Name
-      var userAccounts: Model = ModelFactory.createDefaultModel
-      userAccounts.read("https://raw.githubusercontent.com/dbpedia/accounts/master/accounts.ttl", "turtle")
-      var publisherResource = userAccounts.getResource(publisher.toString)
-      var account = publisherResource.getProperty(userAccounts.getProperty("http://xmlns.com/foaf/0.1/account"))
+      var accountOption = {
+        implicit val userAccounts: Model = ModelFactory.createDefaultModel
+        userAccounts.read("https://raw.githubusercontent.com/dbpedia/accounts/master/accounts.ttl", "turtle")
 
-      if (publisher == null || account == null) {
-        datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#bundle"),
-          dataIdCollect.createResource("http://dataid.dbpedia.org/ns/core#ACCOUNTNEEDED"))
-        datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#artifact"),
-          dataIdCollect.createResource("http://dataid.dbpedia.org/ns/core#ACCOUNTNEEDED"))
-
-      } else {
-        datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#bundle"),
-          dataIdCollect.createResource(s"${account.getResource.getURI}/${bundle}"))
-        datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#artifact"),
-          dataIdCollect.createResource(s"${account.getResource.getURI}/${bundle}/${artifactId}"))
-
+        Option(publisher.toString.asIRI.getProperty(foaf.account)).map(_.getObject.asResource)
       }
 
-      //datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#bundle"))
-      //datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#artifact"))
-      //datasetResource.addProperty(dataIdCollect.createProperty("http://dataid.dbpedia.org/ns/core#artifact"))
+      {
+        implicit val editContext = dataIdCollect
+
+        val datasetResource = dataIdCollect.createResource(s"#${finalName}")
+        DataFileToModel.addBasicPropertiesToResource(this, dataIdCollect, datasetResource)
+
+        //adding todonote
+        datasetResource.addProperty(dataid.prop.todonote, "we are still refactoring code for dataid creation, much " +
+          "more information will be available at this resource later")
+
+        accountOption match {
+
+          case Some(account) => {
+
+            datasetResource.addProperty(dataid.bundle, s"${account.getURI}/${bundle}".asIRI)
+            datasetResource.addProperty(dataid.artifact, s"${account.getURI}/${bundle}/${artifactId}".asIRI)
+          }
+
+          case None => {
+
+            datasetResource.addProperty(dataid.bundle, "http://dataid.dbpedia.org/ns/core#ACCOUNTNEEDED".asIRI)
+            datasetResource.addProperty(dataid.artifact, "http://dataid.dbpedia.org/ns/core#ACCOUNTNEEDED".asIRI)
+          }
+        }
+      }
 
       getDataIdFile().toScala.outputStream.foreach { os =>
 
@@ -141,13 +150,13 @@ class PrepareMetadata extends AbstractMojo with Properties with Locations with S
     )
     var mimetypes = MimeTypeHelper(None, None)
     outerMimeTypes.foreach { case (key, value) => {
-      if (fileName.contains(key)) {
+      if(fileName.contains(key)) {
         mimetypes.outer = Some(value)
       }
     }
     }
     innerMimeTypes.foreach { case (key, value) => {
-      if (fileName.contains(key)) {
+      if(fileName.contains(key)) {
         mimetypes.inner = Some(value)
       }
     }
@@ -156,6 +165,4 @@ class PrepareMetadata extends AbstractMojo with Properties with Locations with S
   }
 
   case class MimeTypeHelper(var outer: Option[String], var inner: Option[String])
-
 }
-

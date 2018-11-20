@@ -20,23 +20,17 @@
  */
 package org.dbpedia.databus
 
-import org.dbpedia.databus.shared._
 import org.dbpedia.databus.lib._
+import org.dbpedia.databus.shared._
 
-import better.files._
-import org.apache.jena.rdf.model.{Model, ModelFactory}
-import org.apache.jena.riot.RDFLanguages
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import org.scalactic.Requirements._
 import org.scalactic.TypeCheckedTripleEquals._
-import resource._
-
-import java.io.ByteArrayOutputStream
 
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY)
-class Deploy extends AbstractMojo with Properties with Locations {
+class Deploy extends AbstractMojo with Properties {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {

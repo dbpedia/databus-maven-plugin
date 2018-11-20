@@ -23,16 +23,19 @@ package org.dbpedia.databus.voc
 
 import org.dbpedia.databus.Properties
 import org.dbpedia.databus.lib.Datafile
+import org.dbpedia.databus.shared.rdf.conversions._
 import org.dbpedia.databus.shared.rdf.vocab._
 
+import better.files._
+import org.apache.jena.datatypes.xsd.XSDDatatype._
 import org.apache.jena.rdf.model.{Model, ModelFactory, Resource}
-import org.apache.jena.vocabulary.RDF
+import org.apache.jena.vocabulary.{OWL, RDF, RDFS, XSD}
 
 import scala.collection.JavaConverters._
 import scala.language.reflectiveCalls
 
-import java.io.File
-import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
+import java.time.{LocalDateTime, ZoneId}
 
 object DataFileToModel {
 
@@ -43,35 +46,36 @@ object DataFileToModel {
     "dataid-mt" -> "http://dataid.dbpedia.org/ns/mt#",
     "dataid-pl" -> "http://dataid.dbpedia.org/ns/pl#",
     "dmp" -> "http://dataid.dbpedia.org/ns/dmp#",
-    "dc" -> "http://purl.org/dc/terms/",
-    "dcat" -> "http://www.w3.org/ns/dcat#",
+    "dc" -> global.dcterms.namespace,
+    "dcat" -> global.dcat.namespace,
     "void" -> "http://rdfs.org/ns/void#",
     "prov" -> "http://www.w3.org/ns/prov#",
-    "xsd" -> "http://www.w3.org/2001/XMLSchema#",
-    "owl" -> "http://www.w3.org/2002/07/owl#",
+    "xsd" -> XSD.NS,
+    "owl" -> OWL.NS,
     "foaf" -> "http://xmlns.com/foaf/0.1/",
-    "rdf" -> "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-    "rdfs" -> "http://www.w3.org/2000/01/rdf-schema#",
+    "rdf" -> RDF.uri,
+    "rdfs" -> RDFS.uri,
     "datacite" -> "http://purl.org/spar/datacite/",
     "spdx" -> "http://spdx.org/rdf/terms#",
     "sd" -> "http://www.w3.org/ns/sparql-service-description#"
   )
 
 
-  def datafile2Model(datafile: Datafile, file: File, properties: Properties): Model = {
+  def datafile2Model(datafile: Datafile, properties: Properties): Model = {
+
     implicit val model: Model = ModelFactory.createDefaultModel
+
     for ((key, value) <- prefixes) {
       model.setNsPrefix(key, value)
     }
 
-
     // main uri of dataid for SingleFile
-    val thisResource = model.createResource("#" + properties.getDatafileFinal(file).getName)
+    val thisResource = ("#" + properties.getDatafileFinal(datafile.file).getName).asIRI
 
     /**
       * linking to other constructs
       */
-    val datasetResource = model.createResource( s"#${properties.finalName}")
+    val datasetResource = s"#${properties.finalName}".asIRI
     thisResource.addProperty(dataid.isDistributionOf,datasetResource)
     datasetResource.addProperty(dcat.distribution,thisResource)
 
@@ -79,38 +83,34 @@ object DataFileToModel {
     thisResource.addProperty(RDF.`type`, dataid.SingleFile)
     datasetResource.addProperty(RDF.`type`, dataid.Dataset)
 
-
-
-
     addBasicPropertiesToResource( properties, model, thisResource)
 
-
     // specific info about the file
-    val modifiedDate = new SimpleDateFormat("yyyy-MM-dd").format(file.lastModified())
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "modified"), model.createTypedLiteral(modifiedDate, model.getNsPrefixURI("xsd") + "date"))
-    thisResource.addProperty(dataid.sha256sum, model.createLiteral(datafile.sha256sum))
-    thisResource.addProperty(dataid.signature, model.createLiteral(datafile.signatureBase64))
-    thisResource.addProperty(dataid.preview, model.createLiteral(datafile.preview))
+    def modificationTime = properties.params.modifiedDate.getOrElse(
+      LocalDateTime.ofInstant(datafile.file.toScala.lastModifiedTime, ZoneId.systemDefault()))
+    thisResource.addProperty(dcterms.modified, ISO_LOCAL_DATE.format(modificationTime).asTypedLiteral(XSDdate))
+    thisResource.addProperty(dataid.sha256sum, datafile.sha256sum.asPlainLiteral)
+    thisResource.addProperty(dataid.signature, datafile.signatureBase64.asPlainLiteral)
+    thisResource.addProperty(dataid.preview, datafile.preview)
     // todo add uncompressedByteSize if possible
-    //thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dataid"), "uncompressedByteSize"), model.createLiteral(datafile.bytes.toString))
-    thisResource.addProperty(dcat.byteSize, model.createLiteral(datafile.bytes.toString))
+    //thisResource.addProperty(dataid.uncompressedByteSize, datafile.bytes.toString.asTypedLiteral(XSDdecimal))
+    thisResource.addProperty(dcat.byteSize, datafile.bytes.toString.asTypedLiteral(XSDdecimal))
     // todo review creation of this statement: the used property is not declared in dcat; looks like a slip of mind
     // sh: it is a dataid property. However, dataid modeled it as a property of the mimetype, which is the wrong place
     // files have one format extension and maybe one compressionextension and mimetypes have a list of likely extensions
-    thisResource.addProperty(dataid.prop.formatExtension, model.createLiteral(datafile.formatExtension))
+    thisResource.addProperty(dataid.prop.formatExtension, datafile.formatExtension.asPlainLiteral)
     //todo handle correctly, if not default
-    thisResource.addProperty(dcat.downloadURL, model.createResource(properties.getDatafileFinal(file).getName))
+    thisResource.addProperty(dcat.downloadURL, properties.getDatafileFinal(datafile.file).getName.asIRI)
 
     // mediatype
-    val mediaType = model.createResource(model.getNsPrefixURI("dataid-mt") + datafile.mimetype.getClass.getSimpleName.replace("$", ""))
-    mediaType.addProperty(RDF.`type`, model.createResource(s"${model.getNsPrefixURI("dataid-mt")}MediaType"))
-    thisResource.addProperty(dcat.mediaType, mediaType)
-    mediaType.addProperty(dataid.mimetype, datafile.mimetype.mimeType)
+    def mediaTypeName = datafile.mimetype.getClass.getSimpleName.stripSuffix("$")
+    val mediaTypeRes = (model.getNsPrefixURI("dataid-mt") + mediaTypeName).asIRI
+    mediaTypeRes.addProperty(RDF.`type`,s"${model.getNsPrefixURI("dataid-mt")}MediaType".asIRI)
+    thisResource.addProperty(dcat.mediaType, mediaTypeRes)
+    mediaTypeRes.addProperty(dataid.mimetype, datafile.mimetype.mimeType)
     thisResource.addProperty(dataid.compression, datafile.compressionVariant)
 
     model
-
-
   }
 
   def addBasicPropertiesToResource( properties: Properties, model: Model, thisResource: Resource) = {
@@ -118,24 +118,23 @@ object DataFileToModel {
     implicit def vocabModel = model
 
     // label
-    for (label :String <- properties.labels.asScala) {
-      val split = label.split("@")
-      thisResource.addProperty(
-        model.getProperty(model.getNsPrefixURI("rdfs"), "label"),
-        model.createLiteral(split.head, split.last))
-      thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"),
-        "title"), model.createLiteral(split.head, split.last))
-
+    for {
+      label :String <- properties.labels.asScala
+      labelText :: langTag :: Nil = label.split("@").toList
+    } {
+      thisResource.addProperty(RDFS.label, labelText, langTag)
+      thisResource.addProperty(dcterms.title, labelText, langTag)
     }
 
     //basic properties
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "description"), model.createLiteral(properties.datasetDescription))
+    thisResource.addProperty(dcterms.description, properties.datasetDescription.asPlainLiteral)
     // todo add version number, but this is a dataid issue
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "conformsTo"), model.createResource(model.getNsPrefixURI("dataid")))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "hasVersion"), model.createLiteral(properties.version))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "issued"), model.createTypedLiteral(properties.issuedDate, model.getNsPrefixURI("xsd") + "date"))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "license"), model.createResource(properties.license))
-     thisResource.addProperty(dataid.associatedAgent, model.createResource(properties.publisher.toString))
-    thisResource.addProperty(model.getProperty(model.getNsPrefixURI("dc"), "publisher"), model.createResource(properties.maintainer.toString))
+    thisResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
+    thisResource.addProperty(dcterms.hasVersion, properties.version.asPlainLiteral)
+    def issuedTime = properties.params.issuedDate.getOrElse(properties.invocationTime)
+    thisResource.addProperty(dcterms.issued, ISO_LOCAL_DATE.format(issuedTime).asTypedLiteral(XSDdate))
+    thisResource.addProperty(dcterms.license, properties.license.asIRI)
+    thisResource.addProperty(dataid.associatedAgent, properties.maintainer.toString.asIRI)
+    thisResource.addProperty(dcterms.publisher, properties.publisher.toString.asIRI)
   }
 }
