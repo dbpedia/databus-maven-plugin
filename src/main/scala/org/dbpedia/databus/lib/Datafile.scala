@@ -27,7 +27,7 @@ import org.dbpedia.databus.shared.authentification.RSAKeyPair
 import org.dbpedia.databus.shared.signing
 import org.dbpedia.databus.voc.{ApplicationNTriples, DataFileToModel, Format, TextTurtle}
 
-import better.files.{File => BetterFile, _}
+import better.files.{File => _, _}
 import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
 import org.apache.commons.compress.compressors.CompressorStreamFactory
 import org.apache.jena.rdf.model.Model
@@ -40,7 +40,6 @@ import scala.util.{Failure, Success, Try}
 import java.io._
 import java.nio.charset.MalformedInputException
 import java.nio.file.Files
-import java.security.PrivateKey
 import java.util.Base64
 
 
@@ -48,7 +47,7 @@ import java.util.Base64
   * a simple dao to collect all values for a file
   * private constructor, must be called with init to handle compression detection
   */
-class Datafile private(datafile: File) {
+class Datafile private(val file: File) {
 
   var mimetype: Format = _
   var formatExtension: String = ""
@@ -68,16 +67,16 @@ class Datafile private(datafile: File) {
   var preview: String = ""
 
   def getName(): String = {
-    datafile.getName
+    file.getName
   }
 
 
   def toModel(props: Properties): Model = {
-    DataFileToModel.datafile2Model(this, datafile, props)
+    DataFileToModel.datafile2Model(this, props)
   }
 
   private def updateMimetype(): Datafile = {
-    val (ext, mt) = Format.detectMimetypeByFileExtension(datafile)
+    val (ext, mt) = Format.detectMimetypeByFileExtension(file)
     mimetype = mt
 
     // downgrade turtle to ntriple, if linebased
@@ -95,12 +94,12 @@ class Datafile private(datafile: File) {
   }
 
   def updateSHA256sum(): Datafile = {
-    sha256sum = signing.sha256Hash(datafile.toScala).asBytes.map("%02x" format _).mkString
+    sha256sum = signing.sha256Hash(file.toScala).asBytes.map("%02x" format _).mkString
     this
   }
 
   def updateBytes(): Datafile = {
-    bytes = datafile.length()
+    bytes = file.length()
     this
   }
 
@@ -136,11 +135,11 @@ class Datafile private(datafile: File) {
 
   def updateSignature(keyPair: RSAKeyPair): Datafile = {
 
-    signatureBytes = signing.signFile(keyPair.privateKey, datafile.toScala)
+    signatureBytes = signing.signFile(keyPair.privateKey, file.toScala)
 
     signatureBase64 = new String(Base64.getEncoder.encode(signatureBytes))
 
-    verified = signing.verifyFile(keyPair.publicKey, signatureBytes, datafile.toScala)
+    verified = signing.verifyFile(keyPair.publicKey, signatureBytes, file.toScala)
     this
   }
 
@@ -152,7 +151,7 @@ class Datafile private(datafile: File) {
     */
   def getInputStream(): ManagedResource[InputStream] = managed({
 
-    val bis = datafile.toScala.newInputStream.buffered
+    val bis = file.toScala.newInputStream.buffered
     if (isCompressed) {
       new CompressorStreamFactory()
         .createCompressorInputStream(compressionVariant, bis)

@@ -38,7 +38,7 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
   *
   */
 @Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE)
-class Validate extends AbstractMojo with Properties with Locations with SigningHelpers with LazyLogging {
+class Validate extends AbstractMojo with Properties with SigningHelpers with LazyLogging {
 
 
   /**
@@ -58,9 +58,6 @@ class Validate extends AbstractMojo with Properties with Locations with SigningH
       validateWebId()
 
     // all submodules
-    } else {
-      // as we changed the phases this one goes out here
-      //validateFileNames()
     }
   }
 
@@ -91,41 +88,6 @@ class Validate extends AbstractMojo with Properties with Locations with SigningH
     } else {
       getLog.error("FAILURE: Private Key and WebID do not match")
     }
-  }
-
-  def validateFileNames(): Unit = {
-
-    //getLog.info("Checking files")
-    //val in =  FileHelper.getListOfDataFiles(dataDirectory,artifactId,getDataIdFile().getName)
-    //getLog.info("including "+in.size+ " files starting with "+artifactId + " and not pre-existing dataid files")
-    //getLog.info("\n"+in.mkString("\n"))
-
-   /*  val moduleDirectories = FileHelper.getModules(multiModuleBaseDirectory)
-    getLog.info(moduleDirectories+"")
-    getLog.info(multiModuleBaseDirectory)
-
-    // processing each module
-    moduleDirectories.foreach(moduleDir => {
-      getLog.info(s"reading from module $moduleDir")
-
-      // processing all file per module
-      FileHelper.getListOfFiles(s"$moduleDir/$resourceDirectory").foreach(datafile => {
-
-        // check for matching artifactId
-        if (datafile.getName.startsWith(artifactId)) {
-          //good
-          getLog.info("include: "+datafile)
-        } else {
-          //bad
-          getLog.info("exclude: "+datafile)
-
-        }
-
-        // check mimetype
-
-      })
-    })
-*/
   }
 
 }

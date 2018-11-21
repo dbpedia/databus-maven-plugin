@@ -25,6 +25,7 @@ import org.apache.maven.plugins.annotations.Parameter
 
 import java.io.File
 import java.net.URL
+import java.time.{Instant, LocalDateTime, ZoneId}
 
 
 /**
@@ -36,7 +37,7 @@ import java.net.URL
   * by maven is done later, so all vars are empty on startup
   *
   */
-trait Properties {
+trait Properties extends Locations with Parameters {
 
   /**
     * Project vars given by Maven
@@ -116,6 +117,7 @@ trait Properties {
   @Parameter val labels: java.util.List[String] = new java.util.ArrayList[String]
   @Parameter val datasetDescription: String = ""
 
+  val invocationTime = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
 
   def isParent(): Boolean = {
     packaging.equals("pom")
@@ -184,7 +186,7 @@ trait Properties {
     */
   def getListOfDataFiles(): List[File] = {
 
-    if(dataInputDirectory.exists && dataInputDirectory.isDirectory) {
+   if(dataInputDirectory.exists && dataInputDirectory.isDirectory) {
       dataInputDirectory.listFiles
         .filter(_.isFile)
         .filter(_.getName.startsWith(artifactId))
