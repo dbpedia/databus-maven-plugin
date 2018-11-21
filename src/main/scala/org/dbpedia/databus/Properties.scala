@@ -21,6 +21,7 @@
 package org.dbpedia.databus
 
 import better.files.{File => _, _}
+import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugins.annotations.Parameter
 
 import java.io.File
@@ -38,6 +39,8 @@ import java.time.{Instant, LocalDateTime, ZoneId}
   *
   */
 trait Properties extends Locations with Parameters {
+
+  this: AbstractMojo =>
 
   /**
     * Project vars given by Maven
@@ -186,15 +189,30 @@ trait Properties extends Locations with Parameters {
     */
   def getListOfDataFiles(): List[File] = {
 
+    getLog.debug("")
+
+
    if(dataInputDirectory.exists && dataInputDirectory.isDirectory) {
-      dataInputDirectory.listFiles
+
+     val dataFiles = dataInputDirectory.listFiles
         .filter(_.isFile)
         .filter(_.getName.startsWith(artifactId))
         .filter(_ != getDataIdFile())
         .filter(_ != getParseLogFile())
         .toList
-    } else {
-      List[File]()
+
+      if(dataFiles.isEmpty) {
+        getLog.warn(s"no matching in put files found within ${dataInputDirectory.listFiles().size} files in " +
+          s"data input directory ${dataInputDirectory.getAbsolutePath}")
+      }
+
+      dataFiles
+   } else {
+
+     getLog.warn(s"data input location '${dataInputDirectory.getAbsolutePath}' is does not exist or is not " +
+       "a directory!")
+
+     List[File]()
     }
   }
 }
