@@ -20,7 +20,7 @@
 -->
         <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
 		<!-- the name of the bundle, used for packaging -->
-		<databus.bundle>${artifactId}</databus.bundle>
+		<databus.bundle>${project.artifactId}</databus.bundle>
 
         <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
 * all files are copied into this directory where mvn databus:package-export is run
@@ -50,6 +50,8 @@ SECURITY NOTICE:
 * Limit access to this file to your own user: chmod 700 $HOME/.m2/webid_bundle.p12
 -->
         <databus.pkcs12File>$databus-pkcs12-file</databus.pkcs12File>
+
+        <databus.deployToTestRepo>false</databus.deployToTestRepo>
 
         <!--maintainer
 The maintainer of the data release, normally the person to contact, often the same as publisher
@@ -166,7 +168,7 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                         if empty: creates the channel based on the pom properties and use old feed from feedDirectory/feed.xml if exists
                         TODO add property above
                      -->
-                    <feedFrom></feedFrom>
+                    <feedFrom/>
                     <dataInputDirectory>${databus.dataInputDirectory}</dataInputDirectory>
                     <packageDirectory>${databus.packageDirectory}</packageDirectory>
                     <bundle>${databus.bundle}</bundle>
