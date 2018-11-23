@@ -21,15 +21,61 @@
 package org.dbpedia.databus
 
 import org.dbpedia.databus.shared.authentification.PKCS12File
+import org.dbpedia.databus.shared.helpers.conversions._
+
+import scala.collection.concurrent.TrieMap
+import scala.io.StdIn
+import scala.util.Try
+
+import java.io.IOException
+import java.security.GeneralSecurityException
+
+object SigningHelpers {
+
+  type FilePath = String
+  type Password = String
+
+  val pkcs12PasswordMemo = TrieMap[FilePath, Password]()
+}
 
 trait SigningHelpers { this: Locations =>
 
-  def singleKeyPairFromPKCS12 = PKCS12File(locations.pkcs12File).rsaKeyPairs match {
+  import SigningHelpers._
+
+  def singleKeyPairFromPKCS12 = openPKCS12.get.rsaKeyPairs match {
 
     case uniqueKeyPair :: Nil => uniqueKeyPair
 
     case Nil => sys.error(s"PKCS12 bundle at '${locations.pkcs12File.pathAsString}' contains no key pairs")
 
     case _ => sys.error(s"PKCS12 bundle at '${locations.pkcs12File.pathAsString}' has multiple key pairs - ambiguity")
+  }
+
+  def openPKCS12 = {
+
+    Try { PKCS12File(locations.pkcs12File, password = "") tap { _.rsaKeyPairs } } recover {
+
+      case _: IOException | _: GeneralSecurityException =>
+        PKCS12File(locations.pkcs12File, askForPassword) tap { _.rsaKeyPairs }
+    }
+  }
+
+  def pkcs12Password = openPKCS12.map(_ => pkcs12PasswordMemo.getOrElse(canonicalPath, ""))
+
+  protected def canonicalPath = locations.pkcs12File.toJava.getCanonicalPath
+
+  protected def askForPassword: String = SigningHelpers.synchronized {
+
+    def inputRequest = s"Enter password for PKCS12 bundle at $canonicalPath: "
+
+    pkcs12PasswordMemo.getOrElseUpdate(canonicalPath, {
+
+      Option(System.console()) match {
+
+        case Some(console) => new String(console.readPassword(inputRequest))
+
+        case None => StdIn.readLine(inputRequest)
+      }
+    })
   }
 }
