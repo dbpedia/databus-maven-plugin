@@ -20,16 +20,22 @@
  */
 package org.dbpedia.databus
 
-import better.files._
+import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatter.ISO_DATE
+import java.time.temporal.TemporalAccessor
 
-trait Locations {
+
+trait Parameters {
   this: Properties =>
 
-  lazy val locations = new Locations(this)
+  lazy val params = new Parameters(this)
 
-  class Locations(props: Properties) {
+  class Parameters(props: Properties) {
 
-    def pkcs12File = lib.findFileMaybeInParent(props.pkcs12File.toScala, "PKCS12 bundle")
+    def issuedDate = Option(props.issuedDate).map(ISO_DATE.parse)
+
+    def modifiedDate = Option(props.modifiedDate).map(ISO_DATE.parse)
   }
 
 }

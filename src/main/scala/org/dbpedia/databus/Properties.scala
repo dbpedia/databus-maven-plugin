@@ -21,10 +21,12 @@
 package org.dbpedia.databus
 
 import better.files.{File => _, _}
+import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugins.annotations.Parameter
 
 import java.io.File
 import java.net.URL
+import java.time.{Instant, LocalDateTime, ZoneId}
 
 
 /**
@@ -36,7 +38,9 @@ import java.net.URL
   * by maven is done later, so all vars are empty on startup
   *
   */
-trait Properties {
+trait Properties extends Locations with Parameters {
+
+  this: AbstractMojo =>
 
   /**
     * Project vars given by Maven
@@ -116,6 +120,7 @@ trait Properties {
   @Parameter val labels: java.util.List[String] = new java.util.ArrayList[String]
   @Parameter val datasetDescription: String = ""
 
+  val invocationTime = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
 
   def isParent(): Boolean = {
     packaging.equals("pom")
@@ -184,15 +189,30 @@ trait Properties {
     */
   def getListOfDataFiles(): List[File] = {
 
-    if(dataInputDirectory.exists && dataInputDirectory.isDirectory) {
-      dataInputDirectory.listFiles
+    getLog.debug("")
+
+
+   if(dataInputDirectory.exists && dataInputDirectory.isDirectory) {
+
+     val dataFiles = dataInputDirectory.listFiles
         .filter(_.isFile)
         .filter(_.getName.startsWith(artifactId))
         .filter(_ != getDataIdFile())
         .filter(_ != getParseLogFile())
         .toList
-    } else {
-      List[File]()
+
+      if(dataFiles.isEmpty) {
+        getLog.warn(s"no matching in put files found within ${dataInputDirectory.listFiles().size} files in " +
+          s"data input directory ${dataInputDirectory.getAbsolutePath}")
+      }
+
+      dataFiles
+   } else {
+
+     getLog.warn(s"data input location '${dataInputDirectory.getAbsolutePath}' is does not exist or is not " +
+       "a directory!")
+
+     List[File]()
     }
   }
 }

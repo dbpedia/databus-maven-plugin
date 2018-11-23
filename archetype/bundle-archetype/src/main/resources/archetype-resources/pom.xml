@@ -51,6 +51,8 @@ SECURITY NOTICE:
 -->
         <databus.pkcs12File>$databus-pkcs12-file</databus.pkcs12File>
 
+        <databus.deployToTestRepo>false</databus.deployToTestRepo>
+
         <!--maintainer
 The maintainer of the data release, normally the person to contact, often the same as publisher
         -->
@@ -166,7 +168,7 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                         if empty: creates the channel based on the pom properties and use old feed from feedDirectory/feed.xml if exists
                         TODO add property above
                      -->
-                    <feedFrom></feedFrom>
+                    <feedFrom/>
                     <dataInputDirectory>${databus.dataInputDirectory}</dataInputDirectory>
                     <packageDirectory>${databus.packageDirectory}</packageDirectory>
                     <bundle>${databus.bundle}</bundle>

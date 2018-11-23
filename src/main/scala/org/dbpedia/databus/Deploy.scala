@@ -20,23 +20,17 @@
  */
 package org.dbpedia.databus
 
-import org.dbpedia.databus.shared._
 import org.dbpedia.databus.lib._
+import org.dbpedia.databus.shared._
 
-import better.files._
-import org.apache.jena.rdf.model.{Model, ModelFactory}
-import org.apache.jena.riot.RDFLanguages
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import org.scalactic.Requirements._
 import org.scalactic.TypeCheckedTripleEquals._
-import resource._
-
-import java.io.ByteArrayOutputStream
 
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY)
-class Deploy extends AbstractMojo with Properties with Locations {
+class Deploy extends AbstractMojo with Properties with SigningHelpers {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
@@ -53,7 +47,8 @@ class Deploy extends AbstractMojo with Properties with Locations {
     val response = if(dataIdPackageTarget.isRegularFile && dataIdPackageTarget.nonEmpty) {
 
       // if there is a (base-resolved) DataId Turtle file in the package directory, attempt to upload that one
-      DataIdUpload.upload(uploadEndpointIRI, dataIdPackageTarget, locations.pkcs12File, dataIdDownloadLocation, allowOverwriteOnDeploy)
+      DataIdUpload.upload(uploadEndpointIRI, dataIdPackageTarget, locations.pkcs12File, pkcs12Password.get,
+        dataIdDownloadLocation, allowOverwriteOnDeploy)
     } else {
 
       //else resolve the base in-memory and upload that
@@ -62,7 +57,7 @@ class Deploy extends AbstractMojo with Properties with Locations {
       getLog.warn(s"Did not find expected DataId file '${dataIdPackageTarget.pathAsString}' from " +
         "databus:package-export goal. Uploading a DataId prepared in-memory.")
 
-      DataIdUpload.upload(uploadEndpointIRI, baseResolvedDataId, locations.pkcs12File,
+      DataIdUpload.upload(uploadEndpointIRI, baseResolvedDataId, locations.pkcs12File, pkcs12Password.get,
         dataIdDownloadLocation, allowOverwriteOnDeploy)
     }
 
