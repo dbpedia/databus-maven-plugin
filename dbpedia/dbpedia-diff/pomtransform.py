@@ -9,9 +9,14 @@ import sys
 import os 
 
 
+
+#Syntax: ./pomtransporm.py sourcedir targetdir
+#For Version Change: ./pomtransform.py -v version sourcedir
+#eg: ./pomtransform -v 2018.11.01 sourcedir
+
 def handlePom(pomdom, pomtype):
 
-    taglist = {"child":{"artifactId":"-diff", "label":"-diff", "datasetDescription":"The diffs to "}, "parent":{"module":"-diff", "artifactId":"-diff", }}
+    taglist = {"child":{"artifactId":"%s%-diff", "label":"-diff", "datasetDescription":"The diffs to %s%"}, "parent":{"module":"%s%-diff", "artifactId":"%s%-diff", }}
 
     for tag in taglist[pomtype]:
         nodeList = pomdom.getElementsByTagName(tag)
@@ -19,18 +24,25 @@ def handlePom(pomdom, pomtype):
                 if node.nodeType == node.ELEMENT_NODE:
                     textValue = node.childNodes[0].nodeValue
                     if textValue != "databus-maven-plugin"  and textValue != "org.dbpedia.databus":
-                        if taglist[pomtype][tag] != "-diff":
-                            node.childNodes[0].nodeValue = taglist[pomtype][tag] + textValue  
-                        elif tag == "label":
+                        if tag == "label":
                             node.childNodes[0].nodeValue = textValue.split("@")[0] + taglist[pomtype][tag] +"@"+ textValue.split("@")[1]
                         else:
-                            node.childNodes[0].nodeValue = textValue + taglist[pomtype][tag]
+                            node.childNodes[0].nodeValue = taglist[pomtype][tag].replace("%s%", textValue)
     return pomdom.toprettyxml()
 
 
+def handleVersionChange(pomdom, version):
+    for node in pomdom.getElementsByTagName("version"):
+        if node.nodeType == node.ELEMENT_NODE:
+            node.childNodes[0].nodeValue = version
 
+    return pomdom.toprettyxml()
 
-sourcedir = sys.argv[1]
+if sys.argv[1] == "-v" or sys.argv[1] == "-version"
+    sourcedir = sys.argv[3]
+    version = sys.argv[2]
+else:
+    sourcedir = sys.argv[1]
 
 targetdir = sys.argv[2]
 
