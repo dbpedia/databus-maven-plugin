@@ -20,7 +20,7 @@
 -->
         <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
 		<!-- the name of the bundle, used for packaging -->
-		<databus.bundle>${project.artifactId}</databus.bundle>
+		<databus.bundle>${artifactId}</databus.bundle>
 
         <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
 * all files are copied into this directory where mvn databus:package-export is run
