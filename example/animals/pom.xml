@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example.data</groupId>
     <artifactId>animals</artifactId>
     <packaging>pom</packaging>
     <version>2018.08.15</version>
+
+    <modules>
+        <module>mammals</module>
+        <module>birds</module>
+        <module>fish</module>
+    </modules>
 
     <properties>
         <!--dataDirectory DEFAULT: src/main/databus/input
@@ -15,23 +22,26 @@
 
 -->
         <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
-		<!-- the name of the bundle, used for packaging -->
-		<databus.bundle>animals</databus.bundle>
+        <!-- the name of the bundle, used for packaging -->
+        <databus.bundle>${project.artifactId}</databus.bundle>
 
         <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
 * all files are copied into this directory where mvn databus:package-export is run
 -->
-        <databus.packageDirectory>${session.executionRootDirectory}/target/databus/package/${databus.bundle}</databus.packageDirectory>
-        
-         <!-- downloadUrlPath 
+        <databus.packageDirectory>${session.executionRootDirectory}/target/databus/package/${databus.bundle}
+        </databus.packageDirectory>
+
+        <!-- downloadUrlPath
 Configure downloadUrlPath, where the dataset will be deployed:
 DBpedia will publish 4 more bundles with dozens of artifacts and new versions at regular intervals, our downloadurl looks like this:
 <databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
 We recommend to do the same, as you can add more bundles and datasets later.
 
 -->
-		<databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
-        
+        <databus.downloadUrlPath>
+            http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/
+        </databus.downloadUrlPath>
+
         <databus.publisher>https://neradis.github.io/test-id.ttl#this</databus.publisher>
         <!--pkcs12File
 The PKCS12 bundle providing the cryptographic identity information associated to the WebID of the
@@ -209,11 +219,4 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
             </plugin>
         </plugins>
     </build>
-
-
-  <modules>
-    <module>mammals</module>
-    <module>birds</module>
-    <module>fish</module>
-  </modules>
 </project>
