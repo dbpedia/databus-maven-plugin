@@ -15,9 +15,51 @@
 	<packaging>pom</packaging>
 	
     
-	<version>2016.10.01</version>
+	<version>2018.11.03</version>
 	
 
+	
+
+	<modules>
+		
+		<module>article-categories</module>
+		  
+		<module>article-templates</module>
+		  <module>article-templates-nested</module>
+		  <module>category-labels</module>
+	  	<module>commons-page-links</module>
+		  <module>disambiguations</module>
+		  <module>external-links</module>
+  		<module>french-population</module>
+		<module>geo-coordinates</module>
+		<module>homepages</module>
+		<module>infobox-properties</module>
+		<module>infobox-property-definitions</module>
+		<module>interlanguage-links</module>
+	        <module>labels</module>
+		<module>out-degree</module>
+		<module>page-ids</module>
+		<module>page-length</module>
+		<module>page-links</module>
+		<module>persondata</module>
+		<module>pnd</module>
+		<module>redirects</module>
+		<module>revision-ids</module>
+		<module>revision-uris</module>
+		<module>skos-categories</module>
+		<module>topical-concepts</module>
+		<module>wikipedia-links</module>    
+    
+		<module>mappingbased-literals-diff</module>
+		
+    
+		<module>mappingbased-objects-diff</module>
+		
+    
+		<module>specific-mappingbased-properties-diff</module>
+		
+  
+	</modules>
     
 	<properties>
 		
@@ -30,13 +72,13 @@
 -->
 		
         
-		<databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
+		<databus.dataInputDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/tmpdev/diffs/new4/mappings-diff/${project.artifactId}/${project.version}</databus.dataInputDirectory>
 		
 		
 		<!-- the name of the bundle, used for packageing -->
 		
 		
-		<databus.bundle>mappings</databus.bundle>
+		<databus.bundle>mappings-diff</databus.bundle>
 		
 
         
@@ -45,7 +87,7 @@
 -->
 		
         
-		<databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${databus.bundle}</databus.packageDirectory>
+		<databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/dev/dbpedia-diff/</databus.packageDirectory>
 		
         
          
@@ -62,7 +104,7 @@ We recommend to do the same, as you can add more bundles and datasets later.
 		
         
         
-		<databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
+		<databus.publisher>https://yum-yab.github.io/webid.ttl#this</databus.publisher>
 		
         
 		<!--privateKeyFile
@@ -106,13 +148,13 @@ Pick one from here: http://rdflicense.linkeddata.es/
 		<!--not clear if needed, using today at the moment-->
 		
         
-		<databus.issuedDate>2016-10-01</databus.issuedDate>
+		<databus.issuedDate>2018-10-16</databus.issuedDate>
 		
         
 		<!--not clear if needed, read from file at the moment-->
 		
         
-		<databus.modifiedDate>2016-10-01</databus.modifiedDate>
+		<databus.modifiedDate>2018-10-16</databus.modifiedDate>
 		
 
 
@@ -277,7 +319,7 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
 					
 
                     
-					<!--pluginDirectory Default: ${project.build.directory}/databus
+					<!--pluginDirectory Default: ${project.build.directory}/databus:
 * all the generated files will be written here, i.e. parselogs, dataids, feeds
 * the path is relative to the module, i.e. target/databus/
 * `mvn clean` will delete all `target` folders in your project
@@ -354,20 +396,6 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
 
 
   
-	<modules>
-		
-    
-    
-		<module>mappingbased-literals-diff</module>
-		
-    
-		<module>mappingbased-objects-diff</module>
-		
-    
-		<module>specific-mappingbased-properties-diff</module>
-		
-  
-	</modules>
 	
 
 </project>

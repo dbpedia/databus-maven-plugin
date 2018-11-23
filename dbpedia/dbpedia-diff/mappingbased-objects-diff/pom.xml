@@ -11,7 +11,7 @@
 		<groupId>org.dbpedia.databus.mappings</groupId>
 		
         
-		<version>2016.10.01</version>
+		<version>2018.11.03</version>
 		
     
 	</parent>
@@ -29,7 +29,7 @@
 	<packaging>jar</packaging>
 	
     
-	<version>2016.10.01</version>
+	<version>2018.11.03</version>
 	
 
 
