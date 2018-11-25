@@ -47,13 +47,10 @@ args = parser.parse_args()
 
 if args.t:
     targetdir=args.t
-else:
-    targetdir=args.sourcedir
-
-if args.t:    
     open_var= "a"
 else:
     open_var= "w"
+    targetdir=args.sourcedir
 
 sourcedir = args.sourcedir
 
