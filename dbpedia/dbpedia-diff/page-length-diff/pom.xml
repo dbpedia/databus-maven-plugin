@@ -1,38 +1,126 @@
 <?xml version="1.0" ?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	
+	
+	
+	
+	
     
+	
+	
+	
+	
 	<parent>
 		
-        
-		<artifactId>generic-spark-diff</artifactId>
+		
+		
+		
 		
         
-		<groupId>org.dbpedia.databus.generic-spark</groupId>
+		
+		
+		
+		
+		<artifactId>dbpedia-diff</artifactId>
+		
+		
+		
+		
 		
         
+		
+		
+		
+		
+		<groupId>org.dbpedia.databus.dbpedia-diff</groupId>
+		
+		
+		
+		
+		
+        
+		
+		
+		
+		
 		<version>2018.08.15</version>
 		
+		
+		
+		
+		
     
+	
+	
+	
+	
 	</parent>
 	
+	
+	
+	
+	
     
+	
+	
+	
+	
 	<modelVersion>4.0.0</modelVersion>
 	
+	
+	
+	
+	
     
+	
+	
+	
+	
 	<artifactId>page-length-diff</artifactId>
 	
+	
+	
+	
+	
     
+	
+	
+	
+	
 	<groupId>org.dbpedia</groupId>
 	
-    
-	<packaging>jar</packaging>
+	
+	
+	
 	
     
+	
+	
+	
+	
+	<packaging>jar</packaging>
+	
+	
+	
+	
+	
+    
+	
+	
+	
+	
 	<version>2018.08.15</version>
+	
+	
+	
+	
 	
 
     
+	
+	
+	
+	
 	<!--This is a module, it inherits all config properties form the parent pom.xml
 You can configure here:
 * the artifactId, please also change <module> in parent pom.xml
@@ -45,51 +133,171 @@ You can configure here:
 * the description
 -->
 	
+	
+	
+	
+	
 
     
+	
+	
+	
+	
 	<build>
 		
+		
+		
+		
+		
         
+		
+		
+		
+		
 		<plugins>
 			
+			
+			
+			
+			
             
+			
+			
+			
+			
 			<plugin>
 				
+				
+				
+				
+				
                 
+				
+				
+				
+				
 				<groupId>org.dbpedia.databus</groupId>
 				
-                
-				<artifactId>databus-maven-plugin</artifactId>
+				
+				
+				
 				
                 
+				
+				
+				
+				
+				<artifactId>databus-maven-plugin</artifactId>
+				
+				
+				
+				
+				
+                
+				
+				
+				
+				
 				<configuration>
 					
-                    
-					<labels>
-						
-                        
-						<label>Page Length-diff@en</label>
-						
-                    
-					</labels>
+					
+					
+					
 					
                     
+					
+					
+					
+					
+					<labels>
+						
+						
+						
+						
+						
+                        
+						
+						
+						
+						
+						<label>Page Length-diff@en</label>
+						
+						
+						
+						
+						
+                    
+					
+					
+					
+					
+					</labels>
+					
+					
+					
+					
+					
+                    
+					
+					
+					
+					
 					<datasetDescription>The diffs to 
                         Numbers of characters contained in a Wikipedia article's source.
                     </datasetDescription>
 					
+					
+					
+					
+					
                 
+				
+				
+				
+				
 				</configuration>
 				
+				
+				
+				
+				
             
+			
+			
+			
+			
 			</plugin>
 			
+			
+			
+			
+			
         
+		
+		
+		
+		
 		</plugins>
 		
+		
+		
+		
+		
     
+	
+	
+	
+	
 	</build>
 	
+	
+	
+	
+	
+
+
+
+
 
 
 </project>

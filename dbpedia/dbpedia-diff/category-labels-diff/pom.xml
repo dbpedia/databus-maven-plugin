@@ -1,39 +1,127 @@
 <?xml version="1.0" ?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	
+	
+	
+	
+	
     
+	
+	
+	
+	
 	<parent>
 		
-        
-		<artifactId>generic-spark-diff</artifactId>
+		
+		
+		
 		
         
-		<groupId>org.dbpedia.databus.generic-spark</groupId>
+		
+		
+		
+		
+		<artifactId>dbpedia-diff</artifactId>
+		
+		
+		
+		
 		
         
+		
+		
+		
+		
+		<groupId>org.dbpedia.databus.dbpedia-diff</groupId>
+		
+		
+		
+		
+		
+        
+		
+		
+		
+		
 		<version>2018.08.15</version>
 		
+		
+		
+		
+		
     
+	
+	
+	
+	
 	</parent>
 	
+	
+	
+	
+	
     
+	
+	
+	
+	
 	<modelVersion>4.0.0</modelVersion>
 	
+	
+	
+	
+	
     
+	
+	
+	
+	
 	<artifactId>category-labels-diff</artifactId>
 	
+	
+	
+	
+	
     
+	
+	
+	
+	
 	<groupId>org.dbpedia</groupId>
 	
+	
+	
+	
+	
     
+	
+	
+	
+	
 	<packaging>jar</packaging>
 	
+	
+	
+	
+	
     
+	
+	
+	
+	
 	<version>2018.08.15</version>
+	
+	
+	
+	
 	
 
 
     
+	
+	
+	
+	
 	<!--This is a module, it inherits all config properties form the parent pom.xml
 You can configure here:
 * the artifactId, please also change <module> in parent pom.xml
@@ -46,51 +134,171 @@ You can configure here:
 * the description
 -->
 	
+	
+	
+	
+	
 
     
+	
+	
+	
+	
 	<build>
 		
+		
+		
+		
+		
         
+		
+		
+		
+		
 		<plugins>
 			
+			
+			
+			
+			
             
+			
+			
+			
+			
 			<plugin>
 				
+				
+				
+				
+				
                 
+				
+				
+				
+				
 				<groupId>org.dbpedia.databus</groupId>
 				
-                
-				<artifactId>databus-maven-plugin</artifactId>
+				
+				
+				
 				
                 
+				
+				
+				
+				
+				<artifactId>databus-maven-plugin</artifactId>
+				
+				
+				
+				
+				
+                
+				
+				
+				
+				
 				<configuration>
 					
-                    
-					<labels>
-						
-                        
-						<label>Category Labels-diff@en</label>
-						
-                    
-					</labels>
+					
+					
+					
 					
                     
+					
+					
+					
+					
+					<labels>
+						
+						
+						
+						
+						
+                        
+						
+						
+						
+						
+						<label>Category Labels-diff@en</label>
+						
+						
+						
+						
+						
+                    
+					
+					
+					
+					
+					</labels>
+					
+					
+					
+					
+					
+                    
+					
+					
+					
+					
 					<datasetDescription>The diffs to 
                         Labels for Categories.
                     </datasetDescription>
 					
+					
+					
+					
+					
                 
+				
+				
+				
+				
 				</configuration>
 				
+				
+				
+				
+				
             
+			
+			
+			
+			
 			</plugin>
 			
+			
+			
+			
+			
         
+		
+		
+		
+		
 		</plugins>
 		
+		
+		
+		
+		
     
+	
+	
+	
+	
 	</build>
 	
+	
+	
+	
+	
+
+
+
+
 
 
 </project>
