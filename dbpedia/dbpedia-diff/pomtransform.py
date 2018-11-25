@@ -7,12 +7,12 @@
 import xml.dom.minidom as minidom
 import sys
 import os 
-
+import argparse
 
 
 #Syntax: ./pomtransporm.py sourcedir targetdir
 #For Version Change: ./pomtransform.py -v version sourcedir
-#eg: ./pomtransform -v 2018.11.01 sourcedir
+#eg: ./pomtransform -v=2018.11.01 sourcedir
 
 def handlePom(pomdom, pomtype):
 
@@ -38,27 +38,45 @@ def handleVersionChange(pomdom, version):
 
     return pomdom.toprettyxml()
 
-if sys.argv[1] == "-v" or sys.argv[1] == "-version"
-    sourcedir = sys.argv[3]
-    version = sys.argv[2]
+
+parser = argparse.ArgumentParser()
+parser.add_argument("sourcedir", help="The source directory. Here should be your parent pom.")
+parser.add_argument("--v", "--version", help="The version the poms should change to.")
+parser.add_argument("--t", "--target", help="If you add a target directory the poms will be copied there, if not the poms in the source will change themself.")
+args = parser.parse_args()
+
+if args.t:
+    targetdir=args.t
 else:
-    sourcedir = sys.argv[1]
+    targetdir=args.sourcedir
 
-targetdir = sys.argv[2]
+if args.t:    
+    open_var= "a"
+else:
+    open_var= "w"
 
-parentpomDir = targetdir+"/"+sourcedir.split("/")[-1]
-if not os.path.isdir(parentpomDir):
-    os.mkdir(parentpomDir)
-    
-for thing in os.listdir(sourcedir):
-    if os.path.isfile(sourcedir+"/"+thing):
-        with open(parentpomDir+"/pom.xml", "a") as parentpom:
-            print(handlePom(minidom.parse(sourcedir+"/"+thing), "parent"), file=parentpom)
-    elif os.path.isdir(sourcedir+"/"+thing):
-        childpomDir = targetdir+"/"+sourcedir.split("/")[-1]+"/"+thing+"-diff"
-        os.mkdir(childpomDir)
+sourcedir = args.sourcedir
+
+ 
+if os.path.isfile(sourcedir+"/pom.xml"):
+
+    parsed_dom = minidom.parse(sourcedir+"/pom.xml")
+    with open(targetdir+"/pom.xml", open_var) as parentpom:
+        if args.v: 
+            print(handleVersionChange(parsed_dom, args.v), file=parentpom)
+        else:
+            print(handlePom(parsed_dom, "parent"), file=parentpom)
+for thing in os.listdir(args.sourcedir):
+    if os.path.isdir(args.sourcedir+"/"+thing):
+        if not os.path.isdir(targetdir+"/"+thing) and args.t:
+            childpomDir = targetdir+"/"+thing+"-diff"
+            os.mkdir(childpomDir)
+        else:
+            childpomDir= sourcedir+"/"+thing
         if os.path.isfile(sourcedir+"/"+thing+"/pom.xml"):
-            with open(childpomDir+"/pom.xml", "a") as childpom:
-                print(handlePom(minidom.parse(sourcedir+"/"+thing+"/pom.xml"), "child"), file=childpom)
-    else:
-        print(" is no file or directory")
+            parsed_dom = minidom.parse(sourcedir+"/"+thing+"/pom.xml")
+            with open(childpomDir+"/pom.xml", open_var) as childpom:
+                if args.v:
+                    print(handleVersionChange(parsed_dom, args.v), file=childpom)
+                else:
+                    print(handlePom(parsed_dom, "child"), file=childpom)
