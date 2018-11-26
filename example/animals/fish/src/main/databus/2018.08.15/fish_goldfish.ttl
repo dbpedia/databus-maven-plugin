@@ -1,3 +1,3 @@
-@prefix ex: <urn:example/>
+@prefix ex: <urn:example/> .
 
-ex:goldfish ex:is ex:small ; ex: shiny.
+ex:goldfish ex:is ex:small , ex:shiny .

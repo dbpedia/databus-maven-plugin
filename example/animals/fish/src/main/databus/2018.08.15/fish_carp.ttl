@@ -1,3 +1,3 @@
-@prefix ex: <urn:example/>
+@prefix ex: <urn:example/> .
 
 ex:carp ex:is ex:big .

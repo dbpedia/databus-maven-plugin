@@ -34,6 +34,12 @@ You can configure here:
                         <label>Infobox Properties@en</label>
                     </labels>
                     <datasetDescription>Extracted Data from the Wikipedia Article-Infoboxes</datasetDescription>
+                    <wasDerivedFrom>
+                        <baseEntity>
+                            <artifact>https://databus.dbpedia.org/dbpedia/bio/mammals-evolution</artifact>
+                            <version>2018-07-15</version>
+                        </baseEntity>
+                    </wasDerivedFrom>
                 </configuration>
             </plugin>
         </plugins>
