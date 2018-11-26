@@ -20,28 +20,16 @@
  */
 package org.dbpedia.databus
 
-import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
+import org.dbpedia.databus
 
-import scala.collection.JavaConverters._
-import scala.collection.immutable
+import java.net.URL
 
-import java.time.Instant
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatter.ISO_DATE
-import java.time.temporal.TemporalAccessor
+package object params {
 
+  object BaseEntity {
 
-trait Parameters {
-  this: Properties =>
-
-  lazy val params = new Parameters(this)
-
-  class Parameters(props: Properties) {
-
-    lazy val issuedDate = Option(props.issuedDate).map(ISO_DATE.parse)
-
-    lazy val modifiedDate = Option(props.modifiedDate).map(ISO_DATE.parse)
-
-    lazy val wasDerivedFrom = props.wasDerivedFrom.asScala.map(ScalaBaseEntity.fromJava).toSet
+    def fromJava(java: databus.BaseEntity) = BaseEntity(java.getArtifact, java.getVersion)
   }
+
+  case class BaseEntity(artifact: URL, version: String)
 }

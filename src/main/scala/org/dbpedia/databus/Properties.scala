@@ -27,6 +27,8 @@ import org.apache.maven.plugins.annotations.Parameter
 import java.io.File
 import java.net.URL
 import java.time.{Instant, LocalDateTime, ZoneId}
+import java.util
+import java.util.{List => JavaList}
 
 
 /**
@@ -117,8 +119,9 @@ trait Properties extends Locations with Parameters {
     * for each modules
     */
 
-  @Parameter val labels: java.util.List[String] = new java.util.ArrayList[String]
+  @Parameter val labels: JavaList[String] = new util.ArrayList[String]()
   @Parameter val datasetDescription: String = ""
+  @Parameter val wasDerivedFrom: JavaList[BaseEntity] = new util.ArrayList[BaseEntity]()
 
   val invocationTime = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
 

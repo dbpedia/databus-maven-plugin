@@ -1,3 +1,5 @@
+package org.dbpedia.databus;
+
 /*-
  * #%L
  * databus-maven-plugin
@@ -18,30 +20,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-package org.dbpedia.databus
 
-import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
+import java.net.URL;
 
-import scala.collection.JavaConverters._
-import scala.collection.immutable
+public class BaseEntity {
 
-import java.time.Instant
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatter.ISO_DATE
-import java.time.temporal.TemporalAccessor
+    private URL artifact;
 
+    private String version;
 
-trait Parameters {
-  this: Properties =>
+    public URL getArtifact() {
+        return artifact;
+    }
 
-  lazy val params = new Parameters(this)
-
-  class Parameters(props: Properties) {
-
-    lazy val issuedDate = Option(props.issuedDate).map(ISO_DATE.parse)
-
-    lazy val modifiedDate = Option(props.modifiedDate).map(ISO_DATE.parse)
-
-    lazy val wasDerivedFrom = props.wasDerivedFrom.asScala.map(ScalaBaseEntity.fromJava).toSet
-  }
+    public String getVersion() {
+        return version;
+    }
 }

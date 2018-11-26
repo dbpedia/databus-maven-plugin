@@ -22,12 +22,15 @@
 package org.dbpedia.databus
 
 import org.dbpedia.databus.lib.Datafile
+import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
+import org.dbpedia.databus.shared.helpers.conversions._
 import org.dbpedia.databus.shared.rdf.conversions._
 import org.dbpedia.databus.shared.rdf.vocab._
 import org.dbpedia.databus.voc.DataFileToModel
 
 import better.files.{File => _, _}
 import org.apache.jena.rdf.model.{Model, ModelFactory}
+import org.apache.jena.riot.RDFLanguages.TURTLE
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 
@@ -70,16 +73,13 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers {
       processFile(datafile, dataIdCollect)
     })
 
-
-
     // write the model to target
     if(!dataIdCollect.isEmpty) {
 
       // add dataset metadata
       // retrieve User Account Name
       var accountOption = {
-        implicit val userAccounts: Model = ModelFactory.createDefaultModel
-        userAccounts.read("https://raw.githubusercontent.com/dbpedia/accounts/master/accounts.ttl", "turtle")
+        implicit val userAccounts: Model = PrepareMetadata.registeredAccounts
 
         Option(publisher.toString.asIRI.getProperty(foaf.account)).map(_.getObject.asResource)
       }
@@ -107,6 +107,17 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers {
             datasetResource.addProperty(dataid.bundle, "http://dataid.dbpedia.org/ns/core#ACCOUNTNEEDED".asIRI)
             datasetResource.addProperty(dataid.artifact, "http://dataid.dbpedia.org/ns/core#ACCOUNTNEEDED".asIRI)
           }
+        }
+
+        params.wasDerivedFrom.foreach { case ScalaBaseEntity(artifact, version) =>
+
+          val baseEntityBlankNode = editContext.createResource().tap { baseEntityRes =>
+
+            baseEntityRes.addProperty(dataid.artifact, artifact.toString.asIRI)
+            baseEntityRes.addProperty(dcterms.hasVersion, version)
+          }
+
+          datasetResource.addProperty(prov.wasDerivedFrom, baseEntityBlankNode)
         }
       }
 
@@ -165,4 +176,13 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers {
   }
 
   case class MimeTypeHelper(var outer: Option[String], var inner: Option[String])
+
+}
+
+object PrepareMetadata {
+
+  lazy val registeredAccounts = ModelFactory.createDefaultModel.tap { accountsModel =>
+
+    accountsModel.read("https://raw.githubusercontent.com/dbpedia/accounts/master/accounts.ttl", TURTLE.getName)
+  }
 }
