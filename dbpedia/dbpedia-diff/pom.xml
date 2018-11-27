@@ -1,184 +1,72 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
-	
-	
-    
-	
-	
-	<modelVersion>4.0.0</modelVersion>
-	
-	
-	
-
-    
-	
-	
-	<groupId>org.dbpedia.databus</groupId>
-	
-	
-	
-    
-	
-	
-	<artifactId>dbpedia-diff</artifactId>
-	
-	
-	
-    
-	
-	
-	<packaging>pom</packaging>
-	
-	
-	
-    
-	
-	
-	<version>2018.10.16</version>
-	
-	
-	
-
-    
-	
-	
-	<modules>
-		
-		
-		<module>anchor-text-diff</module>
-		<module>disambiguations-diff </module>
-		<module>instance-types-diff  </module>
-		<module>page-ids-diff</module>
-		<module>redirects-diff</module>
-		<module>article-categories-diff </module>
-		<module>external-links-diff</module>
-		<module>instance-types-transitive-diff</module>
-		<module>page-length-diff</module>
-		<module>revision-ids-diff</module>
-		<module>article-templates-diff</module>
-		<module>french-population-diff</module>
-		<module>interlanguage-links-diff</module>
-		<module>page-links-diff</module>
-		<module>revision-uris-diff</module>
-		<module>article-templates-nested-diff</module>
-		<module>geo-coordinates-diff</module>
-		<module>labels-diff</module>
-		<module>pages-articles-diff</module>
-		<module>skos-categories-diff</module>
-		<module>category-labels-diff</module>
-		<module>geo-coordinates-mappingbased-diff</module>
-		<module>mappingbased-literals-diff</module>
-		<module>persondata-diff</module>
-		<module>specific-mappingbased-properties-diff</module>
-		<module>citation-data-diff</module>
-		<module>homepages-diff</module>
-		<module>pnd-diff</module>
-		<module>topical-concepts-diff</module>
-		<module>citation-links-diff</module>
-		<module>infobox-properties-diff</module>
-		<module>mappingbased-objects-uncleaned-diff</module>
-		<module>wikipedia-links-diff</module>
-		<module>commons-page-links-diff</module>
-		<module>infobox-property-definitions-diff</module>
-		<module>out-degree-diff</module>	
-		
-		
-	</modules>
-	
-	
-	
-
-    
-	
-	
-	<properties>
-		
-		
-		
-        
-		
-		
-		<!--dataDirectory DEFAULT: src/main/databus/input
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.dbpedia.databus</groupId>
+  <artifactId>dbpedia-diff</artifactId>
+  <packaging>pom</packaging>
+  <version>2018.10.16</version>
+  <modules>
+    <module>anchor-text-diff</module>
+    <module>disambiguations-diff </module>
+    <module>instance-types-diff  </module>
+    <module>page-ids-diff</module>
+    <module>redirects-diff</module>
+    <module>article-categories-diff </module>
+    <module>external-links-diff</module>
+    <module>instance-types-transitive-diff</module>
+    <module>page-length-diff</module>
+    <module>revision-ids-diff</module>
+    <module>article-templates-diff</module>
+    <module>french-population-diff</module>
+    <module>interlanguage-links-diff</module>
+    <module>page-links-diff</module>
+    <module>revision-uris-diff</module>
+    <module>article-templates-nested-diff</module>
+    <module>geo-coordinates-diff</module>
+    <module>labels-diff</module>
+    <module>pages-articles-diff</module>
+    <module>skos-categories-diff</module>
+    <module>category-labels-diff</module>
+    <module>geo-coordinates-mappingbased-diff</module>
+    <module>mappingbased-literals-diff</module>
+    <module>persondata-diff</module>
+    <module>specific-mappingbased-properties-diff</module>
+    <module>citation-data-diff</module>
+    <module>homepages-diff</module>
+    <module>pnd-diff</module>
+    <module>topical-concepts-diff</module>
+    <module>citation-links-diff</module>
+    <module>infobox-properties-diff</module>
+    <module>mappingbased-objects-uncleaned-diff</module>
+    <module>wikipedia-links-diff</module>
+    <module>commons-page-links-diff</module>
+    <module>infobox-property-definitions-diff</module>
+    <module>out-degree-diff</module>
+  </modules>
+  <properties>
+    <!--dataDirectory DEFAULT: src/main/databus/input
 * input folder for data
 * copy/move all your datafiles in the respective modules
 * all files have to start with the dbpedia-diff of the module, i.e. src/main/databus/input/$artifactId_en.nt.bz2
 
 -->
-		
-		
-		
-        
-		
-		
-		<databus.dataInputDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/tmpdev/diffs/2018.09.12-2018.10.16/dbpedia-diff/${project.artifactId}/${project.version}</databus.dataInputDirectory>
-		
-		
-		
-		
-		
-		
-		<!-- the name of the bundle, used for packaging -->
-		
-		
-		
-		
-		
-		
-		<databus.bundle>dbpedia-diff</databus.bundle>
-		
-		
-		
-
-        
-		
-		
-		<!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
+    <databus.dataInputDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/tmpdev/diffs/2018.09.12-2018.10.16/dbpedia-diff/${project.artifactId}/${project.version}</databus.dataInputDirectory>
+    <!-- the name of the bundle, used for packaging -->
+    <databus.bundle>dbpedia-diff</databus.bundle>
+    <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
 * all files are copied into this directory where mvn databus:package-export is run
 -->
-		
-		
-		
-        
-		
-		
-		<databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/dev/dbpedia-diff/</databus.packageDirectory>
-		
-		
-		
-        
-         
-		
-		
-		<!-- downloadUrlPath 
+    <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/dev/dbpedia-diff/</databus.packageDirectory>
+    <!-- downloadUrlPath 
 Configure downloadUrlPath, where the dataset will be deployed:
 DBpedia will publish 4 more bundles with dozens of artifacts and new versions at regular intervals, our downloadurl looks like this:
 <databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
 We recommend to do the same, as you can add more bundles and datasets later.
 
 -->
-		
-		
-		
-		
-		
-		
-		<databus.downloadUrlPath>https://downloads.dbpedia.org/repo/dev/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
-		
-		
-		
-        
-        
-		
-		
-		<databus.publisher>https://yum-yab.github.io/webid.ttl#this</databus.publisher>
-		
-		
-		
-        
-		
-		
-		<!--pkcs12File
+    <databus.downloadUrlPath>https://downloads.dbpedia.org/repo/dev/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
+    <databus.publisher>https://yum-yab.github.io/webid.ttl#this</databus.publisher>
+    <!--pkcs12File
 The PKCS12 bundle providing the cryptographic identity information associated to the WebID of the
 agent operating the databus plugin. This bundle should combine the X509 certificate and the private
 RSA key for the corresponding WebID.
@@ -190,816 +78,136 @@ SECURITY NOTICE:
 * Protect your private key file, do not loose it, do not send it over (unencrypted) network
 * Limit access to this file to your own user: chmod 700 $HOME/.m2/webid_bundle.p12
 -->
-		
-		
-		
-        
-		
-		
-		<databus.pkcs12File>${user.home}/.m2/webid_bundle.p12</databus.pkcs12File>
-		
-		
-		
-
-        
-		
-		
-		<databus.deployToTestRepo>true</databus.deployToTestRepo>
-		
-		
-		
-
-        
-		
-		
-		<!--maintainer
+    <databus.pkcs12File>${user.home}/.m2/webid_bundle.p12</databus.pkcs12File>
+    <databus.deployToTestRepo>true</databus.deployToTestRepo>
+    <!--maintainer
 The maintainer of the data release, normally the person to contact, often the same as publisher
         -->
-		
-		
-		
-        
-		
-		
-		<databus.maintainer>${databus.publisher}</databus.maintainer>
-		
-		
-		
-        
-		
-		
-		<!--license
+    <databus.maintainer>${databus.publisher}</databus.maintainer>
+    <!--license
 Pick one from here: http://rdflicense.linkeddata.es/
         -->
-		
-		
-		
-        
-		
-		
-		<databus.license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</databus.license>
-		
-		
-		
-
-        
-		
-		
-		<!--<databus.issuedDate>[set date here]</databus.issuedDate>-->
-		
-		
-		 
-		
-		
-		<!--using today if undefinded-->
-		
-		
-		
-
-        
-		
-		
-		<!--<databus.modifiedDate>[set date here]</databus.modifiedDate>-->
-		
-		
-		 
-		
-		
-		<!--using today if undefinded-->
-		
-		
-		
-
-        
-		
-		
-		<!--publisher
+    <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</databus.license>
+    <!--<databus.issuedDate>[set date here]</databus.issuedDate>-->
+    <!--using today if undefinded-->
+    <!--<databus.modifiedDate>[set date here]</databus.modifiedDate>-->
+    <!--using today if undefinded-->
+    <!--publisher
 refers to the WebID that does the publication on the web and on the databus
 This one is matched against the private key file (next option)
 Please read on https://github.com/dbpedia/webid how to create such file
 We include a dev-dummy webid file here, please don't use it for publishing, use your own
 -->
-		
-		
-		
-
-        
-		
-		
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		
-		
-		
-        
-		
-		
-		<!--dataDependencyDirectory
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!--dataDependencyDirectory
 NOT IMPLEMENTED YET - This directory will be used to store any files downloaded from the databus as input for your tool
         -->
-		
-		
-		
-        
-		
-		
-		<databus.dataDependencyDirectory>NOT-IMPLEMENTED-YET</databus.dataDependencyDirectory>
-		
-		
-		
-
-    
-	
-	
-	</properties>
-	
-	
-	
-
-    
-	
-	
-	<!-- we will move to maven central soon, this is the dev maven repo-->
-	
-	
-	
-    
-	
-	
-	<pluginRepositories>
-		
-		
-		
-        
-		
-		
-		<pluginRepository>
-			
-			
-			
-            
-			
-			
-			<id>archiva.internal</id>
-			
-			
-			
-            
-			
-			
-			<name>Internal Release Repository</name>
-			
-			
-			
-            
-			
-			
-			<url>http://databus.dbpedia.org:8081/repository/internal</url>
-			
-			
-			
-        
-		
-		
-		</pluginRepository>
-		
-		
-		
-        
-		
-		
-		<pluginRepository>
-			
-			
-			
-            
-			
-			
-			<id>archiva.snapshots</id>
-			
-			
-			
-            
-			
-			
-			<name>Internal Snapshot Repository</name>
-			
-			
-			
-            
-			
-			
-			<url>http://databus.dbpedia.org:8081/repository/snapshots</url>
-			
-			
-			
-        
-		
-		
-		</pluginRepository>
-		
-		
-		
-    
-	
-	
-	</pluginRepositories>
-	
-	
-	
-
-    
-	
-	
-	<build>
-		
-		
-		
-        
-		
-		
-		<plugins>
-			
-			
-			
-            
-			
-			
-			<plugin>
-				
-				
-				
-                
-				
-				
-				<groupId>org.dbpedia.databus</groupId>
-				
-				
-				
-                
-				
-				
-				<artifactId>databus-maven-plugin</artifactId>
-				
-				
-				
-                
-				
-				
-				<version>1.1-SNAPSHOT</version>
-				
-				
-				
-                
-				
-				
-				<executions>
-					
-					
-					
-                    
-					
-					
-					<execution>
-						
-						
-						
-                        
-						
-						
-						<id>validate</id>
-						
-						
-						
-                        
-						
-						
-						<phase>validate</phase>
-						
-						
-						
-                        
-						
-						
-						<goals>
-							
-							
-							
-                            
-							
-							
-							<goal>validate</goal>
-							
-							
-							
-                        
-						
-						
-						</goals>
-						
-						
-						
-                    
-					
-					
-					</execution>
-					
-					
-					
-                    
-					
-					
-					<execution>
-						
-						
-						
-                        
-						
-						
-						<id>test-data</id>
-						
-						
-						
-                        
-						
-						
-						<phase>test</phase>
-						
-						
-						
-                        
-						
-						
-						<goals>
-							
-							
-							
-                            
-							
-							
-							<goal>test-data</goal>
-							
-							
-							
-                        
-						
-						
-						</goals>
-						
-						
-						
-                    
-					
-					
-					</execution>
-					
-					
-					
-                    
-					
-					
-					<execution>
-						
-						
-						
-                        
-						
-						
-						<id>metadata</id>
-						
-						
-						
-                        
-						
-						
-						<phase>prepare-package</phase>
-						
-						
-						
-                        
-						
-						
-						<goals>
-							
-							
-							
-                            
-							
-							
-							<goal>metadata</goal>
-							
-							
-							
-                        
-						
-						
-						</goals>
-						
-						
-						
-                    
-					
-					
-					</execution>
-					
-					
-					
-                    
-					
-					
-					<execution>
-						
-						
-						
-                        
-						
-						
-						<id>package-export</id>
-						
-						
-						
-                        
-						
-						
-						<phase>package</phase>
-						
-						
-						
-                        
-						
-						
-						<goals>
-							
-							
-							
-                            
-							
-							
-							<goal>package-export</goal>
-							
-							
-							
-                        
-						
-						
-						</goals>
-						
-						
-						
-                    
-					
-					
-					</execution>
-					
-					
-					
-                    
-					
-					
-					<execution>
-						
-						
-						
-                        
-						
-						
-						<id>deploy-dataid</id>
-						
-						
-						
-                        
-						
-						
-						<phase>deploy</phase>
-						
-						
-						
-                        
-						
-						
-						<goals>
-							
-							
-							
-                            
-							
-							
-							<goal>deploy</goal>
-							
-							
-							
-                        
-						
-						
-						</goals>
-						
-						
-						
-                    
-					
-					
-					</execution>
-					
-					
-					
-                
-				
-				
-				</executions>
-				
-				
-				
-                
-				
-				
-				<configuration>
-					
-					
-					
-
-                    
-					
-					
-					<!--DO NOT EDIT HERE, unless you know what you are doing, We recommend changing the properties above-->
-					
-					
-					
-
-                    
-					
-					
-					<!--pluginDirectory Default: ${project.build.directory}/databus
+    <databus.dataDependencyDirectory>NOT-IMPLEMENTED-YET</databus.dataDependencyDirectory>
+  </properties>
+  <!-- we will move to maven central soon, this is the dev maven repo-->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>archiva.internal</id>
+      <name>Internal Release Repository</name>
+      <url>http://databus.dbpedia.org:8081/repository/internal</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>archiva.snapshots</id>
+      <name>Internal Snapshot Repository</name>
+      <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
+    </pluginRepository>
+  </pluginRepositories>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.dbpedia.databus</groupId>
+        <artifactId>databus-maven-plugin</artifactId>
+        <version>1.1-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <id>validate</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>test-data</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test-data</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>metadata</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>metadata</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>package-export</id>
+            <phase>package</phase>
+            <goals>
+              <goal>package-export</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>deploy-dataid</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>deploy</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <!--DO NOT EDIT HERE, unless you know what you are doing, We recommend changing the properties above-->
+          <!--pluginDirectory Default: ${project.build.directory}/databus
 * all the generated files will be written here, i.e. parselogs, dataids, feeds
 * the path is relative to the module, i.e. target/databus/
 * `mvn clean` will delete all `target` folders in your project
 -->
-					
-					
-					
-                    
-					
-					
-					<pluginDirectory>${project.build.directory}/databus</pluginDirectory>
-					
-					
-					
-
-                    
-					
-					
-					<!--includeParseLogs DEFAULT: true
+          <pluginDirectory>${project.build.directory}/databus</pluginDirectory>
+          <!--includeParseLogs DEFAULT: true
             The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
             We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
                      -->
-					
-					
-					
-                    
-					
-					
-					<includeParseLogs>true</includeParseLogs>
-					
-					
-					
-
-                    
-					
-					
-					<!-- feedFrom
+          <includeParseLogs>true</includeParseLogs>
+          <!-- feedFrom
                         existing feed file, feed url, or empty
                         if empty: creates the channel based on the pom properties and use old feed from feedDirectory/feed.xml if exists
                         TODO add property above
                      -->
-					
-					
-					
-                    
-					
-					
-					<feedFrom/>
-					
-					
-					
-                    
-					
-					
-					<dataInputDirectory>${databus.dataInputDirectory}</dataInputDirectory>
-					
-					
-					
-                    
-					
-					
-					<packageDirectory>${databus.packageDirectory}</packageDirectory>
-					
-					
-					
-                    
-					
-					
-					<bundle>${databus.bundle}</bundle>
-					
-					
-					
-                    
-					
-					
-					<downloadUrlPath>${databus.downloadUrlPath}</downloadUrlPath>
-					
-					
-					
-                    
-					
-					
-					<publisher>${databus.publisher}</publisher>
-					
-					
-					
-                    
-					
-					
-					<maintainer>${databus.maintainer}</maintainer>
-					
-					
-					
-                    
-					
-					
-					<license>${databus.license}</license>
-					
-					
-					
-                    
-					
-					
-					<pkcs12File>${databus.pkcs12File}</pkcs12File>
-					
-					
-					
-                    
-					
-					
-					<deployToTestRepo>${databus.deployToTestRepo}</deployToTestRepo>
-					
-					
-					
-
-                    
-					
-					
-					<issuedDate>${databus.issuedDate}</issuedDate>
-					
-					
-					
-                    
-					
-					
-					<modifiedDate>${databus.modifiedDate}</modifiedDate>
-					
-					
-					
-
-                
-				
-				
-				</configuration>
-				
-				
-				
-            
-			
-			
-			</plugin>
-			
-			
-			
-            
-			
-			
-			<plugin>
-				
-				
-				
-                
-				
-				
-				<groupId>org.apache.maven.plugins</groupId>
-				
-				
-				
-                
-				
-				
-				<artifactId>maven-install-plugin</artifactId>
-				
-				
-				
-                
-				
-				
-				<version>2.5.2</version>
-				
-				
-				
-                
-				
-				
-				<configuration>
-					
-					
-					
-                    
-					
-					
-					<skip>true</skip>
-					
-					
-					
-                
-				
-				
-				</configuration>
-				
-				
-				
-            
-			
-			
-			</plugin>
-			
-			
-			
-            
-			
-			
-			<plugin>
-				
-				
-				
-                
-				
-				
-				<groupId>org.apache.maven.plugins</groupId>
-				
-				
-				
-                
-				
-				
-				<artifactId>maven-deploy-plugin</artifactId>
-				
-				
-				
-                
-				
-				
-				<version>2.8.2</version>
-				
-				
-				
-                
-				
-				
-				<configuration>
-					
-					
-					
-                    
-					
-					
-					<skip>true</skip>
-					
-					
-					
-                
-				
-				
-				</configuration>
-				
-				
-				
-            
-			
-			
-			</plugin>
-			
-			
-			
-        
-		
-		
-		</plugins>
-		
-		
-		
-    
-	
-	
-	</build>
-	
-	
-	
-
-
-
+          <feedFrom/>
+          <dataInputDirectory>${databus.dataInputDirectory}</dataInputDirectory>
+          <packageDirectory>${databus.packageDirectory}</packageDirectory>
+          <bundle>${databus.bundle}</bundle>
+          <downloadUrlPath>${databus.downloadUrlPath}</downloadUrlPath>
+          <publisher>${databus.publisher}</publisher>
+          <maintainer>${databus.maintainer}</maintainer>
+          <license>${databus.license}</license>
+          <pkcs12File>${databus.pkcs12File}</pkcs12File>
+          <deployToTestRepo>${databus.deployToTestRepo}</deployToTestRepo>
+          <issuedDate>${databus.issuedDate}</issuedDate>
+          <modifiedDate>${databus.modifiedDate}</modifiedDate>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.5.2</version>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.8.2</version>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
-
