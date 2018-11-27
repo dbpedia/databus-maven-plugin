@@ -16,18 +16,22 @@ import argparse
 
 def handlePom(pomdom, pomtype):
 
-    taglist = {"child":{"artifactId":"%s%-diff", "label":"-diff", "datasetDescription":"The diffs to %s%"}, "parent":{"module":"%s%-diff", "artifactId":"%s%-diff", }}
+    taglist = {"child":{"artifactId":"dbpedia-diff", "groupId":"org.dbpedia.databus.dbpedia-diff"}, "parent":{}}
 
     for tag in taglist[pomtype]:
         nodeList = pomdom.getElementsByTagName(tag)
-        for node in nodeList:   
-                if node.nodeType == node.ELEMENT_NODE:
-                    textValue = node.childNodes[0].nodeValue
-                    if textValue != "databus-maven-plugin"  and textValue != "org.dbpedia.databus":
-                        if tag == "label":
-                            node.childNodes[0].nodeValue = textValue.split("@")[0] + taglist[pomtype][tag] +"@"+ textValue.split("@")[1]
-                        else:
-                            node.childNodes[0].nodeValue = taglist[pomtype][tag].replace("%s%", textValue)
+        for node in nodeList:
+            if node.nodeType == node.ELEMENT_NODE:
+                textValue = node.childNodes[0].nodeValue
+                if textValue != "databus-maven-plugin"  and textValue != "org.dbpedia.databus":
+                    if textValue == "generic-spark-diff":
+                        node.childNodes[0].nodeValue = taglist[pomtype][tag] 
+                    elif textValue == "org.dbpedia.databus":
+                        node.childNodes[0].nodeValue = taglist[pomtype][tag]
+                    elif textValue == "mappings-diff":
+                        node.childNodes[0].nodeValue = taglist[pomtype][tag]
+                    elif textValue == "org.dbpedia.databus.mappings":
+                        node.childNodes[0].nodeValue = taglist[pomtype][tag]
     return pomdom.toprettyxml()
 
 
@@ -47,13 +51,10 @@ args = parser.parse_args()
 
 if args.t:
     targetdir=args.t
-else:
-    targetdir=args.sourcedir
-
-if args.t:    
     open_var= "a"
 else:
     open_var= "w"
+    targetdir=args.sourcedir
 
 sourcedir = args.sourcedir
 
@@ -67,12 +68,14 @@ if os.path.isfile(sourcedir+"/pom.xml"):
         else:
             print(handlePom(parsed_dom, "parent"), file=parentpom)
 for thing in os.listdir(args.sourcedir):
+    print(sourcedir+"/"+thing)
     if os.path.isdir(args.sourcedir+"/"+thing):
         if not os.path.isdir(targetdir+"/"+thing) and args.t:
             childpomDir = targetdir+"/"+thing+"-diff"
             os.mkdir(childpomDir)
         else:
             childpomDir= sourcedir+"/"+thing
+        
         if os.path.isfile(sourcedir+"/"+thing+"/pom.xml"):
             parsed_dom = minidom.parse(sourcedir+"/"+thing+"/pom.xml")
             with open(childpomDir+"/pom.xml", open_var) as childpom:
