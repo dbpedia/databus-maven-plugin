@@ -46,7 +46,7 @@ object DataFileToModel {
     "dataid-mt" -> "http://dataid.dbpedia.org/ns/mt#",
     "dataid-pl" -> "http://dataid.dbpedia.org/ns/pl#",
     "dmp" -> "http://dataid.dbpedia.org/ns/dmp#",
-    "dc" -> global.dcterms.namespace,
+    "dct" -> global.dcterms.namespace,
     "dcat" -> global.dcat.namespace,
     "void" -> "http://rdfs.org/ns/void#",
     "prov" -> "http://www.w3.org/ns/prov#",
