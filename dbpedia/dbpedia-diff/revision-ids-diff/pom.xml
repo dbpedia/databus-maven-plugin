@@ -1,127 +1,16 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
-	
-	
-	
-	
-    
-	
-	
-	
-	
-	<parent>
-		
-		
-		
-		
-		
-        
-		
-		
-		
-		
-		<artifactId>dbpedia-diff</artifactId>
-		
-		
-		
-		
-		
-        
-		
-		
-		
-		
-		<groupId>org.dbpedia.databus.dbpedia-diff</groupId>
-		
-		
-		
-		
-		
-        
-		
-		
-		
-		
-		<version>2018.08.15</version>
-		
-		
-		
-		
-		
-    
-	
-	
-	
-	
-	</parent>
-	
-	
-	
-	
-	
-    
-	
-	
-	
-	
-	<modelVersion>4.0.0</modelVersion>
-	
-	
-	
-	
-	
-    
-	
-	
-	
-	
-	<artifactId>revision-ids-diff</artifactId>
-	
-	
-	
-	
-	
-   
-	
-	
-	
-	
-	<groupId>org.dbpedia</groupId>
-	
-	
-	
-	
-	
-    
-	
-	
-	
-	
-	<packaging>jar</packaging>
-	
-	
-	
-	
-	
-    
-	
-	
-	
-	
-	<version>2018.08.15</version>
-	
-	
-	
-	
-	
-
-    
-	
-	
-	
-	
-	<!--This is a module, it inherits all config properties form the parent pom.xml
+  <parent>
+    <artifactId>dbpedia-diff</artifactId>
+    <groupId>org.dbpedia.databus</groupId>
+    <version>2018.10.16</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>revision-ids-diff</artifactId>
+  <groupId>org.dbpedia</groupId>
+  <packaging>jar</packaging>
+  <version>2018.10.16</version>
+  <!--This is a module, it inherits all config properties form the parent pom.xml
 You can configure here:
 * the artifactId, please also change <module> in parent pom.xml
 * the labels for your dataset (Everything behind the @ is used as language tag):
@@ -132,173 +21,20 @@ You can configure here:
 </labels>
 * the description
 -->
-	
-	
-	
-	
-	
-
-    
-	
-	
-	
-	
-	<build>
-		
-		
-		
-		
-		
-        
-		
-		
-		
-		
-		<plugins>
-			
-			
-			
-			
-			
-            
-			
-			
-			
-			
-			<plugin>
-				
-				
-				
-				
-				
-                
-				
-				
-				
-				
-				<groupId>org.dbpedia.databus</groupId>
-				
-				
-				
-				
-				
-                
-				
-				
-				
-				
-				<artifactId>databus-maven-plugin</artifactId>
-				
-				
-				
-				
-				
-                
-				
-				
-				
-				
-				<configuration>
-					
-					
-					
-					
-					
-                    
-					
-					
-					
-					
-					<labels>
-						
-						
-						
-						
-						
-                        
-						
-						
-						
-						
-						<label>Revision Ids-diff@en</label>
-						
-						
-						
-						
-						
-                    
-					
-					
-					
-					
-					</labels>
-					
-					
-					
-					
-					
-                    
-					
-					
-					
-					
-					<datasetDescription>The diffs to 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.dbpedia.databus</groupId>
+        <artifactId>databus-maven-plugin</artifactId>
+        <configuration>
+          <labels>
+            <label>Revision Ids-diff@en</label>
+          </labels>
+          <datasetDescription>The diffs to 
                         Dataset linking a DBpedia resource to the revision ID of the Wikipedia article the data was extracted from.
                     </datasetDescription>
-					
-					
-					
-					
-					
-                
-				
-				
-				
-				
-				</configuration>
-				
-				
-				
-				
-				
-            
-			
-			
-			
-			
-			</plugin>
-			
-			
-			
-			
-			
-        
-		
-		
-		
-		
-		</plugins>
-		
-		
-		
-		
-		
-    
-	
-	
-	
-	
-	</build>
-	
-	
-	
-	
-	
-
-
-
-
-
-
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
-

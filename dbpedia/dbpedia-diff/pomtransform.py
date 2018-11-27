@@ -19,19 +19,14 @@ def handlePom(pomdom, pomtype):
     taglist = {"child":{"artifactId":"dbpedia-diff", "groupId":"org.dbpedia.databus.dbpedia-diff"}, "parent":{}}
 
     for tag in taglist[pomtype]:
-        print(tag)
         nodeList = pomdom.getElementsByTagName(tag)
-        print(nodeList)
         for node in nodeList:
-            print(node.nodeType)
-            print(node.childNodes[0])
             if node.nodeType == node.ELEMENT_NODE:
                 textValue = node.childNodes[0].nodeValue
-                print("TextValue: "+textValue)
                 if textValue != "databus-maven-plugin"  and textValue != "org.dbpedia.databus":
                     if textValue == "generic-spark-diff":
                         node.childNodes[0].nodeValue = taglist[pomtype][tag] 
-                    elif textValue == "org.dbpedia.databus.generic-spark":
+                    elif textValue == "org.dbpedia.databus":
                         node.childNodes[0].nodeValue = taglist[pomtype][tag]
                     elif textValue == "mappings-diff":
                         node.childNodes[0].nodeValue = taglist[pomtype][tag]
