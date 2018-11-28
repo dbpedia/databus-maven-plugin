@@ -37,7 +37,8 @@ object Format {
     ".nq" -> ApplicationNQuad,
     ".rdf" -> ApplicationRDFXML,
     ".csv" -> TextCSV,
-    ".tsv" -> TextTabSeparatedValues
+    ".tsv" -> TextTabSeparatedValues,
+    ".trig" -> ApplicationTrig
   )
 
 
@@ -59,16 +60,16 @@ object ApplicationNTriples extends Format("application/n-triples", true, org.ecl
 
 object ApplicationNQuad extends Format("application/n-quads", true, org.eclipse.rdf4j.rio.RDFFormat.NQUADS, org.apache.jena.riot.RDFFormat.NQUADS) {}
 
+object TextCSV extends Format(mimeType = "text/csv", lineBased = true, null, null)
+
+object TextTabSeparatedValues extends Format("text/tab-separated-values", lineBased = true, null, null)
+
 
 // other
 object TextTurtle extends Format("text/turtle", false, org.eclipse.rdf4j.rio.RDFFormat.TURTLE, org.apache.jena.riot.RDFFormat.TURTLE) {}
 
 object ApplicationRDFXML extends Format("application/rdf+xml", false, org.eclipse.rdf4j.rio.RDFFormat.RDFXML, org.apache.jena.riot.RDFFormat.RDFXML) {}
 
-object TextCSV extends Format(mimeType = "text/csv", lineBased = true, null, null)
-
-object TextTabSeparatedValues extends Format("text/tab-separated-values", lineBased = true, null, null)
+object ApplicationTrig extends Format("application/trig", false, null, null)
 
 object UNKNOWN extends Format("UNKNOWN", false, null, null) {}
-
-
