@@ -44,6 +44,7 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
 
     val uploadEndpointIRI = s"https://databus.dbpedia.org/$repoPathSegement/dataid/upload"
 
+
     val response = if(dataIdPackageTarget.isRegularFile && dataIdPackageTarget.nonEmpty) {
 
       // if there is a (base-resolved) DataId Turtle file in the package directory, attempt to upload that one
@@ -68,6 +69,6 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
          |message from service:\n${response.body}
        """.stripMargin)
 
-    getLog.info(s"upload of DataId succeeded for artifact '$artifactId'")
+    getLog.info(s"upload of DataId for artifact '$artifactId' to $repoPathSegement succeeded")
   }
 }

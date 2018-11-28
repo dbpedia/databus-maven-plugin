@@ -24,6 +24,7 @@ import org.dbpedia.databus.lib.Datafile
 import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
 
 import org.apache.jena.rdf.model.{Model, ModelFactory}
+import org.apache.jena.riot.RDFLanguages
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import org.eclipse.rdf4j.rio.{RDFParser, Rio}
@@ -50,7 +51,7 @@ class TestData extends AbstractMojo with Properties {
 
       var parseLog = new StringBuilder
       var details = new StringBuilder
-      val df: Datafile = Datafile.init(datafile)
+      val df: Datafile = Datafile.init(datafile, getLog)
       var model: Model = ModelFactory.createDefaultModel
       val thisResource = model.createResource("#" + getDatafileFinal(datafile).getName)
       val prefixParse ="http://dataid.dbpedia.org/ns/pl#"
@@ -101,7 +102,7 @@ class TestData extends AbstractMojo with Properties {
 
       // parselog
       thisResource.addProperty(model.createProperty(prefixParse+"parselog"), parseLog.toString);
-      model.write(parseLogFileWriter, "turtle")
+      model.write(parseLogFileWriter, RDFLanguages.strLangTurtle)
       parseLogFileWriter.write(details.toString())
       getLog.info(parseLog)
 

@@ -139,6 +139,7 @@
             <artifactId>scala-arm_${scala.compat.version}</artifactId>
             <version>2.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.scalactic</groupId>
             <artifactId>scalactic_${scala.compat.version}</artifactId>
@@ -148,6 +149,12 @@
             <groupId>org.scala-lang.modules</groupId>
             <artifactId>scala-xml_${scala.compat.version}</artifactId>
             <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.lihaoyi</groupId>
+            <artifactId>fastparse_${scala.compat.version}</artifactId>
+            <version>2.0.4</version>
         </dependency>
     </dependencies>
 

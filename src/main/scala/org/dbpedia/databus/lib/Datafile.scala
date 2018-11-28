@@ -21,16 +21,18 @@
 
 package org.dbpedia.databus.lib
 
-import org.dbpedia.databus.Properties
 import org.dbpedia.databus.parse.LineBasedRioDebugParser
 import org.dbpedia.databus.shared.authentification.RSAKeyPair
 import org.dbpedia.databus.shared.signing
-import org.dbpedia.databus.voc.{ApplicationNTriples, DataFileToModel, Format, TextTurtle}
+import org.dbpedia.databus.voc.{ApplicationNTriples, Format, TextTurtle}
 
 import better.files.{File => _, _}
+import com.typesafe.scalalogging.LazyLogging
+import fastparse.NoWhitespace._
+import fastparse._
 import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
 import org.apache.commons.compress.compressors.CompressorStreamFactory
-import org.apache.jena.rdf.model.Model
+import org.apache.maven.plugin.logging.Log
 import org.eclipse.rdf4j.rio.Rio
 import resource._
 
@@ -41,6 +43,7 @@ import java.io._
 import java.nio.charset.MalformedInputException
 import java.nio.file.Files
 import java.util.Base64
+
 
 
 /**
@@ -60,7 +63,9 @@ class Datafile private(val file: File) {
   var isCompressed: Boolean = false
   var compressionVariant: String = "None"
 
-  var signatureBytes: Array[Byte] = _
+  var contentVariants: Seq[String] = Seq.empty
+
+  var signatureBytes: Array[Byte] = Array.empty
   var signatureBase64: String = ""
   var verified: Boolean = false
 
@@ -68,11 +73,6 @@ class Datafile private(val file: File) {
 
   def getName(): String = {
     file.getName
-  }
-
-
-  def toModel(props: Properties): Model = {
-    DataFileToModel.datafile2Model(this, props)
   }
 
   private def updateMimetype(): Datafile = {
@@ -90,6 +90,19 @@ class Datafile private(val file: File) {
 
 
     formatExtension = ext
+    this
+  }
+
+  private def filenameAnalysis(implicit log: Log): Datafile = {
+
+    parse(getName, databusInputFilenameP(_)) match {
+
+      case success @ Parsed.Success((_ , variants ,innerExts, comp), _) => { contentVariants = variants }
+
+      case failure: Parsed.Failure =>
+        log.warn(s"Unable to analyse filename '${getName}': content variants might be wrong\n$failure")
+    }
+
     this
   }
 
@@ -165,6 +178,21 @@ class Datafile private(val file: File) {
     }
   })
 
+  //todo parse from front, front part:
+  //  P( CharsWhile(_ != '_')
+
+  protected def alphaNumericP[_: P] = CharIn("A-Za-z0-9").rep(1)
+
+  protected def artifactNameP[_: P] = P( CharsWhile(_ != '_').!)
+
+  protected def contentVariantsP[_: P] = P(("_" ~ alphaNumericP.!).rep())
+
+  protected def innerExtensionsP[_: P] = P(("." ~ alphaNumericP.!).rep(1))
+
+  protected def compressionExtensionP[_: P] = P(("." ~ StringIn("bz2", "gz", "xz", "zip").!).?)
+
+  protected def databusInputFilenameP[_: P] =
+    (Start ~ artifactNameP ~ contentVariantsP ~ innerExtensionsP ~ compressionExtensionP ~ End)
 
   override def toString =
     s"""
@@ -179,7 +207,8 @@ class Datafile private(val file: File) {
      """.stripMargin
 }
 
-object Datafile {
+object Datafile extends LazyLogging {
+
   /**
     * factory method
     * * checks whether the file exists
@@ -188,7 +217,9 @@ object Datafile {
     * @param datafile
     * @return
     */
-  def init(datafile: File): Datafile = {
+  def init(datafile: File, log: Log): Datafile = {
+
+    implicit def implicitLog = log
 
     if (!Files.exists(datafile.toPath)) {
       throw new FileNotFoundException("File not found: " + datafile)
@@ -221,6 +252,8 @@ object Datafile {
         df.compressionVariant = arch
       }
     }
+
+    df.filenameAnalysis(log)
 
     // we need a preview for mimetype
     df.updatePreview(10)

@@ -20,15 +20,16 @@
  */
 package org.dbpedia.databus
 
-import java.io.{File,FileWriter, InputStreamReader}
-import java.net.URL
-import java.util
-
 import com.rometools.rome.feed.synd._
 import com.rometools.rome.io.{SyndFeedInput, SyndFeedOutput}
 import org.apache.jena.rdf.model.{Model, ModelFactory}
+import org.apache.jena.riot.RDFLanguages
 
 import scala.collection.mutable
+
+import java.io.{File, FileWriter, InputStreamReader}
+import java.net.URL
+import java.util
 
 /**
   * a junk class to test some code
@@ -44,8 +45,8 @@ object ExperimentCLI {
 
 
     var dataIdCollect: Model = ModelFactory.createDefaultModel
-    dataIdCollect.read(fileurl, "http://example.org/test.ttl","turtle")
-    dataIdCollect.write(new FileWriter("test_new_downloadUrl.ttl"), "turtle")
+    dataIdCollect.read(fileurl, "http://example.org/test.ttl", RDFLanguages.strLangTurtle)
+    dataIdCollect.write(new FileWriter("test_new_downloadUrl.ttl"), RDFLanguages.strLangTurtle)
 
 
     var m2: Model = ModelFactory.createDefaultModel

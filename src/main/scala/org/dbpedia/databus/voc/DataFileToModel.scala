@@ -30,6 +30,7 @@ import better.files._
 import org.apache.jena.datatypes.xsd.XSDDatatype._
 import org.apache.jena.rdf.model.{Model, ModelFactory, Resource}
 import org.apache.jena.vocabulary.{OWL, RDF, RDFS, XSD}
+import org.apache.maven.plugin.AbstractMojo
 
 import scala.collection.JavaConverters._
 import scala.language.reflectiveCalls
@@ -59,67 +60,81 @@ object DataFileToModel {
     "spdx" -> "http://spdx.org/rdf/terms#",
     "sd" -> "http://www.w3.org/ns/sparql-service-description#"
   )
+}
 
+trait DataFileToModel extends Properties {
 
-  def datafile2Model(datafile: Datafile, properties: Properties): Model = {
+  this: AbstractMojo =>
+
+  import DataFileToModel._
+
+  def modelForDatafile(datafile: Datafile): Model = {
 
     implicit val model: Model = ModelFactory.createDefaultModel
 
-    for ((key, value) <- prefixes) {
+    for((key, value) <- prefixes) {
       model.setNsPrefix(key, value)
     }
 
     // main uri of dataid for SingleFile
-    val thisResource = ("#" + properties.getDatafileFinal(datafile.file).getName).asIRI
+    val singleFileResource = ("#" + getDatafileFinal(datafile.file).getName).asIRI
 
     /**
       * linking to other constructs
       */
-    val datasetResource = s"#${properties.finalName}".asIRI
-    thisResource.addProperty(dataid.isDistributionOf,datasetResource)
-    datasetResource.addProperty(dcat.distribution,thisResource)
+    val datasetResource = s"#${finalName}".asIRI
+    singleFileResource.addProperty(dataid.isDistributionOf, datasetResource)
+    datasetResource.addProperty(dcat.distribution, singleFileResource)
 
     //type properties
-    thisResource.addProperty(RDF.`type`, dataid.SingleFile)
+    singleFileResource.addProperty(RDF.`type`, dataid.SingleFile)
     datasetResource.addProperty(RDF.`type`, dataid.Dataset)
 
-    addBasicPropertiesToResource( properties, model, thisResource)
+    addBasicPropertiesToResource(model, singleFileResource)
 
     // specific info about the file
-    def modificationTime = properties.params.modifiedDate.getOrElse(
+    def modificationTime = params.modifiedDate.getOrElse(
       LocalDateTime.ofInstant(datafile.file.toScala.lastModifiedTime, ZoneId.systemDefault()))
-    thisResource.addProperty(dcterms.modified, ISO_LOCAL_DATE.format(modificationTime).asTypedLiteral(XSDdate))
-    thisResource.addProperty(dataid.sha256sum, datafile.sha256sum.asPlainLiteral)
-    thisResource.addProperty(dataid.signature, datafile.signatureBase64.asPlainLiteral)
-    thisResource.addProperty(dataid.preview, datafile.preview)
+
+    singleFileResource.addProperty(dcterms.modified, ISO_LOCAL_DATE.format(modificationTime).asTypedLiteral(XSDdate))
+    singleFileResource.addProperty(dataid.sha256sum, datafile.sha256sum.asPlainLiteral)
+    singleFileResource.addProperty(dataid.signature, datafile.signatureBase64.asPlainLiteral)
+    singleFileResource.addProperty(dataid.preview, datafile.preview)
     // todo add uncompressedByteSize if possible
     //thisResource.addProperty(dataid.uncompressedByteSize, datafile.bytes.toString.asTypedLiteral(XSDdecimal))
-    thisResource.addProperty(dcat.byteSize, datafile.bytes.toString.asTypedLiteral(XSDdecimal))
+    singleFileResource.addProperty(dcat.byteSize, datafile.bytes.toString.asTypedLiteral(XSDdecimal))
     // todo review creation of this statement: the used property is not declared in dcat; looks like a slip of mind
     // sh: it is a dataid property. However, dataid modeled it as a property of the mimetype, which is the wrong place
     // files have one format extension and maybe one compressionextension and mimetypes have a list of likely extensions
-    thisResource.addProperty(dataid.prop.formatExtension, datafile.formatExtension.asPlainLiteral)
     //todo handle correctly, if not default
-    thisResource.addProperty(dcat.downloadURL, properties.getDatafileFinal(datafile.file).getName.asIRI)
+
+    singleFileResource.addProperty(dcat.downloadURL, getDatafileFinal(datafile.file).getName.asIRI)
 
     // mediatype
     def mediaTypeName = datafile.mimetype.getClass.getSimpleName.stripSuffix("$")
+
     val mediaTypeRes = (model.getNsPrefixURI("dataid-mt") + mediaTypeName).asIRI
-    mediaTypeRes.addProperty(RDF.`type`,s"${model.getNsPrefixURI("dataid-mt")}MediaType".asIRI)
-    thisResource.addProperty(dcat.mediaType, mediaTypeRes)
+    mediaTypeRes.addProperty(RDF.`type`, s"${model.getNsPrefixURI("dataid-mt")}MediaType".asIRI)
+    singleFileResource.addProperty(dcat.mediaType, mediaTypeRes)
     mediaTypeRes.addProperty(dataid.mimetype, datafile.mimetype.mimeType)
-    thisResource.addProperty(dataid.compression, datafile.compressionVariant)
+    singleFileResource.addProperty(dataid.prop.formatExtension, datafile.formatExtension.asPlainLiteral)
+    singleFileResource.addProperty(dataid.compression, datafile.compressionVariant)
+
+    datafile.contentVariants.foreach { contentVariant =>
+
+      singleFileResource.addProperty(dataid.prop.contentVariant, contentVariant)
+    }
 
     model
   }
 
-  def addBasicPropertiesToResource( properties: Properties, model: Model, thisResource: Resource) = {
+  def addBasicPropertiesToResource(model: Model, thisResource: Resource) = {
 
     implicit def vocabModel = model
 
     // label
     for {
-      label :String <- properties.labels.asScala
+      label: String <- labels.asScala
       labelText :: langTag :: Nil = label.split("@").toList
     } {
       thisResource.addProperty(RDFS.label, labelText, langTag)
@@ -127,14 +142,16 @@ object DataFileToModel {
     }
 
     //basic properties
-    thisResource.addProperty(dcterms.description, properties.datasetDescription.asPlainLiteral)
+    thisResource.addProperty(dcterms.description, datasetDescription.asPlainLiteral)
     // todo add version number, but this is a dataid issue
     thisResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
-    thisResource.addProperty(dcterms.hasVersion, properties.version.asPlainLiteral)
-    def issuedTime = properties.params.issuedDate.getOrElse(properties.invocationTime)
+    thisResource.addProperty(dcterms.hasVersion, version.asPlainLiteral)
+
+    def issuedTime = params.issuedDate.getOrElse(invocationTime)
+
     thisResource.addProperty(dcterms.issued, ISO_LOCAL_DATE.format(issuedTime).asTypedLiteral(XSDdate))
-    thisResource.addProperty(dcterms.license, properties.license.asIRI)
-    thisResource.addProperty(dataid.associatedAgent, properties.maintainer.toString.asIRI)
-    thisResource.addProperty(dcterms.publisher, properties.publisher.toString.asIRI)
+    thisResource.addProperty(dcterms.license, license.asIRI)
+    thisResource.addProperty(dataid.associatedAgent, maintainer.toString.asIRI)
+    thisResource.addProperty(dcterms.publisher, publisher.toString.asIRI)
   }
 }

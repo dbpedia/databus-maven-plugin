@@ -94,9 +94,10 @@ trait Properties extends Locations with Parameters {
   @Parameter val bundle: String = null
   @Parameter val downloadUrlPath: URL = null
   @Parameter val allowOverwriteOnDeploy: Boolean = true
-  @Parameter val deployToTestRepo: Boolean = false
+  @Parameter(property = "databus.deployToTestRepo") val deployToTestRepo: Boolean = false
   @Parameter val feedFrom: String = null
 
+  @Parameter(property = "databus.skipHashing") val skipHashing: Boolean = false
 
   /**
     * Plugin specific vars defined in parent module

@@ -55,7 +55,7 @@ import java.io._
   *
   */
 @Mojo(name = "metadata", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
-class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers {
+class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers with DataFileToModel {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
@@ -88,7 +88,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers {
         implicit val editContext = dataIdCollect
 
         val datasetResource = dataIdCollect.createResource(s"#${finalName}")
-        DataFileToModel.addBasicPropertiesToResource(this, dataIdCollect, datasetResource)
+        addBasicPropertiesToResource(dataIdCollect, datasetResource)
 
         //adding todonote
         datasetResource.addProperty(dataid.prop.todonote, "we are still refactoring code for dataid creation, much " +
@@ -129,54 +129,23 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers {
   }
 
   def processFile(datafile: File, dataIdCollect: Model): Unit = {
+
     getLog.info(s"found file ${datafile.getCanonicalPath}")
-    val df: Datafile = Datafile.init(datafile)
 
-    df
-      .updateSHA256sum()
-      .updateBytes()
-      .updateSignature(singleKeyPairFromPKCS12)
+    val df: Datafile = Datafile.init(datafile, getLog)
 
-    val model = df.toModel(this)
+    df.updateBytes()
+
+    if(!skipHashing) {
+      df
+        .updateSHA256sum()
+        .updateSignature(singleKeyPairFromPKCS12)
+    }
+
+    val model = modelForDatafile(df)
     getLog.info(df.toString)
     dataIdCollect.add(model)
   }
-
-
-  /**
-    * replaced partly by detect compression
-    **/
-  @Deprecated
-  def getMimeType(fileName: String): MimeTypeHelper = {
-    val innerMimeTypes = Map(
-      "ttl" -> "text/turtle",
-      "tql" -> "application/n-quads",
-      "nt" -> "application/n-quads",
-      "xml" -> "application/xml"
-    )
-    val outerMimeTypes = Map(
-      "gz" -> "application/x-gzip",
-      "bz2" -> "application/x-bzip2",
-      "sparql" -> "application/sparql-results+xml"
-    )
-    var mimetypes = MimeTypeHelper(None, None)
-    outerMimeTypes.foreach { case (key, value) => {
-      if(fileName.contains(key)) {
-        mimetypes.outer = Some(value)
-      }
-    }
-    }
-    innerMimeTypes.foreach { case (key, value) => {
-      if(fileName.contains(key)) {
-        mimetypes.inner = Some(value)
-      }
-    }
-    }
-    mimetypes
-  }
-
-  case class MimeTypeHelper(var outer: Option[String], var inner: Option[String])
-
 }
 
 object PrepareMetadata {
