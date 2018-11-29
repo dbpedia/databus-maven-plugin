@@ -461,7 +461,12 @@ Can potentially fixed by locally installing the shared-lib:
 Then clone the repo and run `mvn install` which will install the databus-maven-plugin locally
 
 
-
+## databus plugin goals are not found after installing the plugin via sources (mvn install)
+```
+[ERROR] Could not find goal 'metadata' in plugin org.dbpedia.databus:databus-maven-plugin:1.1-SNAPSHOT among available goals -> [Help 1]
+org.apache.maven.plugin.MojoNotFoundException: Could not find goal 'metadata' in plugin org.dbpedia.databus:databus-maven-plugin:1.1-SNAPSHOT among available goals 
+```
+Try to wipe (make a copy of it and then delete the original) your m2 (maven local repository) and then build it again. 
 ## BUILD FAILURE, no mojo-descriptors found (when using `mvn install` to install the databus-maven-plugin)
 This is most likely caused by using an old maven version (observed in version `3.0.5`)
 A workaround for this would be replacing:
