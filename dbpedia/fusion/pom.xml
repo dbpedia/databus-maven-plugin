@@ -28,7 +28,7 @@ DBpedia will publish 4 more bundles with dozens of artifacts and new versions at
 <databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
 We recommend to do the same, as you can add more bundles and datasets later.
 -->
-        <databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
+        <databus.downloadUrlPath>http://downloads.dbpedia.org/repo/dev/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
 
         <databus.publisher>http://vehnem.github.io/webid.ttl#this</databus.publisher>
         <!--pkcs12File
