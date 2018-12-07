@@ -5,7 +5,7 @@
     <groupId>org.dbpedia.fusion</groupId>
     <artifactId>fusion</artifactId>
     <packaging>pom</packaging>
-    <version>2018.08.15</version>
+    <version>2018.11.25</version>
 
     <properties>
         <!--dataDirectory DEFAULT: src/main/databus/input
@@ -15,7 +15,7 @@
 -->
         <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
         <!-- the name of the bundle, used for packaging -->
-        <databus.bundle>bundle</databus.bundle>
+        <databus.bundle>fusion</databus.bundle>
 
         <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
 * all files are copied into this directory where mvn databus:package-export is run
@@ -30,7 +30,7 @@ We recommend to do the same, as you can add more bundles and datasets later.
 -->
         <databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
 
-        <databus.publisher>http://kurzum.net/dev-dummy.ttl#this</databus.publisher>
+        <databus.publisher>http://vehnem.github.io/webid.ttl#this</databus.publisher>
         <!--pkcs12File
 The PKCS12 bundle providing the cryptographic identity information associated to the WebID of the
 agent operating the databus plugin. This bundle should combine the X509 certificate and the private
@@ -56,9 +56,9 @@ Pick one from here: http://rdflicense.linkeddata.es/
         -->
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</databus.license>
         <!--not clear if needed, using today at the moment-->
-        <databus.issuedDate>2018-08-01</databus.issuedDate>
+        <databus.issuedDate>2018-11-12</databus.issuedDate>
         <!--not clear if needed, read from file at the moment-->
-        <databus.modifiedDate>2018-08-03</databus.modifiedDate>
+        <databus.modifiedDate>2018-11-25</databus.modifiedDate>
 
 
         <!--publisher
