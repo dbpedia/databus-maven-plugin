@@ -1,13 +1,48 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.dbpedia.databus</groupId>
     <artifactId>databus-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.1-SNAPSHOT</version>
-    <name>${project.artifactId}</name>
+    <version>1.1</version>
 
-    <url>http://maven.apache.org</url>
+    <name>DBpedia Databus Maven Plugin</name>
+    <description>A Maven Plugin to test data, prepare meta-data (DataIDs) and publish the resulting DataIDs to the Databus repository.</description>
+    <url>http://dev.dbpedia.org/Databus%20Maven%20Plugin</url>
+
+    <licenses>
+        <license>
+            <name>GNU Affero General Public License version 3.0</name>
+            <url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Sebastian Hellmann</name>
+            <email>hellmann@informatik.uni-leipzig.de</email>
+            <organization>DBpedia Association</organization>
+            <organizationUrl>https://dbpedia.org</organizationUrl>
+        </developer>
+        <developer>
+            <name>Markus Ackermann</name>
+            <email>ackermann@fusionfactory.de</email>
+            <organization>DBpedia Association</organization>
+            <organizationUrl>https://dbpedia.org</organizationUrl>
+        </developer>
+        <developer>
+            <name>Robert Bielinski</name>
+            <email>robertbielinski@live.de</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/dbpedia/databus-maven-plugin.git</connection>
+        <developerConnection>scm:git:git://github.com/dbpedia/databus-maven-plugin.git</developerConnection>
+        <url>https://github.com/dbpedia/databus-maven-plugin/tree/master</url>
+    </scm>
+
     <properties>
         <encoding>UTF-8</encoding>
         <file.encoding>UTF-8</file.encoding>
@@ -321,6 +356,44 @@
                         <phase>process-sources</phase>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                </configuration>
             </plugin>
         </plugins>
     </build>
