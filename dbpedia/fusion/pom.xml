@@ -13,14 +13,14 @@
 * copy/move all your datafiles in the respective modules
 * all files have to start with the animals of the module, i.e. src/main/databus/input/$artifactId_en.nt.bz2
 -->
-        <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
+        <databus.dataInputDirectory>/home/marvin/userstorage/release/${project.artifactId}/${project.version}</databus.dataInputDirectory>
         <!-- the name of the bundle, used for packaging -->
         <databus.bundle>fusion</databus.bundle>
 
         <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
 * all files are copied into this directory where mvn databus:package-export is run
 -->
-        <databus.packageDirectory>${session.executionRootDirectory}/target/databus/package/${databus.bundle}</databus.packageDirectory>
+        <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/dev/fusion/</databus.packageDirectory>
 
         <!-- downloadUrlPath
 Configure downloadUrlPath, where the dataset will be deployed:
@@ -44,7 +44,7 @@ SECURITY NOTICE:
 * Limit access to this file to your own user: chmod 700 $HOME/.m2/webid_bundle.p12
 -->
         <!--<databus.pkcs12File>${user.home}/.m2/webid_bundle.p12</databus.pkcs12File>-->
-        <databus.pkcs12File>test-cert-bundle.p12</databus.pkcs12File>
+        <databus.pkcs12File>${user.home}/webid-fusion-release/certificate_vehnem-github-io.pfx</databus.pkcs12File>
 
         <databus.deployToTestRepo>true</databus.deployToTestRepo>
         <!--maintainer
@@ -210,15 +210,15 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
 
     <modules>
 
-        <module>fused-categories</module>
+<!--        <module>fused-categories</module> -->
         <module>fused-geo-coordinates</module>
-        <module>fused-images</module>
+<!--        <module>fused-images</module> -->
         <module>fused-instance-types</module>
         <module>fused-labels</module>
-        <module>fused-long-abstracts</module>
+<!--        <module>fused-long-abstracts</module> -->
         <module>fused-mappingbased-literals</module>
         <module>fused-mappingbased-objects</module>
-        <module>fused-short-abstracts</module>
+<!--        <module>fused-short-abstracts</module> -->
         <module>fused-weblinks</module>
     </modules>
 </project>

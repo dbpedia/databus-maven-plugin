@@ -31,9 +31,9 @@ You can configure here:
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
                     <labels>
-                        <label>Fused infobox properties@en</label>
+                        <label>Fused weblinks@en</label>
                     </labels>
-                    <datasetDescription>Extracted Data from the Wikipedia Article-Infoboxes</datasetDescription>
+                    <datasetDescription>fusion of the artifacts external-links, homepages by union</datasetDescription>
                 </configuration>
             </plugin>
         </plugins>
