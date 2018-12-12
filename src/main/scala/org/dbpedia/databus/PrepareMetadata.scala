@@ -69,7 +69,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
 
     getLog.info(s"looking for data files in: ${dataInputDirectory.getCanonicalPath}")
-    getListOfDataFiles().foreach(datafile => {
+    getListOfInputFiles().foreach(datafile => {
       processFile(datafile, dataIdCollect)
     })
 
@@ -132,18 +132,15 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
     getLog.info(s"found file ${datafile.getCanonicalPath}")
 
-    val df: Datafile = Datafile.init(datafile, getLog)
+    val df: Datafile = Datafile(datafile, skipHashing = skipHashing)(getLog).ensureExists()
 
-    df.updateBytes()
 
     if(!skipHashing) {
-      df
-        .updateSHA256sum()
-        .updateSignature(singleKeyPairFromPKCS12)
+      df.updateSignature(singleKeyPairFromPKCS12)
     }
 
     val model = modelForDatafile(df)
-    getLog.info(df.toString)
+    getLog.debug(df.toString)
     dataIdCollect.add(model)
   }
 }

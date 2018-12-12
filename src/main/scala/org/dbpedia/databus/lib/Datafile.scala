@@ -45,75 +45,104 @@ import java.nio.file.Files
 import java.util.Base64
 
 
-
 /**
   * a simple dao to collect all values for a file
   * private constructor, must be called with init to handle compression detection
   */
-class Datafile private(val file: File) {
+class Datafile private(val file: File, previewLineCount: Int = 10, skipHashing: Boolean = false)(implicit log: Log) {
 
-  var mimetype: Format = _
-  var formatExtension: String = ""
+  lazy val (filePrefix: String, contentVariantExtensions: Seq[String], formatVariantExtensions: Seq[String],
+    compressionVariantExtensions) = filenameAnalysis
 
-  var sha256sum: String = ""
-  var bytes: Long = _
+  lazy val (format, formatExtension) = computeMimeType(formatVariantExtensions)
+
+  lazy val sha256sum: String = if(skipHashing) "" else
+    signing.sha256Hash(file.toScala).asBytes.map("%02x" format _).mkString
+
+  lazy val bytes: Long = file.length()
 
   // compression option
-  var isArchive: Boolean = false
-  var isCompressed: Boolean = false
-  var compressionVariant: String = "None"
+  lazy val archiveVariant: Option[String] = Compression.detectArchive(file.toScala)
+  lazy val compressionVariant: Option[String] = Compression.detectCompression(file.toScala)
 
-  var contentVariants: Seq[String] = Seq.empty
+  def compressionOrArchiveDesc =
+    (Stream.empty ++ compressionVariant ++ archiveVariant).headOption.getOrElse("None")
 
   var signatureBytes: Array[Byte] = Array.empty
   var signatureBase64: String = ""
   var verified: Boolean = false
 
-  var preview: String = ""
+  lazy val preview: String = computePreview
 
-  def getName(): String = {
+  /**
+    * initialization
+    * * checks whether the file exists
+    * * detects compression for further reading
+    */
+  def ensureExists(): Datafile = {
+
+    if(file.exists()) {
+
+      if(!file.toScala.isRegularFile) {
+
+        throw new FileNotFoundException(s"${file.getAbsolutePath} is not a regular file")
+      }
+    } else throw new FileNotFoundException("File not found: " + file.getAbsolutePath)
+
+    this
+  }
+
+  def basename(): String = {
     file.getName
   }
 
-  private def updateMimetype(): Datafile = {
-    val (ext, mt) = Format.detectMimetypeByFileExtension(file)
-    mimetype = mt
+  def finalBasename(versionToAdd: Option[String]) = {
+
+    def prefix = versionToAdd.fold(filePrefix) { version => s"$filePrefix-$version" }
+
+    // we have to check for empty extension seqs, otherwise we get misplaced inital '.'/'_'
+    def contentVariantsSuffix = if(contentVariantExtensions.nonEmpty) {
+      contentVariantExtensions.mkString("_", "_", "")
+    } else ""
+
+    def formatVariantsSuffix = if(formatVariantExtensions.nonEmpty) {
+      formatVariantExtensions.mkString(".", ".", "")
+    } else ""
+
+    def compressionVariantsSuffix = if(compressionVariantExtensions.nonEmpty) {
+      compressionVariantExtensions.mkString(".", ".", "")
+    } else ""
+
+    prefix + contentVariantsSuffix + formatVariantsSuffix + compressionVariantsSuffix
+  }
+
+  private def computeMimeType(formatVariants: Seq[String]) = {
+
+    val (ext, mimeTypeByFileName) = Format.detectMimeTypeByFileExtension(formatVariants)
 
     // downgrade turtle to ntriple, if linebased
-    if (mt == TextTurtle) {
+    val mimeType: Format = if(mimeTypeByFileName == TextTurtle) {
+
       val baos: ByteArrayInputStream = new ByteArrayInputStream(preview.getBytes);
-      val (a, b, c, d) = LineBasedRioDebugParser.parse(baos, Rio.createParser(ApplicationNTriples.rio))
-      if (d.size == 0) {
-        mimetype = ApplicationNTriples
-      }
-    }
+      val (_, _, _, wrongTriples) = LineBasedRioDebugParser.parse(baos, Rio.createParser(ApplicationNTriples.rio))
 
+      if(wrongTriples.isEmpty) ApplicationNTriples else mimeTypeByFileName
 
-    formatExtension = ext
-    this
+    } else mimeTypeByFileName
+
+    (mimeType, ext)
   }
 
-  private def filenameAnalysis(implicit log: Log): Datafile = {
+  private def filenameAnalysis: (String, Seq[String], Seq[String], Seq[String]) = {
 
-    parse(getName, databusInputFilenameP(_)) match {
+    parse(basename, Datafile.databusInputFilenameP(_)) match {
 
-      case success @ Parsed.Success((_ , variants ,innerExts, comp), _) => { contentVariants = variants }
+      case success@Parsed.Success(basenameParts, _) => basenameParts
 
       case failure: Parsed.Failure =>
-        log.warn(s"Unable to analyse filename '${getName}': content variants might be wrong\n$failure")
+        sys.error(s"Unable to analyse filename '${basename}': Please refer to " +
+          s"http://dev.dbpedia.org/Databus%20Maven%20Plugin on conventions for input file naming:\n$failure")
     }
-
-    this
-  }
-
-  def updateSHA256sum(): Datafile = {
-    sha256sum = signing.sha256Hash(file.toScala).asBytes.map("%02x" format _).mkString
-    this
-  }
-
-  def updateBytes(): Datafile = {
-    bytes = file.length()
-    this
   }
 
   /**
@@ -121,20 +150,20 @@ class Datafile private(val file: File) {
     * @param lineCount gives the linecount of the preview, however it is limited to 500 chars per line, in case there is a very long line
     * @return
     */
-  private def updatePreview(lineCount: Int): Datafile = {
+  private def computePreview: String = {
 
     val unshortenedPreview = for {
 
-        inputStream <- getInputStream
-        source <- managed(Source.fromInputStream(inputStream)(Codec.UTF8))
+      inputStream <- getInputStream
+      source <- managed(Source.fromInputStream(inputStream)(Codec.UTF8))
 
-      } yield {
-        Try(source.getLines().take(lineCount).mkString("\n"))
+    } yield {
+      Try(source.getLines().take(previewLineCount).mkString("\n"))
     }
 
-    def maxLength = lineCount * 500
+    def maxLength = previewLineCount * 500
 
-    preview = unshortenedPreview apply {
+    unshortenedPreview apply {
 
       case Success(tooLong) if tooLong.size > maxLength => tooLong.substring(0, maxLength)
 
@@ -142,8 +171,6 @@ class Datafile private(val file: File) {
 
       case Failure(mie: MalformedInputException) => "[binary data - no preview]"
     }
-
-    this
   }
 
   def updateSignature(keyPair: RSAKeyPair): Datafile = {
@@ -162,44 +189,32 @@ class Datafile private(val file: File) {
     *
     * @return
     */
-  def getInputStream(): ManagedResource[InputStream] = managed({
+  def getInputStream(): ManagedResource[InputStream] = managed {
 
     val bis = file.toScala.newInputStream.buffered
-    if (isCompressed) {
-      new CompressorStreamFactory()
-        .createCompressorInputStream(compressionVariant, bis)
-    } else if (isArchive) {
-      val ais: ArchiveInputStream = new ArchiveStreamFactory()
-        .createArchiveInputStream(compressionVariant, bis)
-      ais.getNextEntry
-      ais
-    } else {
-      bis
+
+    (compressionVariant, archiveVariant) match {
+
+      case (Some(comp), None) => {
+        new CompressorStreamFactory().createCompressorInputStream(bis)
+      }
+
+      case (None, Some(arch)) => {
+        new ArchiveStreamFactory().createArchiveInputStream(bis)
+      }
+
+      case (None, None) => bis
+
+      case (Some(comp), Some(arch)) => sys.error(s"file seems to be both compressed and an archive: $comp, $arch")
     }
-  })
-
-  //todo parse from front, front part:
-  //  P( CharsWhile(_ != '_')
-
-  protected def alphaNumericP[_: P] = CharIn("A-Za-z0-9").rep(1)
-
-  protected def artifactNameP[_: P] = P( CharsWhile(_ != '_').!)
-
-  protected def contentVariantsP[_: P] = P(("_" ~ alphaNumericP.!).rep())
-
-  protected def innerExtensionsP[_: P] = P(("." ~ alphaNumericP.!).rep(1))
-
-  protected def compressionExtensionP[_: P] = P(("." ~ StringIn("bz2", "gz", "xz", "zip").!).?)
-
-  protected def databusInputFilenameP[_: P] =
-    (Start ~ artifactNameP ~ contentVariantsP ~ innerExtensionsP ~ compressionExtensionP ~ End)
+  }
 
   override def toString =
     s"""
-       |Datafile(sha256sum=$sha256sum
+       |Datafile(format=$format
+       |sha256sum=$sha256sum
        |bytes=$bytes
-       |isArchive=$isArchive
-       |isCompressed=$isCompressed
+       |archiveVariant=$archiveVariant
        |compressionVariant=$compressionVariant
        |signatureBytes=${signatureBytes.map("%02X" format _).mkString}
        |signatureBase64=$signatureBase64
@@ -209,58 +224,36 @@ class Datafile private(val file: File) {
 
 object Datafile extends LazyLogging {
 
-  /**
-    * factory method
-    * * checks whether the file exists
-    * * detects compression for further reading
-    *
-    * @param datafile
-    * @return
-    */
-  def init(datafile: File, log: Log): Datafile = {
-
-    implicit def implicitLog = log
-
-    if (!Files.exists(datafile.toPath)) {
-      throw new FileNotFoundException("File not found: " + datafile)
-    }
-    var df: Datafile = new Datafile(datafile)
-
-    // detect compression
-    var comp = Compression.detectCompression(datafile)
-    var arch = Compression.detectArchive(datafile)
-
-    comp match {
-      case "None" => {
-        df.isCompressed = false
-        df.compressionVariant = "None"
-      }
-      case _ => {
-        df.isCompressed = true
-        df.compressionVariant = comp
-      }
-    }
-
-    arch match {
-      // note that if compression is also none\nvalue has already been assigned above
-      case "None" => {
-        df.isArchive = false
-      }
-      // overrides compression
-      case _ => {
-        df.isArchive = true
-        df.compressionVariant = arch
-      }
-    }
-
-    df.filenameAnalysis(log)
-
-    // we need a preview for mimetype
-    df.updatePreview(10)
-
-    //detect mimetype
-    df.updateMimetype()
-
-    df
+  def apply(file: File, previewLineCount: Int = 10, skipHashing: Boolean = false)(implicit log: Log): Datafile = {
+    new Datafile(file, previewLineCount, skipHashing)(log)
   }
+
+  protected def alphaNumericP[_: P] = CharIn("A-Za-z0-9").rep(1)
+
+  // the negative lookahead ensures that we do not parse into the format extension(s) if there is no content variant
+  protected def artifactNameP[_: P] =
+    P((!extensionP ~ CharPred(_ != '_')).rep(1).!)
+      .opaque("<artifact prefix>")
+
+  protected def contentVariantsP[_: P] =
+    P(("_" ~ alphaNumericP.!).rep())
+      .opaque("<content variants>")
+
+  protected def extensionP[_ : P] = "." ~  (CharIn("A-Za-z") ~ CharIn("A-Za-z0-9").rep()).!
+
+  // using a negative lookahead here to ensure that no compression extension is parsed as format extension
+  protected def formatExtensionP[_: P] = P(!compressionExtensionP ~ extensionP)
+
+  protected def formatExtensionsP[_: P] =
+    P(formatExtensionP.rep(1))
+      .opaque("<format variant extensions>")
+
+  protected def compressionExtensionP[_: P] =
+    P("." ~ StringIn("bz2", "gz", "xz", "tar", "zip").!)
+      .opaque("<compression variant extensions>")
+
+  protected def compressionExtensionsP[_: P] = P(compressionExtensionP.rep())
+
+  protected def databusInputFilenameP[_: P]: P[(String, Seq[String], Seq[String], Seq[String])] =
+    (Start ~ artifactNameP ~ contentVariantsP ~ formatExtensionsP ~ compressionExtensionsP ~ End)
 }

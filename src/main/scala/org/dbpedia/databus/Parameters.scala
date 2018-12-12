@@ -22,6 +22,8 @@ package org.dbpedia.databus
 
 import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
 
+import better.files._
+
 import scala.collection.JavaConverters._
 import scala.collection.immutable
 
@@ -43,5 +45,7 @@ trait Parameters {
     lazy val modifiedDate = Option(props.modifiedDate).map(ISO_DATE.parse)
 
     lazy val wasDerivedFrom = props.wasDerivedFrom.asScala.map(ScalaBaseEntity.fromJava).toSet
+
+    lazy val versionToInsert = if(insertVersion) Some(version) else None
   }
 }

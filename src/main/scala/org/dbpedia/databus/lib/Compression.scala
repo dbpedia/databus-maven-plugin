@@ -20,57 +20,29 @@
  */
 package org.dbpedia.databus.lib
 
-import java.io.{BufferedInputStream, File, FileInputStream, InputStream}
-
+import better.files._
+import java.io.{BufferedInputStream, FileInputStream, InputStream}
 import com.codahale.metrics.MetricRegistry
 import org.apache.commons.compress.archivers.{ArchiveEntry, ArchiveException, ArchiveInputStream, ArchiveStreamFactory}
 import org.apache.commons.compress.compressors.{CompressorException, CompressorInputStream, CompressorStreamFactory}
 
+import scala.util.Try
+
 object Compression {
 
-  //TODO streams need to be closed properly
-  def detectCompression(datafile: File): String = {
+  def detectCompression(datafile: File): Option[String] = {
     try {
-      val fi = new BufferedInputStream(new FileInputStream(datafile))
-      CompressorStreamFactory.detect(fi)
+      Some(datafile.inputStream.map(_.buffered).apply(CompressorStreamFactory.detect))
     } catch {
-      case ce: CompressorException => "None"
+      case ce: CompressorException => None
     }
-
   }
 
-  def detectArchive(datafile: File): String = {
+  def detectArchive(datafile: File): Option[String] = {
     try {
-      val fi = new BufferedInputStream(new FileInputStream(datafile))
-      ArchiveStreamFactory.detect(fi)
+      Some(datafile.inputStream.map(_.buffered).apply(ArchiveStreamFactory.detect))
     } catch {
-      case ce: ArchiveException => "None"
+      case ce: ArchiveException => None
     }
-
   }
-
-  /*
-  def readFirstFileFromArchive ( in : ArchiveInputStream, out:InputStream) : Unit = {
-
-    in.getNextEntry
-
-    val out: OutputStream = Files.newOutputStream(dir.toPath.resolve(entry.getName))
-    IOUtils.copy(in, out)
-    out.close()
-  }
-
-  import org.apache.commons.compress.archivers.ArchiveInputStream
-import org.apache.commons.compress.archivers.ArchiveStreamFactory
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
-import java.io.InputStream
-import java.io.OutputStream
-import java.nio.file.Files
-val is: InputStream = Files.newInputStream(input.toPath)
- val in: ArchiveInputStream = new ArchiveStreamFactory().createArchiveInputStream(ArchiveStreamFactory.ZIP, is)
- val entry: ZipArchiveEntry = in.getNextEntry.asInstanceOf[ZipArchiveEntry]
- val out: OutputStream = Files.newOutputStream(dir.toPath.resolve(entry.getName))
- IOUtils.copy(in, out)
- out.close()
-   */
-
 }

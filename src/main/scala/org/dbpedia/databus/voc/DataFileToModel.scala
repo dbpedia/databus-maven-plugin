@@ -21,7 +21,7 @@
 
 package org.dbpedia.databus.voc
 
-import org.dbpedia.databus.Properties
+import org.dbpedia.databus.{Parameters, Properties}
 import org.dbpedia.databus.lib.Datafile
 import org.dbpedia.databus.shared.rdf.conversions._
 import org.dbpedia.databus.shared.rdf.vocab._
@@ -62,7 +62,7 @@ object DataFileToModel {
   )
 }
 
-trait DataFileToModel extends Properties {
+trait DataFileToModel extends Properties with Parameters {
 
   this: AbstractMojo =>
 
@@ -77,7 +77,7 @@ trait DataFileToModel extends Properties {
     }
 
     // main uri of dataid for SingleFile
-    val singleFileResource = ("#" + getDatafileFinal(datafile.file).getName).asIRI
+    val singleFileResource = ("#" + datafile.finalBasename(params.versionToInsert)).asIRI
 
     /**
       * linking to other constructs
@@ -108,19 +108,19 @@ trait DataFileToModel extends Properties {
     // files have one format extension and maybe one compressionextension and mimetypes have a list of likely extensions
     //todo handle correctly, if not default
 
-    singleFileResource.addProperty(dcat.downloadURL, getDatafileFinal(datafile.file).getName.asIRI)
+    singleFileResource.addProperty(dcat.downloadURL, datafile.finalBasename(params.versionToInsert).asIRI)
 
     // mediatype
-    def mediaTypeName = datafile.mimetype.getClass.getSimpleName.stripSuffix("$")
+    def mediaTypeName = datafile.format.getClass.getSimpleName.stripSuffix("$")
 
     val mediaTypeRes = (model.getNsPrefixURI("dataid-mt") + mediaTypeName).asIRI
     mediaTypeRes.addProperty(RDF.`type`, s"${model.getNsPrefixURI("dataid-mt")}MediaType".asIRI)
     singleFileResource.addProperty(dcat.mediaType, mediaTypeRes)
-    mediaTypeRes.addProperty(dataid.mimetype, datafile.mimetype.mimeType)
+    mediaTypeRes.addProperty(dataid.mimetype, datafile.format.mimeType)
     singleFileResource.addProperty(dataid.prop.formatExtension, datafile.formatExtension.asPlainLiteral)
-    singleFileResource.addProperty(dataid.compression, datafile.compressionVariant)
+    singleFileResource.addProperty(dataid.compression, datafile.compressionOrArchiveDesc)
 
-    datafile.contentVariants.foreach { contentVariant =>
+    datafile.contentVariantExtensions.foreach { contentVariant =>
 
       singleFileResource.addProperty(dataid.prop.contentVariant, contentVariant)
     }

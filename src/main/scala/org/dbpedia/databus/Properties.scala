@@ -98,6 +98,7 @@ trait Properties extends Locations with Parameters {
   @Parameter val feedFrom: String = null
 
   @Parameter(property = "databus.skipHashing") val skipHashing: Boolean = false
+  @Parameter(property = "databus.insertVersion") val insertVersion: Boolean = true
 
   /**
     * Plugin specific vars defined in parent module
@@ -134,7 +135,7 @@ trait Properties extends Locations with Parameters {
 
   def dataIdFile = getDataIdDirectory.toScala / s"${finalName}_dataid.ttl"
 
-  def dataIdPackageTarget = packageSubdirectory / dataIdFile.name
+  def dataIdPackageTarget = locations.packageTargetDirectory / dataIdFile.name
 
   def dataIdDownloadLocation = downloadUrlPath.toString + getDataIdFile.getName
 
@@ -158,22 +159,6 @@ trait Properties extends Locations with Parameters {
     create(new File(pluginDirectory, "/feed"))
   }
 
-  /**
-    * below are functions for the package-export phase
-    */
-
-  def getPackageDirectory: File = packageSubdirectory.toJava
-
-  def packageSubdirectory = (packageDirectory.toScala / artifactId / version).createDirectories()
-
-  def getDatafileFinal(datafile: File): File = {
-    new File(datafile.getParent, datafile.getName.replace(artifactId, finalName))
-  }
-
-  def getDatafilePackageTarget(datafile: File): File = {
-    new File(getPackageDirectory, getDatafileFinal(datafile).getName)
-  }
-
   private def create(dir: File): File = {
     if(!dir.exists()) {
       dir.mkdirs()
@@ -191,7 +176,7 @@ trait Properties extends Locations with Parameters {
     *
     * @return
     */
-  def getListOfDataFiles(): List[File] = {
+  def getListOfInputFiles(): List[File] = {
 
     getLog.debug("")
 

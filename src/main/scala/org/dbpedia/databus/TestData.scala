@@ -47,16 +47,17 @@ class TestData extends AbstractMojo with Properties {
 
     val parseLogFileWriter = Files.newBufferedWriter(getDataIdFile().toPath, StandardCharsets.UTF_8)
 
-    getListOfDataFiles().foreach(datafile => {
+    getListOfInputFiles().foreach(datafile => {
 
       var parseLog = new StringBuilder
       var details = new StringBuilder
-      val df: Datafile = Datafile.init(datafile, getLog)
-      var model: Model = ModelFactory.createDefaultModel
-      val thisResource = model.createResource("#" + getDatafileFinal(datafile).getName)
+      val df: Datafile = Datafile(datafile)(getLog).ensureExists()
+      val model: Model = ModelFactory.createDefaultModel
+      val finalBasename = df.finalBasename(params.versionToInsert)
+      val thisResource = model.createResource("#" + finalBasename)
       val prefixParse ="http://dataid.dbpedia.org/ns/pl#"
 
-      parseLog.append(s"${getDatafileFinal(datafile).getName}\n${df.mimetype}\n")
+      parseLog.append(s"${finalBasename}\n${df.format}\n")
 
       //val config = new ParserConfig
       //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_DATATYPES, false)
@@ -68,10 +69,10 @@ class TestData extends AbstractMojo with Properties {
       var rdfParser: RDFParser = null
       //rdfParser.setParserConfig(config)
 
-      if (!(df.mimetype.rio eq null)) {
+      if (!(df.format.rio eq null)) {
 
-        if (df.mimetype.lineBased) {
-          rdfParser = Rio.createParser(df.mimetype.rio)
+        if (df.format.lineBased) {
+          rdfParser = Rio.createParser(df.format.rio)
 
           val (lines, all, good, bad) = df.getInputStream().apply { in =>
 
@@ -88,7 +89,7 @@ class TestData extends AbstractMojo with Properties {
             details.append(s"\n#Error details for $datafile\n#${bad.mkString("\n#")}\n")
           }
         } else {
-          rdfParser = Rio.createParser(df.mimetype.rio)
+          rdfParser = Rio.createParser(df.format.rio)
           val (success, errors) = df.getInputStream().apply { in =>
             RioOtherParser.parse(in, rdfParser)
           }

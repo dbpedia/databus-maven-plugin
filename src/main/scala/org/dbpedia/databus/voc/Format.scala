@@ -20,6 +20,8 @@
  */
 package org.dbpedia.databus.voc
 
+import org.apache.maven.plugin.logging.Log
+
 import java.io.File
 
 
@@ -31,27 +33,32 @@ class Format(val mimeType: String = "UNKNOWN", val lineBased: Boolean = false, v
 object Format {
 
   lazy val knownFormats = Map(
-    ".nt" -> ApplicationNTriples,
-    ".ttl" -> TextTurtle,
-    ".tql" -> ApplicationNQuad,
-    ".nq" -> ApplicationNQuad,
-    ".rdf" -> ApplicationRDFXML,
-    ".csv" -> TextCSV,
-    ".tsv" -> TextTabSeparatedValues,
-    ".trig" -> ApplicationTrig
+    "nt" -> ApplicationNTriples,
+    "ttl" -> TextTurtle,
+    "tql" -> ApplicationNQuad,
+    "nq" -> ApplicationNQuad,
+    "rdf" -> ApplicationRDFXML,
+    "csv" -> TextCSV,
+    "tsv" -> TextTabSeparatedValues,
+    "trig" -> ApplicationTrig
   )
 
+  def detectMimeTypeByFileExtension(extensions: Seq[String])(implicit log: Log): (String, Format) = {
 
-  def detectMimetypeByFileExtension(datafile: File): (String, Format) = {
+    val extensionMatch = extensions.reverse.toStream.map({ ext =>
 
-    val extensionMatch = knownFormats find { case (ext, _) => datafile.getName.contains(ext) }
+      knownFormats.get(ext) match {
 
-    extensionMatch match {
+        case None => {
+          log.warn(s"Unable to assign file extension '$ext' to a known format.")
+          None
+        }
 
-      case Some(matchedExtAndFormat) => matchedExtAndFormat
+        case Some(format) => Some((ext, format))
+      }
+    }).collectFirst { case Some(pair) => pair }
 
-      case None => ("", UNKNOWN)
-    }
+    extensionMatch.getOrElse(("", UNKNOWN))
   }
 }
 

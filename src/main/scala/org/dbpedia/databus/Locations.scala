@@ -29,6 +29,8 @@ trait Locations {
 
   class Locations(props: Properties) {
 
+    def packageTargetDirectory = (packageDirectory.toScala / artifactId / version).createDirectories()
+
     def pkcs12File = lib.findFileMaybeInParent(props.pkcs12File.toScala, "PKCS12 bundle")
   }
 

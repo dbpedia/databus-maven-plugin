@@ -45,30 +45,37 @@ class PackageExport extends AbstractMojo with Properties {
     }
 
     // for each module copy all files to target
-    getListOfDataFiles().foreach(datafile => {
+    getListOfInputFiles().foreach { inputFile =>
 
-      if(getDatafilePackageTarget(datafile).exists()) {
+      val df = Datafile(inputFile)(getLog)
 
-        val targetHash = signing.sha256Hash(getDatafilePackageTarget(datafile).toScala)
+      val packageTarget = locations.packageTargetDirectory / df.finalBasename(params.versionToInsert)
 
-        val sourceHash = signing.sha256Hash(datafile.toScala)
+      if(packageTarget.isRegularFile) {
+
+        val targetHash = signing.sha256Hash(packageTarget)
+
+        val sourceHash = signing.sha256Hash(inputFile.toScala)
 
         if(targetHash != sourceHash) {
-          Files.copy(datafile.getAbsoluteFile.toPath, getDatafilePackageTarget(datafile).toPath, REPLACE_EXISTING)
-          getLog.info("packaged: " + getDatafilePackageTarget(datafile).getName)
+
+          inputFile.toScala.copyTo(packageTarget, overwrite = true)
+          getLog.info("packaged: " + packageTarget.name)
         } else {
-          getLog.info("skipped (same file): " + getDatafilePackageTarget(datafile).getName)
+
+          getLog.info("skipped (same file): " + packageTarget.name)
         }
 
       } else {
-        Files.copy(datafile.getAbsoluteFile.toPath, getDatafilePackageTarget(datafile).toPath, REPLACE_EXISTING)
-        getLog.info("packaged: " + getDatafilePackageTarget(datafile).getName)
+
+        inputFile.toScala.copyTo(packageTarget, overwrite = true)
+        getLog.info("packaged: " + packageTarget.name)
       }
-    })
+    }
 
     //Parselogs
     if(includeParseLogs && getParseLogFile().exists()) {
-      val packageTarget = getPackageDirectory.toScala / getParseLogFile().getName
+      val packageTarget = locations.packageTargetDirectory / getParseLogFile().getName
       getParseLogFile().toScala.copyTo(packageTarget, true)
       getLog.info("packaged: " + packageTarget.name)
     }
@@ -77,7 +84,7 @@ class PackageExport extends AbstractMojo with Properties {
 
     dataIdPackageTarget.writeByteArray(baseResolvedDataId)
 
-    getLog.info("packaged:  " + dataIdPackageTarget.name)
+    getLog.info("packaged: " + dataIdPackageTarget.name)
 
     getLog.info(s"package written to ${packageDirectory}")
   }
