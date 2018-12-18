@@ -3,26 +3,13 @@
     <parent>
         <artifactId>global-id-management</artifactId>
         <groupId>org.dbpedia.databus.global-id-management</groupId>
-        <version>2018.09.01</version>
+        <version>2018.11.09</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>excluded-links</artifactId>
-    <groupId>org.dbpedia.databus.global-id-management</groupId>
+    <artifactId>sameas-clusters</artifactId>
     <packaging>jar</packaging>
-    <version>2018.09.01</version>
+    <version>2018.11.09</version>
 
-
-    <!--This is a module, it inherits all config properties form the parent pom.xml
-You can configure here:
-* the artifactId, please also change <module> in parent pom.xml
-* the labels for your dataset (Everything behind the @ is used as language tag):
-<labels>
-    <label>Name in English@en</label>
-    <label>Name in French@fr</label>
-    ...
-</labels>
-* the description
--->
 
     <build>
         <plugins>
@@ -31,12 +18,13 @@ You can configure here:
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
                     <labels>
-                        <label>Infobox Properties@en</label>
+                        <label>owl:sameAs Clusters@en</label>
                     </labels>
-                    <datasetDescription>Extracted Data from the Wikipedia Article-Infoboxes</datasetDescription>
+                    <datasetDescription>Tabular representation of the global ID assignments
+The assignments are encoded as TSV tuples of three columns: original (local) IRI, the singleton ID and the cluster ID.
+There the assigned integer IDs are represented in Base58. </datasetDescription>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>

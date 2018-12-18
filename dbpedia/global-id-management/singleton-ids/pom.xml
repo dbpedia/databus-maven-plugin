@@ -3,13 +3,12 @@
     <parent>
         <artifactId>global-id-management</artifactId>
         <groupId>org.dbpedia.databus.global-id-management</groupId>
-        <version>2018.09.01</version>
+        <version>2018.11.09</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>included-links</artifactId>
-    <groupId>org.dbpedia.databus.global-id-management</groupId>
+    <artifactId>singleton-ids</artifactId>
     <packaging>jar</packaging>
-    <version>2018.09.01</version>
+    <version>2018.11.09</version>
 
 
     <!--This is a module, it inherits all config properties form the parent pom.xml
@@ -31,12 +30,12 @@ You can configure here:
                 <artifactId>databus-maven-plugin</artifactId>
                 <configuration>
                     <labels>
-                        <label>Infobox Properties@en</label>
+                        <label>Singleton ID Assignments@en</label>
                     </labels>
-                    <datasetDescription>Extracted Data from the Wikipedia Article-Infoboxes</datasetDescription>
+                    <datasetDescription>Tabular representation of the singleton ID assignments
+The assignments are encoded as TSV tuples of two columns: original (local) IRI and the singleton ID.</datasetDescription>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>
