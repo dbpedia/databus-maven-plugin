@@ -5,7 +5,7 @@
     <groupId>org.dbpedia.databus</groupId>
     <artifactId>databus-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2</version>
 
     <name>DBpedia Databus Maven Plugin</name>
     <description>A Maven Plugin to test data, prepare meta-data (DataIDs) and publish the resulting DataIDs to the Databus repository.</description>
@@ -28,8 +28,6 @@
         <developer>
             <name>Markus Ackermann</name>
             <email>ackermann@fusionfactory.de</email>
-            <organization>DBpedia Association</organization>
-            <organizationUrl>https://dbpedia.org</organizationUrl>
         </developer>
         <developer>
             <name>Robert Bielinski</name>
@@ -201,16 +199,6 @@
     </dependencies>
 
     <repositories>
-        <!--<repository>
-            <id>archiva.internal</id>
-            <name>Internal Release Repository</name>
-            <url>http://databus.dbpedia.org:8081/repository/internal</url>
-        </repository>
-        <repository>
-            <id>archiva.snapshots</id>
-            <name>Internal Snapshot Repository</name>
-            <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
-        </repository>-->
         <repository>
             <id>sonatype-releases</id>
             <url>https://oss.sonatype.org/service/local/repositories/releases/content/</url>

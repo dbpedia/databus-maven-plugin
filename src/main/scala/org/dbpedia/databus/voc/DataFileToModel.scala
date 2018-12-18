@@ -42,7 +42,7 @@ object DataFileToModel {
 
   val prefixes = Map(
     "databus" -> "https://databus.dbpedia.org/",
-    "dataid" -> "http://dataid.dbpedia.org/ns/core#",
+    "dataid" -> global.dataid.namespace,
     "dataid-ld" -> "http://dataid.dbpedia.org/ns/ld#",
     "dataid-mt" -> "http://dataid.dbpedia.org/ns/mt#",
     "dataid-pl" -> "http://dataid.dbpedia.org/ns/pl#",
@@ -50,10 +50,10 @@ object DataFileToModel {
     "dct" -> global.dcterms.namespace,
     "dcat" -> global.dcat.namespace,
     "void" -> "http://rdfs.org/ns/void#",
-    "prov" -> "http://www.w3.org/ns/prov#",
+    "prov" -> global.prov.namespace,
     "xsd" -> XSD.NS,
     "owl" -> OWL.NS,
-    "foaf" -> "http://xmlns.com/foaf/0.1/",
+    "foaf" -> global.foaf.namespace,
     "rdf" -> RDF.uri,
     "rdfs" -> RDFS.uri,
     "datacite" -> "http://purl.org/spar/datacite/",
