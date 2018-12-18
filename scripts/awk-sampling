@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -eou pipefail
+
+bzfile=`basename $1`
+dirname=`dirname $1`
+destdir=$2
+ext=${3:-ttl}
+
+noext=${bzfile%%.${ext}.bz2}
+
+mkdir -p ${destdir}/${dirname}
+
+lbzcat ${dirname}/${bzfile} | awk 'BEGIN {srand()} !/^$/ { if (rand() <= .01) print $0}' | lbzip2 > ${destdir}/${dirname}/${noext}-sample-1-perc.${ext}.bz2
