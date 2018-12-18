@@ -141,7 +141,8 @@ class Datafile private(val file: File, previewLineCount: Int = 10, skipHashing: 
 
       case failure: Parsed.Failure =>
         sys.error(s"Unable to analyse filename '${basename}': Please refer to " +
-          s"http://dev.dbpedia.org/Databus%20Maven%20Plugin on conventions for input file naming:\n$failure")
+          s"http://dev.dbpedia.org/Databus%20Maven%20Plugin on conventions for input file naming:\n" +
+          failure.trace().longAggregateMsg)
     }
   }
 
