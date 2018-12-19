@@ -22,19 +22,12 @@ package org.dbpedia.databus
 
 import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
 
-import better.files._
-
 import scala.collection.JavaConverters._
-import scala.collection.immutable
 
-import java.time.Instant
-import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatter.ISO_DATE
-import java.time.temporal.TemporalAccessor
 
 
-trait Parameters {
-  this: Properties =>
+trait Parameters { this: Properties =>
 
   lazy val params = new Parameters(this)
 
@@ -48,4 +41,5 @@ trait Parameters {
 
     lazy val versionToInsert = if(insertVersion) Some(version) else None
   }
+
 }

@@ -234,7 +234,7 @@ object Datafile extends LazyLogging {
   // the negative lookahead ensures that we do not parse into the format extension(s) if there is no content variant
   protected def artifactNameP[_: P] =
     P((!extensionP ~ CharPred(_ != '_')).rep(1).!)
-      .opaque("<artifact prefix>")
+      .opaque("<filename prefix>")
 
   protected def contentVariantsP[_: P] =
     P(("_" ~ alphaNumericP.!).rep())
@@ -250,7 +250,7 @@ object Datafile extends LazyLogging {
       .opaque("<format variant extensions>")
 
   protected def compressionExtensionP[_: P] =
-    P("." ~ StringIn("bz2", "gz", "xz", "tar", "zip").!)
+    P("." ~ StringIn("bz2", "gz", "tar", "xz", "zip").!)
       .opaque("<compression variant extensions>")
 
   protected def compressionExtensionsP[_: P] = P(compressionExtensionP.rep())

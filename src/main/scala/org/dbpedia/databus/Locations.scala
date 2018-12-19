@@ -22,8 +22,7 @@ package org.dbpedia.databus
 
 import better.files._
 
-trait Locations {
-  this: Properties =>
+trait Locations { this: Properties =>
 
   lazy val locations = new Locations(this)
 
