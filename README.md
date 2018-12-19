@@ -1,6 +1,6 @@
 **Discuss** via Slack  #releases: <a href="https://dbpedia.slack.com/messages/CBLRV788K/details/" target="_blank">dbpedia.slack.org</a>
 
-# Databus Maven Plugin [![Build Status](https://travis-ci.org/dbpedia/databus-maven-plugin.svg?branch=master)](https://travis-ci.org/dbpedia/databus-maven-plugin)
+# Databus Maven Plugin [![Build Status](https://travis-ci.org/dbpedia/databus-maven-plugin.svg?branch=master)](https://travis-ci.org/dbpedia/databus-maven-plugin) [![Maven Central Version](https://img.shields.io/maven-central/v/org.dbpedia.databus/databus-maven-plugin.svg)](https://search.maven.org/search?q=g:org.dbpedia.databus%20AND%20a:databus-maven-plugin&core=gav)
 Aligning data and software lifecycle with Maven
 
 The plugin was developed to use the features of the Maven software build automation tool for data releases and metadata generation.
@@ -83,9 +83,15 @@ In this section, we will describe the basic terminology and how they relate to M
 * Bundle - a collection of datasets released together. Also a pragmatic definition. The framework here will not work well, if you combine datasets with different release cycles and metadata in the same bundle, e.g. some daily, some monthly or metadata variance different publishers or versioning systems.
 
 ## Relation to Maven
-Maven was established to automate software builds and release them (mostly Java). A major outcome of the ALIGNED project (http://aligned-project.eu/) was to establish which parts of data releases can be captured by Maven. Here is a practical summary:
+Maven was established to automate software builds and release them (mostly Java). A major outcome of the ALIGNED project 
+(http://aligned-project.eu/) was to establish which parts of data releases can be captured by Maven. Here is a 
+practical summary:
 
-Maven uses a Parent POM (Project Object Model) to define software project. The POM is saved in a file called `pom.xml`. Each project can have multiple `modules` where the code resides. These modules refer to the parent pom and inherit any values unless they are overwritten. While in software the programming language defines a complex structure which has to be followed, in data everything is fantasy ecxept for the concrete file as it provides a clearly defined thing. Hence the model imposed for the databus is simpler than for software:
+Maven uses a Parent POM (Project Object Model) to define software project. The POM is saved in a file called `pom.xml`. 
+Each project can have multiple `modules` where the code resides. These modules refer to the parent pom and inherit any 
+values unless they are overwritten. While in software the programming language defines a complex structure which has to 
+be followed, in data everything is fantasy ecxept for the concrete file as it provides a clearly defined thing. Hence 
+the model imposed for the databus is simpler than for software:
 * Bundle relates to the Parent POM and inherits its metadata to the modules/datasets
 * Datasets are modules and receive their metadata from the bundle/parent pom (and can extend or override it)
 * Distributions are the files of the dataset and are normally stored in `src/main/databus/${version}/` for each module
@@ -93,8 +99,13 @@ Maven uses a Parent POM (Project Object Model) to define software project. The P
 
 
 ## Versioning
-Changes in software can be tracked very well and manual versioning can be given. Data behaves two-fold: Schematic information, e.g. schema definitions, taxonomy and ontologies can be versioned like software. The data itself follows pareto-efficiency: The first 80% need 20% of effort, the last 20% need 80%. Fixing the last error in data is extremely expensive. Hence, we recommend using a time-based version, i.e. YEAR.MONTH.DAY in the format YYYY.MM.DD (alphabetical sortable). Another possibility is to align the version number to either:
-1. the software version used to create it (as a consequence the software version needs to be incremented for each data release)
+Changes in software can be tracked very well and manual versioning can be given. Data behaves two-fold: Schematic 
+information, e.g. schema definitions, taxonomy and ontologies can be versioned like software. The data itself follows 
+pareto-efficiency: The first 80% need 20% of effort, the last 20% need 80%. Fixing the last error in data is extremely 
+expensive. Hence, we recommend using a time-based version, i.e. YEAR.MONTH.DAY in the format YYYY.MM.DD (alphabetical 
+sortable). Another possibility is to align the version number to either:
+1. the software version used to create it (as a consequence the software version needs to be incremented for each data 
+   release)
 2. the ontology version if and only if the ontology is contained in the bundle and versioned like software
 
 ## Files & folders
@@ -110,16 +121,19 @@ ${bundle}/
 |   |   *-- ${artifactid1}_cvar1.csv.bz2 (distribution, content variance 1, formatvariance csv, compressionvariant bzip)
 |   |   *-- ${artifactid1}_cvar2.ttl (distribution, content variance 2, formatvariance ttl, compressionvariant none)
 |   |   *-- ${artifactid1}_cvar2.csv (distribution, content variance 2, formatvariance csv, compressionvariant none)
+|   |   *-- ${artifactid1}.csv (distribution, no content variant, formatvariance csv, compressionvariant none)
 ```
 An example is given in the example folder of this repo.
 
 ### (Important) File input path
 The file input path is `src/main/databus/${version}/` per default, relative to the module.
-This path can be configured in the parent pom.xml using the `<databus.dataInputDirectory>` parameter. Absolute paths are allowed. 
+This path can be configured in the parent pom.xml using the `<databus.dataInputDirectory>` parameter. 
+Absolute paths are allowed. 
 
 ### (Important) File copying
-During the maven build process, the code is normally duplicated 6-7 times. For each module, the code is first copied and compiled in the `target/classes` folder and then copied and compressed again in a .jar file. All this is then copied again. 
-The databus-maven-plugin behaves different: 
+During the maven build process, the code is normally duplicated 6-7 times. For each module, the code is first copied 
+and compiled in the `target/classes` folder and then copied and compressed again in a .jar file. All this is then 
+copied again. The databus-maven-plugin behaves different: 
 * the `target/databus` folder is used to assemble metadata (which is not large)
 * `mvn clean` deletes the target folder and will only delete the generated metadata
 * no input data is copied into the `target` folder, i.e. the process does not duplicate data due to storage reasons
@@ -131,9 +145,10 @@ The databus-maven-plugin behaves different:
 ## How to make a release 
 Once the project is configured properly [see Configuration](#configuration) releases are easy to generate and update. 
 The only technical requirement for usage is Maven3 `sudo apt-get install maven`
-We regularly deploy the plugin to our archiva at http://databus.dbpedia.org:8081/, later Maven Central.
-Maven will automatically install the plugin (Note that the archetype for configuration has to be installed manually at the moment )
-We assume that you have set up the private key, the WebId and the data resides in `src/main/databus/${version}/` and the pom.xml are configured properly.
+Maven will automatically install the plugin (Note that the archetype for configuration has to be installed manually at 
+the moment.)
+We assume that you have set the WebId, a corresponding PKCS12 bundle and the data in `src/main/databus/${version}/` and 
+that the pom.xml is configured properly.
 
 ```
 # deleting any previously generated metadata
@@ -155,10 +170,16 @@ mvn databus:package-export
 
 # submit/upload the generated metadata to the databus metadata repository
 mvn databus:deploy
+```
 
-# output folder or any parameter can be set on the fly 
+The target directory for packaging and almost any other configuration parameter can be set on the fly 
+
+```
 mvn databus:package-export -Ddatabus.packageDirectory="/var/www/mydata.org/datareleases"
 ```
+
+Exceptions are `databus.labels` and `databus.wasDerivedFrom`, as these options expect lists that cannot be
+expressed properly with a `-D`-switch.
 
 
 ### Github setup
@@ -188,12 +209,51 @@ mvn databus:validate databus:test-data databus:metadata databus:package-export
 # Configuration
 
 ## File setup and conventions
+### Naming Scheme for File to be Published
+
+To ensure that metadata for files to be published can be determined correctly, the names of
+these files have to fulfil a specific schema. This schema can be described by the following 
+[EBNF](https://www.w3.org/TR/REC-xml/#sec-notation):
+
+```
+inputFileName ::= fileNamePrefix contentVariant* formatExtension+? compressionExtension*
+
+fileNamePrefix ::= [^_]+? /* a non-empty string consisting of any chars except '_' */
+
+contentVariant ::= '_' [A-Za-z0-9]+
+
+formatExtension ::= '.' [A-Za-z] [A-Za-z0-9]*
+
+compressionExtension ::=  '.' ( 'bz2' | 'gz' | 'tar' | 'xz' | 'zip' )
+```
+
+**Hint:** `+?` in the grammar above denotes a reluctant one-or-more quantifier such that, for example, 
+  the production rule for the `artifactName` will not 'parse into' the `formatExtensions` when `contentVariants`
+  are absent.
+
+Here are some examples of valid filenames from the `animals` example:
+
+```
+mammals.nt - `nt` as format variant
+mammals_carnivore_cat.nt.patch - `carnivore` and `cat` as content variants, `nt` and `patch` as content variants
+mammals_monkey.nt.bz2 - `monkey` as content variant; `nt` as format variant; `bz2` as compression variant
+mammals-2018.08.17_cat.nt - `cat` as content variant; `nt` as format variant; `fileNamePrefix` contains a date
+```
+
+In contrast follows a short list of invalid (counter-)examples:
+
+```mammals.zip.nt, mammals_monkey.nt.001.bz2, mammals_2018.08.17_cat.nt```
+
+As mentioned above, filenames are not only required to conform to the  aforementioned schema, but the `fileNamePrefix`
+also has to start with the name of the artifact. (Files with names starting differently will be ignored.)
 
 ## Generate a release configuration with an archetype
  Note: For datasets with few artifacts, you can also copy the example and adjust it
 
-We provide a Maven Archetype for easy and automatic project setup. In short, Archetype is a Maven project templating toolkit: https://maven.apache.org/guides/introduction/introduction-to-archetypes.html 
-The template is created from an existing project, found in `archetype/existing-projects`. Variables are replaced upon instantiation. 
+We provide a Maven Archetype for easy and automatic project setup. In short, Archetype is a Maven project templating 
+toolkit: https://maven.apache.org/guides/introduction/introduction-to-archetypes.html 
+The template is created from an existing project, found in `archetype/existing-projects`. Variables are replaced 
+upon instantiation. 
 
 ### Install databus archetype 
 We provide two archetype templates:
@@ -252,10 +312,15 @@ rm */src/main/databus/$VERSION/*
 # Development 
 
 ## License
-License of the software is AGPL with intended copyleft. We expect that you spend your best effort to commit upstream to make this tool better or at least that your extensions are made available again. 
+License of the software is AGPL with intended copyleft. We expect that you spend your best effort to commit upstream to 
+make this tool better or at least that your extensions are made available again. 
 Any contribution will be merged under the copyright of the DBpedia Association. 
+
 ## Development rules
-* All paths are configured in Properties.scala, which is a trait for the Mojos (Maven Plugin classes), please handle all paths there
+* configuration values taken from Maven are configured in `Properties.scala`, use its 'sub-trait' `Locations.scala` to
+  derive filesystem locations from these and `Parameters.scala` to compute all other values derived from the original
+  Maven properties (refactoring into this separation is not yet complete, but please heed this guidelines for additional
+  configuration-derived fields nontheless)
 * Datafile.scala is a quasi decorator for files, use getInputStream to open any file
 * Use the issue tracker, do branches instead of forks (we can give access), we will merge with master
 * Document options in the archetype pom and here
