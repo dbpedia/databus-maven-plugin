@@ -2,12 +2,40 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.dbpedia.databus.archetype</groupId>
+  <groupId>org.dbpedia.databus</groupId>
   <artifactId>bundle-archetype</artifactId>
-  <version>1.0.0</version>
+  <version>1.1</version>
   <packaging>maven-archetype</packaging>
 
   <name>bundle-archetype</name>
+  <description>Archetype to use the Databus Maven Plugin to test data, prepare meta-data (DataIDs) and publish the resulting DataIDs to the Databus repository.</description>
+  <url>http://dev.dbpedia.org/Databus%20Maven%20Plugin</url>
+
+  <licenses>
+    <license>
+      <name>GNU Affero General Public License version 3.0</name>
+      <url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Sebastian Hellmann</name>
+      <email>hellmann@informatik.uni-leipzig.de</email>
+      <organization>DBpedia Association</organization>
+      <organizationUrl>https://dbpedia.org</organizationUrl>
+    </developer>
+    <developer>
+      <name>Markus Ackermann</name>
+      <email>ackermann@fusionfactory.de</email>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/dbpedia/databus-maven-plugin.git</connection>
+    <developerConnection>scm:git:git://github.com/dbpedia/databus-maven-plugin.git</developerConnection>
+    <url>https://github.com/dbpedia/databus-maven-plugin/tree/master</url>
+  </scm>
 
   <build>
     <extensions>
@@ -25,6 +53,42 @@
           <version>3.0.1</version>
         </plugin>
       </plugins>
+
     </pluginManagement>
   </build>
+
+  <profiles>
+    <profile>
+      <id>ossrh</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.8</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
