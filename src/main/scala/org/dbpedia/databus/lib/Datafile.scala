@@ -195,32 +195,39 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     var dupes = 0
     var sort: Boolean = true
     var previousLine = ""
-
-    getInputStream().apply { in =>
-      val it = Source.fromInputStream(in)(Codec.UTF8).getLines()
-      while (it.hasNext) {
-        val line = it.next().toString
-        // non empty lines
-        if (!line.trim.isEmpty) {
-          nonEmpty += 1
-        }
-
-        // sorted or duplicate
-        if (!previousLine.isEmpty) {
-          val cmp = line.trim.compareTo(previousLine)
-          if (cmp == 0) {
-            dupes += 1
-          } else if (cmp < 0) {
-            sort = false
+    try {
+      getInputStream().apply { in =>
+        val it = Source.fromInputStream(in)(Codec.UTF8).getLines()
+        while (it.hasNext) {
+          val line = it.next().toString
+          // non empty lines
+          if (!line.trim.isEmpty) {
+            nonEmpty += 1
           }
+
+          // sorted or duplicate
+          if (!previousLine.isEmpty) {
+            val cmp = line.trim.compareTo(previousLine)
+            if (cmp == 0) {
+              dupes += 1
+            } else if (cmp < 0) {
+              sort = false
+            }
+          }
+          previousLine = line.trim
         }
-        previousLine = line.trim
+      }
+
+      numberOfNonEmptyLines = nonEmpty
+      numberOfDuplicates = dupes
+      sorted = sort
+    } catch {
+      case mfe: MalformedInputException => {
+        numberOfNonEmptyLines = -1
+        numberOfDuplicates = 0
+        sorted = false
       }
     }
-
-    numberOfNonEmptyLines = nonEmpty
-    numberOfDuplicates = dupes
-    sorted = sort
 
 
     this
