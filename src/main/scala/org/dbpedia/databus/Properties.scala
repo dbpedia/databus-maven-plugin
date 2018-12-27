@@ -48,6 +48,9 @@ trait Properties extends Locations with Parameters {
     * Project vars given by Maven
     */
 
+  @Parameter(defaultValue = "${project.groupId}", readonly = true)
+  val groupId: String = null
+
   @Parameter(defaultValue = "${project.artifactId}", readonly = true)
   val artifactId: String = null
 
@@ -97,7 +100,6 @@ trait Properties extends Locations with Parameters {
   @Parameter(property = "databus.deployToTestRepo") val deployToTestRepo: Boolean = false
   @Parameter val feedFrom: String = null
 
-  @Parameter(property = "databus.skipHashing") val skipHashing: Boolean = false
   @Parameter(property = "databus.insertVersion") val insertVersion: Boolean = true
 
   /**

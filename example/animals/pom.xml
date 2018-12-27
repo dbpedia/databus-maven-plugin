@@ -108,7 +108,7 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
             <plugin>
                 <groupId>org.dbpedia.databus</groupId>
                 <artifactId>databus-maven-plugin</artifactId>
-                <version>1.1-SNAPSHOT</version>
+                <version>1.2</version>
                 <executions>
                     <execution>
                         <id>validate</id>

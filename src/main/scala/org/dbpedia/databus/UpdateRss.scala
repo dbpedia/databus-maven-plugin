@@ -37,6 +37,7 @@ import scala.collection.JavaConverters._
 /**
   * TODO use right links to dataid (catalog)
   */
+@deprecated(message = "RSS will be generated from the SPARQL API", since = "early days")
 @Mojo(name = "update-rss", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
 class UpdateRss extends AbstractMojo with Properties {
 

@@ -49,28 +49,35 @@ import java.util.Base64
   * a simple dao to collect all values for a file
   * private constructor, must be called with init to handle compression detection
   */
-class Datafile private(val file: File, previewLineCount: Int = 10, skipHashing: Boolean = false)(implicit log: Log) {
+class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log: Log) {
 
   lazy val (filePrefix: String, contentVariantExtensions: Seq[String], formatVariantExtensions: Seq[String],
-    compressionVariantExtensions) = filenameAnalysis
+  compressionVariantExtensions) = filenameAnalysis
 
   lazy val (format, formatExtension) = computeMimeType(formatVariantExtensions)
 
-  lazy val sha256sum: String = if(skipHashing) "" else
-    signing.sha256Hash(file.toScala).asBytes.map("%02x" format _).mkString
-
   lazy val bytes: Long = file.length()
 
-  // compression option
+  // compression options
   lazy val archiveVariant: Option[String] = Compression.detectArchive(file.toScala)
   lazy val compressionVariant: Option[String] = Compression.detectCompression(file.toScala)
 
   def compressionOrArchiveDesc =
     (Stream.empty ++ compressionVariant ++ archiveVariant).headOption.getOrElse("None")
 
+  // sum
+  lazy val sha256sum: String = signing.sha256Hash(file.toScala).asBytes.map("%02x" format _).mkString
+
+  // collected by updateSignature
   var signatureBytes: Array[Byte] = Array.empty
   var signatureBase64: String = ""
   var verified: Boolean = false
+
+  // some quality metrics
+  var numberOfNonEmptyLines = 0
+  var numberOfDuplicates = 0
+  var sorted: Boolean = false
+
 
   lazy val preview: String = computePreview
 
@@ -81,9 +88,9 @@ class Datafile private(val file: File, previewLineCount: Int = 10, skipHashing: 
     */
   def ensureExists(): Datafile = {
 
-    if(file.exists()) {
+    if (file.exists()) {
 
-      if(!file.toScala.isRegularFile) {
+      if (!file.toScala.isRegularFile) {
 
         throw new FileNotFoundException(s"${file.getAbsolutePath} is not a regular file")
       }
@@ -101,15 +108,15 @@ class Datafile private(val file: File, previewLineCount: Int = 10, skipHashing: 
     def prefix = versionToAdd.fold(filePrefix) { version => s"$filePrefix-$version" }
 
     // we have to check for empty extension seqs, otherwise we get misplaced inital '.'/'_'
-    def contentVariantsSuffix = if(contentVariantExtensions.nonEmpty) {
+    def contentVariantsSuffix = if (contentVariantExtensions.nonEmpty) {
       contentVariantExtensions.mkString("_", "_", "")
     } else ""
 
-    def formatVariantsSuffix = if(formatVariantExtensions.nonEmpty) {
+    def formatVariantsSuffix = if (formatVariantExtensions.nonEmpty) {
       formatVariantExtensions.mkString(".", ".", "")
     } else ""
 
-    def compressionVariantsSuffix = if(compressionVariantExtensions.nonEmpty) {
+    def compressionVariantsSuffix = if (compressionVariantExtensions.nonEmpty) {
       compressionVariantExtensions.mkString(".", ".", "")
     } else ""
 
@@ -121,12 +128,12 @@ class Datafile private(val file: File, previewLineCount: Int = 10, skipHashing: 
     val (ext, mimeTypeByFileName) = Format.detectMimeTypeByFileExtension(formatVariants)
 
     // downgrade turtle to ntriple, if linebased
-    val mimeType: Format = if(mimeTypeByFileName == TextTurtle) {
+    val mimeType: Format = if (mimeTypeByFileName == TextTurtle) {
 
       val baos: ByteArrayInputStream = new ByteArrayInputStream(preview.getBytes);
       val (_, _, _, wrongTriples) = LineBasedRioDebugParser.parse(baos, Rio.createParser(ApplicationNTriples.rio))
 
-      if(wrongTriples.isEmpty) ApplicationNTriples else mimeTypeByFileName
+      if (wrongTriples.isEmpty) ApplicationNTriples else mimeTypeByFileName
 
     } else mimeTypeByFileName
 
@@ -147,9 +154,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10, skipHashing: 
   }
 
   /**
-    *
-    * @param lineCount gives the linecount of the preview, however it is limited to 500 chars per line, in case there is a very long line
-    * @return
+    * @return gives the preview, however it is limited to 500 chars per line, in case there is a very long line
     */
   private def computePreview: String = {
 
@@ -181,6 +186,43 @@ class Datafile private(val file: File, previewLineCount: Int = 10, skipHashing: 
     signatureBase64 = new String(Base64.getEncoder.encode(signatureBytes))
 
     verified = signing.verifyFile(keyPair.publicKey, signatureBytes, file.toScala)
+    this
+  }
+
+  def updateFileMetrics(): Datafile = {
+
+    var nonEmpty = 0
+    var dupes = 0
+    var sort: Boolean = true
+    var previousLine = ""
+
+    getInputStream().apply { in =>
+      val it = Source.fromInputStream(in)(Codec.UTF8).getLines()
+      while (it.hasNext) {
+        val line = it.next().toString
+        // non empty lines
+        if (!line.trim.isEmpty) {
+          nonEmpty += 1
+        }
+
+        // sorted or duplicate
+        if (!previousLine.isEmpty) {
+          val cmp = line.trim.compareTo(previousLine)
+          if (cmp == 0) {
+            dupes += 1
+          } else if (cmp < 0) {
+            sort = false
+          }
+        }
+        previousLine = line.trim
+      }
+    }
+
+    numberOfNonEmptyLines = nonEmpty
+    numberOfDuplicates = dupes
+    sorted = sort
+
+
     this
   }
 
@@ -220,14 +262,18 @@ class Datafile private(val file: File, previewLineCount: Int = 10, skipHashing: 
        |signatureBytes=${signatureBytes.map("%02X" format _).mkString}
        |signatureBase64=$signatureBase64
        |verified=$verified)
+       |numberOfNonEmptyLines=$numberOfNonEmptyLines)
+       |numberOfDuplicates=$numberOfDuplicates)
+       |sorted=$sorted)
      """.stripMargin
 }
 
 object Datafile extends LazyLogging {
 
-  def apply(file: File, previewLineCount: Int = 10, skipHashing: Boolean = false)(implicit log: Log): Datafile = {
-    new Datafile(file, previewLineCount, skipHashing)(log)
+  def apply(file: File, previewLineCount: Int = 10)(implicit log: Log): Datafile = {
+    new Datafile(file, previewLineCount)(log)
   }
+
 
   protected def alphaNumericP[_: P] = CharIn("A-Za-z0-9").rep(1)
 
@@ -240,7 +286,7 @@ object Datafile extends LazyLogging {
     P(("_" ~ alphaNumericP.!).rep())
       .opaque("<content variants>")
 
-  protected def extensionP[_ : P] = "." ~  (CharIn("A-Za-z") ~ CharIn("A-Za-z0-9").rep()).!
+  protected def extensionP[_: P] = "." ~ (CharIn("A-Za-z") ~ CharIn("A-Za-z0-9").rep()).!
 
   // using a negative lookahead here to ensure that no compression extension is parsed as format extension
   protected def formatExtensionP[_: P] = P(!compressionExtensionP ~ extensionP)

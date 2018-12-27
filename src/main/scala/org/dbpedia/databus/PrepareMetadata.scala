@@ -38,7 +38,6 @@ import scala.language.reflectiveCalls
 
 import java.io._
 
-
 /**
   * Analyse release data files
   *
@@ -69,24 +68,24 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
 
     getLog.info(s"looking for data files in: ${dataInputDirectory.getCanonicalPath}")
+    getLog.info(s"Found ${getListOfInputFiles().size} files:\n${getListOfInputFiles().mkString(", ")}")
+    //collecting metadata for each file
     getListOfInputFiles().foreach(datafile => {
       processFile(datafile, dataIdCollect)
     })
 
-    // write the model to target
+    //retrieving all User Accounts
+    var accountOption = {
+      implicit val userAccounts: Model = PrepareMetadata.registeredAccounts
+      Option(publisher.toString.asIRI.getProperty(foaf.account)).map(_.getObject.asResource)
+    }
+
+    // write the model to /target/
     if(!dataIdCollect.isEmpty) {
-
-      // add dataset metadata
-      // retrieve User Account Name
-      var accountOption = {
-        implicit val userAccounts: Model = PrepareMetadata.registeredAccounts
-
-        Option(publisher.toString.asIRI.getProperty(foaf.account)).map(_.getObject.asResource)
-      }
-
       {
         implicit val editContext = dataIdCollect
 
+        // add dataset metadata
         val datasetResource = dataIdCollect.createResource(s"#${finalName}")
         addBasicPropertiesToResource(dataIdCollect, datasetResource)
 
@@ -94,6 +93,11 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
         datasetResource.addProperty(dataid.prop.todonote, "we are still refactoring code for dataid creation, much " +
           "more information will be available at this resource later")
 
+
+
+        /**
+          * match WebId to Account Name
+          */
         accountOption match {
 
           case Some(account) => {
@@ -109,6 +113,9 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
           }
         }
 
+        /**
+          * adding wasDerivedFrom other datasets
+          */
         params.wasDerivedFrom.foreach { case ScalaBaseEntity(artifact, version) =>
 
           val baseEntityBlankNode = editContext.createResource().tap { baseEntityRes =>
@@ -121,6 +128,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
         }
       }
 
+      //writing the metadatafile
       getDataIdFile().toScala.outputStream.foreach { os =>
 
         dataIdCollect.write(os, "turtle")
@@ -130,14 +138,10 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
   def processFile(datafile: File, dataIdCollect: Model): Unit = {
 
-    getLog.info(s"found file ${datafile.getCanonicalPath}")
-
-    val df: Datafile = Datafile(datafile, skipHashing = skipHashing)(getLog).ensureExists()
-
-
-    if(!skipHashing) {
-      df.updateSignature(singleKeyPairFromPKCS12)
-    }
+    getLog.debug(s"found file ${datafile.getCanonicalPath}")
+    val df: Datafile = Datafile(datafile)(getLog).ensureExists()
+    df.updateSignature(singleKeyPairFromPKCS12)
+    df.updateFileMetrics()
 
     val model = modelForDatafile(df)
     getLog.debug(df.toString)
