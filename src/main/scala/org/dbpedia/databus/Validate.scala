@@ -44,7 +44,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
   /**
     *  TODO potential caveat: check if, else based on pom could fail
 
-    * @throws MojoExecutionException
+    *
     */
   @throws[MojoExecutionException]
   override def execute(): Unit = {
