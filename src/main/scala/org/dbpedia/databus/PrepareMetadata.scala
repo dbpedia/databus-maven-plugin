@@ -102,8 +102,8 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
           case Some(account) => {
 
-            datasetResource.addProperty(dataid.bundle, s"${account.getURI}/${bundle}".asIRI)
-            datasetResource.addProperty(dataid.artifact, s"${account.getURI}/${bundle}/${artifactId}".asIRI)
+            datasetResource.addProperty(dataid.bundle, s"${account.getURI}/${groupId}".asIRI)
+            datasetResource.addProperty(dataid.artifact, s"${account.getURI}/${groupId}/${artifactId}".asIRI)
           }
 
           case None => {

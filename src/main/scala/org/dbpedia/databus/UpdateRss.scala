@@ -38,16 +38,18 @@ import scala.collection.JavaConverters._
   * TODO use right links to dataid (catalog)
   */
 @deprecated(message = "RSS will be generated from the SPARQL API", since = "early days")
-@Mojo(name = "update-rss", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
 class UpdateRss extends AbstractMojo with Properties {
 
   // rometools offers different options:
   // "rss_0.9", "rss_0.91", "rss_0.92", "rss_0.93", "rss_0.94", "rss_1.0", "rss_2.0", "atom_0.3"
   val feedType = "rss_1.0"
 
+  def getFeedDirectory() :File = {null}
+  def getFeedFile() :File = {null}
   @throws[MojoExecutionException]
   override def execute(): Unit = {
 
+    val feedFrom =""
     //skip the parent module for now
     if (isParent()) {
       getLog.info("skipping parent module")
