@@ -73,10 +73,10 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>deploy-dataid</id>
+                        <id>deploy</id>
                         <phase>deploy</phase>
                         <goals>
-                            <goal>deploy-dataid</goal>
+                            <goal>deploy</goal>
                         </goals>
                     </execution>
              </plugin>

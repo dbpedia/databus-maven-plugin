@@ -104,7 +104,7 @@ trait Properties extends Locations with Parameters {
   @Parameter(property = "databus.deployToTestRepo", defaultValue = "false")
   val deployToTestRepo: Boolean = false
 
-  @Parameter val allowOverwriteOnDeploy: Boolean = true
+  @Parameter(property = "databus.allowOverwriteOnDeploy") val allowOverwriteOnDeploy: Boolean = true
   @Parameter(property = "databus.insertVersion") val insertVersion: Boolean = true
 
 
