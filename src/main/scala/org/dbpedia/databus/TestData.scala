@@ -32,7 +32,7 @@ import org.eclipse.rdf4j.rio.{RDFParser, Rio}
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
-@Mojo(name = "test-data", defaultPhase = LifecyclePhase.TEST)
+@Mojo(name = "test-data", defaultPhase = LifecyclePhase.TEST, requiresDirectInvocation = true)
 class TestData extends AbstractMojo with Properties {
 
 
