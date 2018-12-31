@@ -27,7 +27,6 @@ import org.dbpedia.databus.shared.helpers.conversions._
 import org.dbpedia.databus.shared.rdf.conversions._
 import org.dbpedia.databus.shared.rdf.vocab._
 import org.dbpedia.databus.voc.DataFileToModel
-
 import better.files.{File => _, _}
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.jena.riot.RDFLanguages.TURTLE
@@ -35,8 +34,11 @@ import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 
 import scala.language.reflectiveCalls
-
 import java.io._
+import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
+
+import org.apache.jena.datatypes.xsd.XSDDatatype.XSDdate
+import org.apache.jena.vocabulary.{RDF, RDFS}
 
 /**
   * Analyse release data files
@@ -85,14 +87,37 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
       {
         implicit val editContext = dataIdCollect
 
+        // add DataId
+        /**
+          * <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl>
+        ? dataid:underAuthorization  <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=maintainerAuthorization> , <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=creatorAuthorization> , <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=contactAuthorization> ;
+        dc:modified                "2017-07-06"^^xsd:date ;
+        foaf:primaryTopic          <http://dbpedia.org/dataset/main_dataset?lang=en&dbpv=2016-10> .
+          */
+
+        val dataIdResource = dataIdCollect.createResource("")
+        dataIdResource.addProperty(dcterms.title, s"DataID metadata for ${groupId}/${artifactId}", "en")
+        dataIdResource.addProperty(RDFS.`label`, s"DataID metadata for ${groupId}/${artifactId}", "en")
+        dataIdResource.addProperty(dcterms.hasVersion, "1.3.0")
+        dataIdResource.addProperty(RDF.`type`, dataid.DataId)
+        dataIdResource.addProperty(RDFS.`comment`,
+          s"""Metadata created by the DBpedia Databus Maven Plugin: https://github.com/dbpedia/databus-maven-plugin
+            |Version 1.3.0 (the first stable release, containing all essential properties)
+            |The DataID ontology is a metadata omnibus, which can be extended to be interoperable with all metadata formats
+            |Note that the metadata (the dataid.ttl file) is always CC-0, the files are licensed individually
+            |Created by ${publisher}
+          """.stripMargin)
+        def issuedTime = params.issuedDate.getOrElse(invocationTime)
+        dataIdResource.addProperty(dcterms.issued, ISO_LOCAL_DATE.format(issuedTime).asTypedLiteral(XSDdate))
+        dataIdResource.addProperty(dcterms.license, "http://purl.oclc.org/NET/rdflicense/cc-zero1.0".asIRI)
+        dataIdResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
+        dataIdResource.addProperty(dataid.associatedAgent, publisher.toString.asIRI)
+        dataIdResource.addProperty(dcterms.publisher, publisher.toString.asIRI)
+
         // add dataset metadata
         val datasetResource = dataIdCollect.createResource(s"#${finalName}")
+        datasetResource.addProperty(RDF.`type`, dataid.Dataset)
         addBasicPropertiesToResource(dataIdCollect, datasetResource)
-
-        //adding todonote
-        datasetResource.addProperty(dataid.prop.todonote, "we are still refactoring code for dataid creation, much " +
-          "more information will be available at this resource later")
-
 
 
         /**
@@ -102,14 +127,14 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
           case Some(account) => {
 
-            datasetResource.addProperty(dataid.bundle, s"${account.getURI}/${groupId}".asIRI)
+            datasetResource.addProperty(dataid.groupId, s"${account.getURI}/${groupId}".asIRI)
             datasetResource.addProperty(dataid.artifact, s"${account.getURI}/${groupId}/${artifactId}".asIRI)
           }
 
           case None => {
 
-            datasetResource.addProperty(dataid.bundle, "http://dataid.dbpedia.org/ns/core#ACCOUNTNEEDED".asIRI)
-            datasetResource.addProperty(dataid.artifact, "http://dataid.dbpedia.org/ns/core#ACCOUNTNEEDED".asIRI)
+            datasetResource.addProperty(dataid.groupId, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
+            datasetResource.addProperty(dataid.artifact, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
           }
         }
 

@@ -80,39 +80,47 @@ trait DataFileToModel extends Properties with Parameters {
     val singleFileResource = ("#" + datafile.finalBasename(params.versionToInsert)).asIRI
 
     /**
-      * linking to other constructs
+      * linking to dataset
       */
     val datasetResource = s"#${finalName}".asIRI
     singleFileResource.addProperty(dataid.isDistributionOf, datasetResource)
     datasetResource.addProperty(dcat.distribution, singleFileResource)
 
-    //type properties
+    /**
+      *  type properties
+      */
     singleFileResource.addProperty(RDF.`type`, dataid.SingleFile)
-    datasetResource.addProperty(RDF.`type`, dataid.Dataset)
 
+    /**
+      * basic properties
+      */
     addBasicPropertiesToResource(model, singleFileResource)
 
-    // specific info about the file
+    /**
+      * specific info about the file
+       */
+
     def modificationTime = params.modifiedDate.getOrElse(
       LocalDateTime.ofInstant(datafile.file.toScala.lastModifiedTime, ZoneId.systemDefault()))
-
     singleFileResource.addProperty(dcterms.modified, ISO_LOCAL_DATE.format(modificationTime).asTypedLiteral(XSDdate))
+
     singleFileResource.addProperty(dataid.sha256sum, datafile.sha256sum.asPlainLiteral)
     singleFileResource.addProperty(dataid.signature, datafile.signatureBase64.asPlainLiteral)
     singleFileResource.addProperty(dataid.preview, datafile.preview)
-    // todo add uncompressedByteSize if possible
-    //thisResource.addProperty(dataid.uncompressedByteSize, datafile.bytes.toString.asTypedLiteral(XSDdecimal))
+    singleFileResource.addProperty(dataid.uncompressedByteSize, datafile.uncompressedByteSize.toString.asTypedLiteral(XSDdecimal))
     singleFileResource.addProperty(dcat.byteSize, datafile.bytes.toString.asTypedLiteral(XSDdecimal))
-    // todo review creation of this statement: the used property is not declared in dcat; looks like a slip of mind
-    // sh: it is a dataid property. However, dataid modeled it as a property of the mimetype, which is the wrong place
-    // files have one format extension and maybe one compressionextension and mimetypes have a list of likely extensions
-    //todo handle correctly, if not default
-
     singleFileResource.addProperty(dcat.downloadURL, datafile.finalBasename(params.versionToInsert).asIRI)
 
-    // mediatype
-    def mediaTypeName = datafile.format.getClass.getSimpleName.stripSuffix("$")
+    singleFileResource.addProperty(dataid.duplicates, datafile.duplicates.toString.asTypedLiteral(XSDdecimal))
+    singleFileResource.addProperty(dataid.sorted, datafile.sorted.toString.asTypedLiteral(XSDboolean))
+    singleFileResource.addProperty(dataid.nonEmptyLines, datafile.nonEmptyLines.toString.asTypedLiteral(XSDdecimal))
 
+    /**
+      * mediatype
+      * sh: it is a dataid property. However, dataid modeled it as a property of the mimetype, which is the wrong place
+      * files have one format extension and maybe one compressionextension and mimetypes have a list of likely extensions
+      */
+    def mediaTypeName = datafile.format.getClass.getSimpleName.stripSuffix("$")
     val mediaTypeRes = (model.getNsPrefixURI("dataid-mt") + mediaTypeName).asIRI
     mediaTypeRes.addProperty(RDF.`type`, s"${model.getNsPrefixURI("dataid-mt")}MediaType".asIRI)
     singleFileResource.addProperty(dcat.mediaType, mediaTypeRes)
@@ -120,8 +128,10 @@ trait DataFileToModel extends Properties with Parameters {
     singleFileResource.addProperty(dataid.prop.formatExtension, datafile.formatExtension.asPlainLiteral)
     singleFileResource.addProperty(dataid.compression, datafile.compressionOrArchiveDesc)
 
+    /**
+      * content variant
+      */
     datafile.contentVariantExtensions.foreach { contentVariant =>
-
       singleFileResource.addProperty(dataid.prop.contentVariant, contentVariant)
     }
 
@@ -151,7 +161,11 @@ trait DataFileToModel extends Properties with Parameters {
 
     thisResource.addProperty(dcterms.issued, ISO_LOCAL_DATE.format(issuedTime).asTypedLiteral(XSDdate))
     thisResource.addProperty(dcterms.license, license.asIRI)
-    thisResource.addProperty(dataid.associatedAgent, maintainer.toString.asIRI)
+    thisResource.addProperty(dataid.associatedAgent, publisher.toString.asIRI)
     thisResource.addProperty(dcterms.publisher, publisher.toString.asIRI)
+
+    if (maintainer !=null){
+      thisResource.addProperty(dataid.maintainer, maintainer.toString.asIRI)
+    }
   }
 }

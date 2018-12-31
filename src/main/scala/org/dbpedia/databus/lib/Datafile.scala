@@ -74,9 +74,10 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
   var verified: Boolean = false
 
   // some quality metrics
-  var numberOfNonEmptyLines = 0
-  var numberOfDuplicates = 0
+  var nonEmptyLines = 0
+  var duplicates = 0
   var sorted: Boolean = false
+  var uncompressedByteSize  = 0
 
 
   lazy val preview: String = computePreview
@@ -194,12 +195,16 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     var nonEmpty = 0
     var dupes = 0
     var sort: Boolean = true
+    var uncompressedSize = 0
+
     var previousLine = ""
     try {
       getInputStream().apply { in =>
         val it = Source.fromInputStream(in)(Codec.UTF8).getLines()
         while (it.hasNext) {
           val line = it.next().toString
+          uncompressedSize += line.size+1
+
           // non empty lines
           if (!line.trim.isEmpty) {
             nonEmpty += 1
@@ -218,14 +223,17 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
         }
       }
 
-      numberOfNonEmptyLines = nonEmpty
-      numberOfDuplicates = dupes
+      nonEmptyLines = nonEmpty
+      duplicates = dupes
       sorted = sort
+      uncompressedByteSize = uncompressedSize
     } catch {
       case mfe: MalformedInputException => {
-        numberOfNonEmptyLines = -1
-        numberOfDuplicates = 0
+        nonEmptyLines = -1
+        duplicates = 0
         sorted = false
+        uncompressedByteSize = uncompressedSize
+
       }
     }
 
@@ -269,8 +277,8 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
        |signatureBytes=${signatureBytes.map("%02X" format _).mkString}
        |signatureBase64=$signatureBase64
        |verified=$verified)
-       |numberOfNonEmptyLines=$numberOfNonEmptyLines)
-       |numberOfDuplicates=$numberOfDuplicates)
+       |nonEmptyLines=$nonEmptyLines)
+       |duplicates=$duplicates)
        |sorted=$sorted)
      """.stripMargin
 }

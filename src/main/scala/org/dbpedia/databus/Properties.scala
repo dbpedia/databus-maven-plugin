@@ -169,7 +169,6 @@ trait Properties extends Locations with Parameters {
   val publisher: URL = null
 
   /**
-    * todo seems to be broken
     * The maintainer of the data release, normally the person to contact, often the same as publisher
     */
   @Parameter(property = "databus.maintainer")

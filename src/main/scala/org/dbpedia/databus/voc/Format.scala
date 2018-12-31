@@ -40,7 +40,9 @@ object Format {
     "rdf" -> ApplicationRDFXML,
     "csv" -> TextCSV,
     "tsv" -> TextTabSeparatedValues,
-    "trig" -> ApplicationTrig
+    "tab" -> TextTabSeparatedValues,
+    "trig" -> ApplicationTrig,
+    "bin" -> ApplicationOctetStream
   )
 
   def detectMimeTypeByFileExtension(extensions: Seq[String])(implicit log: Log): (String, Format) = {
@@ -78,5 +80,7 @@ object TextTurtle extends Format("text/turtle", false, org.eclipse.rdf4j.rio.RDF
 object ApplicationRDFXML extends Format("application/rdf+xml", false, org.eclipse.rdf4j.rio.RDFFormat.RDFXML, org.apache.jena.riot.RDFFormat.RDFXML) {}
 
 object ApplicationTrig extends Format("application/trig", false, null, null)
+
+object ApplicationOctetStream extends Format("application/octet-stream", false, null, null)
 
 object UNKNOWN extends Format("UNKNOWN", false, null, null) {}
