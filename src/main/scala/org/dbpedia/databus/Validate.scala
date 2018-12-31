@@ -73,13 +73,13 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
     val modulusExponentFromPKCS12 =
       RSAModulusAndExponent(keyPair.privateKey.getModulus, keyPair.publicKey.getPublicExponent)
 
-
     /**
       * Read the webid
       */
+
     val webIdModel = ModelFactory.createDefaultModel
     webIdModel.read(publisher.toString)
-    getLog.debug("Read " + webIdModel.size() + " triples from " + publisher)
+    getLog.debug("Read publisher webid: " + webIdModel.size() + " triples from " + publisher)
 
     val matchingKeyInWebId = modulusExponentFromPKCS12.matchAgainstWebId(webIdModel, publisher.toString, Some(getLog))
 
@@ -87,6 +87,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
       getLog.info("SUCCESS: Private Key validated against WebID")
     } else {
       getLog.error("FAILURE: Private Key and WebID do not match")
+      System.exit(-1)
     }
   }
 

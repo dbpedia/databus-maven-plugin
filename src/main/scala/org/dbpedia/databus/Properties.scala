@@ -145,6 +145,7 @@ trait Properties extends Locations with Parameters {
 
   /**
     * TODO the absolute path here is different for parent and modules the function
+    * TODO works with .pfx file
     * read privatekeyfiles in hash and signs searches in the parent folder using ../
     * works for now, but could fail
     *  pkcs12File
