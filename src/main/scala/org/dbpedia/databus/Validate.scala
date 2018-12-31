@@ -66,7 +66,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
     */
   def validateWebId(): Unit = {
 
-    getLog.debug("PKCS12 bundle: " + locations.pkcs12File.pathAsString)
+    getLog.debug("PKCS12 bundle location: " + locations.pkcs12File.pathAsString)
 
     def keyPair = singleKeyPairFromPKCS12
 
@@ -78,10 +78,10 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
       * Read the webid
       */
     val webIdModel = ModelFactory.createDefaultModel
-    webIdModel.read(maintainer.toString)
-    getLog.debug("Read " + webIdModel.size() + " triples from " + maintainer)
+    webIdModel.read(publisher.toString)
+    getLog.debug("Read " + webIdModel.size() + " triples from " + publisher)
 
-    val matchingKeyInWebId = modulusExponentFromPKCS12.matchAgainstWebId(webIdModel, maintainer.toString, Some(getLog))
+    val matchingKeyInWebId = modulusExponentFromPKCS12.matchAgainstWebId(webIdModel, publisher.toString, Some(getLog))
 
     if(matchingKeyInWebId.isDefined) {
       getLog.info("SUCCESS: Private Key validated against WebID")
