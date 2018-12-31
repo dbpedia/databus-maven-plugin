@@ -50,6 +50,35 @@
                 <groupId>org.dbpedia.databus</groupId>
                 <artifactId>databus-maven-plugin</artifactId>
                 <version>1.2-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>metadata</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>metadata</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>package-export</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package-export</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>deploy-dataid</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy-dataid</goal>
+                        </goals>
+                    </execution>
              </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

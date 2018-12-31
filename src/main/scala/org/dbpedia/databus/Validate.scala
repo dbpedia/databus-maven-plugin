@@ -37,7 +37,7 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
   * - get the private key from the config, generate a public key and compare to the public key
   *
   */
-@Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE)
+@Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE, requiresOnline = true)
 class Validate extends AbstractMojo with Properties with SigningHelpers with LazyLogging {
 
 

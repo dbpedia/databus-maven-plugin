@@ -55,7 +55,7 @@ import org.apache.jena.vocabulary.{RDF, RDFS}
   * * triple size
   *
   */
-@Mojo(name = "metadata", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
+@Mojo(name = "metadata", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresOnline = true)
 class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers with DataFileToModel {
 
   @throws[MojoExecutionException]
@@ -135,6 +135,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
             datasetResource.addProperty(dataid.groupId, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
             datasetResource.addProperty(dataid.artifact, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
+            getLog.warn("Not registered, Dataset URIs will not work, please register at https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED")
           }
         }
 
