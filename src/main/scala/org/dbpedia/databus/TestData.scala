@@ -45,7 +45,7 @@ class TestData extends AbstractMojo with Properties {
       return
     }
 
-    val parseLogFileWriter = Files.newBufferedWriter(getDataIdFile().toPath, StandardCharsets.UTF_8)
+    val parseLogFileWriter = Files.newBufferedWriter(getParseLogFile().toPath, StandardCharsets.UTF_8)
 
     getListOfInputFiles().foreach(datafile => {
 
