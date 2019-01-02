@@ -72,12 +72,12 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     getLog.info(s"looking for data files in: ${dataInputDirectory.getCanonicalPath}")
     getLog.info(s"Found ${getListOfInputFiles().size} files:\n${ getListOfInputFiles().mkString(", ").replaceAll(dataInputDirectory.getCanonicalPath,"")}")
     //collecting metadata for each file
+    getLog.info("Analysing file information and generating metadata and signatures")
     getListOfInputFiles().foreach(datafile => {
-      getLog.info("Analysing file information and generating metadata and signatures")
       processFile(datafile, dataIdCollect)
-      getLog.info("Metadata collected")
 
     })
+    getLog.info("Metadata collected")
 
     //retrieving all User Accounts
     var accountOption = {
