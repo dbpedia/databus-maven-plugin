@@ -42,8 +42,8 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
 
 
   /**
-    *  TODO potential caveat: check if, else based on pom could fail
-
+    * TODO potential caveat: check if, else based on pom could fail
+    *
     *
     */
   @throws[MojoExecutionException]
@@ -57,7 +57,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
     if (isParent()) {
       validateWebId()
 
-    // all submodules
+      // all submodules
     }
   }
 
@@ -67,6 +67,11 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
   def validateWebId(): Unit = {
 
     getLog.debug("PKCS12 bundle location: " + locations.pkcs12File.pathAsString)
+
+
+    if (!pkcs12password.isEmpty) {
+      SigningHelpers.pkcs12PasswordMemo.update(locations.pkcs12File.toJava.getCanonicalPath, pkcs12password)
+    }
 
     def keyPair = singleKeyPairFromPKCS12
 
@@ -83,7 +88,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
 
     val matchingKeyInWebId = modulusExponentFromPKCS12.matchAgainstWebId(webIdModel, publisher.toString, Some(getLog))
 
-    if(matchingKeyInWebId.isDefined) {
+    if (matchingKeyInWebId.isDefined) {
       getLog.info("SUCCESS: Private Key validated against WebID")
     } else {
       getLog.error("FAILURE: Private Key and WebID do not match")

@@ -108,13 +108,12 @@ trait Properties extends Locations with Parameters {
   @Parameter(property = "databus.insertVersion") val insertVersion: Boolean = true
 
 
-
   /**
     * properties that need to be configured by the user
     *
     */
 
-    /**
+  /**
     * input folder for data
     * copy/move all your datafiles in the respective modules
     * all files have to start with the animals of the module, i.e. src/main/databus/input/$artifactId_en.nt.bz2
@@ -132,7 +131,7 @@ trait Properties extends Locations with Parameters {
     * <databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
     * We recommend to do the same, as you can add more bundles and datasets later.
     */
-  @Parameter(property = "databus.downloadUrlPath",  required = true)
+  @Parameter(property = "databus.downloadUrlPath", required = true)
   val downloadUrlPath: URL = null
 
   /**
@@ -148,17 +147,20 @@ trait Properties extends Locations with Parameters {
     * TODO works with .pfx file
     * read privatekeyfiles in hash and signs searches in the parent folder using ../
     * works for now, but could fail
-    *  pkcs12File
-    *  The PKCS12 bundle providing the cryptographic identity information associated to the WebID of the agent operating the databus plugin. This bundle should combine the X509 certificate and the private RSA key for the corresponding WebID.
-    *  We recommend putting the file in ~/.m2 next to the settings.xml (Maven user dir):
-    *  <databus.pkcs12File>${user.home}/.m2/webid_bundle.p12</databus.pkcs12File>
-    *  SECURITY NOTICE:
+    * pkcs12File
+    * The PKCS12 bundle providing the cryptographic identity information associated to the WebID of the agent operating the databus plugin. This bundle should combine the X509 certificate and the private RSA key for the corresponding WebID.
+    * We recommend putting the file in ~/.m2 next to the settings.xml (Maven user dir):
+    * <databus.pkcs12File>${user.home}/.m2/webid_bundle.p12</databus.pkcs12File>
+    * SECURITY NOTICE:
     * Protect your private key file, do not loose it, do not send it over (unencrypted) network
     * Limit access to this file to your own user: chmod 700 $HOME/.m2/webid_bundle.p12
     * <!--<databus.pkcs12File>${user.home}/.m2/webid_bundle.p12</databus.pkcs12File>-->
     */
-  @Parameter(property = "databus.pkcs12File",  required = true)
+  @Parameter(property = "databus.pkcs12File", required = true)
   val pkcs12File: File = null
+
+  @Parameter(property = "databus.pkcs12password", required = false)
+  val pkcs12password = ""
 
   /**
     * refers to the WebID that does the publication on the web and on the databus
@@ -166,7 +168,7 @@ trait Properties extends Locations with Parameters {
     * Please read on https://github.com/dbpedia/webid how to create such file
     * We include a dev-dummy webid file here, please don't use it for publishing, use your own
     */
-  @Parameter(property = "databus.publisher",  required = true)
+  @Parameter(property = "databus.publisher", required = true)
   val publisher: URL = null
 
   /**
@@ -178,11 +180,11 @@ trait Properties extends Locations with Parameters {
   /**
     * Pick one from here: http://rdflicense.linkeddata.es/
     */
-  @Parameter(property = "databus.license",  required = true) val license: String = null
+  @Parameter(property = "databus.license", required = true) val license: String = null
 
   /**
     * default today
-     */
+    */
   @Parameter(property = "databus.issuedDate") val issuedDate: String = null
   /**
     * default from file, else today
@@ -210,7 +212,7 @@ trait Properties extends Locations with Parameters {
 
   def getDataIdFile(): File = dataIdFile.toJava
 
-  def dataIdFile = getDataIdDirectory.toScala / s"${finalName}_dataid.ttl"
+  def dataIdFile = getDataIdDirectory.toScala / s"dataid.ttl"
 
   def dataIdPackageTarget = locations.packageTargetDirectory / dataIdFile.name
 

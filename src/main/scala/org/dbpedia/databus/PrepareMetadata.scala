@@ -115,7 +115,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
         dataIdResource.addProperty(dcterms.publisher, publisher.toString.asIRI)
 
         // add dataset metadata
-        val datasetResource = dataIdCollect.createResource(s"#${finalName}")
+        val datasetResource = dataIdCollect.createResource(s"#Dataset")
         datasetResource.addProperty(RDF.`type`, dataid.Dataset)
         addBasicPropertiesToResource(dataIdCollect, datasetResource)
 
