@@ -9,7 +9,11 @@
     <module>mappingbased-literals</module>
     <module>mappingbased-objects</module>
     <module>specific-mappingbased-properties</module>
-  </modules>
+    <module>geo-coordinates-mappingbased</module>
+    <module>instance-types-transitive</module>
+    <module>instance-types</module>
+    <module>mappingbased-objects-uncleaned</module>
+ </modules>
   <properties>
     <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
     <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}</databus.packageDirectory>
