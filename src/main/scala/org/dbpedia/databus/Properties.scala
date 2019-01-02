@@ -143,18 +143,18 @@ trait Properties extends Locations with Parameters {
 
 
   /**
-    * TODO the absolute path here is different for parent and modules the function
-    * TODO works with .pfx file
-    * read privatekeyfiles in hash and signs searches in the parent folder using ../
-    * works for now, but could fail
-    * pkcs12File
-    * The PKCS12 bundle providing the cryptographic identity information associated to the WebID of the agent operating the databus plugin. This bundle should combine the X509 certificate and the private RSA key for the corresponding WebID.
+    * File ending on `.pfx` or `.p12`
+    * Background information: https://github.com/dbpedia/webid#webid
+    * The PKCS12 bundle providing the cryptographic identity information associated
+    * to the WebID of the agent operating the databus plugin. This bundle should combine
+    * the .X509 certificate and the private RSA key for the corresponding WebID.
     * We recommend putting the file in ~/.m2 next to the settings.xml (Maven user dir):
     * <databus.pkcs12File>${user.home}/.m2/webid_bundle.p12</databus.pkcs12File>
+    *
     * SECURITY NOTICE:
     * Protect your private key file, do not loose it, do not send it over (unencrypted) network
     * Limit access to this file to your own user: chmod 700 $HOME/.m2/webid_bundle.p12
-    * <!--<databus.pkcs12File>${user.home}/.m2/webid_bundle.p12</databus.pkcs12File>-->
+    * The data channel you are about to create requires it to republish new versions there.
     */
   @Parameter(property = "databus.pkcs12File", required = true)
   val pkcs12File: File = null
