@@ -21,7 +21,7 @@
 
 package org.dbpedia.databus
 
-import org.dbpedia.databus.lib.Datafile
+import org.dbpedia.databus.lib.{AccountHelpers, Datafile, SigningHelpers}
 import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
 import org.dbpedia.databus.shared.helpers.conversions._
 import org.dbpedia.databus.shared.rdf.conversions._
@@ -55,7 +55,7 @@ import org.apache.jena.vocabulary.{RDF, RDFS}
   * * triple size
   *
   */
-@Mojo(name = "metadata", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresOnline = true)
+@Mojo(name = "metadata", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresOnline = true, threadSafe = true)
 class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers with DataFileToModel {
 
   @throws[MojoExecutionException]
@@ -72,18 +72,16 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     getLog.info(s"looking for data files in: ${dataInputDirectory.getCanonicalPath}")
     getLog.info(s"Found ${getListOfInputFiles().size} files:\n${ getListOfInputFiles().mkString(", ").replaceAll(dataInputDirectory.getCanonicalPath,"")}")
     //collecting metadata for each file
-    getLog.info("Analysing file information and generating metadata and signatures")
     getListOfInputFiles().foreach(datafile => {
       processFile(datafile, dataIdCollect)
 
     })
-    getLog.info("Metadata collected")
 
     //retrieving all User Accounts
-    var accountOption = {
-      implicit val userAccounts: Model = PrepareMetadata.registeredAccounts
-      Option(publisher.toString.asIRI.getProperty(foaf.account)).map(_.getObject.asResource)
-    }
+    //var accountOption = {
+      //implicit val userAccounts: Model = SigningHelpers.registeredAccounts
+      //Option(publisher.toString.asIRI.getProperty(foaf.account)).map(_.getObject.asResource)
+    //}
 
     // write the model to /target/
     if(!dataIdCollect.isEmpty) {
@@ -126,7 +124,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
         /**
           * match WebId to Account Name
           */
-        accountOption match {
+        AccountHelpers.getAccountOption(publisher) match {
 
           case Some(account) => {
 
@@ -180,8 +178,5 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
 object PrepareMetadata {
 
-  lazy val registeredAccounts = ModelFactory.createDefaultModel.tap { accountsModel =>
 
-    accountsModel.read("https://raw.githubusercontent.com/dbpedia/accounts/master/accounts.ttl", TURTLE.getName)
-  }
 }

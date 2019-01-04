@@ -20,12 +20,14 @@
  */
 package org.dbpedia.databus
 
-import org.dbpedia.databus.shared.authentification.RSAModulusAndExponent
+import java.io.{DataInput, File}
 
+import org.dbpedia.databus.shared.authentification.RSAModulusAndExponent
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
+import org.dbpedia.databus.lib.{AccountHelpers, SigningHelpers}
 
 
 /**
@@ -37,7 +39,7 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
   * - get the private key from the config, generate a public key and compare to the public key
   *
   */
-@Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE, requiresOnline = true)
+@Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE, requiresOnline = true, threadSafe = true)
 class Validate extends AbstractMojo with Properties with SigningHelpers with LazyLogging {
 
 
@@ -57,9 +59,55 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
     if (isParent()) {
       validateWebId()
 
-      // all submodules
+      getLog.info("Checking for registered DBpedia account")
+      AccountHelpers.getAccountOption(publisher) match {
+        case Some(account) => {
+          getLog.info(s"SUCCESS: DBpedia Account found: ${account.getURI}")
+        }
+        case None => {
+          getLog.warn(s"DBpedia account for $publisher not found at https://github.com/dbpedia/accounts , some features might be deactivated")
+        }
+      }
+    } else {
+
+
     }
   }
+
+  def versionInfo(dataInputDir: File) = {
+
+    //Version number
+    // Total Files
+    //
+
+  }
+
+  def getListOfInputFiles(dir: File): List[File] = {
+
+    if (dir.exists && dir.isDirectory) {
+
+      val dataFiles = dir.listFiles
+        .filter(_.isFile)
+        .filter(_.getName.startsWith(artifactId))
+        .filter(_ != getDataIdFile())
+        .filter(_ != getParseLogFile())
+        .toList
+
+      if (dataFiles.isEmpty) {
+        getLog.warn(s"no matching in put files found within ${dataInputDirectory.listFiles().size} files in " +
+          s"data input directory ${dataInputDirectory.getAbsolutePath}")
+      }
+
+      dataFiles
+    } else {
+
+      getLog.warn(s"data input location '${dataInputDirectory.getAbsolutePath}' does not exist or is not a directory!")
+
+      List[File]()
+    }
+
+  }
+
 
   /**
     *

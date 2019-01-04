@@ -114,9 +114,10 @@ trait Properties extends Locations with Parameters {
     */
 
   /**
+    * TODO
     * input folder for data
     * copy/move all your datafiles in the respective modules
-    * all files have to start with the animals of the module, i.e. src/main/databus/input/$artifactId_en.nt.bz2
+    * all files have to start with the animals of the module, i.e. src/main/databus/$artifactId_en.nt.bz2
     */
   @Parameter(property = "databus.dataInputDirectory", defaultValue = "src/main/databus/${project.version}", required = true)
   val dataInputDirectory: File = null
@@ -275,4 +276,8 @@ trait Properties extends Locations with Parameters {
       List[File]()
     }
   }
+
+
+
+
 }
