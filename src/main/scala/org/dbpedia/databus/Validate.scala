@@ -26,8 +26,8 @@ import org.dbpedia.databus.shared.authentification.RSAModulusAndExponent
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
-import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-import org.dbpedia.databus.lib.{AccountHelpers, SigningHelpers}
+import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
+import org.dbpedia.databus.lib.{AccountHelpers, FilenameHelpers, SigningHelpers}
 
 
 /**
@@ -42,6 +42,8 @@ import org.dbpedia.databus.lib.{AccountHelpers, SigningHelpers}
 @Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE, requiresOnline = true, threadSafe = true)
 class Validate extends AbstractMojo with Properties with SigningHelpers with LazyLogging {
 
+  @Parameter(property = "databus.allVersions", required = false)
+  val allVersions: Boolean = true
 
   /**
     * TODO potential caveat: check if, else based on pom could fail
@@ -70,17 +72,49 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
       }
     } else {
 
+      if (allVersions) {
+        val versions = getVersions(dataInputDirectory)
+        getLog.info(s"found ${versions.size}\n${versions.mkString("\n")}")
+      }
+
+      versionInfo(dataInputDirectory)
 
     }
   }
 
-  def versionInfo(dataInputDir: File) = {
+  def getVersions(dataInputDirectory: File): List[File] = {
+    dataInputDirectory.getParentFile.listFiles().filter(_.isDirectory).toList.sorted
+  }
+
+  def versionInfo(dir: File) = {
 
     //Version number
     // Total Files
     //
+    if (dir.exists && dir.isDirectory) {
+
+      val dataFiles = dir.listFiles
+        .filter(_.isFile)
+        .filter(_.getName.startsWith(artifactId))
+        .filter(_ != getDataIdFile())
+        .filter(_ != getParseLogFile())
+        .toList
+
+      dataFiles.foreach(f => {
+        val a = new FilenameHelpers(f)(getLog)
+        getLog.info(a.filePrefix)
+        getLog.info(a.compressionVariantExtensions.toString())
+        getLog.info(a.contentVariantExtensions.toString())
+        getLog.info(a.formatVariantExtensions.toString())
+      }
+
+      )
+
+    }
 
   }
+
+
 
   def getListOfInputFiles(dir: File): List[File] = {
 

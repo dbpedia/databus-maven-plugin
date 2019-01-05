@@ -23,12 +23,13 @@ package org.dbpedia.databus
 import better.files.{File => _, _}
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugins.annotations.Parameter
-
 import java.io.File
 import java.net.URL
 import java.time.{Instant, LocalDateTime, ZoneId}
 import java.util
 import java.util.{List => JavaList}
+
+import org.apache.maven.plugin.logging.Log
 
 
 /**
@@ -43,6 +44,14 @@ import java.util.{List => JavaList}
 trait Properties extends Locations with Parameters {
 
   this: AbstractMojo =>
+
+  /*************************************
+    * CODE THAT WILL BE EXECUTED BEFORE RUNNING EACH MOJO
+    */
+  {
+    Properties.printLogoOnce(getLog)
+  }
+
 
   /**
     * Project vars given by Maven
@@ -276,8 +285,31 @@ trait Properties extends Locations with Parameters {
       List[File]()
     }
   }
-
-
-
-
 }
+
+object Properties {
+  val pluginVersion="1.3-SNAPSHOT"
+  var logoPrinted = false
+  val logo = s"""
+               |######
+               |#     #   ##   #####   ##   #####  #    #  ####
+               |#     #  #  #    #    #  #  #    # #    # #
+               |#     # #    #   #   #    # #####  #    #  ####
+               |#     # ######   #   ###### #    # #    #      #
+               |#     # #    #   #   #    # #    # #    # #    #
+               |######  #    #   #   #    # #####   ####   ####
+               |
+               |# Plugin version ${pluginVersion} - https://github.com/dbpedia/databus-maven-plugin
+               |
+               |""".stripMargin
+
+
+  def printLogoOnce(mavenlog: Log) = {
+    if (!logoPrinted) {
+      mavenlog.info(logo)
+    }
+    logoPrinted = true
+  }
+}
+
+

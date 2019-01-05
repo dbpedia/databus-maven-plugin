@@ -103,7 +103,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
         dataIdResource.addProperty(RDF.`type`, dataid.DataId)
         dataIdResource.addProperty(RDFS.`comment`,
           s"""Metadata created by the DBpedia Databus Maven Plugin: https://github.com/dbpedia/databus-maven-plugin
-            |Version 1.3.0 (the first stable release, containing all essential properties)
+            |Version ${Properties.pluginVersion} (the first stable release, containing all essential properties)
             |The DataID ontology is a metadata omnibus, which can be extended to be interoperable with all metadata formats
             |Note that the metadata (the dataid.ttl file) is always CC-0, the files are licensed individually
             |Created by ${publisher}
@@ -157,7 +157,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
       //writing the metadatafile
       getDataIdFile().toScala.outputStream.foreach { os =>
-
+        os.write(Properties.logo.getBytes)
         dataIdCollect.write(os, "turtle")
       }
     }
