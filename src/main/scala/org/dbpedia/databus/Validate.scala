@@ -29,6 +29,8 @@ import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import org.dbpedia.databus.lib.{AccountHelpers, FilenameHelpers, SigningHelpers}
 
+import scala.collection.mutable
+
 
 /**
   * Validate setup and resources
@@ -72,18 +74,22 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
       }
     } else {
 
+      val dataInputDirectoryParent = dataInputDirectory.getParentFile
+
+      val versions: mutable.SortedSet[String] = mutable.SortedSet(dataInputDirectory.toString.replace(dataInputDirectoryParent.toString, ""))
+
+      // add allVersions to the set
       if (allVersions) {
-        val versions = getVersions(dataInputDirectory)
-        getLog.info(s"found ${versions.size}\n${versions.mkString("\n")}")
+        versions.++=(dataInputDirectoryParent.listFiles().filter(_.isDirectory).map( f =>{
+          f.toString.replace(dataInputDirectoryParent.toString, "")}).toSet)
+        getLog.info(s"[databus.allVersion=true] found ${versions.size} version(s):\n${versions.mkString(", ")}")
       }
 
-      versionInfo(dataInputDirectory)
+      versions.foreach(v=>{
+        versionInfo(new File(dataInputDirectoryParent,v))
+      })
 
     }
-  }
-
-  def getVersions(dataInputDirectory: File): List[File] = {
-    dataInputDirectory.getParentFile.listFiles().filter(_.isDirectory).toList.sorted
   }
 
   def versionInfo(dir: File) = {
@@ -101,11 +107,12 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
         .toList
 
       dataFiles.foreach(f => {
+        getLog.info(f.getName)
         val a = new FilenameHelpers(f)(getLog)
-        getLog.info(a.filePrefix)
-        getLog.info(a.compressionVariantExtensions.toString())
-        getLog.info(a.contentVariantExtensions.toString())
-        getLog.info(a.formatVariantExtensions.toString())
+  //      getLog.info(a.filePrefix)
+  //      getLog.info(a.compressionVariantExtensions.toString())
+  //      getLog.info(a.contentVariantExtensions.toString())
+  //      getLog.info(a.formatVariantExtensions.toString())
       }
 
       )
