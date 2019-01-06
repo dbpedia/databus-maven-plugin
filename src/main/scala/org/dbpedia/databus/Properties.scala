@@ -290,6 +290,8 @@ trait Properties extends Locations with Parameters {
 object Properties {
   val pluginVersion="1.3-SNAPSHOT"
   var logoPrinted = false
+
+  //NOTE: NEEDS TO BE COMPATIBLE WITH TURTLE COMMENTS
   val logo = s"""
                |######
                |#     #   ##   #####   ##   #####  #    #  ####

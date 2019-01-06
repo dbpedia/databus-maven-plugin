@@ -157,7 +157,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
       //writing the metadatafile
       getDataIdFile().toScala.outputStream.foreach { os =>
-        os.write(Properties.logo.getBytes)
+        os.write((Properties.logo+"/n").getBytes)
         dataIdCollect.write(os, "turtle")
       }
     }

@@ -77,7 +77,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
   var nonEmptyLines = 0
   var duplicates = 0
   var sorted: Boolean = false
-  var uncompressedByteSize  = 0
+  var uncompressedByteSize = 0
 
 
   lazy val preview: String = computePreview
@@ -190,6 +190,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     this
   }
 
+
   def updateFileMetrics(): Datafile = {
 
     var nonEmpty = 0
@@ -203,7 +204,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
         val it = Source.fromInputStream(in)(Codec.UTF8).getLines()
         while (it.hasNext) {
           val line = it.next().toString
-          uncompressedSize += line.size+1
+          uncompressedSize += line.size + 1
 
           // non empty lines
           if (!line.trim.isEmpty) {
@@ -224,22 +225,22 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
       }
 
       nonEmptyLines = nonEmpty
-      duplicates = dupes
+      duplicates = duplicates
       sorted = sort
       uncompressedByteSize = uncompressedSize
     } catch {
       case mfe: MalformedInputException => {
-        nonEmptyLines = -1
-        duplicates = 0
-        sorted = false
+        nonEmptyLines = nonEmpty
+        duplicates = duplicates
+        sorted = sort
         uncompressedByteSize = uncompressedSize
-
       }
     }
 
 
     this
   }
+
 
   /**
     * Opens the file with compression, etc.
@@ -285,6 +286,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
 
 object Datafile extends LazyLogging {
 
+
   def apply(file: File, previewLineCount: Int = 10)(implicit log: Log): Datafile = {
     new Datafile(file, previewLineCount)(log)
   }
@@ -318,4 +320,5 @@ object Datafile extends LazyLogging {
 
   protected def databusInputFilenameP[_: P]: P[(String, Seq[String], Seq[String], Seq[String])] =
     (Start ~ artifactNameP ~ contentVariantsP ~ formatExtensionsP ~ compressionExtensionsP ~ End)
+
 }

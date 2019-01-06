@@ -27,7 +27,7 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-import org.dbpedia.databus.lib.{AccountHelpers, FilenameHelpers, SigningHelpers}
+import org.dbpedia.databus.lib.{AccountHelpers, Datafile, FilenameHelpers, SigningHelpers}
 
 import scala.collection.mutable
 
@@ -46,6 +46,9 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
 
   @Parameter(property = "databus.allVersions", required = false)
   val allVersions: Boolean = true
+
+  @Parameter(property = "databus.detailedValidation", required = false)
+  val detailedValidation: Boolean = true
 
   /**
     * TODO potential caveat: check if, else based on pom could fail
@@ -80,72 +83,66 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
 
       // add allVersions to the set
       if (allVersions) {
-        versions.++=(dataInputDirectoryParent.listFiles().filter(_.isDirectory).map( f =>{
-          f.toString.replace(dataInputDirectoryParent.toString, "")}).toSet)
+        versions.++=(dataInputDirectoryParent.listFiles().filter(_.isDirectory).map(f => {
+          f.toString.replace(dataInputDirectoryParent.toString, "")
+        }).toSet)
         getLog.info(s"[databus.allVersion=true] found ${versions.size} version(s):\n${versions.mkString(", ")}")
       }
+      versions.foreach(v => {
+        val versionDir = new File(dataInputDirectoryParent, v)
+        if (versionDir.exists && versionDir.isDirectory) {
+          //check startswith
+          val filesNotInFormat = versionDir.listFiles.filterNot(_.getName.startsWith(artifactId)).toList
+          if (filesNotInFormat.size > 0) {
+            //log
+          }
 
-      versions.foreach(v=>{
-        versionInfo(new File(dataInputDirectoryParent,v))
+          var headlineBasic = "comp\tcontent\tformat\tprefix\tname"
+          var contentBasic = ""
+
+          var headLineDetails = "nonEmpty\tduplicates\tsorted\tsize\tname"
+          var contentDetails = ""
+
+          val dataFiles = listDataFiles(versionDir)
+          dataFiles.foreach(f => {
+            val fileName = new FilenameHelpers(f)(getLog)
+            contentBasic +=
+              s"${fileName.compressionVariantExtensions.mkString(", ")} \t" +
+                s"${fileName.contentVariantExtensions.mkString(", ")} \t" +
+                s"${fileName.formatVariantExtensions.mkString(", ")} \t" +
+                s"${fileName.filePrefix} \t" +
+                s"${f.getName}\n"
+
+
+            if (detailedValidation == true) {
+              val df: Datafile = Datafile(f)(getLog).ensureExists()
+              df.updateFileMetrics()
+              contentDetails += s"" +
+                s"${df.nonEmptyLines}\t" +
+                s"${df.duplicates}\t" +
+                s"${df.sorted}\t" +
+                s"${df.uncompressedByteSize}\t" +
+                s"${f.getName}\n"
+            }
+          })
+
+          var tableBasic = s"${headlineBasic}\n${contentBasic}"
+          var tableDetails = s"${headLineDetails}\n${contentDetails}"
+          getLog.info(s"Version $v has ${dataFiles.size} files total\n$tableBasic\n$tableDetails")
+        }
       })
-
     }
   }
 
-  def versionInfo(dir: File) = {
 
-    //Version number
-    // Total Files
-    //
-    if (dir.exists && dir.isDirectory) {
-
-      val dataFiles = dir.listFiles
-        .filter(_.isFile)
-        .filter(_.getName.startsWith(artifactId))
-        .filter(_ != getDataIdFile())
-        .filter(_ != getParseLogFile())
-        .toList
-
-      dataFiles.foreach(f => {
-        getLog.info(f.getName)
-        val a = new FilenameHelpers(f)(getLog)
-  //      getLog.info(a.filePrefix)
-  //      getLog.info(a.compressionVariantExtensions.toString())
-  //      getLog.info(a.contentVariantExtensions.toString())
-  //      getLog.info(a.formatVariantExtensions.toString())
-      }
-
-      )
-
-    }
-
-  }
-
-
-
-  def getListOfInputFiles(dir: File): List[File] = {
-
-    if (dir.exists && dir.isDirectory) {
-
-      val dataFiles = dir.listFiles
-        .filter(_.isFile)
-        .filter(_.getName.startsWith(artifactId))
-        .filter(_ != getDataIdFile())
-        .filter(_ != getParseLogFile())
-        .toList
-
-      if (dataFiles.isEmpty) {
-        getLog.warn(s"no matching in put files found within ${dataInputDirectory.listFiles().size} files in " +
-          s"data input directory ${dataInputDirectory.getAbsolutePath}")
-      }
-
-      dataFiles
-    } else {
-
-      getLog.warn(s"data input location '${dataInputDirectory.getAbsolutePath}' does not exist or is not a directory!")
-
-      List[File]()
-    }
+  def listDataFiles(versionDir: File): List[File] = {
+    val dataFiles = versionDir.listFiles
+      .filter(_.isFile)
+      .filter(_.getName.startsWith(artifactId))
+      .filter(_ != getDataIdFile())
+      .filter(_ != getParseLogFile())
+      .toList
+    dataFiles
 
   }
 
