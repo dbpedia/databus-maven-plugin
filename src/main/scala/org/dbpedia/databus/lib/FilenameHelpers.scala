@@ -39,7 +39,7 @@ class FilenameHelpers(val file: File, previewLineCount: Int = 10)(implicit log: 
     file.getName
   }
 
-  def finalBasename(versionToAdd: Option[String]) = {
+  /*def finalBasename(versionToAdd: Option[String]) = {
 
     def prefix = versionToAdd.fold(filePrefix) { version => s"$filePrefix-$version" }
 
@@ -57,10 +57,10 @@ class FilenameHelpers(val file: File, previewLineCount: Int = 10)(implicit log: 
     } else ""
 
     prefix + contentVariantsSuffix + formatVariantsSuffix + compressionVariantsSuffix
-  }
+  }*/
 
-
-  private def filenameAnalysis: (String, Seq[String], Seq[String], Seq[String]) = {
+    //todo check if not private is okay
+   def filenameAnalysis: (String, Seq[String], Seq[String], Seq[String]) = {
 
     parse(basename, databusInputFilenameP(_)) match {
 

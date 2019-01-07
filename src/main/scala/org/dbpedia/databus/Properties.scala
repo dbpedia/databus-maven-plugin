@@ -260,9 +260,6 @@ trait Properties extends Locations with Parameters {
     */
   def getListOfInputFiles(): List[File] = {
 
-    getLog.debug("")
-
-
     if (dataInputDirectory.exists && dataInputDirectory.isDirectory) {
 
       val dataFiles = dataInputDirectory.listFiles
@@ -273,7 +270,7 @@ trait Properties extends Locations with Parameters {
         .toList
 
       if (dataFiles.isEmpty) {
-        getLog.warn(s"no matching in put files found within ${dataInputDirectory.listFiles().size} files in " +
+        getLog.warn(s"no matching input files found within ${dataInputDirectory.listFiles().size} files in " +
           s"data input directory ${dataInputDirectory.getAbsolutePath}")
       }
 
@@ -304,7 +301,6 @@ object Properties {
                |# Plugin version ${pluginVersion} - https://github.com/dbpedia/databus-maven-plugin
                |
                |""".stripMargin
-
 
   def printLogoOnce(mavenlog: Log) = {
     if (!logoPrinted) {

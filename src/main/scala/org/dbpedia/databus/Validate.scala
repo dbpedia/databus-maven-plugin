@@ -45,10 +45,10 @@ import scala.collection.mutable
 class Validate extends AbstractMojo with Properties with SigningHelpers with LazyLogging {
 
   @Parameter(property = "databus.allVersions", required = false)
-  val allVersions: Boolean = true
+  val allVersions: Boolean = false
 
   @Parameter(property = "databus.detailedValidation", required = false)
-  val detailedValidation: Boolean = true
+  val detailedValidation: Boolean = false
 
   /**
     * TODO potential caveat: check if, else based on pom could fail
@@ -86,21 +86,65 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
         versions.++=(dataInputDirectoryParent.listFiles().filter(_.isDirectory).map(f => {
           f.toString.replace(dataInputDirectoryParent.toString, "")
         }).toSet)
-        getLog.info(s"[databus.allVersion=true] found ${versions.size} version(s):\n${versions.mkString(", ")}")
+        getLog.info(s"[databus.allVersion=true] found ${versions.size} version(s): ${versions.mkString(", ")}")
       }
-      versions.foreach(v => {
+
+      //val versions: mutable.SortedSet[String] = mutable.SortedSet(dataInputDirectory.toString.replace(dataInputDirectoryParent.toString, ""))
+
+      // collect all information
+
+      val versionDirs = versions.map(v => {
+        val versionDir: File = new File(dataInputDirectoryParent, v)
+        if (versionDir.exists && versionDir.isDirectory) {
+
+          val wrongFiles = versionDir.listFiles.filterNot(_.getName.startsWith(artifactId)).toList
+          if (wrongFiles.size > 0) {
+            getLog.warn(s" ${wrongFiles.mkString(s" not starting with $artifactId\n")}")
+          }
+
+          var fileList: List[File] = versionDir.listFiles
+            .filter(_.isFile)
+            .filter(_.getName.startsWith(artifactId))
+            .filter(_ != getDataIdFile())
+            .filter(_ != getParseLogFile())
+            .toList
+
+          val filenameHelpers: List[FilenameHelpers] = fileList.map(f => {
+            new FilenameHelpers(f)(getLog)
+          })
+
+          val datafiles: List[Datafile] = fileList.map(f => {
+
+            val df = Datafile(f)(getLog).ensureExists()
+            if (detailedValidation) {
+              df.updateFileMetrics()
+            }
+            df
+          })
+
+
+          (v, versionDir, fileList, filenameHelpers, datafiles)
+        } else {
+          getLog.warn(s"directory does not exist or not a directory: ${versionDir}")
+        }
+      })
+
+      // now validation starts
+      for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
+        getLog.info(s"Version ${v} with ${fileList.size} files")
+      }
+
+
+
+      /*versions.foreach(v => {
         val versionDir = new File(dataInputDirectoryParent, v)
         if (versionDir.exists && versionDir.isDirectory) {
-          //check startswith
-          val filesNotInFormat = versionDir.listFiles.filterNot(_.getName.startsWith(artifactId)).toList
-          if (filesNotInFormat.size > 0) {
-            //log
-          }
+
 
           var headlineBasic = "comp\tcontent\tformat\tprefix\tname"
           var contentBasic = ""
 
-          var headLineDetails = "nonEmpty\tduplicates\tsorted\tsize\tname"
+          var headLineDetails = "sorted\tduplicates\tnonEmpty\tsize\tname"
           var contentDetails = ""
 
           val dataFiles = listDataFiles(versionDir)
@@ -117,10 +161,14 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
             if (detailedValidation == true) {
               val df: Datafile = Datafile(f)(getLog).ensureExists()
               df.updateFileMetrics()
+              if (df.sorted != true) {
+                getLog.warn(s"${f.getName} not sorted according to code points (LC_COLLATE=C)")
+              }
+
               contentDetails += s"" +
-                s"${df.nonEmptyLines}\t" +
-                s"${df.duplicates}\t" +
                 s"${df.sorted}\t" +
+                s"${df.duplicates}\t" +
+                s"${df.nonEmptyLines}\t" +
                 s"${df.uncompressedByteSize}\t" +
                 s"${f.getName}\n"
             }
@@ -130,20 +178,8 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
           var tableDetails = s"${headLineDetails}\n${contentDetails}"
           getLog.info(s"Version $v has ${dataFiles.size} files total\n$tableBasic\n$tableDetails")
         }
-      })
+      })*/
     }
-  }
-
-
-  def listDataFiles(versionDir: File): List[File] = {
-    val dataFiles = versionDir.listFiles
-      .filter(_.isFile)
-      .filter(_.getName.startsWith(artifactId))
-      .filter(_ != getDataIdFile())
-      .filter(_ != getParseLogFile())
-      .toList
-    dataFiles
-
   }
 
 

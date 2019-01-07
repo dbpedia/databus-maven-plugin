@@ -52,7 +52,7 @@ import java.util.Base64
 class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log: Log) {
 
   lazy val (filePrefix: String, contentVariantExtensions: Seq[String], formatVariantExtensions: Seq[String],
-  compressionVariantExtensions) = filenameAnalysis
+  compressionVariantExtensions) = new FilenameHelpers(file).filenameAnalysis
 
   lazy val (format, formatExtension) = computeMimeType(formatVariantExtensions)
 
@@ -141,6 +141,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     (mimeType, ext)
   }
 
+  /*
   private def filenameAnalysis: (String, Seq[String], Seq[String], Seq[String]) = {
 
     parse(basename, Datafile.databusInputFilenameP(_)) match {
@@ -152,7 +153,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
           s"http://dev.dbpedia.org/Databus%20Maven%20Plugin on conventions for input file naming:\n" +
           failure.trace().longAggregateMsg)
     }
-  }
+  }*/
 
   /**
     * @return gives the preview, however it is limited to 500 chars per line, in case there is a very long line
@@ -291,7 +292,7 @@ object Datafile extends LazyLogging {
     new Datafile(file, previewLineCount)(log)
   }
 
-
+/*
   protected def alphaNumericP[_: P] = CharIn("A-Za-z0-9").rep(1)
 
   // the negative lookahead ensures that we do not parse into the format extension(s) if there is no content variant
@@ -320,5 +321,5 @@ object Datafile extends LazyLogging {
 
   protected def databusInputFilenameP[_: P]: P[(String, Seq[String], Seq[String], Seq[String])] =
     (Start ~ artifactNameP ~ contentVariantsP ~ formatExtensionsP ~ compressionExtensionsP ~ End)
-
+*/
 }
