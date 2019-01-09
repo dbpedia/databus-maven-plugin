@@ -44,6 +44,7 @@ object SigningHelpers {
   val pkcs12PasswordMemo = TrieMap[FilePath, Password]()
 
 
+
 }
 
 trait SigningHelpers {
@@ -80,6 +81,10 @@ trait SigningHelpers {
   protected def canonicalPath = locations.pkcs12File.toJava.getCanonicalPath
 
   protected def askForPassword: String = SigningHelpers.synchronized {
+
+    if (locations.pkcs12Password.nonEmpty) {
+      SigningHelpers.pkcs12PasswordMemo.update(canonicalPath, locations.pkcs12Password)
+    }
 
     def inputRequest = s"Enter password for PKCS12 bundle at $canonicalPath: "
 

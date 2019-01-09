@@ -26,10 +26,11 @@ import org.dbpedia.databus.shared.authentification.RSAModulusAndExponent
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
-import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
+import org.apache.maven.plugins.annotations.{Execute, LifecyclePhase, Mojo, Parameter}
 import org.dbpedia.databus.lib.{AccountHelpers, Datafile, FilenameHelpers, SigningHelpers}
 
 import scala.collection.mutable
+import org.apache.maven.settings.Settings
 
 
 /**
@@ -42,6 +43,7 @@ import scala.collection.mutable
   *
   */
 @Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE, requiresOnline = true, threadSafe = true)
+//@Execute(goal = "validate", phase = LifecyclePhase.VALIDATE, lifecycle = "validate")
 class Validate extends AbstractMojo with Properties with SigningHelpers with LazyLogging {
 
   @Parameter(property = "databus.allVersions", required = false)
@@ -50,6 +52,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
   @Parameter(property = "databus.detailedValidation", required = false)
   val detailedValidation: Boolean = false
 
+
   /**
     * TODO potential caveat: check if, else based on pom could fail
     *
@@ -57,6 +60,8 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
     */
   @throws[MojoExecutionException]
   override def execute(): Unit = {
+
+    //System.exit(0)
 
     /**
       * validation
@@ -93,12 +98,12 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
 
       // collect all information
 
-      val versionDirs = versions.map(v => {
+      val versionDirs = versions.toList.flatMap(v => {
         val versionDir: File = new File(dataInputDirectoryParent, v)
         if (versionDir.exists && versionDir.isDirectory) {
 
           val wrongFiles = versionDir.listFiles.filterNot(_.getName.startsWith(artifactId)).toList
-          if (wrongFiles.size > 0) {
+          if (wrongFiles.nonEmpty) {
             getLog.warn(s" ${wrongFiles.mkString(s" not starting with $artifactId\n")}")
           }
 
@@ -123,9 +128,10 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
           })
 
 
-          (v, versionDir, fileList, filenameHelpers, datafiles)
+          Some((v, versionDir, fileList, filenameHelpers, datafiles))
         } else {
           getLog.warn(s"directory does not exist or not a directory: ${versionDir}")
+          None
         }
       })
 
@@ -189,11 +195,6 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
   def validateWebId(): Unit = {
 
     getLog.debug("PKCS12 bundle location: " + locations.pkcs12File.pathAsString)
-
-
-    if (!pkcs12password.isEmpty) {
-      SigningHelpers.pkcs12PasswordMemo.update(locations.pkcs12File.toJava.getCanonicalPath, pkcs12password)
-    }
 
     def keyPair = singleKeyPairFromPKCS12
 
