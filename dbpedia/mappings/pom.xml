@@ -18,7 +18,8 @@
     <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}</databus.packageDirectory>
     <databus.downloadUrlPath>https://downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
     <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
-    <databus.pkcs12File>${user.home}/.m2/certificate_generic.pfx</databus.pkcs12File>
+    <!-- moved to settings.xml
+     databus.pkcs12File>${user.home}/.m2/certificate_generic.pfx</databus.pkcs12File-->
     <databus.maintainer>https://termilion.github.io/webid.ttl#this</databus.maintainer>
     <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
