@@ -132,14 +132,14 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
             val group = s"${account.getURI}/${groupId}".asIRI
             val artifact = s"${account.getURI}/${groupId}/${artifactId}".asIRI
-            val version = s"${account.getURI}/${groupId}/${artifactId}/${version}".asIRI
+            val versionIRI = s"${account.getURI}/${groupId}/${artifactId}/${version}".asIRI
             group.addProperty(RDF.`type`, dataid.Group)
             artifact.addProperty(RDF.`type`, dataid.Artifact)
-            version.addProperty(RDF.`type`, dataid.Version)
+            versionIRI.addProperty(RDF.`type`, dataid.Version)
 
             datasetResource.addProperty(dataid.groupId, group)
             datasetResource.addProperty(dataid.artifact, artifact)
-            datasetResource.addProperty(dataid.version, version)
+            datasetResource.addProperty(dataid.version, versionIRI)
           }
 
           case None => {

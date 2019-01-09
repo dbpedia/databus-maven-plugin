@@ -126,25 +126,117 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
             }
             df
           })
-
-
           Some((v, versionDir, fileList, filenameHelpers, datafiles))
         } else {
-          getLog.warn(s"directory does not exist or not a directory: ${versionDir}")
+          getLog.warn(s"empty directory: ${versionDir}")
           None
         }
       })
 
       // now validation starts
+
+      getLog.info("Number of files:")
       for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
-        getLog.info(s"Version ${v} with ${fileList.size} files")
+        getLog.info(s"${v} with ${fileList.size} files")
+      }
+
+      getLog.info("Compression:")
+      for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
+        val compfilenames: mutable.SortedSet[String] = mutable.SortedSet()
+        fileNames.foreach(f => {
+          f.compressionVariantExtensions.foreach(a => {
+            compfilenames.add(a)
+          })
+        })
+        val compFile: mutable.SortedSet[String] = mutable.SortedSet()
+        datafiles.foreach(f => {
+          compFile.add(f.compressionVariant.toString)
+        })
+        getLog.info(s"${v} from name: {${compfilenames.mkString(", ")}}, from file {${compFile.mkString(", ")}}")
+      }
+
+      getLog.info("Format:")
+      for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
+        val formfilenames: mutable.SortedSet[String] = mutable.SortedSet()
+        fileNames.foreach(f => {
+          f.formatVariantExtensions.foreach(a => {
+            formfilenames.add(a)
+          })
+        })
+        val formFile: mutable.SortedSet[String] = mutable.SortedSet()
+        datafiles.foreach(f => {
+          formFile.add(f.format.mimeType)
+        })
+        getLog.info(s"${v} from name: {${formfilenames.mkString(", ")}}, from file {${formFile.mkString(", ")}}")
+      }
+
+      getLog.info("ContentVariant:")
+      for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
+        val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
+        fileNames.foreach(f => {
+          f.contentVariantExtensions.foreach(a => {
+            contfilenames.add(a)
+          })
+        })
+        getLog.info(s"${v} from name: {${contfilenames.mkString(", ")}}")
+      }
+
+      getLog.info("prefix:")
+      for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
+        val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
+        fileNames.foreach(f => {
+            contfilenames.add(f.filePrefix)
+        })
+        getLog.info(s"${v} from name: {${contfilenames.mkString(", ")}}")
+      }
+
+      if (detailedValidation) {
+
+        getLog.info("Sorted:")
+        for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
+          val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
+          var sorted = 0
+          var unsorted = 0
+          datafiles.foreach(df => {
+            if (df.sorted) {
+              sorted+=1
+            } else {
+              unsorted+=1
+              contfilenames.add(df.file.getName)
+            }
+          })
+          getLog.info(s"${v} sorted: ${sorted}, not sorted: ${unsorted} {${contfilenames.mkString(", ")}}")
+        }
+
+        getLog.info("Duplicates:")
+        for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
+          var duplicates = 0
+          val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
+
+          datafiles.foreach(df => {
+            if (df.duplicates>0) {
+              duplicates += df.duplicates
+              contfilenames.add(df.file.getName)
+
+            }
+          })
+          getLog.info(s"${v} duplicates: ${duplicates} in {${contfilenames.mkString(", ")}}")
+        }
+
+        getLog.info("Empty files:")
+        for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
+          val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
+          datafiles.foreach(df => {
+            if (df.nonEmptyLines==0) {
+              contfilenames.add(df.file.getName)
+            }
+          })
+          getLog.info(s"${v} has ${contfilenames.size} empty files:  {${contfilenames.mkString(", ")}} ")
+        }
+
       }
 
 
-
-      /*versions.foreach(v => {
-        val versionDir = new File(dataInputDirectoryParent, v)
-        if (versionDir.exists && versionDir.isDirectory) {
 
 
           var headlineBasic = "comp\tcontent\tformat\tprefix\tname"
@@ -153,7 +245,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
           var headLineDetails = "sorted\tduplicates\tnonEmpty\tsize\tname"
           var contentDetails = ""
 
-          val dataFiles = listDataFiles(versionDir)
+/*          val dataFiles = listDataFiles(versionDir)
           dataFiles.foreach(f => {
             val fileName = new FilenameHelpers(f)(getLog)
             contentBasic +=
