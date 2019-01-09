@@ -22,7 +22,8 @@ package org.dbpedia.databus
 
 import better.files._
 
-trait Locations { this: Properties =>
+trait Locations {
+  this: Properties =>
 
   lazy val locations = new Locations(this)
 
@@ -30,7 +31,27 @@ trait Locations { this: Properties =>
 
     def packageTargetDirectory = (packageDirectory.toScala / artifactId / version).createDirectories()
 
-    def pkcs12File = lib.findFileMaybeInParent(props.pkcs12File.toScala, "PKCS12 bundle")
+    lazy val pkcs12File: File = {
+      if (props.pkcs12File != null) {
+        lib.findFileMaybeInParent(props.pkcs12File.toScala, "PKCS12 bundle")
+      } else if (props.settings.getServer(pkcs12serverId) != null) {
+        lib.findFileMaybeInParent(File(settings.getServer(pkcs12serverId).getPrivateKey),"PKCS bundle")
+      } else {
+        null
+      }
+    }
+
+    def pkcs12Password: String = {
+
+      if (props.pkcs12password.nonEmpty) {
+        props.pkcs12password
+      } else if (props.settings.getServer(pkcs12serverId) != null) {
+        settings.getServer(pkcs12serverId).getPassphrase
+      } else {
+        ""
+      }
+    }
+
   }
 
 }

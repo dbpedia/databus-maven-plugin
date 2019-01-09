@@ -30,6 +30,7 @@ import java.util
 import java.util.{List => JavaList}
 
 import org.apache.maven.plugin.logging.Log
+import org.apache.maven.settings.Settings
 
 
 /**
@@ -45,11 +46,26 @@ trait Properties extends Locations with Parameters {
 
   this: AbstractMojo =>
 
-  /*************************************
+
+  /** ***********************************
     * CODE THAT WILL BE EXECUTED BEFORE RUNNING EACH MOJO
-    */
+    * ************************************/
   {
     Properties.printLogoOnce(getLog)
+
+    // password
+    //option 1 no password provided
+    //option 2 pw in pom or passed as parameter
+    //option 3 settings.xml
+    /*val profile = settings.getProfilesAsMap.get("databus_central")
+    if (profile != null) {
+      //get profile
+      // add to memo
+    }*/
+
+    //println(a+"sss")
+    //System.exit(0)
+
   }
 
 
@@ -74,6 +90,9 @@ trait Properties extends Locations with Parameters {
 
   @Parameter(defaultValue = "${project.build.finalName}", readonly = true)
   val finalName: String = null
+
+  @Parameter(defaultValue = "${settings}", readonly = true)
+  val settings: Settings = null
 
 
   /**
@@ -166,11 +185,15 @@ trait Properties extends Locations with Parameters {
     * Limit access to this file to your own user: chmod 700 $HOME/.m2/webid_bundle.p12
     * The data channel you are about to create requires it to republish new versions there.
     */
-  @Parameter(property = "databus.pkcs12File", required = true)
+  @Parameter(property = "databus.pkcs12File", required = false)
   val pkcs12File: File = null
 
   @Parameter(property = "databus.pkcs12password", required = false)
   val pkcs12password = ""
+
+  @Parameter(property = "databus.pkcs12serverId", defaultValue = "databus.defaultkey", required = false)
+  val pkcs12serverId: String = ""
+
 
   /**
     * refers to the WebID that does the publication on the web and on the databus
@@ -214,11 +237,13 @@ trait Properties extends Locations with Parameters {
     * common variables used in the code
     */
 
-  val invocationTime = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
 
   def isParent(): Boolean = {
     packaging.equals("pom")
   }
+
+  val invocationTime = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
+
 
   def getDataIdFile(): File = dataIdFile.toJava
 
@@ -282,25 +307,33 @@ trait Properties extends Locations with Parameters {
       List[File]()
     }
   }
+
 }
 
+/**
+  * Static property object, which contains all static code
+  */
 object Properties {
-  val pluginVersion="1.3-SNAPSHOT"
+
+  val pluginVersion = "1.3-SNAPSHOT"
+
   var logoPrinted = false
 
   //NOTE: NEEDS TO BE COMPATIBLE WITH TURTLE COMMENTS
-  val logo = s"""
-               |######
-               |#     #   ##   #####   ##   #####  #    #  ####
-               |#     #  #  #    #    #  #  #    # #    # #
-               |#     # #    #   #   #    # #####  #    #  ####
-               |#     # ######   #   ###### #    # #    #      #
-               |#     # #    #   #   #    # #    # #    # #    #
-               |######  #    #   #   #    # #####   ####   ####
-               |
-               |# Plugin version ${pluginVersion} - https://github.com/dbpedia/databus-maven-plugin
-               |
-               |""".stripMargin
+  val logo =
+    s"""|
+        |
+        |######
+        |#     #   ##   #####   ##   #####  #    #  ####
+        |#     #  #  #    #    #  #  #    # #    # #
+        |#     # #    #   #   #    # #####  #    #  ####
+        |#     # ######   #   ###### #    # #    #      #
+        |#     # #    #   #   #    # #    # #    # #    #
+        |######  #    #   #   #    # #####   ####   ####
+        |
+        |# Plugin version ${pluginVersion} - https://github.com/dbpedia/databus-maven-plugin
+        |
+        |""".stripMargin
 
   def printLogoOnce(mavenlog: Log) = {
     if (!logoPrinted) {
@@ -308,6 +341,17 @@ object Properties {
     }
     logoPrinted = true
   }
+
+
 }
+
+
+
+
+
+
+
+
+
 
 
