@@ -61,7 +61,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
   @throws[MojoExecutionException]
   override def execute(): Unit = {
     //skip the parent module
-    if(isParent()) {
+    if (isParent()) {
       getLog.info("skipping parent module")
       return
     }
@@ -70,7 +70,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
 
     getLog.info(s"looking for data files in: ${dataInputDirectory.getCanonicalPath}")
-    getLog.info(s"Found ${getListOfInputFiles().size} files:\n${ getListOfInputFiles().mkString(", ").replaceAll(dataInputDirectory.getCanonicalPath,"")}")
+    getLog.info(s"Found ${getListOfInputFiles().size} files:\n${getListOfInputFiles().mkString(", ").replaceAll(dataInputDirectory.getCanonicalPath, "")}")
     //collecting metadata for each file
     getListOfInputFiles().foreach(datafile => {
       processFile(datafile, dataIdCollect)
@@ -79,21 +79,21 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
     //retrieving all User Accounts
     //var accountOption = {
-      //implicit val userAccounts: Model = SigningHelpers.registeredAccounts
-      //Option(publisher.toString.asIRI.getProperty(foaf.account)).map(_.getObject.asResource)
+    //implicit val userAccounts: Model = SigningHelpers.registeredAccounts
+    //Option(publisher.toString.asIRI.getProperty(foaf.account)).map(_.getObject.asResource)
     //}
 
     // write the model to /target/
-    if(!dataIdCollect.isEmpty) {
+    if (!dataIdCollect.isEmpty) {
       {
         implicit val editContext = dataIdCollect
 
         // add DataId
         /**
           * <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl>
-        ? dataid:underAuthorization  <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=maintainerAuthorization> , <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=creatorAuthorization> , <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=contactAuthorization> ;
-        dc:modified                "2017-07-06"^^xsd:date ;
-        foaf:primaryTopic          <http://dbpedia.org/dataset/main_dataset?lang=en&dbpv=2016-10> .
+          * ? dataid:underAuthorization  <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=maintainerAuthorization> , <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=creatorAuthorization> , <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=contactAuthorization> ;
+          * dc:modified                "2017-07-06"^^xsd:date ;
+          * foaf:primaryTopic          <http://dbpedia.org/dataset/main_dataset?lang=en&dbpv=2016-10> .
           */
 
         val dataIdResource = dataIdCollect.createResource("")
@@ -103,12 +103,14 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
         dataIdResource.addProperty(RDF.`type`, dataid.DataId)
         dataIdResource.addProperty(RDFS.`comment`,
           s"""Metadata created by the DBpedia Databus Maven Plugin: https://github.com/dbpedia/databus-maven-plugin
-            |Version ${Properties.pluginVersion} (the first stable release, containing all essential properties)
-            |The DataID ontology is a metadata omnibus, which can be extended to be interoperable with all metadata formats
-            |Note that the metadata (the dataid.ttl file) is always CC-0, the files are licensed individually
-            |Created by ${publisher}
+             |Version ${Properties.pluginVersion} (the first stable release, containing all essential properties)
+             |The DataID ontology is a metadata omnibus, which can be extended to be interoperable with all metadata formats
+             |Note that the metadata (the dataid.ttl file) is always CC-0, the files are licensed individually
+             |Created by ${publisher}
           """.stripMargin)
+
         def issuedTime = params.issuedDate.getOrElse(invocationTime)
+
         dataIdResource.addProperty(dcterms.issued, ISO_LOCAL_DATE.format(issuedTime).asTypedLiteral(XSDdate))
         dataIdResource.addProperty(dcterms.license, "http://purl.oclc.org/NET/rdflicense/cc-zero1.0".asIRI)
         dataIdResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
@@ -128,8 +130,16 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
           case Some(account) => {
 
-            datasetResource.addProperty(dataid.groupId, s"${account.getURI}/${groupId}".asIRI)
-            datasetResource.addProperty(dataid.artifact, s"${account.getURI}/${groupId}/${artifactId}".asIRI)
+            val group = s"${account.getURI}/${groupId}".asIRI
+            val artifact = s"${account.getURI}/${groupId}/${artifactId}".asIRI
+            val version = s"${account.getURI}/${groupId}/${artifactId}/${version}".asIRI
+            group.addProperty(RDF.`type`, dataid.Group)
+            artifact.addProperty(RDF.`type`, dataid.Artifact)
+            version.addProperty(RDF.`type`, dataid.Version)
+
+            datasetResource.addProperty(dataid.groupId, group)
+            datasetResource.addProperty(dataid.artifact, artifact)
+            datasetResource.addProperty(dataid.version, version)
           }
 
           case None => {
@@ -157,7 +167,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
       //writing the metadatafile
       getDataIdFile().toScala.outputStream.foreach { os =>
-        os.write((Properties.logo+"\n").getBytes)
+        os.write((Properties.logo + "\n").getBytes)
         dataIdCollect.write(os, "turtle")
       }
     }

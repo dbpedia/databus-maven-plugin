@@ -35,6 +35,7 @@ trait Locations {
       if (props.pkcs12File != null) {
         lib.findFileMaybeInParent(props.pkcs12File.toScala, "PKCS12 bundle")
       } else if (props.settings.getServer(pkcs12serverId) != null) {
+        //TODO strictly not necessary to us find here
         lib.findFileMaybeInParent(File(settings.getServer(pkcs12serverId).getPrivateKey),"PKCS bundle")
       } else {
         null
