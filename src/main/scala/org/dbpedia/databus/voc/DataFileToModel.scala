@@ -152,7 +152,7 @@ trait DataFileToModel extends Properties with Parameters {
     }
 
     //basic properties
-    thisResource.addProperty(dcterms.description, datasetDescription.asPlainLiteral)
+    thisResource.addProperty(dcterms.description, (docheader+"\n"+datasetDescription+"\n"+docfooter).asPlainLiteral)
     // todo add version number, but this is a dataid issue
     thisResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
     thisResource.addProperty(dcterms.hasVersion, version.asPlainLiteral)

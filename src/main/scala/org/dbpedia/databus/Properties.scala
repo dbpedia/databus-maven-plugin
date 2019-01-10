@@ -225,6 +225,11 @@ trait Properties extends Locations with Parameters {
   @Parameter(property = "databus.modifiedDate") val modifiedDate: String = null
 
 
+  @Parameter(property = "databus.changelog", defaultValue = "") val changelog: String = null
+  @Parameter(property = "databus.docheader", defaultValue = "") val docheader: String = null
+  @Parameter(property = "databus.docfooter", defaultValue = "") val docfooter: String = null
+
+
   /**
     * for each modules
     */

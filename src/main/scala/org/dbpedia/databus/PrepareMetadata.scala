@@ -99,14 +99,13 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
         val dataIdResource = dataIdCollect.createResource("")
         dataIdResource.addProperty(dcterms.title, s"DataID metadata for ${groupId}/${artifactId}", "en")
         dataIdResource.addProperty(RDFS.`label`, s"DataID metadata for ${groupId}/${artifactId}", "en")
-        dataIdResource.addProperty(dcterms.hasVersion, "1.3.0")
+        dataIdResource.addProperty(dcterms.hasVersion, Properties.pluginVersion)
         dataIdResource.addProperty(RDF.`type`, dataid.DataId)
         dataIdResource.addProperty(RDFS.`comment`,
-          s"""Metadata created by the DBpedia Databus Maven Plugin: https://github.com/dbpedia/databus-maven-plugin
-             |Version ${Properties.pluginVersion} (the first stable release, containing all essential properties)
+          s"""Metadata created by the DBpedia Databus Maven Plugin: https://github.com/dbpedia/databus-maven-plugin (Version ${Properties.pluginVersion})
              |The DataID ontology is a metadata omnibus, which can be extended to be interoperable with all metadata formats
              |Note that the metadata (the dataid.ttl file) is always CC-0, the files are licensed individually
-             |Created by ${publisher}
+             |Metadata created by ${publisher}
           """.stripMargin)
 
         def issuedTime = params.issuedDate.getOrElse(invocationTime)
@@ -121,7 +120,9 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
         val datasetResource = dataIdCollect.createResource(s"#Dataset")
         datasetResource.addProperty(RDF.`type`, dataid.Dataset)
         addBasicPropertiesToResource(dataIdCollect, datasetResource)
-
+        if (changelog.nonEmpty) {
+          datasetResource.addProperty(dataid.changelog, changelog.asPlainLiteral)
+        }
 
         /**
           * match WebId to Account Name
@@ -175,7 +176,9 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
   def processFile(datafile: File, dataIdCollect: Model): Unit = {
 
-    getLog.debug(s"found file ${datafile.getCanonicalPath}")
+    getLog.debug(s"found file ${
+      datafile.getCanonicalPath
+    }")
     val df: Datafile = Datafile(datafile)(getLog).ensureExists()
     df.updateSignature(singleKeyPairFromPKCS12)
     df.updateFileMetrics()

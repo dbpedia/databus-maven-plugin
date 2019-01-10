@@ -28,6 +28,9 @@
  
         <databus.deployToTestRepo>true</databus.deployToTestRepo>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<databus.changelog>No real version, we also use this as a dataset to test the framework</databus.changelog>
+		<databus.docheader>Snippet to put before docu</databus.docheader>
+		<databus.docfooter>Snippet to put after docu</databus.docfooter>
     </properties>
 
     <!-- we will move to maven central soon, this is the dev maven repo-->
