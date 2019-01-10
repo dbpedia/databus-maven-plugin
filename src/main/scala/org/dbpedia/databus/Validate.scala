@@ -152,7 +152,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
         datafiles.foreach(f => {
           compFile.add(f.compressionVariant.toString)
         })
-        getLog.info(s"${v} from name: {${compfilenames.mkString(", ")}}, from file {${compFile.mkString(", ")}}")
+        getLog.info(s"${v} from file ending: {${compfilenames.mkString(", ")}}, from file {${compFile.mkString(", ")}}")
       }
 
       getLog.info("Format:")
@@ -167,7 +167,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
         datafiles.foreach(f => {
           formFile.add(f.format.mimeType)
         })
-        getLog.info(s"${v} from name: {${formfilenames.mkString(", ")}}, from file {${formFile.mkString(", ")}}")
+        getLog.info(s"${v} from file name: {${formfilenames.mkString(", ")}}, from file {${formFile.mkString(", ")}}")
       }
 
       getLog.info("ContentVariant:")
@@ -178,7 +178,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
             contfilenames.add(a)
           })
         })
-        getLog.info(s"${v} from name: {${contfilenames.mkString(", ")}}")
+        getLog.info(s"${v} from file name: {${contfilenames.mkString(", ")}}")
       }
 
       getLog.info("prefix:")
@@ -192,7 +192,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
 
       if (detailedValidation) {
 
-        getLog.info("Sorted:")
+        getLog.info("Sorted (LC_COLLATE=C):")
         for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
           val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
           var sorted = 0
@@ -205,7 +205,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
               contfilenames.add(df.file.getName)
             }
           })
-          getLog.info(s"${v} sorted: ${sorted}, not sorted: ${unsorted} {${contfilenames.mkString(", ")}}")
+          getLog.info(s"${v} sorted: ${sorted}, not sorted: ${unsorted} {${contfilenames.mkString(", ").replaceAll(artifactId,"")}}")
         }
 
         getLog.info("Duplicates:")
@@ -220,7 +220,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
 
             }
           })
-          getLog.info(s"${v} duplicates: ${duplicates} in {${contfilenames.mkString(", ")}}")
+          getLog.info(s"${v} duplicates: ${duplicates} in {${contfilenames.mkString(", ").replaceAll(artifactId,"")}}")
         }
 
         getLog.info("Empty files:")
@@ -231,52 +231,12 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
               contfilenames.add(df.file.getName)
             }
           })
-          getLog.info(s"${v} has ${contfilenames.size} empty files:  {${contfilenames.mkString(", ")}} ")
+          getLog.info(s"${v} has ${contfilenames.size} empty files:  {${contfilenames.mkString(", ").replaceAll(artifactId,"")}} ")
         }
 
       }
 
 
-
-
-          var headlineBasic = "comp\tcontent\tformat\tprefix\tname"
-          var contentBasic = ""
-
-          var headLineDetails = "sorted\tduplicates\tnonEmpty\tsize\tname"
-          var contentDetails = ""
-
-/*          val dataFiles = listDataFiles(versionDir)
-          dataFiles.foreach(f => {
-            val fileName = new FilenameHelpers(f)(getLog)
-            contentBasic +=
-              s"${fileName.compressionVariantExtensions.mkString(", ")} \t" +
-                s"${fileName.contentVariantExtensions.mkString(", ")} \t" +
-                s"${fileName.formatVariantExtensions.mkString(", ")} \t" +
-                s"${fileName.filePrefix} \t" +
-                s"${f.getName}\n"
-
-
-            if (detailedValidation == true) {
-              val df: Datafile = Datafile(f)(getLog).ensureExists()
-              df.updateFileMetrics()
-              if (df.sorted != true) {
-                getLog.warn(s"${f.getName} not sorted according to code points (LC_COLLATE=C)")
-              }
-
-              contentDetails += s"" +
-                s"${df.sorted}\t" +
-                s"${df.duplicates}\t" +
-                s"${df.nonEmptyLines}\t" +
-                s"${df.uncompressedByteSize}\t" +
-                s"${f.getName}\n"
-            }
-          })
-
-          var tableBasic = s"${headlineBasic}\n${contentBasic}"
-          var tableDetails = s"${headLineDetails}\n${contentDetails}"
-          getLog.info(s"Version $v has ${dataFiles.size} files total\n$tableBasic\n$tableDetails")
-        }
-      })*/
     }
   }
 
