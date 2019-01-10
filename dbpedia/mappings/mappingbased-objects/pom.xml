@@ -34,9 +34,8 @@ You can configure here:
                         <label>Mappingbased Objects@en</label>
                     </labels>
                     <datasetDescription>
-                        High quality object properties from the Wikipedia Infoboxes, gathered by the mapping-based extraction, using the mappings from http://mappings.dbpedia.org/.
-                        This data was extracted from the wikipedia-dumps available on https://dumps.wikimedia.org/ using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework. 
-                        For more information on how these datasets were generated, please visit http://dev.dbpedia.org/Extraction%20Workflow.
+                        High quality object properties from the Wikipedia Infoboxes, gathered by the mapping-based extraction.
+                        Derived from uncleaned by post-processing
                     </datasetDescription>
                 </configuration>
             </plugin>
