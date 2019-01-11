@@ -52,6 +52,8 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
   @Parameter(property = "databus.detailedValidation", required = false)
   val detailedValidation: Boolean = false
 
+  @Parameter(property = "databus.strict", required = false)
+  val strict: Boolean = false
 
   /**
     * TODO potential caveat: check if, else based on pom could fail
@@ -77,7 +79,8 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
           getLog.info(s"SUCCESS: DBpedia Account found: ${account.getURI}")
         }
         case None => {
-          getLog.warn(s"DBpedia account for $publisher not found at https://github.com/dbpedia/accounts , some features might be deactivated")
+          strict(s"DBpedia account for $publisher not found at https://github.com/dbpedia/accounts " +
+            s", some features might be deactivated")
         }
       }
     } else {
@@ -104,7 +107,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
 
           val wrongFiles = versionDir.listFiles.filterNot(_.getName.startsWith(artifactId)).toList
           if (wrongFiles.nonEmpty) {
-            getLog.warn(s" ${wrongFiles.mkString(s" not starting with $artifactId\n")}")
+            strict(s" ${wrongFiles.mkString(s" not starting with $artifactId\n")}")
           }
 
           var fileList: List[File] = versionDir.listFiles
@@ -128,7 +131,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
           })
           Some((v, versionDir, fileList, filenameHelpers, datafiles))
         } else {
-          getLog.warn(s"empty directory: ${versionDir}")
+          strict(s"empty directory: ${versionDir}")
           None
         }
       })
@@ -185,7 +188,7 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
       for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
         val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
         fileNames.foreach(f => {
-            contfilenames.add(f.filePrefix)
+          contfilenames.add(f.filePrefix)
         })
         getLog.info(s"${v} from name: {${contfilenames.mkString(", ")}}")
       }
@@ -199,13 +202,13 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
           var unsorted = 0
           datafiles.foreach(df => {
             if (df.sorted) {
-              sorted+=1
+              sorted += 1
             } else {
-              unsorted+=1
+              unsorted += 1
               contfilenames.add(df.file.getName)
             }
           })
-          getLog.info(s"${v} sorted: ${sorted}, not sorted: ${unsorted} {${contfilenames.mkString(", ").replaceAll(artifactId,"")}}")
+          getLog.info(s"${v} sorted: ${sorted}, not sorted: ${unsorted} {${contfilenames.mkString(", ").replaceAll(artifactId, "")}}")
         }
 
         getLog.info("Duplicates:")
@@ -214,24 +217,24 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
           val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
 
           datafiles.foreach(df => {
-            if (df.duplicates>0) {
+            if (df.duplicates > 0) {
               duplicates += df.duplicates
               contfilenames.add(df.file.getName)
 
             }
           })
-          getLog.info(s"${v} duplicates: ${duplicates} in {${contfilenames.mkString(", ").replaceAll(artifactId,"")}}")
+          getLog.info(s"${v} duplicates: ${duplicates} in {${contfilenames.mkString(", ").replaceAll(artifactId, "")}}")
         }
 
         getLog.info("Empty files:")
         for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
           val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
           datafiles.foreach(df => {
-            if (df.nonEmptyLines==0) {
+            if (df.nonEmptyLines == 0) {
               contfilenames.add(df.file.getName)
             }
           })
-          getLog.info(s"${v} has ${contfilenames.size} empty files:  {${contfilenames.mkString(", ").replaceAll(artifactId,"")}} ")
+          getLog.info(s"${v} has ${contfilenames.size} empty files:  {${contfilenames.mkString(", ").replaceAll(artifactId, "")}} ")
         }
 
       }
@@ -240,6 +243,14 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
     }
   }
 
+  def strict(reason:String): Unit ={
+    if (strict) {
+      getLog.error(s"[strict==true] failing reason: ${reason}")
+      System.exit(-1)
+    }else{
+      getLog.warn(reason)
+    }
+  }
 
   /**
     *

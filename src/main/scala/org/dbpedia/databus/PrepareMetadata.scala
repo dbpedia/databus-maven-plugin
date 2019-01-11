@@ -62,7 +62,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
   override def execute(): Unit = {
     //skip the parent module
     if (isParent()) {
-      getLog.info("skipping parent module")
+      getLog.info(s"skipping parent $artifactId")
       return
     }
 
@@ -70,8 +70,9 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
 
     getLog.info(s"looking for data files in: ${dataInputDirectory.getCanonicalPath}")
-    getLog.info(s"Found ${getListOfInputFiles().size} files:\n${getListOfInputFiles().mkString(", ").replaceAll(dataInputDirectory.getCanonicalPath, "")}")
-    //collecting metadata for each file
+    getLog.info(s"Found ${getListOfInputFiles().size} files:\n${
+      getListOfInputFiles().mkString(", ").replaceAll(dataInputDirectory.getCanonicalPath + "/" + artifactId, "")}")
+    getLog.info("collecting metadata for each file (from parameters in pom.xml and from file itself)")
     getListOfInputFiles().foreach(datafile => {
       processFile(datafile, dataIdCollect)
 
@@ -83,7 +84,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     //Option(publisher.toString.asIRI.getProperty(foaf.account)).map(_.getObject.asResource)
     //}
 
-    // write the model to /target/
+    getLog.info(s"writing metadata to ${getDataIdFile()}")
     if (!dataIdCollect.isEmpty) {
       {
         implicit val editContext = dataIdCollect
@@ -171,6 +172,8 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
         os.write((Properties.logo + "\n").getBytes)
         dataIdCollect.write(os, "turtle")
       }
+      getLog.info(s"dataid.ttl written")
+
     }
   }
 

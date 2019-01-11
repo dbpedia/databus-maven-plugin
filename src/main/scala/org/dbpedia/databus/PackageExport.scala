@@ -40,7 +40,7 @@ class PackageExport extends AbstractMojo with Properties {
   override def execute(): Unit = {
     //skip the parent module
     if(isParent()) {
-      getLog.info("skipping parent module")
+      getLog.info(s"skipping parent ${artifactId}")
       return
     }
 
