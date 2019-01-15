@@ -40,9 +40,13 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
       return
     }
 
-    val repoPathSegement = if(deployToTestRepo) "testrepo" else "repo"
+    //val repoPathSegement = if(deployToTestRepo) "testrepo" else "repo"
 
-    val uploadEndpointIRI = s"https://databus.dbpedia.org/$repoPathSegement/dataid/upload"
+    if(!deployRepoURL.startsWith("https://")){
+      getLog.error(s"<databus.deployRepoURL> is not https:// ${deployRepoURL}")
+    }
+
+    val uploadEndpointIRI = s"$deployRepoURL/dataid/upload"
 
 
     val response = if(dataIdPackageTarget.isRegularFile && dataIdPackageTarget.nonEmpty) {
@@ -69,6 +73,6 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
          |message from service:\n${response.body}
        """.stripMargin)
 
-    getLog.info(s"upload of DataId for artifact '$artifactId' to $repoPathSegement succeeded")
+    getLog.info(s"upload of DataId for artifact '$artifactId' to $uploadEndpointIRI succeeded")
   }
 }

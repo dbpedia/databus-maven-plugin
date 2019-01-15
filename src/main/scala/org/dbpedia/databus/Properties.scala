@@ -132,6 +132,9 @@ trait Properties extends Locations with Parameters {
   @Parameter(property = "databus.deployToTestRepo", defaultValue = "false")
   val deployToTestRepo: Boolean = false
 
+  @Parameter(property = "databus.deployRepoURL", defaultValue = "https://databus.dbpedia.org/repo")
+  val deployRepoURL : String = ""
+
   @Parameter(property = "databus.allowOverwriteOnDeploy") val allowOverwriteOnDeploy: Boolean = true
   @Parameter(property = "databus.insertVersion") val insertVersion: Boolean = true
 

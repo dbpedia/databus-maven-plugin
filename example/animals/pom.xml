@@ -26,7 +26,7 @@
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</databus.license>
 
  
-        <databus.deployToTestRepo>true</databus.deployToTestRepo>
+        <databus.deployRepoURL>https://localhost/repo</databus.deployRepoURL>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<databus.changelog>No real version, we also use this as a dataset to test the framework</databus.changelog>
 		<databus.docheader>Snippet to put before docu</databus.docheader>
