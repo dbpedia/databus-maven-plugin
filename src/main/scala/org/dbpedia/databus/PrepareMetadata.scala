@@ -21,7 +21,7 @@
 
 package org.dbpedia.databus
 
-import org.dbpedia.databus.lib.{AccountHelpers, Datafile, SigningHelpers}
+import org.dbpedia.databus.lib.{Datafile, SigningHelpers}
 import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
 import org.dbpedia.databus.shared.helpers.conversions._
 import org.dbpedia.databus.shared.rdf.conversions._
@@ -39,6 +39,7 @@ import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 
 import org.apache.jena.datatypes.xsd.XSDDatatype.XSDdate
 import org.apache.jena.vocabulary.{RDF, RDFS}
+import org.dbpedia.databus.shared.authentification.AccountHelpers
 
 /**
   * Analyse release data files

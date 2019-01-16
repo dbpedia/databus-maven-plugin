@@ -22,9 +22,11 @@ package org.dbpedia.databus
 
 import org.dbpedia.databus.lib._
 import org.dbpedia.databus.shared._
-
+import org.dbpedia.databus.shared.helpers.conversions._
+import org.dbpedia.databus.shared.rdf.conversions._
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
+import org.dbpedia.databus.shared.authentification.AccountHelpers
 import org.scalactic.Requirements._
 import org.scalactic.TypeCheckedTripleEquals._
 
@@ -48,12 +50,24 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
 
     val uploadEndpointIRI = s"$deployRepoURL/dataid/upload"
 
+    val datasetIdentifier = AccountHelpers.getAccountOption(publisher) match {
 
+      case Some(account) => {
+
+        s"${account.getURI}/${groupId}/${artifactId}/${version}"
+      }
+
+      case None => {
+        dataIdDownloadLocation
+      }
+    }
+
+    //TODO packageExport should do the resolution of URIs
     val response = if(dataIdPackageTarget.isRegularFile && dataIdPackageTarget.nonEmpty) {
 
       // if there is a (base-resolved) DataId Turtle file in the package directory, attempt to upload that one
       DataIdUpload.upload(uploadEndpointIRI, dataIdPackageTarget, locations.pkcs12File, pkcs12Password.get,
-        dataIdDownloadLocation, allowOverwriteOnDeploy)
+        dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)
     } else {
 
       //else resolve the base in-memory and upload that
@@ -63,7 +77,7 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
         "databus:package-export goal. Uploading a DataId prepared in-memory.")
 
       DataIdUpload.upload(uploadEndpointIRI, baseResolvedDataId, locations.pkcs12File, pkcs12Password.get,
-        dataIdDownloadLocation, allowOverwriteOnDeploy)
+        dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)
     }
 
     requireState(response.code === 200,
