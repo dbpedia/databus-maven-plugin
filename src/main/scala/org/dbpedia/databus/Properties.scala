@@ -250,7 +250,6 @@ trait Properties extends Locations with Parameters {
     packaging.equals("pom")
   }
 
-  val invocationTime = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
 
 
   def getDataIdFile(): File = dataIdFile.toJava

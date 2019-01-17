@@ -35,7 +35,7 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 
 import scala.language.reflectiveCalls
 import java.io._
-import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
+import java.time.format.DateTimeFormatter.ISO_INSTANT
 
 import org.apache.jena.datatypes.xsd.XSDDatatype.XSDdate
 import org.apache.jena.vocabulary.{RDF, RDFS}
@@ -110,9 +110,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
              |Metadata created by ${publisher}
           """.stripMargin)
 
-        def issuedTime = params.issuedDate.getOrElse(invocationTime)
-
-        dataIdResource.addProperty(dcterms.issued, ISO_LOCAL_DATE.format(issuedTime).asTypedLiteral(XSDdate))
+        dataIdResource.addProperty(dcterms.issued, ISO_INSTANT.format(params.invocationTime).asTypedLiteral(XSDdate))
         dataIdResource.addProperty(dcterms.license, "http://purl.oclc.org/NET/rdflicense/cc-zero1.0".asIRI)
         dataIdResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
         dataIdResource.addProperty(dataid.associatedAgent, publisher.toString.asIRI)
