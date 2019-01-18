@@ -20,13 +20,16 @@
  */
 package org.dbpedia.databus
 
+import java.nio.charset.StandardCharsets
+
 import org.dbpedia.databus.lib._
 import org.dbpedia.databus.shared._
-
+import org.dbpedia.databus.shared.helpers.conversions._
+import org.dbpedia.databus.shared.rdf.conversions._
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-import org.scalactic.Requirements._
-import org.scalactic.TypeCheckedTripleEquals._
+import org.dbpedia.databus.shared.authentification.AccountHelpers
+import java.net.URLEncoder
 
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY)
@@ -35,40 +38,89 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
   @throws[MojoExecutionException]
   override def execute(): Unit = {
     //skip the parent module
-    if(isParent()) {
+    if (isParent()) {
       getLog.info("skipping parent module")
       return
     }
 
-    val repoPathSegement = if(deployToTestRepo) "testrepo" else "repo"
+    //val repoPathSegement = if(deployToTestRepo) "testrepo" else "repo"
 
-    val uploadEndpointIRI = s"https://databus.dbpedia.org/$repoPathSegement/dataid/upload"
+    if (!deployRepoURL.startsWith("https://")) {
+      getLog.error(s"<databus.deployRepoURL> is not https:// ${deployRepoURL}")
+    }
+
+    val uploadEndpointIRI = s"$deployRepoURL/dataid/upload"
+
+    val datasetIdentifier = AccountHelpers.getAccountOption(publisher) match {
+
+      case Some(account) => {
+
+        s"${account.getURI}/${groupId}/${artifactId}/${version}"
+      }
+
+      case None => {
+        dataIdDownloadLocation
+      }
+    }
 
 
-    val response = if(dataIdPackageTarget.isRegularFile && dataIdPackageTarget.nonEmpty) {
+    getLog.info(s"Attempting upload to ${uploadEndpointIRI} with allowOverrideOnDeploy=${allowOverwriteOnDeploy} into graph ${datasetIdentifier}")
+
+    //TODO packageExport should do the resolution of URIs
+    val response = if (dataIdPackageTarget.isRegularFile && dataIdPackageTarget.nonEmpty) {
 
       // if there is a (base-resolved) DataId Turtle file in the package directory, attempt to upload that one
       DataIdUpload.upload(uploadEndpointIRI, dataIdPackageTarget, locations.pkcs12File, pkcs12Password.get,
-        dataIdDownloadLocation, allowOverwriteOnDeploy)
+        dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)
     } else {
-
-      //else resolve the base in-memory and upload that
-      val baseResolvedDataId = resolveBaseForRDFFile(dataIdFile, dataIdDownloadLocation)
 
       getLog.warn(s"Did not find expected DataId file '${dataIdPackageTarget.pathAsString}' from " +
         "databus:package-export goal. Uploading a DataId prepared in-memory.")
 
+      //else resolve the base in-memory and upload that
+      val baseResolvedDataId = resolveBaseForRDFFile(dataIdFile, dataIdDownloadLocation)
+
       DataIdUpload.upload(uploadEndpointIRI, baseResolvedDataId, locations.pkcs12File, pkcs12Password.get,
-        dataIdDownloadLocation, allowOverwriteOnDeploy)
+        dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)
     }
 
-    requireState(response.code === 200,
-      s"""
-         |The repository service refused to upload the DataId document ${dataIdFile.pathAsString}:
-         |HTTP response code: ${response.code}
-         |message from service:\n${response.body}
+
+    if (response.code != 200) {
+      getLog.error(
+        s"""|FAILURE HTTP response code: ${response.code} (check https://en.wikipedia.org/wiki/HTTP_${response.code})
+            |$deployRepoURL rejected ${dataIdFile.pathAsString}:
+            |Message:\n${response.body}
        """.stripMargin)
 
-    getLog.info(s"upload of DataId for artifact '$artifactId' to $repoPathSegement succeeded")
+      getLog.debug(s"Full ${response.toString}")
+
+      System.exit(-1)
+    }
+
+
+    val query =
+      s"""
+         |PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
+         |PREFIX dct: <http://purl.org/dc/terms/>
+         |
+         |SELECT ?name ?version ?date ?webid ?account {
+         |Graph <${datasetIdentifier}> {
+         |  ?dataset a dataid:Dataset .
+         |  ?dataset rdfs:label ?name .
+         |  ?dataset dct:hasVersion ?version .
+         |  ?dataset dct:issued ?date .
+         |  ?dataset dataid:associatedAgent ?webid .
+         |  OPTIONAL {?webid foaf:account ?account }
+         |}}
+         |""".stripMargin
+
+    val encoded = URLEncoder.encode(query, StandardCharsets.UTF_8.name())
+
+    getLog.info(
+      s"""SUCCESS: upload of DataId for artifact '$artifactId' version ${version} to $deployRepoURL succeeded
+         |Data should be available within some minutes at graph ${datasetIdentifier}
+         |Test at ${deployRepoURL}/sparql  with query: ${query}
+         |curl "${deployRepoURL}/sparql?query=${encoded}"
+       """.stripMargin)
   }
 }

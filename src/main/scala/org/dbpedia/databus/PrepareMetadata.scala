@@ -21,7 +21,7 @@
 
 package org.dbpedia.databus
 
-import org.dbpedia.databus.lib.{AccountHelpers, Datafile, SigningHelpers}
+import org.dbpedia.databus.lib.{Datafile, SigningHelpers}
 import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
 import org.dbpedia.databus.shared.helpers.conversions._
 import org.dbpedia.databus.shared.rdf.conversions._
@@ -35,10 +35,11 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 
 import scala.language.reflectiveCalls
 import java.io._
-import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 
-import org.apache.jena.datatypes.xsd.XSDDatatype.XSDdate
-import org.apache.jena.vocabulary.{RDF, RDFS}
+import org.apache.jena.datatypes.xsd.XSDDatatype.XSDdateTime
+
+import org.apache.jena.vocabulary.{RDF, RDFS, XSD}
+import org.dbpedia.databus.shared.authentification.AccountHelpers
 
 /**
   * Analyse release data files
@@ -109,9 +110,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
              |Metadata created by ${publisher}
           """.stripMargin)
 
-        def issuedTime = params.issuedDate.getOrElse(invocationTime)
-
-        dataIdResource.addProperty(dcterms.issued, ISO_LOCAL_DATE.format(issuedTime).asTypedLiteral(XSDdate))
+        dataIdResource.addProperty(dcterms.issued, ISO_INSTANT_NO_NANO.format(params.invocationTime).asTypedLiteral(XSDdateTime))
         dataIdResource.addProperty(dcterms.license, "http://purl.oclc.org/NET/rdflicense/cc-zero1.0".asIRI)
         dataIdResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
         dataIdResource.addProperty(dataid.associatedAgent, publisher.toString.asIRI)

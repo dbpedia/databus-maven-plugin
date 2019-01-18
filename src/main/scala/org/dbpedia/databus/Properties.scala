@@ -132,6 +132,9 @@ trait Properties extends Locations with Parameters {
   @Parameter(property = "databus.deployToTestRepo", defaultValue = "false")
   val deployToTestRepo: Boolean = false
 
+  @Parameter(property = "databus.deployRepoURL", defaultValue = "https://databus.dbpedia.org/repo")
+  val deployRepoURL : String = ""
+
   @Parameter(property = "databus.allowOverwriteOnDeploy") val allowOverwriteOnDeploy: Boolean = true
   @Parameter(property = "databus.insertVersion") val insertVersion: Boolean = true
 
@@ -219,6 +222,9 @@ trait Properties extends Locations with Parameters {
     * default today
     */
   @Parameter(property = "databus.issuedDate") val issuedDate: String = null
+
+  @Parameter(property = "databus.tryVersionAsIssuedDate", defaultValue = "false") val tryVersionAsIssuedDate: Boolean = false
+
   /**
     * default from file, else today
     */
@@ -247,7 +253,6 @@ trait Properties extends Locations with Parameters {
     packaging.equals("pom")
   }
 
-  val invocationTime = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
 
 
   def getDataIdFile(): File = dataIdFile.toJava

@@ -191,6 +191,40 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     this
   }
 
+  /**
+    * translates a java (signed!) byte into an unsigned byte (emulated via short)
+    *
+    * @param b signed byte to convert to unsigned byte value
+    * @return the unsigned byte value stored as short
+    */
+  def toUnsignedByte(b : Byte) = {
+    val aByte:Int = 0xff & b.asInstanceOf[Int]
+    aByte.asInstanceOf[Short]
+  }
+
+  /**
+    * does a bytewise string comparison in scala similar to LC_ALL=C sort does in Unix
+    *
+    * @param a
+    * @param b
+    * @return a negative value if a is in byte order before b, zero if a and b bytestreams match and, and a positive value else
+    */
+  def compareStringsBytewise(a :String, b :String): Int =
+  {
+    val ab = a.getBytes("UTF-8")
+    val bb = b.getBytes("UTF-8")
+
+    var mLength = scala.math.min(ab.length,bb.length)
+
+    for( i <- 0 to mLength-1){
+      if (ab(i)==bb(i))
+        {}
+      else
+        return toUnsignedByte(ab(i)).compareTo(toUnsignedByte(bb(i)))
+    }
+    return ab.length-bb.length
+  }
+
 
   def updateFileMetrics(): Datafile = {
 
@@ -199,7 +233,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     var sort: Boolean = true
     var uncompressedSize = 0
 
-    var previousLine = ""
+    var previousLine : String = null
     try {
       getInputStream().apply { in =>
         val it = Source.fromInputStream(in)(Codec.UTF8).getLines()
@@ -213,15 +247,19 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
           }
 
           // sorted or duplicate
-          if (!previousLine.isEmpty) {
-            val cmp = line.trim.compareTo(previousLine)
+          if (previousLine!=null) {
+            val cmp = compareStringsBytewise(line,previousLine)
             if (cmp == 0) {
               dupes += 1
             } else if (cmp < 0) {
+                log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    Sort order wrong for pair:  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                log.debug(previousLine)
+                log.debug(line)
+                log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
               sort = false
             }
           }
-          previousLine = line.trim
+          previousLine = line
         }
       }
 

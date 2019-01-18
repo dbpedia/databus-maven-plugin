@@ -25,7 +25,6 @@ import org.dbpedia.databus.{Parameters, Properties}
 import org.dbpedia.databus.lib.Datafile
 import org.dbpedia.databus.shared.rdf.conversions._
 import org.dbpedia.databus.shared.rdf.vocab._
-
 import better.files._
 import org.apache.jena.datatypes.xsd.XSDDatatype._
 import org.apache.jena.rdf.model.{Model, ModelFactory, Resource}
@@ -34,9 +33,7 @@ import org.apache.maven.plugin.AbstractMojo
 
 import scala.collection.JavaConverters._
 import scala.language.reflectiveCalls
-
-import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
-import java.time.{LocalDateTime, ZoneId}
+import java.time.{ ZoneId, ZonedDateTime}
 
 object DataFileToModel {
 
@@ -72,7 +69,7 @@ trait DataFileToModel extends Properties with Parameters {
 
     implicit val model: Model = ModelFactory.createDefaultModel
 
-    for((key, value) <- prefixes) {
+    for ((key, value) <- prefixes) {
       model.setNsPrefix(key, value)
     }
 
@@ -87,7 +84,7 @@ trait DataFileToModel extends Properties with Parameters {
     datasetResource.addProperty(dcat.distribution, singleFileResource)
 
     /**
-      *  type properties
+      * type properties
       */
     singleFileResource.addProperty(RDF.`type`, dataid.SingleFile)
 
@@ -98,11 +95,16 @@ trait DataFileToModel extends Properties with Parameters {
 
     /**
       * specific info about the file
-       */
+      */
 
-    def modificationTime = params.modifiedDate.getOrElse(
-      LocalDateTime.ofInstant(datafile.file.toScala.lastModifiedTime, ZoneId.systemDefault()))
-    singleFileResource.addProperty(dcterms.modified, ISO_LOCAL_DATE.format(modificationTime).asTypedLiteral(XSDdate))
+    // def modificationTime =
+
+    val modificationTime = Option(ZonedDateTime.ofInstant(datafile.file.toScala.lastModifiedTime, ZoneId.systemDefault())) match {
+      case Some(instant) => instant
+      case None => params.modifiedDate
+    }
+
+    singleFileResource.addProperty(dcterms.modified,  ISO_INSTANT_NO_NANO.format(modificationTime).asTypedLiteral(XSDdateTime))
 
     singleFileResource.addProperty(dataid.sha256sum, datafile.sha256sum.asPlainLiteral)
     singleFileResource.addProperty(dataid.signature, datafile.signatureBase64.asPlainLiteral)
@@ -121,6 +123,7 @@ trait DataFileToModel extends Properties with Parameters {
       * files have one format extension and maybe one compressionextension and mimetypes have a list of likely extensions
       */
     def mediaTypeName = datafile.format.getClass.getSimpleName.stripSuffix("$")
+
     val mediaTypeRes = (model.getNsPrefixURI("dataid-mt") + mediaTypeName).asIRI
     mediaTypeRes.addProperty(RDF.`type`, s"${model.getNsPrefixURI("dataid-mt")}MediaType".asIRI)
     singleFileResource.addProperty(dcat.mediaType, mediaTypeRes)
@@ -152,19 +155,17 @@ trait DataFileToModel extends Properties with Parameters {
     }
 
     //basic properties
-    thisResource.addProperty(dcterms.description, (docheader+"\n"+datasetDescription+"\n"+docfooter).asPlainLiteral)
+    thisResource.addProperty(dcterms.description, (docheader + "\n" + datasetDescription + "\n" + docfooter).asPlainLiteral)
     // todo add version number, but this is a dataid issue
     thisResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
     thisResource.addProperty(dcterms.hasVersion, version.asPlainLiteral)
 
-    def issuedTime = params.issuedDate.getOrElse(invocationTime)
-
-    thisResource.addProperty(dcterms.issued, ISO_LOCAL_DATE.format(issuedTime).asTypedLiteral(XSDdate))
+    thisResource.addProperty(dcterms.issued, ISO_INSTANT_NO_NANO.format(params.issuedDate).asTypedLiteral(XSDdateTime))
     thisResource.addProperty(dcterms.license, license.asIRI)
     thisResource.addProperty(dataid.associatedAgent, publisher.toString.asIRI)
     thisResource.addProperty(dcterms.publisher, publisher.toString.asIRI)
 
-    if (maintainer !=null){
+    if (maintainer != null) {
       thisResource.addProperty(dataid.maintainer, maintainer.toString.asIRI)
     }
   }

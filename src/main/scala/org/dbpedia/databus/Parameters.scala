@@ -20,26 +20,57 @@
  */
 package org.dbpedia.databus
 
+
 import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
 
 import scala.collection.JavaConverters._
+import java.time.format.DateTimeFormatter.ISO_INSTANT
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.TemporalAccessor
+import java.time._
 
-import java.time.format.DateTimeFormatter.ISO_DATE
 
-
-trait Parameters { this: Properties =>
+trait Parameters {
+  this: Properties =>
 
   lazy val params = new Parameters(this)
 
+  val ISO_INSTANT_NO_NANO = new DateTimeFormatterBuilder().parseCaseInsensitive().appendInstant(0).toFormatter
+
   class Parameters(props: Properties) {
 
-    lazy val issuedDate = Option(props.issuedDate).map(ISO_DATE.parse)
 
-    lazy val modifiedDate = Option(props.modifiedDate).map(ISO_DATE.parse)
+    val invocationTime: ZonedDateTime = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
+
+
+    lazy val issuedDate: ZonedDateTime =
+      try {
+        if (props.tryVersionAsIssuedDate) {
+          val attempt = props.version.replace(".", "-") + "T00:00:00Z"
+          val zone = ZonedDateTime.parse(attempt)
+          zone
+        } else {
+          //ZonedDateTime.ofInstant(LocalDateTime.parse(props.issuedDate).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
+          ZonedDateTime.parse(props.issuedDate)
+        }
+      } catch {
+        case e: Throwable => {
+          invocationTime
+        }
+      }
+
+
+    lazy val modifiedDate: ZonedDateTime = try {
+      ZonedDateTime.parse(props.modifiedDate)
+    } catch {
+      case e: Throwable => invocationTime
+    }
 
     lazy val wasDerivedFrom = props.wasDerivedFrom.asScala.map(ScalaBaseEntity.fromJava).toSet
 
-    lazy val versionToInsert = if(insertVersion) Some(version) else None
+    lazy val versionToInsert = if (insertVersion) Some(version) else None
   }
 
 }
+
+
