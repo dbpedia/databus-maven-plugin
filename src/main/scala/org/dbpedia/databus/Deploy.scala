@@ -20,7 +20,6 @@
  */
 package org.dbpedia.databus
 
-import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 import org.dbpedia.databus.lib._
@@ -30,10 +29,7 @@ import org.dbpedia.databus.shared.rdf.conversions._
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import org.dbpedia.databus.shared.authentification.AccountHelpers
-import org.scalactic.Requirements._
-import org.scalactic.TypeCheckedTripleEquals._
 import java.net.URLEncoder
-
 
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY)
@@ -42,14 +38,14 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
   @throws[MojoExecutionException]
   override def execute(): Unit = {
     //skip the parent module
-    if(isParent()) {
+    if (isParent()) {
       getLog.info("skipping parent module")
       return
     }
 
     //val repoPathSegement = if(deployToTestRepo) "testrepo" else "repo"
 
-    if(!deployRepoURL.startsWith("https://")){
+    if (!deployRepoURL.startsWith("https://")) {
       getLog.error(s"<databus.deployRepoURL> is not https:// ${deployRepoURL}")
     }
 
@@ -68,10 +64,11 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
     }
 
 
-    getLog.info(s"Attemtpting upload to ${uploadEndpointIRI} with allowOverrideOnDeploy=${allowOverwriteOnDeploy} into graph ${datasetIdentifier}" )
+    getLog.info(
+      s"Attemtpting upload to ${uploadEndpointIRI} with allowOverrideOnDeploy=${allowOverwriteOnDeploy} into graph ${datasetIdentifier}")
 
     //TODO packageExport should do the resolution of URIs
-    val response = if(dataIdPackageTarget.isRegularFile && dataIdPackageTarget.nonEmpty) {
+    val response = if (dataIdPackageTarget.isRegularFile && dataIdPackageTarget.nonEmpty) {
 
       // if there is a (base-resolved) DataId Turtle file in the package directory, attempt to upload that one
       DataIdUpload.upload(uploadEndpointIRI, dataIdPackageTarget, locations.pkcs12File, pkcs12Password.get,
@@ -88,15 +85,36 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
         dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)
     }
 
-    requireState(response.code === 200,
-      s"""
-         |The repository service refused to upload the DataId document ${dataIdFile.pathAsString}:
-         |HTTP response code: ${response.code}
-         |message from service:\n${response.body}
-       """.stripMargin)
 
-    val query = s"SELECT * {Graph <${datasetIdentifier}> {?s ?p ?o}} Limit 5"
+    if (response.code != 200) {
+      getLog.error(
+        s"""|FAILURE HTTP response code: ${response.code}
+            |The repository at $deployRepoURL refused to upload the DataId document ${dataIdFile.pathAsString}:
+            |message:\n${response.body}
+       """.stripMargin)
+      System.exit(-1)
+
+    }
+
+
+    val query =
+      s"""
+         |PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
+         |PREFIX dct: <http://purl.org/dc/terms/>
+         |
+         |SELECT ?name ?version ?date ?webid ?account {
+         |Graph <${datasetIdentifier}> {
+         |  ?dataset a dataid:Dataset .
+         |  ?dataset rdfs:label ?name .
+         |  ?dataset dct:hasVersion ?version .
+         |  ?dataset dct:issued ?date .
+         |  ?dataset dataid:associatedAgent ?webid .
+         |  OPTIONAL {?webid foaf:account ?account }
+         |}}
+         |""".stripMargin
+
     val encoded = URLEncoder.encode(query, StandardCharsets.UTF_8.name())
+
     getLog.info(
       s"""SUCCESS: upload of DataId for artifact '$artifactId' version ${version} to $deployRepoURL succeeded
          |Data should be available within some minutes at graph ${datasetIdentifier}

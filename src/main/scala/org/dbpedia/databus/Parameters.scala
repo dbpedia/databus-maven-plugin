@@ -25,8 +25,9 @@ import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
 
 import scala.collection.JavaConverters._
 import java.time.format.DateTimeFormatter.ISO_INSTANT
+import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.TemporalAccessor
-import java.time.{Instant,  ZoneId, ZonedDateTime}
+import java.time._
 
 
 trait Parameters {
@@ -34,20 +35,28 @@ trait Parameters {
 
   lazy val params = new Parameters(this)
 
+  val ISO_INSTANT_NO_NANO = new DateTimeFormatterBuilder().parseCaseInsensitive().appendInstant(0).toFormatter
+
   class Parameters(props: Properties) {
 
-    val invocationTime = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
 
-    lazy val issuedDate: TemporalAccessor = try {
-      ZonedDateTime.from(ISO_INSTANT.parse(props.issuedDate))
-    } catch {
-      case e: Throwable => {
-        invocationTime
-      }
-    }
+    val invocationTime: ZonedDateTime = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
 
-    lazy val modifiedDate: TemporalAccessor = try {
-      ZonedDateTime.from(ISO_INSTANT.parse(props.modifiedDate))
+
+    lazy val issuedDate: ZonedDateTime =
+      try {
+        if (props.tryVersionAsIssuedDate) {
+          val attempt = props.version.replace(".", "-") + "T00:00:00"
+          val zone = ZonedDateTime.ofInstant(LocalDateTime.parse(attempt).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
+          zone
+        } else {
+          ZonedDateTime.ofInstant(LocalDateTime.parse(props.issuedDate).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
+        }
+      }catch {case e:Throwable => {invocationTime}}
+
+
+    lazy val modifiedDate: ZonedDateTime = try {
+      ZonedDateTime.ofInstant(LocalDateTime.parse(props.modifiedDate).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
     } catch {
       case e: Throwable => invocationTime
     }

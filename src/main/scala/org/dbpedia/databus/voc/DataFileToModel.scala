@@ -33,7 +33,6 @@ import org.apache.maven.plugin.AbstractMojo
 
 import scala.collection.JavaConverters._
 import scala.language.reflectiveCalls
-import java.time.format.DateTimeFormatter.ISO_INSTANT
 import java.time.{ ZoneId, ZonedDateTime}
 
 object DataFileToModel {
@@ -105,7 +104,7 @@ trait DataFileToModel extends Properties with Parameters {
       case None => params.modifiedDate
     }
 
-    singleFileResource.addProperty(dcterms.modified, ISO_INSTANT.format(modificationTime).asTypedLiteral(XSDdate))
+    singleFileResource.addProperty(dcterms.modified,  ISO_INSTANT_NO_NANO.format(modificationTime).asTypedLiteral(XSDdateTime))
 
     singleFileResource.addProperty(dataid.sha256sum, datafile.sha256sum.asPlainLiteral)
     singleFileResource.addProperty(dataid.signature, datafile.signatureBase64.asPlainLiteral)
@@ -161,7 +160,7 @@ trait DataFileToModel extends Properties with Parameters {
     thisResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
     thisResource.addProperty(dcterms.hasVersion, version.asPlainLiteral)
 
-    thisResource.addProperty(dcterms.issued, ISO_INSTANT.format(params.issuedDate).asTypedLiteral(XSDdate))
+    thisResource.addProperty(dcterms.issued, ISO_INSTANT_NO_NANO.format(params.issuedDate).asTypedLiteral(XSDdateTime))
     thisResource.addProperty(dcterms.license, license.asIRI)
     thisResource.addProperty(dataid.associatedAgent, publisher.toString.asIRI)
     thisResource.addProperty(dcterms.publisher, publisher.toString.asIRI)

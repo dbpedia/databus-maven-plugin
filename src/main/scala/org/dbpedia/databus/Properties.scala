@@ -222,6 +222,9 @@ trait Properties extends Locations with Parameters {
     * default today
     */
   @Parameter(property = "databus.issuedDate") val issuedDate: String = null
+
+  @Parameter(property = "databus.tryVersionAsIssuedDate", defaultValue = "false") val tryVersionAsIssuedDate: Boolean = false
+
   /**
     * default from file, else today
     */
