@@ -64,8 +64,7 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
     }
 
 
-    getLog.info(
-      s"Attemtpting upload to ${uploadEndpointIRI} with allowOverrideOnDeploy=${allowOverwriteOnDeploy} into graph ${datasetIdentifier}")
+    getLog.info(s"Attempting upload to ${uploadEndpointIRI} with allowOverrideOnDeploy=${allowOverwriteOnDeploy} into graph ${datasetIdentifier}")
 
     //TODO packageExport should do the resolution of URIs
     val response = if (dataIdPackageTarget.isRegularFile && dataIdPackageTarget.nonEmpty) {
@@ -88,12 +87,14 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
 
     if (response.code != 200) {
       getLog.error(
-        s"""|FAILURE HTTP response code: ${response.code}
-            |The repository at $deployRepoURL refused to upload the DataId document ${dataIdFile.pathAsString}:
-            |message:\n${response.body}
+        s"""|FAILURE HTTP response code: ${response.code} (check https://en.wikipedia.org/wiki/HTTP_${response.code})
+            |$deployRepoURL rejected ${dataIdFile.pathAsString}:
+            |Message:\n${response.body}
        """.stripMargin)
-      System.exit(-1)
 
+      getLog.debug(s"Full ${response.toString}")
+
+      System.exit(-1)
     }
 
 

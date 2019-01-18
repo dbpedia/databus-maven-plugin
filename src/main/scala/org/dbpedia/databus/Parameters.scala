@@ -46,17 +46,22 @@ trait Parameters {
     lazy val issuedDate: ZonedDateTime =
       try {
         if (props.tryVersionAsIssuedDate) {
-          val attempt = props.version.replace(".", "-") + "T00:00:00"
-          val zone = ZonedDateTime.ofInstant(LocalDateTime.parse(attempt).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
+          val attempt = props.version.replace(".", "-") + "T00:00:00Z"
+          val zone = ZonedDateTime.parse(attempt)
           zone
         } else {
-          ZonedDateTime.ofInstant(LocalDateTime.parse(props.issuedDate).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
+          //ZonedDateTime.ofInstant(LocalDateTime.parse(props.issuedDate).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
+          ZonedDateTime.parse(props.issuedDate)
         }
-      }catch {case e:Throwable => {invocationTime}}
+      } catch {
+        case e: Throwable => {
+          invocationTime
+        }
+      }
 
 
     lazy val modifiedDate: ZonedDateTime = try {
-      ZonedDateTime.ofInstant(LocalDateTime.parse(props.modifiedDate).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
+      ZonedDateTime.parse(props.modifiedDate)
     } catch {
       case e: Throwable => invocationTime
     }
