@@ -20,6 +20,9 @@
  */
 package org.dbpedia.databus
 
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+
 import org.dbpedia.databus.lib._
 import org.dbpedia.databus.shared._
 import org.dbpedia.databus.shared.helpers.conversions._
@@ -29,6 +32,8 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import org.dbpedia.databus.shared.authentification.AccountHelpers
 import org.scalactic.Requirements._
 import org.scalactic.TypeCheckedTripleEquals._
+import java.net.URLEncoder
+
 
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY)
@@ -62,6 +67,9 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
       }
     }
 
+
+    getLog.info(s"Attemtpting upload to ${uploadEndpointIRI} with allowOverrideOnDeploy=${allowOverwriteOnDeploy} into graph ${datasetIdentifier}" )
+
     //TODO packageExport should do the resolution of URIs
     val response = if(dataIdPackageTarget.isRegularFile && dataIdPackageTarget.nonEmpty) {
 
@@ -70,11 +78,11 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
         dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)
     } else {
 
-      //else resolve the base in-memory and upload that
-      val baseResolvedDataId = resolveBaseForRDFFile(dataIdFile, dataIdDownloadLocation)
-
       getLog.warn(s"Did not find expected DataId file '${dataIdPackageTarget.pathAsString}' from " +
         "databus:package-export goal. Uploading a DataId prepared in-memory.")
+
+      //else resolve the base in-memory and upload that
+      val baseResolvedDataId = resolveBaseForRDFFile(dataIdFile, dataIdDownloadLocation)
 
       DataIdUpload.upload(uploadEndpointIRI, baseResolvedDataId, locations.pkcs12File, pkcs12Password.get,
         dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)
@@ -87,6 +95,13 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
          |message from service:\n${response.body}
        """.stripMargin)
 
-    getLog.info(s"upload of DataId for artifact '$artifactId' to $uploadEndpointIRI succeeded")
+    val query = s"SELECT * {Graph <${datasetIdentifier}> {?s ?p ?o}} Limit 5"
+    val encoded = URLEncoder.encode(query, StandardCharsets.UTF_8.name())
+    getLog.info(
+      s"""SUCCESS: upload of DataId for artifact '$artifactId' version ${version} to $deployRepoURL succeeded
+         |Data should be available within some minutes at graph ${datasetIdentifier}
+         |Test at ${deployRepoURL}/sparql  with query: ${query}
+         |curl "${deployRepoURL}/sparql?query=${encoded}"
+       """.stripMargin)
   }
 }
