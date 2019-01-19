@@ -99,8 +99,7 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
 
 
     val query =
-      s"""
-         |PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
+      s"""PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
          |PREFIX dct: <http://purl.org/dc/terms/>
          |
          |SELECT ?name ?version ?date ?webid ?account {
@@ -110,8 +109,10 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
          |  ?dataset dct:hasVersion ?version .
          |  ?dataset dct:issued ?date .
          |  ?dataset dataid:associatedAgent ?webid .
-         |  OPTIONAL {?webid foaf:account ?account }
-         |}}
+         |  }
+         |# resides in other graph
+         |OPTIONAL {?webid foaf:account ?account }
+         |}
          |""".stripMargin
 
     val encoded = URLEncoder.encode(query, StandardCharsets.UTF_8.name())
@@ -119,7 +120,7 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
     getLog.info(
       s"""SUCCESS: upload of DataId for artifact '$artifactId' version ${version} to $deployRepoURL succeeded
          |Data should be available within some minutes at graph ${datasetIdentifier}
-         |Test at ${deployRepoURL}/sparql  with query: ${query}
+         |Test at ${deployRepoURL}/sparql  with query: \n\n ${query}
          |curl "${deployRepoURL}/sparql?query=${encoded}"
        """.stripMargin)
   }
