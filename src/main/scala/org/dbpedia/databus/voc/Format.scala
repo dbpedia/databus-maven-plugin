@@ -42,10 +42,14 @@ trait RDFBased {
 
 // unknown and binary
 object UNKNOWN extends Format("UNKNOWN", false) {}
+
 object ApplicationOctetStream extends Format("application/octet-stream", false)
+
+object TextPlain extends Format("text/plain", true)
 
 //csv
 object TextCSV extends Format(mimeType = "text/csv", lineBased = true)
+
 object TextTabSeparatedValues extends Format("text/tab-separated-values", lineBased = true)
 
 /**

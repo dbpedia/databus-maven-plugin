@@ -45,14 +45,7 @@ import org.apache.maven.settings.Settings
 @Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE, requiresOnline = true, threadSafe = true)
 class Validate extends AbstractMojo with Properties with SigningHelpers with LazyLogging {
 
-  @Parameter(property = "databus.allVersions", required = false)
-  val allVersions: Boolean = false
 
-  @Parameter(property = "databus.detailedValidation", required = false)
-  val detailedValidation: Boolean = false
-
-  @Parameter(property = "databus.strict", required = false)
-  val strict: Boolean = false
 
   /**
     * TODO potential caveat: check if, else based on pom could fail
@@ -62,31 +55,15 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
   @throws[MojoExecutionException]
   override def execute(): Unit = {
 
-    //System.exit(0)
-
-    /**
-      * validation
-      */
-
     // parent module, i.e. packaging pom
     if (isParent()) {
       validateWebId()
       validateAccount()
-
-    } else {
-
-      validateVersions()
     }
+
   }
 
-  def strict(reason: String): Unit = {
-    if (strict) {
-      getLog.error(s"[strict==true] failing reason: ${reason}")
-      System.exit(-1)
-    } else {
-      getLog.warn(reason)
-    }
-  }
+
 
 
   /**
@@ -126,174 +103,15 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
         getLog.info(s"SUCCESS: DBpedia Account found: ${account.getURI}")
       }
       case None => {
-        strict(s"DBpedia account for $publisher not found at https://github.com/dbpedia/accounts " +
+        getLog.warn(s"DBpedia account for $publisher not found at https://github.com/dbpedia/accounts " +
           s", some features might be deactivated")
       }
     }
   }
 
-  /**
-    * validate one or several versions
-    * NOTE: UGLY CODE AHEAD
-    */
-  def validateVersions(): Unit = {
-
-    val dataInputDirectoryParent = dataInputDirectory.getParentFile
-
-    val versions: mutable.SortedSet[String] = mutable.SortedSet(dataInputDirectory.toString.replace(dataInputDirectoryParent.toString, ""))
-
-    // add allVersions to the set
-    if (allVersions) {
-      versions.++=(dataInputDirectoryParent.listFiles().filter(_.isDirectory).map(f => {
-        f.toString.replace(dataInputDirectoryParent.toString, "")
-      }).toSet)
-      getLog.info(s"[databus.allVersion=true] found ${versions.size} version(s): ${versions.mkString(", ")}")
-    }
-
-    //val versions: mutable.SortedSet[String] = mutable.SortedSet(dataInputDirectory.toString.replace(dataInputDirectoryParent.toString, ""))
-
-    // collect all information
-
-    val versionDirs = versions.toList.flatMap(v => {
-      val versionDir: File = new File(dataInputDirectoryParent, v)
-      if (versionDir.exists && versionDir.isDirectory) {
-
-        val wrongFiles = versionDir.listFiles.filterNot(_.getName.startsWith(artifactId)).toList
-        if (wrongFiles.nonEmpty) {
-          strict(s" ${wrongFiles.mkString(s" not starting with $artifactId\n")}")
-        }
-
-        var fileList: List[File] = versionDir.listFiles
-          .filter(_.isFile)
-          .filter(_.getName.startsWith(artifactId))
-          .filter(_ != getDataIdFile())
-          .filter(_ != getParseLogFile())
-          .toList
-
-        val filenameHelpers: List[FilenameHelpers] = fileList.map(f => {
-          new FilenameHelpers(f)(getLog)
-        })
-
-        val datafiles: List[Datafile] = fileList.map(f => {
-
-          val df = Datafile(f)(getLog).ensureExists()
-          if (detailedValidation) {
-            df.updateFileMetrics()
-          }
-          df
-        })
-        Some((v, versionDir, fileList, filenameHelpers, datafiles))
-      } else {
-        strict(s"empty directory: ${versionDir}")
-        None
-      }
-    })
-
-    // now validation starts
-
-    getLog.info("Number of files:")
-    for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
-      getLog.info(s"${v} with ${fileList.size} files")
-    }
-
-    getLog.info("Compression:")
-    for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
-      val compfilenames: mutable.SortedSet[String] = mutable.SortedSet()
-      fileNames.foreach(f => {
-        f.compressionVariantExtensions.foreach(a => {
-          compfilenames.add(a)
-        })
-      })
-      val compFile: mutable.SortedSet[String] = mutable.SortedSet()
-      datafiles.foreach(f => {
-        compFile.add(f.compressionVariant.toString)
-      })
-      getLog.info(s"${v} from file ending: {${compfilenames.mkString(", ")}}, from file {${compFile.mkString(", ")}}")
-    }
-
-    getLog.info("Format:")
-    for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
-      val formfilenames: mutable.SortedSet[String] = mutable.SortedSet()
-      fileNames.foreach(f => {
-        f.formatVariantExtensions.foreach(a => {
-          formfilenames.add(a)
-        })
-      })
-      val formFile: mutable.SortedSet[String] = mutable.SortedSet()
-      datafiles.foreach(f => {
-        formFile.add(f.format.mimeType)
-      })
-      getLog.info(s"${v} from file name: {${formfilenames.mkString(", ")}}, from file {${formFile.mkString(", ")}}")
-    }
-
-    getLog.info("ContentVariant:")
-    for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
-      val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
-      fileNames.foreach(f => {
-        f.contentVariantExtensions.foreach(a => {
-          contfilenames.add(a)
-        })
-      })
-      getLog.info(s"${v} from file name: {${contfilenames.mkString(", ")}}")
-    }
-
-    getLog.info("prefix:")
-    for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
-      val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
-      fileNames.foreach(f => {
-        contfilenames.add(f.filePrefix)
-      })
-      getLog.info(s"${v} from name: {${contfilenames.mkString(", ")}}")
-    }
-
-    if (detailedValidation) {
-
-      getLog.info("Sorted (LC_COLLATE=C):")
-      for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
-        val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
-        var sorted = 0
-        var unsorted = 0
-        datafiles.foreach(df => {
-          if (df.sorted) {
-            sorted += 1
-          } else {
-            unsorted += 1
-            contfilenames.add(df.file.getName)
-          }
-        })
-        getLog.info(s"${v} sorted: ${sorted}, not sorted: ${unsorted} {${contfilenames.mkString(", ").replaceAll(artifactId, "")}}")
-      }
-
-      getLog.info("Duplicates:")
-      for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
-        var duplicates = 0
-        val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
-
-        datafiles.foreach(df => {
-          if (df.duplicates > 0) {
-            duplicates += df.duplicates
-            contfilenames.add(df.file.getName)
-
-          }
-        })
-        getLog.info(s"${v} duplicates: ${duplicates} in {${contfilenames.mkString(", ").replaceAll(artifactId, "")}}")
-      }
-
-      getLog.info("Empty files:")
-      for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
-        val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
-        datafiles.foreach(df => {
-          if (df.nonEmptyLines == 0) {
-            contfilenames.add(df.file.getName)
-          }
-        })
-        getLog.info(s"${v} has ${contfilenames.size} empty files:  {${contfilenames.mkString(", ").replaceAll(artifactId, "")}} ")
-      }
-
-    }
 
 
-  }
+
 
 
 }

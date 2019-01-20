@@ -62,6 +62,13 @@
                         </goals>
                     </execution>
                     <execution>
+                        <id>test-data</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test-data</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <id>metadata</id>
                         <phase>prepare-package</phase>
                         <goals>
