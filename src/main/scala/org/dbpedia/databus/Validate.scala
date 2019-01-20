@@ -71,6 +71,13 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
     */
   def validateWebId(): Unit = {
 
+    if(locations.pkcs12File == null){
+      getLog.error(s"no private key bundle (pkcs12/.pfx) configured [databus.pkcs12File = ${locations.pkcs12File}] \nfix with:\n" +
+        s"adding <databus.pkcs12file> to pom.xml\n" +
+        s"adding server config to settings.xml of maven")
+      System.exit(-1)
+    }
+
     getLog.debug("PKCS12 bundle location: " + locations.pkcs12File.pathAsString)
 
     def keyPair = singleKeyPairFromPKCS12
