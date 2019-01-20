@@ -32,7 +32,7 @@ import org.dbpedia.databus.shared.authentification.AccountHelpers
 import java.net.URLEncoder
 
 
-@Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY)
+@Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 class Deploy extends AbstractMojo with Properties with SigningHelpers {
 
   @throws[MojoExecutionException]
