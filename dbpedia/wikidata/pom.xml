@@ -38,77 +38,34 @@
     </modules>
 
     <properties>
-        <!--dataDirectory DEFAULT: src/main/databus/input
-* input folder for data
-* copy/move all your datafiles in the respective modules
-* all files have to start with the wikidata of the module, i.e. src/main/databus/input/$artifactId_en.nt.bz2
-
--->
-        <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
-		<!-- the name of the bundle, used for packageing -->
-		<databus.bundle>wikidata</databus.bundle>
-
-        <!--packageDirectory DEFAULT ${session.executionRootDirectory}/target/databus/package/{databus.bundle}
-* all files are copied into this directory where mvn databus:package-export is run
--->
-        <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${databus.bundle}</databus.packageDirectory>
-
-         <!-- downloadUrlPath 
-Configure downloadUrlPath, where the dataset will be deployed:
-DBpedia will publish 4 more bundles with dozens of artifacts and new versions at regular intervals, our downloadurl looks like this:
-<databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
-We recommend to do the same, as you can add more bundles and datasets later.
-
--->
-		<databus.downloadUrlPath>https://downloads.dbpedia.org/repo/lts/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
-        
+		<databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
+        <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}
+        </databus.packageDirectory>
+        <databus.downloadUrlPath>
+            https://downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}/${project.version}/
+        </databus.downloadUrlPath>
         <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
-        <!--privateKeyFile
-The private key file that is matched against the publisher WebID, see the tutorial suggested there.
-Note that Java/Scala only accepts DER/PKCS8 formatted files, so you might need to run:
-$ openssl pkcs8 -topk8 -inform PEM -outform DER -in private_key.pem -out private_key.der -nocrypt
-We recommend putting the file in ~/.m2 next to the settings.xml (Maven user dir):
-```
-<privateKeyFile>${user.home}/.m2/private_key.der</privateKeyFile>
-```
-SECURITY NOTICE:
-* Protect your private key file, do not loose, do not send over network
-* chmod 700
-* The data channel you are about to create requires it to republish new versions there.
-        -->
-        <!--<databus.privateKeyFile>${user.home}/.m2/private_key.der</databus.privateKeyFile>-->
-        <databus.privateKeyFile>${user.home}/.m2/private_key_generic.der</databus.privateKeyFile>
-
-        <databus.pkcs12File>${user.home}/.m2/test-cert-bundle.p12</databus.pkcs12File>
-
-        <databus.deployToTestRepo>false</databus.deployToTestRepo>
-
-        <!--maintainer
-The maintainer of the data release, normally the person to contact, often the same as publisher
-        -->
+        <!-- moved to settings.xml
+         databus.pkcs12File>${user.home}/.m2/certificate_generic.pfx</databus.pkcs12File-->
         <databus.maintainer>https://alismayilov.github.io/webid-ali.ttl#this</databus.maintainer>
-        <!--license
-Pick one from here: http://rdflicense.linkeddata.es/
-        -->
-        <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</databus.license>
-        <!--not clear if needed, using today at the moment-->
-        <databus.issuedDate>2018-10-01</databus.issuedDate>
-        <!--not clear if needed, read from file at the moment-->
-        <databus.modifiedDate>2018-10-22</databus.modifiedDate>
-
-
-        <!--publisher
-refers to the WebID that does the publication on the web and on the databus
-This one is matched against the private key file (next option)
-Please read on https://github.com/dbpedia/webid how to create such file
-We include a dev-dummy webid file here, please don't use it for publishing, use your own
--->
-
+        <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!--dataDependencyDirectory
-NOT IMPLEMENTED YET - This directory will be used to store any files downloaded from the databus as input for your tool
-        -->
-        <databus.dataDependencyDirectory>NOT-IMPLEMENTED-YET</databus.dataDependencyDirectory>
+        <databus.changelog>
+            * 2018.07.20 to current - were created as new modular releases, some issues remain:
+            ** we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe characters
+            ** link to Wikimedia dump version is missing
+        </databus.changelog>
+        <databus.docfooter>
+            DBpedia is a community project, help us with this dataset:
+            * improve the software at: https://github.com/dbpedia/extraction-framework
+            * improve this documentation in the pom.xml at https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/wikidata/pom.xml
+            
+            TODO bad docu, i.e. missing links where to add te mappings, paper, etc. 
+            Origin:
+            This dataset was extracted using the wikidata-dumps available on https://www.wikidata.org/wiki/Wikidata:Database_download
+            using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
+            For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
+        </databus.docfooter>
 
     </properties>
 
@@ -131,20 +88,13 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
             <plugin>
                 <groupId>org.dbpedia.databus</groupId>
                 <artifactId>databus-maven-plugin</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.3-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>validate</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>validate</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test-data</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test-data</goal>
                         </goals>
                     </execution>
                     <execution>
@@ -155,57 +105,20 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                         </goals>
                     </execution>
                     <execution>
-                    <id>package-export</id>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>package-export</goal>
-                    </goals>
-                </execution>
-                <execution>
-                    <id>deploy-dataid</id>
-                    <phase>deploy</phase>
-                    <goals>
-                        <goal>deploy</goal>
-                    </goals>
+                        <id>package-export</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package-export</goal>
+                        </goals>
+                    </execution>
+					<execution>
+						<id>deploy-dataid</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
                 </execution>
                 </executions>
-                <configuration>
-
-                    <!--DO NOT EDIT HERE, unless you know what you are doing, We recommend changing the properties above-->
-
-                    <!--pluginDirectory Default: ${project.build.directory}/databus
-* all the generated files will be written here, i.e. parselogs, dataids, feeds
-* the path is relative to the module, i.e. target/databus/
-* `mvn clean` will delete all `target` folders in your project
--->
-                    <pluginDirectory>${project.build.directory}/databus</pluginDirectory>
-
-                    <!--includeParseLogs DEFAULT: true
-            The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
-            We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
-                     -->
-                    <includeParseLogs>true</includeParseLogs>
-
-                    <!-- feedFrom
-                        existing feed file, feed url, or empty
-                        if empty: creates the channel based on the pom properties and use old feed from feedDirectory/feed.xml if exists
-                        TODO add property above
-                     -->
-                    <feedFrom/>
-                    <dataInputDirectory>${databus.dataInputDirectory}</dataInputDirectory>
-                    <packageDirectory>${databus.packageDirectory}</packageDirectory>
-                    <bundle>${databus.bundle}</bundle>
-                    <downloadUrlPath>${databus.downloadUrlPath}</downloadUrlPath>
-                    <publisher>${databus.publisher}</publisher>
-                    <maintainer>${databus.maintainer}</maintainer>
-                    <license>${databus.license}</license>
-                    <privateKeyFile>${databus.privateKeyFile}</privateKeyFile>
-                    <pkcs12File>${databus.pkcs12File}</pkcs12File>
-                    <deployToTestRepo>${databus.deployToTestRepo}</deployToTestRepo>
-
-                    <issuedDate>${databus.issuedDate}</issuedDate>
-                    <modifiedDate>${databus.modifiedDate}</modifiedDate>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -220,6 +133,23 @@ NOT IMPLEMENTED YET - This directory will be used to store any files downloaded 
                 <configuration>
                     <skip>true</skip>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>0.3.1</version>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <property>databus.rootProjectDir</property>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
