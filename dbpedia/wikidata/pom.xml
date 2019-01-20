@@ -84,6 +84,9 @@
             <id>archiva.snapshots</id>
             <name>Internal Snapshot Repository</name>
             <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
         </pluginRepository>
     </pluginRepositories>
 

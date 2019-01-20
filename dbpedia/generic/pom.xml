@@ -49,23 +49,25 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.changelog>
             * 2018.08.15 to current - were created as new modular releases, some issues remain:
-            ** we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe characters
+            ** we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
+            characters
             ** link to Wikimedia dump version is missing
         </databus.changelog>
         <databus.docfooter>
             DBpedia is a community project, help us with this dataset:
             * improve the software at: https://github.com/dbpedia/extraction-framework
-            * improve this documentation in the pom.xml at https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/generic/pom.xml
-            
+            * improve this documentation in the pom.xml at
+            https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/generic/pom.xml
+
             Origin:
             This dataset was extracted using the wikipedia-dumps available on https://dumps.wikimedia.org/
             using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
             For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
         </databus.docfooter>
-        
-        
-        
+
+
     </properties>
+
     <pluginRepositories>
         <pluginRepository>
             <id>archiva.internal</id>
@@ -77,8 +79,8 @@
             <name>Internal Snapshot Repository</name>
             <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
             <snapshots>
-               <updatePolicy>always</updatePolicy>
-            </snapshots>	    
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
         </pluginRepository>
     </pluginRepositories>
     <build>
@@ -153,4 +155,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.dbpedia.databus.text</groupId>
-    <artifactId>text</artifactId>
+    <groupId>text</groupId>
+    <artifactId>common-metadata</artifactId>
     <packaging>pom</packaging>
     <version>2016.10.01</version>
 
@@ -47,7 +47,6 @@
 
     </properties>
 
-    <!-- we will move to maven central soon, this is the dev maven repo-->
     <pluginRepositories>
         <pluginRepository>
             <id>archiva.internal</id>
@@ -58,9 +57,11 @@
             <id>archiva.snapshots</id>
             <name>Internal Snapshot Repository</name>
             <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
     <build>
         <plugins>
             <plugin>
@@ -133,6 +134,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>
