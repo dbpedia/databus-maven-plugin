@@ -47,6 +47,11 @@ class PackageExport extends AbstractMojo with Properties {
     // for each module copy all files to target
     getListOfInputFiles().foreach { inputFile =>
 
+      if(!dataIdFile.isRegularFile){
+        getLog.error(s"${dataIdFile} not found, can not package, fix with running mvn prepare-package or mvn databus:metadata first" )
+        System.exit(-1)
+      }
+
       val df = Datafile(inputFile)(getLog)
 
       val packageTarget = locations.packageTargetDirectory / df.finalBasename(params.versionToInsert)

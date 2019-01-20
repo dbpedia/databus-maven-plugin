@@ -43,7 +43,6 @@ import org.apache.maven.settings.Settings
   *
   */
 @Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE, requiresOnline = true, threadSafe = true)
-//@Execute(goal = "validate", phase = LifecyclePhase.VALIDATE, lifecycle = "validate")
 class Validate extends AbstractMojo with Properties with SigningHelpers with LazyLogging {
 
   @Parameter(property = "databus.allVersions", required = false)

@@ -22,15 +22,15 @@ package org.dbpedia.databus
 
 import org.dbpedia.databus.lib.Datafile
 import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
-
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.jena.riot.RDFLanguages
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import org.eclipse.rdf4j.rio.{RDFParser, Rio}
-
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
+
+import org.dbpedia.databus.voc.RDFBased
 
 @Mojo(name = "test-data", defaultPhase = LifecyclePhase.TEST, requiresDirectInvocation = true)
 class TestData extends AbstractMojo with Properties {
@@ -55,7 +55,7 @@ class TestData extends AbstractMojo with Properties {
       val model: Model = ModelFactory.createDefaultModel
       val finalBasename = df.finalBasename(params.versionToInsert)
       val thisResource = model.createResource("#" + finalBasename)
-      val prefixParse ="http://dataid.dbpedia.org/ns/pl#"
+      val prefixParse = "http://dataid.dbpedia.org/ns/pl#"
 
       parseLog.append(s"${finalBasename}\n${df.format}\n")
 
@@ -69,27 +69,31 @@ class TestData extends AbstractMojo with Properties {
       var rdfParser: RDFParser = null
       //rdfParser.setParserConfig(config)
 
-      if (!(df.format.rio eq null)) {
+      //
+
+
+      if (df.format.isRDF() && (df.format.asInstanceOf[RDFBased].rio != null)) {
+        val rioformat = df.format.asInstanceOf[RDFBased].rio
 
         if (df.format.lineBased) {
-          rdfParser = Rio.createParser(df.format.rio)
+          rdfParser = Rio.createParser(rioformat)
 
           val (lines, all, good, bad) = df.getInputStream().apply { in =>
 
             LineBasedRioDebugParser.parse(in, rdfParser)
           }
 
-          thisResource.addProperty(model.createProperty(prefixParse+"lines"), lines.toString);
-          thisResource.addProperty(model.createProperty(prefixParse+"triples"), all.toString);
-          thisResource.addProperty(model.createProperty(prefixParse+"valid"), good.toString);
-          thisResource.addProperty(model.createProperty(prefixParse+"errors"), bad.size.toString);
+          thisResource.addProperty(model.createProperty(prefixParse + "lines"), lines.toString);
+          thisResource.addProperty(model.createProperty(prefixParse + "triples"), all.toString);
+          thisResource.addProperty(model.createProperty(prefixParse + "valid"), good.toString);
+          thisResource.addProperty(model.createProperty(prefixParse + "errors"), bad.size.toString);
           //parseLog.append(s"Lines: $lines\nTriples: $all\nValid: $good\nErrors: ${bad.size}\n")
 
           if (bad.size > 0) {
             details.append(s"\n#Error details for $datafile\n#${bad.mkString("\n#")}\n")
           }
         } else {
-          rdfParser = Rio.createParser(df.format.rio)
+          rdfParser = Rio.createParser(rioformat)
           val (success, errors) = df.getInputStream().apply { in =>
             RioOtherParser.parse(in, rdfParser)
           }
@@ -102,7 +106,7 @@ class TestData extends AbstractMojo with Properties {
       }
 
       // parselog
-      thisResource.addProperty(model.createProperty(prefixParse+"parselog"), parseLog.toString);
+      thisResource.addProperty(model.createProperty(prefixParse + "parselog"), parseLog.toString);
       model.write(parseLogFileWriter, RDFLanguages.strLangTurtle)
       parseLogFileWriter.write(details.toString())
       getLog.info(parseLog)
