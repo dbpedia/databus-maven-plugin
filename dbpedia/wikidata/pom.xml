@@ -111,13 +111,13 @@
                             <goal>package-export</goal>
                         </goals>
                     </execution>
-					<execution>
-						<id>deploy-dataid</id>
-						<phase>deploy</phase>
-						<goals>
-							<goal>deploy</goal>
-						</goals>
-                </execution>
+  		    <execution>
+			<id>deploy</id>
+			<phase>deploy</phase>
+			<goals>
+				<goal>deploy</goal>
+			</goals>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
