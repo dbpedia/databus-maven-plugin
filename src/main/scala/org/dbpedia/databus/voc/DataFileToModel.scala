@@ -79,7 +79,7 @@ trait DataFileToModel extends Properties with Parameters {
     /**
       * linking to dataset
       */
-    val datasetResource = s"#${finalName}".asIRI
+    val datasetResource = model.createResource(s"#Dataset")
     singleFileResource.addProperty(dataid.isDistributionOf, datasetResource)
     datasetResource.addProperty(dcat.distribution, singleFileResource)
 
