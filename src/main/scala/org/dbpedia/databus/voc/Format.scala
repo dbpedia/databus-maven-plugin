@@ -93,6 +93,8 @@ object Format {
     "tsv" -> TextTabSeparatedValues,
     "tab" -> TextTabSeparatedValues,
     "trig" -> ApplicationTrig,
+    "txt" -> TextPlain,
+    "list" -> TextPlain,
     "bin" -> ApplicationOctetStream
   )
 
