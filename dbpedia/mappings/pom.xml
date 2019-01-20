@@ -15,7 +15,7 @@
         <module>mappingbased-objects-uncleaned</module>
     </modules>
     <properties>
-	<databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
+	    <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
         <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
         <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}
         </databus.packageDirectory>

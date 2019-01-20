@@ -88,7 +88,7 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
     if (response.code != 200) {
       getLog.error(
         s"""|FAILURE HTTP response code: ${response.code} (check https://en.wikipedia.org/wiki/HTTP_${response.code})
-            |$deployRepoURL rejected ${dataIdFile.pathAsString}:
+            |$deployRepoURL rejected ${dataIdFile.pathAsString}
             |Message:\n${response.body}
        """.stripMargin)
 
