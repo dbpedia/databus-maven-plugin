@@ -49,10 +49,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.changelog>
             * 2018.08.15 to 2018.12.14 - were created as new modular releases, some issues remain:
-            ** language normalisation to iso codes
-	    *** zh-min-nan to nan
-	    *** zh-yue to yue
-   	    *** bat-smg to batsmg (no iso code available)		
+            ** language normalisation to iso codes, zh-min-nan to nan, zh-yue to yue, bat-smg to batsmg (no iso code available)		
 	    ** we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
             characters
             ** link to Wikimedia dump version is missing

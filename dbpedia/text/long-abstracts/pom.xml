@@ -10,20 +10,6 @@
     <groupId>text</groupId>
     <packaging>jar</packaging>
     <version>2016.10.01</version>
-
-
-    <!--This is a module, it inherits all config properties form the parent pom.xml
-You can configure here:
-* the artifactId, please also change <module> in parent pom.xml
-* the labels for your dataset (Everything behind the @ is used as language tag):
-<labels>
-    <label>Name in English@en</label>
-    <label>Name in French@fr</label>
-    ...
-</labels>
-* the description
--->
-
     <build>
         <plugins>
             <plugin>
@@ -33,7 +19,7 @@ You can configure here:
                     <labels>
                         <label>Long Abstracts@en</label>
                     </labels>
-                    <datasetDescription>Long abstracts (full abstracts) of Wikipedia articles, usually the first section.</datasetDescription>
+                    <datasetDescription>Long abstracts (full abstracts) of Wikipedia articles, usually the first section, before table of contents as rdfs:comment.</datasetDescription>
                 </configuration>
             </plugin>
         </plugins>
