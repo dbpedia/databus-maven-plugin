@@ -153,7 +153,6 @@ class TestData extends AbstractMojo with Properties {
     */
   def validateVersions(): Unit = {
 
-    var versionLog = new StringBuilder
     val dataInputDirectoryParent = dataInputDirectory.getParentFile
 
     val versions: mutable.SortedSet[String] = mutable.SortedSet(dataInputDirectory.toString.replace(dataInputDirectoryParent.toString, ""))
@@ -163,7 +162,7 @@ class TestData extends AbstractMojo with Properties {
       versions.++=(dataInputDirectoryParent.listFiles().filter(_.isDirectory).map(f => {
         f.toString.replace(dataInputDirectoryParent.toString, "")
       }).toSet)
-      versionLog.append(s"[databus.allVersion=true] $artifactId found ${versions.size} version(s): ${versions.mkString(", ")}\n")
+      getLog.info(s"[databus.allVersion=true] $artifactId found ${versions.size} version(s): ${versions.mkString(", ")}\n")
     }
 
     //val versions: mutable.SortedSet[String] = mutable.SortedSet(dataInputDirectory.toString.replace(dataInputDirectoryParent.toString, ""))
@@ -207,27 +206,32 @@ class TestData extends AbstractMojo with Properties {
 
     // now validation starts
 
-    versionLog.append("\nNumber of files:\n")
-    for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
-      versionLog.append(s"${v} with ${fileList.size} files\n")
-    }
 
-    versionLog.append("Compression:\n")
+    var l: String = ""
     for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
-      val compfilenames: mutable.SortedSet[String] = mutable.SortedSet()
+      l += s"${v} with ${fileList.size} files\n"
+    }
+    getLog.info(s"[${artifactId}] Number of files:\n" + l)
+
+
+    l = ""
+    for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
+      val compFilenames: mutable.SortedSet[String] = mutable.SortedSet()
       fileNames.foreach(f => {
         f.compressionVariantExtensions.foreach(a => {
-          compfilenames.add(a)
+          compFilenames.add(a)
         })
       })
       val compFile: mutable.SortedSet[String] = mutable.SortedSet()
       datafiles.foreach(f => {
         compFile.add(f.compressionVariant.toString)
       })
-      versionLog.append(s"${v} from file ending: {${compfilenames.mkString(", ")}}, from file {${compFile.mkString(", ")}}\n")
+      l += s"${v} from file ending: {${compFilenames.mkString(", ")}}, " +
+        s"from file {${compFile.mkString(", ")}}\n"
     }
+    getLog.info("[${artifactId}] Compression:\n" + l)
 
-    versionLog.append("Format:\n")
+    l = ""
     for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
       val formfilenames: mutable.SortedSet[String] = mutable.SortedSet()
       fileNames.foreach(f => {
@@ -239,10 +243,12 @@ class TestData extends AbstractMojo with Properties {
       datafiles.foreach(f => {
         formFile.add(f.format.mimeType)
       })
-      versionLog.append(s"${v} from file name: {${formfilenames.mkString(", ")}}, from file {${formFile.mkString(", ")}}\n")
+      l += (s"${v} from file name: {${formfilenames.mkString(", ")}}, from file {${formFile.mkString(", ")}}\n")
     }
+    getLog.info(s"[${artifactId}] Format:\n" + l)
 
-    versionLog.append("ContentVariant:\n")
+    l = ""
+
     for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
       val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
       fileNames.foreach(f => {
@@ -250,21 +256,24 @@ class TestData extends AbstractMojo with Properties {
           contfilenames.add(a)
         })
       })
-      versionLog.append(s"${v} from file name: {${contfilenames.mkString(", ")}}\n")
+      l += (s"${v} from file name: {${contfilenames.mkString(", ")}}\n")
     }
+    getLog.info(s"[${artifactId}]ContentVariant:\n" + l)
 
-    versionLog.append("prefix:\n")
+
+    l = ""
     for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
       val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
       fileNames.foreach(f => {
         contfilenames.add(f.filePrefix)
       })
-      versionLog.append(s"${v} from name: {${contfilenames.mkString(", ")}}\n")
+      l += (s"${v} from name: {${contfilenames.mkString(", ")}}\n")
     }
+    getLog.info(s"[${artifactId}] Prefix:\n" + l)
 
     if (detailedValidation) {
 
-      versionLog.append("Byte sorted (LC_ALL=C):\n")
+      l = ""
       for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
         val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
         var sorted = 0
@@ -277,10 +286,11 @@ class TestData extends AbstractMojo with Properties {
             contfilenames.add(df.file.getName)
           }
         })
-        versionLog.append(s"${v} sorted: ${sorted}, not sorted: ${unsorted} {${contfilenames.mkString(", ").replaceAll(artifactId, "")}}\n")
+        l += (s"${v} sorted: ${sorted}, not sorted: ${unsorted} {${contfilenames.mkString(", ").replaceAll(artifactId, "")}}\n")
       }
+      getLog.info(s"[${artifactId}] Byte sorted (LC_ALL=C):\n")
 
-      versionLog.append("Duplicates:\n")
+      l = ""
       for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
         var duplicates = 0
         val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
@@ -292,10 +302,12 @@ class TestData extends AbstractMojo with Properties {
 
           }
         })
-        versionLog.append(s"${v} duplicates: ${duplicates} in {${contfilenames.mkString(", ").replaceAll(artifactId, "")}}\n")
+        l += (s"${v} duplicates: ${duplicates} in {${contfilenames.mkString(", ").replaceAll(artifactId, "")}}\n")
       }
+      getLog.info(s"[${artifactId}] Duplicates:\n")
 
-      versionLog.append("Empty files:\n")
+
+      l = ""
       for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
         val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
         datafiles.foreach(df => {
@@ -303,12 +315,11 @@ class TestData extends AbstractMojo with Properties {
             contfilenames.add(df.file.getName)
           }
         })
-        versionLog.append(s"${v} has ${contfilenames.size} empty files:  {${contfilenames.mkString(", ").replaceAll(artifactId, "")}}\n")
+        l += (s"${v} has ${contfilenames.size} empty files:  {${contfilenames.mkString(", ").replaceAll(artifactId, "")}}\n")
       }
+      getLog.info(s"[${artifactId}] Empty files:\n")
 
     }
-
-    getLog.info(versionLog)
   }
 
 }
