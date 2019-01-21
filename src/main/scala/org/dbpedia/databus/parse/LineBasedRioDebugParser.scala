@@ -35,6 +35,30 @@ object LineBasedRioDebugParser {
 
   val batchSize = 500 * 1000
 
+  /* Error from short and long abstract computepreview
+  [INFO] collecting metadata for each file (from parameters in pom.xml and from file itself)
+Err: Expected '<' or '_', found: [ [line 1, column 91]: [binary data - no preview]
+Err: Unexpected character U+FF3BA at index 32: http://ja.dbpedia.org/resource/!<U+FF3BA>i-ou］ [line 1]: <http://ja.dbpedia.org
+/resource/!<U+FF3BA>i-ou］> <http://dbpedia.org/ontology/abstract> "『! [ai-ou]』（アイ・オー）は<U+5E741>日公開の日本映画分、
+カラー作品<U+5E744>月現在、<U+672AD>VD化。"@ja .
+Err: Unexpected character U+10 at index 31: http://ja.dbpedia.org/resource/^P [line 1]: <http://ja.dbpedia.org/resource/^P> <ht
+tp://dbpedia.org/ontology/abstract> "#9110（シャープきゅういちいちまる）は、日本において、生活の安全や悩み事に関する事柄を警察
+に相談する目的で設定されている電話番号である。"@ja .
+Err: Expected '<' or '_', found: - [line 1, column 45]: -80）。"@ja .
+Err: Unexpected character U+12 at index 31: http://ko.dbpedia.org/resource/^R [line 1]: <http://ko.dbpedia.org/resource/^R> <ht
+tp://dbpedia.org/ontology/abstract> "^R(Room2012)는 독일의 팝 밴드이다."@ko .
+Err: Expected '<' or '_', found: [ [line 1, column 91]: [binary data - no preview]
+Err: Expected '<' or '_', found: [ [line 1, column 91]: [binary data - no preview]
+Err: Unexpected character U+0 at index 31: http://zh.dbpedia.org/resource/^@年的舱外活动列表 [line 1]: <http://zh.dbpedia.org/r
+esource/^@年的舱外活动列表> <http://dbpedia.org/ontology/abstract> "本列表包含了所有的^@年的太空行走以及月表行走；即所有宇航员
+完全或部分离开航天器的事件。 舱外活动开始及结束时间均为协调世界时（UTC）时区。"@zh .
+Err: Expected '<' or '_', found: [ [line 1, column 91]: [binary data - no preview]
+Err: Unexpected character U+F4BE at index 40: http://wa.dbpedia.org/resource/10_d'_oct<U+F4BE> [line 1]: <http://wa.dbpedia.org
+/resource/10_d'_oct<U+F4BE>> <http://dbpedia.org/ontology/abstract> "Li 10 d' oct<U+F4BE>, c' est li 283inme djoû d' l' anêye d
+o calindrî grigoryin (li 284inme po ls anêyes bizetes); gn è dmeure co 82 djoûs po disk' al fén d' l' anêye."@wa .
+Err: Expected '<' or '_', found: [ [line 1, column 91]: [binary data - no preview]
+
+   */
 
   def parse(in: InputStream, rdfParser: RDFParser): (Integer, Integer, Integer, mutable.HashSet[String]) = {
 

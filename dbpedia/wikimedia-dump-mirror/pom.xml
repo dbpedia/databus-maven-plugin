@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>wikimedia-dump-mirror</groupId>
+    <artifactId>common-metadata</artifactId>
+    <packaging>pom</packaging>
+    <version>2016.10.01</version>
+
+    <modules>
+        <module>enwiki-pages</module>
+    </modules>
+
+    <properties>
+        <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
+        <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}
+        </databus.packageDirectory>
+        <databus.downloadUrlPath>
+            https://downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}/${project.version}/
+        </databus.downloadUrlPath>
+        <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
+        <!-- moved to settings.xml
+         databus.pkcs12File>${user.home}/.m2/certificate_generic.pfx</databus.pkcs12File-->
+        <databus.maintainer>https://m1ci.github.io/webid.ttl#this</databus.maintainer>
+        <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <databus.changelog>
+            * 2016.10.01 - old dataset from 2016
+            ** quite old, but work on new releases is on it's way
+            ** mimetype is detected by a parse over the 10-line preview, line by line. If no wrong triples are found, we
+            assume that it is ntriples, which is a subset of turtle, however, this fails here, sometimes.
+            ** normalisation of langs: zh_yue to yue, zh_min_nan to nan, bat_smg to batsmg
+            ** we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
+            characters
+            ** link to Wikimedia dump version is missing
+        </databus.changelog>
+        <databus.docfooter>
+            DBpedia is a community project, help us with this dataset:
+            * improve this documentation in the pom.xml at
+            https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/text/pom.xml
+
+            Origin:
+            This dataset was extracted using the wikipedia-dumps available on https://dumps.wikimedia.org/
+            using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
+            For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
+        </databus.docfooter>
+        <scala.version>2.12.6</scala.version>
+        <scala.compat.version>2.12</scala.compat.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+    </dependencies>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>archiva.internal</id>
+            <name>Internal Release Repository</name>
+            <url>http://databus.dbpedia.org:8081/repository/internal</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>archiva.snapshots</id>
+            <name>Internal Snapshot Repository</name>
+            <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.dbpedia.databus</groupId>
+                <artifactId>databus-maven-plugin</artifactId>
+                <version>1.3-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>metadata</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>metadata</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>package-export</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package-export</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>deploy</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>0.3.1</version>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <property>databus.rootProjectDir</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.4.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>script</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <script>
+                        println ("Hello from pom script :-)")
+                    </script>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

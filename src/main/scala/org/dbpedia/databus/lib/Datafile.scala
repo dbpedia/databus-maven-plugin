@@ -131,10 +131,16 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     // downgrade turtle to ntriple, if linebased
     val mimeType: Format = if (mimeTypeByFileName == TextTurtle) {
 
-      val baos: ByteArrayInputStream = new ByteArrayInputStream(preview.getBytes);
+      val baos: ByteArrayInputStream = new ByteArrayInputStream(preview.getBytes)
       val (_, _, _, wrongTriples) = LineBasedRioDebugParser.parse(baos, Rio.createParser(ApplicationNTriples.rio))
 
-      if (wrongTriples.isEmpty) ApplicationNTriples else mimeTypeByFileName
+
+      if (wrongTriples.isEmpty) {
+        ApplicationNTriples
+      } else {
+        //println(wrongTriples.mkString("\n"))
+        mimeTypeByFileName
+      }
 
     } else mimeTypeByFileName
 
@@ -169,7 +175,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
       Try(source.getLines().take(previewLineCount).mkString("\n"))
     }
 
-    def maxLength = previewLineCount * 500
+    def maxLength = previewLineCount * 3000
 
     unshortenedPreview apply {
 
@@ -197,8 +203,8 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     * @param b signed byte to convert to unsigned byte value
     * @return the unsigned byte value stored as short
     */
-  def toUnsignedByte(b : Byte) = {
-    val aByte:Int = 0xff & b.asInstanceOf[Int]
+  def toUnsignedByte(b: Byte) = {
+    val aByte: Int = 0xff & b.asInstanceOf[Int]
     aByte.asInstanceOf[Short]
   }
 
@@ -209,20 +215,18 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     * @param b
     * @return a negative value if a is in byte order before b, zero if a and b bytestreams match and, and a positive value else
     */
-  def compareStringsBytewise(a :String, b :String): Int =
-  {
+  def compareStringsBytewise(a: String, b: String): Int = {
     val ab = a.getBytes("UTF-8")
     val bb = b.getBytes("UTF-8")
 
-    var mLength = scala.math.min(ab.length,bb.length)
+    var mLength = scala.math.min(ab.length, bb.length)
 
-    for( i <- 0 to mLength-1){
-      if (ab(i)==bb(i))
-        {}
+    for (i <- 0 to mLength - 1) {
+      if (ab(i) == bb(i)) {}
       else
         return toUnsignedByte(ab(i)).compareTo(toUnsignedByte(bb(i)))
     }
-    return ab.length-bb.length
+    return ab.length - bb.length
   }
 
 
@@ -233,7 +237,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     var sort: Boolean = true
     var uncompressedSize = 0
 
-    var previousLine : String = null
+    var previousLine: String = null
     try {
       getInputStream().apply { in =>
         val it = Source.fromInputStream(in)(Codec.UTF8).getLines()
@@ -247,15 +251,15 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
           }
 
           // sorted or duplicate
-          if (previousLine!=null) {
-            val cmp = compareStringsBytewise(line,previousLine)
+          if (previousLine != null) {
+            val cmp = compareStringsBytewise(line, previousLine)
             if (cmp == 0) {
               dupes += 1
             } else if (cmp < 0) {
-                log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    Sort order wrong for pair:  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                log.debug(previousLine)
-                log.debug(line)
-                log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+              log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    Sort order wrong for pair:  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+              log.debug(previousLine)
+              log.debug(line)
+              log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
               sort = false
             }
           }
@@ -330,34 +334,34 @@ object Datafile extends LazyLogging {
     new Datafile(file, previewLineCount)(log)
   }
 
-/*
-  protected def alphaNumericP[_: P] = CharIn("A-Za-z0-9").rep(1)
+  /*
+    protected def alphaNumericP[_: P] = CharIn("A-Za-z0-9").rep(1)
 
-  // the negative lookahead ensures that we do not parse into the format extension(s) if there is no content variant
-  protected def artifactNameP[_: P] =
-    P((!extensionP ~ CharPred(_ != '_')).rep(1).!)
-      .opaque("<filename prefix>")
+    // the negative lookahead ensures that we do not parse into the format extension(s) if there is no content variant
+    protected def artifactNameP[_: P] =
+      P((!extensionP ~ CharPred(_ != '_')).rep(1).!)
+        .opaque("<filename prefix>")
 
-  protected def contentVariantsP[_: P] =
-    P(("_" ~ alphaNumericP.!).rep())
-      .opaque("<content variants>")
+    protected def contentVariantsP[_: P] =
+      P(("_" ~ alphaNumericP.!).rep())
+        .opaque("<content variants>")
 
-  protected def extensionP[_: P] = "." ~ (CharIn("A-Za-z") ~ CharIn("A-Za-z0-9").rep()).!
+    protected def extensionP[_: P] = "." ~ (CharIn("A-Za-z") ~ CharIn("A-Za-z0-9").rep()).!
 
-  // using a negative lookahead here to ensure that no compression extension is parsed as format extension
-  protected def formatExtensionP[_: P] = P(!compressionExtensionP ~ extensionP)
+    // using a negative lookahead here to ensure that no compression extension is parsed as format extension
+    protected def formatExtensionP[_: P] = P(!compressionExtensionP ~ extensionP)
 
-  protected def formatExtensionsP[_: P] =
-    P(formatExtensionP.rep(1))
-      .opaque("<format variant extensions>")
+    protected def formatExtensionsP[_: P] =
+      P(formatExtensionP.rep(1))
+        .opaque("<format variant extensions>")
 
-  protected def compressionExtensionP[_: P] =
-    P("." ~ StringIn("bz2", "gz", "tar", "xz", "zip").!)
-      .opaque("<compression variant extensions>")
+    protected def compressionExtensionP[_: P] =
+      P("." ~ StringIn("bz2", "gz", "tar", "xz", "zip").!)
+        .opaque("<compression variant extensions>")
 
-  protected def compressionExtensionsP[_: P] = P(compressionExtensionP.rep())
+    protected def compressionExtensionsP[_: P] = P(compressionExtensionP.rep())
 
-  protected def databusInputFilenameP[_: P]: P[(String, Seq[String], Seq[String], Seq[String])] =
-    (Start ~ artifactNameP ~ contentVariantsP ~ formatExtensionsP ~ compressionExtensionsP ~ End)
-*/
+    protected def databusInputFilenameP[_: P]: P[(String, Seq[String], Seq[String], Seq[String])] =
+      (Start ~ artifactNameP ~ contentVariantsP ~ formatExtensionsP ~ compressionExtensionsP ~ End)
+  */
 }
