@@ -28,6 +28,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.changelog>
             * 2016.10.01 old dataset from 2016
+            ** zh_yue to yue, zh_min_nan to nan
             ** we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
             characters
             ** link to Wikimedia dump version is missing

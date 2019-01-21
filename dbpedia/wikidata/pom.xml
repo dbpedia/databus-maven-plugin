@@ -53,6 +53,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.changelog>
             * 2018.07.20 to current - were created as new modular releases, some issues remain:
+	    ** corrupted files: 
+		./wikidata-redirects/src/main/databus/2018.10.01/wikidata-redirects.ttl.bz2		 
+		./wikidata-debug-type-like-statements/src/main/databus/2018.10.01/wikidata-debug-type-like-statements.ttl.bz2
             ** we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
             characters
             ** link to Wikimedia dump version is missing
