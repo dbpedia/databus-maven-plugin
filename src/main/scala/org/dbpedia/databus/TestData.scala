@@ -229,7 +229,7 @@ class TestData extends AbstractMojo with Properties {
       l += s"${v} from file ending: {${compFilenames.mkString(", ")}}, " +
         s"from file {${compFile.mkString(", ")}}\n"
     }
-    getLog.info("[${artifactId}] Compression:\n" + l)
+    getLog.info(s"[${artifactId}] Compression:\n" + l)
 
     l = ""
     for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
@@ -288,7 +288,7 @@ class TestData extends AbstractMojo with Properties {
         })
         l += (s"${v} sorted: ${sorted}, not sorted: ${unsorted} {${contfilenames.mkString(", ").replaceAll(artifactId, "")}}\n")
       }
-      getLog.info(s"[${artifactId}] Byte sorted (LC_ALL=C):\n")
+      getLog.info(s"[${artifactId}] Byte sorted (LC_ALL=C):\n"+l)
 
       l = ""
       for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
@@ -304,7 +304,7 @@ class TestData extends AbstractMojo with Properties {
         })
         l += (s"${v} duplicates: ${duplicates} in {${contfilenames.mkString(", ").replaceAll(artifactId, "")}}\n")
       }
-      getLog.info(s"[${artifactId}] Duplicates:\n")
+      getLog.info(s"[${artifactId}] Duplicates:\n"+l)
 
 
       l = ""
@@ -317,7 +317,7 @@ class TestData extends AbstractMojo with Properties {
         })
         l += (s"${v} has ${contfilenames.size} empty files:  {${contfilenames.mkString(", ").replaceAll(artifactId, "")}}\n")
       }
-      getLog.info(s"[${artifactId}] Empty files:\n")
+      getLog.info(s"[${artifactId}] Empty files:\n"+l)
 
     }
   }
