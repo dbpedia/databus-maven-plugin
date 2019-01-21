@@ -7,44 +7,6 @@
     <artifactId>common-metadata</artifactId>
     <packaging>pom</packaging>
     <version>2018.10.01</version>
-<!--
-for i in `find . -name "*.bz2"` ; do lbzip2 -dc $i > /dev/null 2>>berr ; done
-
-corrupted bz2:
-/databus/2018.10.01/wikidata-images.ttl.bz2"
-/databus/2018.10.01/wikidata-geo-coordinates.ttl.bz2"
-/databus/2018.10.01/wikidata-properties.ttl.bz2"
-/databus/2018.10.01/wikidata-redirects.ttl.bz2"
-/databus/2018.10.01/wikidata-raw_reified.ttl.bz2"
-/databus/2018.10.01/wikidata-raw.ttl.bz2"
-/databus/2018.10.01/wikidata-raw_reifiedqualifiers.ttl.bz2"
-/databus/2018.10.01/wikidata-ontology-subclassof.ttl.bz2"
-/databus/2018.10.01/wikidata-references.ttl.bz2"
-/databus/2018.10.01/wikidata-page-ids.ttl.bz2"
-/databus/2018.10.01/wikidata-sameas-external.ttl.bz2"
-/databus/2018.10.01/wikidata-instance-types.ttl.bz2"
-/databus/2018.10.01/wikidata-labels_nmw.ttl.bz2"
-/databus/2018.10.01/wikidata-labels.ttl.bz2"
-/databus/2018.10.01/wikidata-sameas-all-wikis.ttl.bz2"
-/databus/2018.10.01/wikidata-mappingbased-properties_reified.ttl.bz2"
-/databus/2018.10.01/wikidata-mappingbased-properties_reifiedqualifiers.ttl.bz2"
-/databus/2018.10.01/wikidata-instance-types-transitive.ttl.bz2"
-/databus/2018.10.01/wikidata-page-length.ttl.bz2"
-/databus/2018.10.01/wikidata-revision-uris.ttl.bz2"
-/databus/2018.10.01/wikidata-description.ttl.bz2"
-/databus/2018.10.01/wikidata-description_nmw.ttl.bz2"
-/databus/2018.10.01/wikidata-mappingbased-literals.ttl.bz2"
-/databus/2018.10.01/wikidata-mappingbased-objects_uncleaned.ttl.bz2"
-/databus/2018.10.01/wikidata-debug-duplicate-iri-split.ttl.bz2"
-/databus/2018.10.01/wikidata-alias_nmw.ttl.bz2"
-/databus/2018.10.01/wikidata-alias.ttl.bz2"
-/databus/2018.10.01/wikidata-sameas-wikidata.ttl.bz2"
-/databus/2018.10.01/wikidata-debug-rmapping-errors.ttl.bz2"
-/databus/2018.10.01/wikidata-debug-type-like-statements.ttl.bz2"
-/databus/2018.10.01/wikidata-revision-ids.ttl.bz2"
-
-
--->
 
     <modules>
         <module>wikidata-alias</module>
@@ -97,6 +59,7 @@ corrupted bz2:
             ** we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
             characters
             ** link to Wikimedia dump version is missing
+	    2018.10.01 - deleted due to bzip2 non-recoverable bad blocks
         </databus.changelog>
         <databus.docfooter>
             DBpedia is a community project, help us with this dataset:
@@ -208,9 +171,9 @@ corrupted bz2:
 <!--
 run with:
 mvn exec:exec -Prapandsort
-
 runs over "*/src/main/databus/*/*.ttl.bz2"
-lbzip2 -dc $file | rapper -i ntriples -O - - file |  ascii2uni -a U | LC_ALL=C sort --parallel=4 -u -T tmpfolder  |  lbzip2
+lbzip2 -dc $file | rapper -i ntriples -O - - file |  ascii2uni -a U | LC_ALL=C sort -u -T tmpfolder  |  lbzip2
+
 -->
       <id>rapandsort</id>
       <build>
