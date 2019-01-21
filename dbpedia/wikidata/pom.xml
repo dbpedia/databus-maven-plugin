@@ -6,7 +6,7 @@
     <groupId>wikidata</groupId>
     <artifactId>common-metadata</artifactId>
     <packaging>pom</packaging>
-    <version>2018.10.01</version>
+    <version>2018.11.30</version>
 
     <modules>
         <module>wikidata-alias</module>
@@ -14,10 +14,9 @@
         <module>wikidata-geo-coordinates</module>
         <module>wikidata-images</module>
         <module>wikidata-instance-types</module>
-        <module>wikidata-instance-types-transitive</module>
         <module>wikidata-labels</module>
         <module>wikidata-mappingbased-literals</module>
-        <module>wikidata-mappingbased-objects</module>
+        <module>wikidata-mappingbased-objects-uncleaned</module>
         <module>wikidata-mappingbased-properties</module>
         <module>wikidata-ontology-subclassof</module>
         <module>wikidata-page-ids</module>
@@ -38,6 +37,8 @@
         <module>wikidata-debug-type-like-statements</module>
     </modules>
 
+<!-- needed 511 minutes for 110GB -->
+
     <properties>
         <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
         <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}
@@ -52,10 +53,8 @@
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.changelog>
-            * 2018.07.20 to current - were created as new modular releases, some issues remain:
-	    ** corrupted files: 
-		./wikidata-redirects/src/main/databus/2018.10.01/wikidata-redirects.ttl.bz2		 
-		./wikidata-debug-type-like-statements/src/main/databus/2018.10.01/wikidata-debug-type-like-statements.ttl.bz2
+            * 2018.07.20 to 2018.11.30 - were created as new modular releases, some issues remain:
+            ** mappingbased objects are not cleaned	
             ** we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
             characters
             ** link to Wikimedia dump version is missing
