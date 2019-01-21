@@ -7,6 +7,44 @@
     <artifactId>common-metadata</artifactId>
     <packaging>pom</packaging>
     <version>2018.10.01</version>
+<!--
+for i in `find . -name "*.bz2"` ; do lbzip2 -dc $i > /dev/null 2>>berr ; done
+
+corrupted bz2:
+/databus/2018.10.01/wikidata-images.ttl.bz2"
+/databus/2018.10.01/wikidata-geo-coordinates.ttl.bz2"
+/databus/2018.10.01/wikidata-properties.ttl.bz2"
+/databus/2018.10.01/wikidata-redirects.ttl.bz2"
+/databus/2018.10.01/wikidata-raw_reified.ttl.bz2"
+/databus/2018.10.01/wikidata-raw.ttl.bz2"
+/databus/2018.10.01/wikidata-raw_reifiedqualifiers.ttl.bz2"
+/databus/2018.10.01/wikidata-ontology-subclassof.ttl.bz2"
+/databus/2018.10.01/wikidata-references.ttl.bz2"
+/databus/2018.10.01/wikidata-page-ids.ttl.bz2"
+/databus/2018.10.01/wikidata-sameas-external.ttl.bz2"
+/databus/2018.10.01/wikidata-instance-types.ttl.bz2"
+/databus/2018.10.01/wikidata-labels_nmw.ttl.bz2"
+/databus/2018.10.01/wikidata-labels.ttl.bz2"
+/databus/2018.10.01/wikidata-sameas-all-wikis.ttl.bz2"
+/databus/2018.10.01/wikidata-mappingbased-properties_reified.ttl.bz2"
+/databus/2018.10.01/wikidata-mappingbased-properties_reifiedqualifiers.ttl.bz2"
+/databus/2018.10.01/wikidata-instance-types-transitive.ttl.bz2"
+/databus/2018.10.01/wikidata-page-length.ttl.bz2"
+/databus/2018.10.01/wikidata-revision-uris.ttl.bz2"
+/databus/2018.10.01/wikidata-description.ttl.bz2"
+/databus/2018.10.01/wikidata-description_nmw.ttl.bz2"
+/databus/2018.10.01/wikidata-mappingbased-literals.ttl.bz2"
+/databus/2018.10.01/wikidata-mappingbased-objects_uncleaned.ttl.bz2"
+/databus/2018.10.01/wikidata-debug-duplicate-iri-split.ttl.bz2"
+/databus/2018.10.01/wikidata-alias_nmw.ttl.bz2"
+/databus/2018.10.01/wikidata-alias.ttl.bz2"
+/databus/2018.10.01/wikidata-sameas-wikidata.ttl.bz2"
+/databus/2018.10.01/wikidata-debug-rmapping-errors.ttl.bz2"
+/databus/2018.10.01/wikidata-debug-type-like-statements.ttl.bz2"
+/databus/2018.10.01/wikidata-revision-ids.ttl.bz2"
+
+
+-->
 
     <modules>
         <module>wikidata-alias</module>
@@ -165,4 +203,37 @@
             </plugin>
         </plugins>
     </build>
+ <profiles>
+    <profile>
+<!--
+run with:
+mvn exec:exec -Prapandsort
+
+runs over "*/src/main/databus/*/*.ttl.bz2"
+lbzip2 -dc $file | rapper -i ntriples -O - - file |  ascii2uni -a U | LC_ALL=C sort --parallel=4 -u -T tmpfolder  |  lbzip2
+-->
+      <id>rapandsort</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.3.2</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <executable>../rapandsort.sh</executable>
+              <arguments><argument>${project.artifactId}</argument></arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
 </project>
