@@ -32,9 +32,7 @@
         <module>wikidata-sameas-wikidata</module>
         <module>wikidata-template-redirects</module>
         <module>wikidata-transitive-redirects</module>
-        <module>wikidata-debug-duplicate-iri-split</module>
-        <module>wikidata-debug-rmapping-errors</module>
-        <module>wikidata-debug-type-like-statements</module>
+        <module>wikidata-debug</module>
     </modules>
 
 <!-- needed 511 minutes for 110GB -->
