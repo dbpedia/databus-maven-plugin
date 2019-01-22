@@ -31,6 +31,8 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import org.eclipse.rdf4j.rio.{RDFParser, Rio}
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
+import java.security.MessageDigest
+import java.util.Base64
 
 import org.dbpedia.databus.voc.RDFBased
 
@@ -209,9 +211,10 @@ class TestData extends AbstractMojo with Properties {
 
     var l: String = ""
     for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
-      l += s"${v} with ${fileList.size} files\n"
+      val md5 = Base64.getEncoder().encodeToString(MessageDigest.getInstance("MD5").digest(fileList.map(f=>f.getName).sorted.mkString("").getBytes("UTF-8")))
+      l += s"${v} with ${fileList.size} files,  $md5\n"
     }
-    getLog.info(s"[${artifactId}] Number of files:\n" + l)
+    getLog.info(s"[${artifactId}] Number of files plus a hash over the sorted filenames:\n" + l)
 
 
     l = ""
@@ -224,12 +227,13 @@ class TestData extends AbstractMojo with Properties {
       })
       val compFile: mutable.SortedSet[String] = mutable.SortedSet()
       datafiles.foreach(f => {
-        compFile.add(f.compressionVariant.toString)
+        compFile.add(f.compressionVariant.getOrElse("None"))
       })
       l += s"${v} from file ending: {${compFilenames.mkString(", ")}}, " +
         s"from file {${compFile.mkString(", ")}}\n"
     }
     getLog.info(s"[${artifactId}] Compression:\n" + l)
+
 
     l = ""
     for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
@@ -258,7 +262,7 @@ class TestData extends AbstractMojo with Properties {
       })
       l += (s"${v} from file name: {${contfilenames.mkString(", ")}}\n")
     }
-    getLog.info(s"[${artifactId}]ContentVariant:\n" + l)
+    getLog.info(s"[${artifactId}] ContentVariant:\n" + l)
 
 
     l = ""
