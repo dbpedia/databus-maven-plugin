@@ -24,8 +24,7 @@
         <module>wikidata-raw</module>
         <module>wikidata-redirects</module>
         <module>wikidata-references</module>
-        <module>wikidata-revision-ids</module>
-        <module>wikidata-revision-uris</module>
+        <module>wikidata-revision</module>
         <module>wikidata-sameas-all-wikis</module>
         <module>wikidata-sameas-external</module>
         <module>wikidata-sameas-wikidata</module>
