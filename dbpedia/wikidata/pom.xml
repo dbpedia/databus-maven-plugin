@@ -28,7 +28,7 @@
         <module>sameas-all-wikis</module>
         <module>sameas-external</module>
         <module>sameas-wikidata</module>
-        <module>template-redirects</module>
+        <!--module>template-redirects</module-->
         <module>transitive-redirects</module>
         <module>debug</module>
     </modules>
