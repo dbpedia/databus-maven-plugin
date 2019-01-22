@@ -19,8 +19,7 @@
         <module>wikidata-mappingbased-objects-uncleaned</module>
         <module>wikidata-mappingbased-properties</module>
         <module>wikidata-ontology-subclassof</module>
-        <module>wikidata-page-ids</module>
-        <module>wikidata-page-length</module>
+        <module>wikidata-page</module>
         <module>wikidata-properties</module>
         <module>wikidata-raw</module>
         <module>wikidata-redirects</module>
