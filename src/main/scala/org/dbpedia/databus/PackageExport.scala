@@ -87,7 +87,9 @@ class PackageExport extends AbstractMojo with Properties {
 
     val baseResolvedDataId = resolveBaseForRDFFile(dataIdFile, dataIdDownloadLocation)
 
-    dataIdPackageTarget.writeByteArray(baseResolvedDataId)
+
+    dataIdPackageTarget.writeByteArray((Properties.logo + "\n").getBytes())
+    dataIdPackageTarget.appendByteArray(baseResolvedDataId)
 
     getLog.info("packaged: " + dataIdPackageTarget.name)
 
