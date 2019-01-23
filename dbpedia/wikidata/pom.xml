@@ -9,30 +9,26 @@
     <version>2018.11.30</version>
 
     <modules>
-        <module>wikidata-alias</module>
-        <module>wikidata-description</module>
-        <module>wikidata-geo-coordinates</module>
-        <module>wikidata-images</module>
-        <module>wikidata-instance-types</module>
-        <module>wikidata-labels</module>
-        <module>wikidata-mappingbased-literals</module>
-        <module>wikidata-mappingbased-objects-uncleaned</module>
-        <module>wikidata-mappingbased-properties</module>
-        <module>wikidata-ontology-subclassof</module>
-        <module>wikidata-page-ids</module>
-        <module>wikidata-page-length</module>
-        <module>wikidata-properties</module>
-        <module>wikidata-raw</module>
-        <module>wikidata-redirects</module>
-        <module>wikidata-references</module>
-        <module>wikidata-revision-ids</module>
-        <module>wikidata-revision-uris</module>
-        <module>wikidata-sameas-all-wikis</module>
-        <module>wikidata-sameas-external</module>
-        <module>wikidata-sameas-wikidata</module>
-        <module>wikidata-template-redirects</module>
-        <module>wikidata-transitive-redirects</module>
-        <module>wikidata-debug</module>
+        <module>alias</module>
+        <module>description</module>
+        <module>geo-coordinates</module>
+        <module>images</module>
+        <module>instance-types</module>
+        <module>labels</module>
+        <module>mappingbased-literals</module>
+        <module>mappingbased-objects-uncleaned</module>
+        <module>mappingbased-properties-reified</module>
+        <module>ontology-subclassof</module>
+        <module>page</module>
+        <module>properties-reified</module>
+        <module>raw</module>
+        <module>redirects</module>
+        <module>references</module>
+        <module>revision</module>
+        <module>sameas-all-wikis</module>
+        <module>sameas-external</module>
+        <module>sameas-wikidata</module>
+        <module>debug</module>
     </modules>
 
 <!-- needed 511 minutes for 110GB -->
