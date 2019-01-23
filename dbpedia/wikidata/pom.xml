@@ -17,10 +17,10 @@
         <module>labels</module>
         <module>mappingbased-literals</module>
         <module>mappingbased-objects-uncleaned</module>
-        <module>mappingbased-properties</module>
+        <module>mappingbased-properties-reified</module>
         <module>ontology-subclassof</module>
         <module>page</module>
-        <module>properties</module>
+        <module>properties-reified</module>
         <module>raw</module>
         <module>redirects</module>
         <module>references</module>
