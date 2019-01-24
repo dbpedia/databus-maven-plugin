@@ -72,8 +72,9 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
     getLog.info(s"looking for data files in: ${dataInputDirectory.getCanonicalPath}")
     getLog.info(s"Found ${getListOfInputFiles().size} files:\n${
-      getListOfInputFiles().mkString(", ").replaceAll(dataInputDirectory.getCanonicalPath + "/" + artifactId, "")}")
-    getLog.info("collecting metadata for each file (from parameters in pom.xml and from file itself)")
+      getListOfInputFiles().mkString(", ").replaceAll(dataInputDirectory.getCanonicalPath + "/" + artifactId, "")
+    }")
+    getLog.info(s"collecting metadata for each file (from parameters in pom.xml, from ${markdown} and from the file itself)")
     getListOfInputFiles().foreach(datafile => {
       processFile(datafile, dataIdCollect)
 
@@ -91,30 +92,8 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
         implicit val editContext = dataIdCollect
 
         // add DataId
-        /**
-          * <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl>
-          * ? dataid:underAuthorization  <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=maintainerAuthorization> , <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=creatorAuthorization> , <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=contactAuthorization> ;
-          * dc:modified                "2017-07-06"^^xsd:date ;
-          * foaf:primaryTopic          <http://dbpedia.org/dataset/main_dataset?lang=en&dbpv=2016-10> .
-          */
+        addDataId(dataIdCollect)
 
-        val dataIdResource = dataIdCollect.createResource("")
-        dataIdResource.addProperty(dcterms.title, s"DataID metadata for ${groupId}/${artifactId}", "en")
-        dataIdResource.addProperty(RDFS.`label`, s"DataID metadata for ${groupId}/${artifactId}", "en")
-        dataIdResource.addProperty(dcterms.hasVersion, Properties.pluginVersion)
-        dataIdResource.addProperty(RDF.`type`, dataid.DataId)
-        dataIdResource.addProperty(RDFS.`comment`,
-          s"""Metadata created by the DBpedia Databus Maven Plugin: https://github.com/dbpedia/databus-maven-plugin (Version ${Properties.pluginVersion})
-             |The DataID ontology is a metadata omnibus, which can be extended to be interoperable with all metadata formats
-             |Note that the metadata (the dataid.ttl file) is always CC-0, the files are licensed individually
-             |Metadata created by ${publisher}
-          """.stripMargin)
-
-        dataIdResource.addProperty(dcterms.issued, ISO_INSTANT_NO_NANO.format(params.invocationTime).asTypedLiteral(XSDdateTime))
-        dataIdResource.addProperty(dcterms.license, "http://purl.oclc.org/NET/rdflicense/cc-zero1.0".asIRI)
-        dataIdResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
-        dataIdResource.addProperty(dataid.associatedAgent, publisher.toString.asIRI)
-        dataIdResource.addProperty(dcterms.publisher, publisher.toString.asIRI)
 
         // add dataset metadata
         val datasetResource = dataIdCollect.createResource(s"#Dataset")
@@ -131,15 +110,15 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
           case Some(account) => {
 
-            val group = s"${account.getURI}/${groupId}".asIRI
-            val artifact = s"${account.getURI}/${groupId}/${artifactId}".asIRI
+            val groupIRI = s"${account.getURI}/${groupId}".asIRI
+            val artifactIRI = s"${account.getURI}/${groupId}/${artifactId}".asIRI
             val versionIRI = s"${account.getURI}/${groupId}/${artifactId}/${version}".asIRI
-            group.addProperty(RDF.`type`, dataid.Group)
-            artifact.addProperty(RDF.`type`, dataid.Artifact)
+            groupIRI.addProperty(RDF.`type`, dataid.Group)
+            artifactIRI.addProperty(RDF.`type`, dataid.Artifact)
             versionIRI.addProperty(RDF.`type`, dataid.Version)
 
-            datasetResource.addProperty(dataid.groupId, group)
-            datasetResource.addProperty(dataid.artifact, artifact)
+            datasetResource.addProperty(dataid.groupId, groupIRI)
+            datasetResource.addProperty(dataid.artifact, artifactIRI)
             datasetResource.addProperty(dataid.version, versionIRI)
           }
 
@@ -171,9 +150,38 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
         os.write((Properties.logo + "\n").getBytes)
         dataIdCollect.write(os, "turtle")
       }
-      getLog.info(s"dataid.ttl written")
+      getLog.info(s"${getDataIdFile()} written")
 
     }
+  }
+
+  def addDataId(dataIdCollect: Model): Unit = {
+
+    implicit def vocabModel = dataIdCollect
+
+    /**
+      * <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl>
+      * ? dataid:underAuthorization  <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=maintainerAuthorization> , <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=creatorAuthorization> , <http://downloads.dbpedia.org/2016-10/core-i18n/en/2016-10_dataid_en.ttl?auth=contactAuthorization> ;
+      * dc:modified                "2017-07-06"^^xsd:date ;
+      * foaf:primaryTopic          <http://dbpedia.org/dataset/main_dataset?lang=en&dbpv=2016-10> .
+      */
+    val dataIdResource = dataIdCollect.createResource("")
+    dataIdResource.addProperty(dcterms.title, s"DataID metadata for ${groupId}/${artifactId}", "en")
+    dataIdResource.addProperty(RDFS.`label`, s"DataID metadata for ${groupId}/${artifactId}", "en")
+    dataIdResource.addProperty(dcterms.hasVersion, Properties.pluginVersion)
+    dataIdResource.addProperty(RDF.`type`, dataid.DataId)
+    dataIdResource.addProperty(RDFS.`comment`,
+      s"""Metadata created by the DBpedia Databus Maven Plugin: https://github.com/dbpedia/databus-maven-plugin (Version ${Properties.pluginVersion})
+         |The DataID ontology is a metadata omnibus, which can be extended to be interoperable with all metadata formats
+         |Note that the metadata (the dataid.ttl file) is always CC-0, the files are licensed individually
+         |Metadata created by ${publisher}
+          """.stripMargin)
+
+    dataIdResource.addProperty(dcterms.issued, ISO_INSTANT_NO_NANO.format(params.invocationTime).asTypedLiteral(XSDdateTime))
+    dataIdResource.addProperty(dcterms.license, "http://purl.oclc.org/NET/rdflicense/cc-zero1.0".asIRI)
+    dataIdResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
+    dataIdResource.addProperty(dataid.associatedAgent, publisher.toString.asIRI)
+    dataIdResource.addProperty(dcterms.publisher, publisher.toString.asIRI)
   }
 
   def processFile(datafile: File, dataIdCollect: Model): Unit = {

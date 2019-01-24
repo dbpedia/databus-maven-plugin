@@ -133,7 +133,7 @@ trait Properties extends Locations with Parameters {
   val deployToTestRepo: Boolean = false
 
   @Parameter(property = "databus.deployRepoURL", defaultValue = "https://databus.dbpedia.org/repo")
-  val deployRepoURL : String = ""
+  val deployRepoURL: String = ""
 
   @Parameter(property = "databus.allowOverwriteOnDeploy") val allowOverwriteOnDeploy: Boolean = true
   @Parameter(property = "databus.insertVersion") val insertVersion: Boolean = true
@@ -239,6 +239,9 @@ trait Properties extends Locations with Parameters {
   /**
     * for each modules
     */
+
+
+  @Parameter(property = "databus.markdown", defaultValue = "${project.artifactId}.md") val markdown: File = null
   @Parameter val labels: JavaList[String] = new util.ArrayList[String]()
   @Parameter val datasetDescription: String = ""
   @Parameter val wasDerivedFrom: JavaList[BaseEntity] = new util.ArrayList[BaseEntity]()
@@ -252,7 +255,6 @@ trait Properties extends Locations with Parameters {
   def isParent(): Boolean = {
     packaging.equals("pom")
   }
-
 
 
   def getDataIdFile(): File = dataIdFile.toJava

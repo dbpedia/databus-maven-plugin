@@ -33,7 +33,7 @@ import org.apache.maven.plugin.AbstractMojo
 
 import scala.collection.JavaConverters._
 import scala.language.reflectiveCalls
-import java.time.{ ZoneId, ZonedDateTime}
+import java.time.{ZoneId, ZonedDateTime}
 
 object DataFileToModel {
 
@@ -63,18 +63,23 @@ trait DataFileToModel extends Properties with Parameters {
 
   this: AbstractMojo =>
 
-  import DataFileToModel._
 
   def modelForDatafile(datafile: Datafile): Model = {
+    import DataFileToModel._
 
     implicit val model: Model = ModelFactory.createDefaultModel
 
-    for ((key, value) <- prefixes) {
-      model.setNsPrefix(key, value)
-    }
+    // for ((key, value) <- prefixes) {
+    //   model.setNsPrefix(key, value)
+    // }
 
-    // main uri of dataid for SingleFile
+    /*
+     main uri of dataid for SingleFile
+     Type
+      */
     val singleFileResource = ("#" + datafile.finalBasename(params.versionToInsert)).asIRI
+    singleFileResource.addProperty(RDF.`type`, dataid.SingleFile)
+
 
     /**
       * linking to dataset
@@ -84,11 +89,6 @@ trait DataFileToModel extends Properties with Parameters {
     datasetResource.addProperty(dcat.distribution, singleFileResource)
 
     /**
-      * type properties
-      */
-    singleFileResource.addProperty(RDF.`type`, dataid.SingleFile)
-
-    /**
       * basic properties
       */
     addBasicPropertiesToResource(model, singleFileResource)
@@ -96,77 +96,90 @@ trait DataFileToModel extends Properties with Parameters {
     /**
       * specific info about the file
       */
+    addSpecificInfoToFile(model, datafile, singleFileResource)
 
-    // def modificationTime =
-
-    val modificationTime = Option(ZonedDateTime.ofInstant(datafile.file.toScala.lastModifiedTime, ZoneId.systemDefault())) match {
-      case Some(instant) => instant
-      case None => params.modifiedDate
-    }
-
-    singleFileResource.addProperty(dcterms.modified,  ISO_INSTANT_NO_NANO.format(modificationTime).asTypedLiteral(XSDdateTime))
-
-    singleFileResource.addProperty(dataid.sha256sum, datafile.sha256sum.asPlainLiteral)
-    singleFileResource.addProperty(dataid.signature, datafile.signatureBase64.asPlainLiteral)
-    singleFileResource.addProperty(dataid.preview, datafile.preview)
-    singleFileResource.addProperty(dataid.uncompressedByteSize, datafile.uncompressedByteSize.toString.asTypedLiteral(XSDdecimal))
-    singleFileResource.addProperty(dcat.byteSize, datafile.bytes.toString.asTypedLiteral(XSDdecimal))
-    singleFileResource.addProperty(dcat.downloadURL, datafile.finalBasename(params.versionToInsert).asIRI)
-
-    singleFileResource.addProperty(dataid.duplicates, datafile.duplicates.toString.asTypedLiteral(XSDdecimal))
-    singleFileResource.addProperty(dataid.sorted, datafile.sorted.toString.asTypedLiteral(XSDboolean))
-    singleFileResource.addProperty(dataid.nonEmptyLines, datafile.nonEmptyLines.toString.asTypedLiteral(XSDdecimal))
 
     /**
       * mediatype
       * sh: it is a dataid property. However, dataid modeled it as a property of the mimetype, which is the wrong place
       * files have one format extension and maybe one compressionextension and mimetypes have a list of likely extensions
       */
+
+    addMediatypeAndVariants(model, datafile, singleFileResource)
+
+    model
+  }
+
+  def addMediatypeAndVariants(model: Model, datafile: Datafile, singleFileResource: Resource) = {
+
+    implicit def vocabModel = model
+
     def mediaTypeName = datafile.format.getClass.getSimpleName.stripSuffix("$")
 
-    val mediaTypeRes = (model.getNsPrefixURI("dataid-mt") + mediaTypeName).asIRI
-    mediaTypeRes.addProperty(RDF.`type`, s"${model.getNsPrefixURI("dataid-mt")}MediaType".asIRI)
+    //TODO move to shared lib
+    val dataid_mt = "http://dataid.dbpedia.org/ns/mt#"
+    val mediaTypeRes = (dataid_mt + mediaTypeName).asIRI
+    mediaTypeRes.addProperty(RDF.`type`, s"${dataid_mt}MediaType".asIRI)
     singleFileResource.addProperty(dcat.mediaType, mediaTypeRes)
     mediaTypeRes.addProperty(dataid.mimetype, datafile.format.mimeType)
     singleFileResource.addProperty(dataid.prop.formatExtension, datafile.formatExtension.asPlainLiteral)
     singleFileResource.addProperty(dataid.compression, datafile.compressionOrArchiveDesc)
 
-    /**
-      * content variant
-      */
+    // content variant
     datafile.contentVariantExtensions.foreach { contentVariant =>
       singleFileResource.addProperty(dataid.prop.contentVariant, contentVariant)
     }
-
-    model
   }
 
-  def addBasicPropertiesToResource(model: Model, thisResource: Resource) = {
+
+  def addBasicPropertiesToResource(model: Model, singleFileResource: Resource) = {
 
     implicit def vocabModel = model
 
+    //
     // label
     for {
       label: String <- labels.asScala
       labelText :: langTag :: Nil = label.split("@").toList
     } {
-      thisResource.addProperty(RDFS.label, labelText, langTag)
-      thisResource.addProperty(dcterms.title, labelText, langTag)
+      singleFileResource.addProperty(RDFS.label, labelText, langTag)
+      singleFileResource.addProperty(dcterms.title, labelText, langTag)
     }
 
     //basic properties
-    thisResource.addProperty(dcterms.description, (docheader + "\n" + datasetDescription + "\n" + docfooter).asPlainLiteral)
+    singleFileResource.addProperty(dcterms.description, (docheader + "\n" + datasetDescription + "\n" + docfooter).asPlainLiteral)
     // todo add version number, but this is a dataid issue
-    thisResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
-    thisResource.addProperty(dcterms.hasVersion, version.asPlainLiteral)
-
-    thisResource.addProperty(dcterms.issued, ISO_INSTANT_NO_NANO.format(params.issuedDate).asTypedLiteral(XSDdateTime))
-    thisResource.addProperty(dcterms.license, license.asIRI)
-    thisResource.addProperty(dataid.associatedAgent, publisher.toString.asIRI)
-    thisResource.addProperty(dcterms.publisher, publisher.toString.asIRI)
+    singleFileResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
+    singleFileResource.addProperty(dcterms.hasVersion, version.asPlainLiteral)
+    singleFileResource.addProperty(dcterms.issued, ISO_INSTANT_NO_NANO.format(params.issuedDate).asTypedLiteral(XSDdateTime))
+    singleFileResource.addProperty(dcterms.license, license.asIRI)
+    singleFileResource.addProperty(dataid.associatedAgent, publisher.toString.asIRI)
+    singleFileResource.addProperty(dcterms.publisher, publisher.toString.asIRI)
 
     if (maintainer != null) {
-      thisResource.addProperty(dataid.maintainer, maintainer.toString.asIRI)
+      singleFileResource.addProperty(dataid.maintainer, maintainer.toString.asIRI)
     }
+  }
+
+  def addSpecificInfoToFile(model: Model, datafile: Datafile, singleFileResource: Resource) = {
+
+    implicit def vocabModel = model
+
+
+    val modificationTime = Option(ZonedDateTime.ofInstant(datafile.file.toScala.lastModifiedTime, ZoneId.systemDefault())) match {
+      case Some(instant) => instant
+      case None => params.modifiedDate
+    }
+
+    singleFileResource.addProperty(dcterms.modified, ISO_INSTANT_NO_NANO.format(modificationTime).asTypedLiteral(XSDdateTime))
+    singleFileResource.addProperty(dataid.sha256sum, datafile.sha256sum.asPlainLiteral)
+    singleFileResource.addProperty(dataid.signature, datafile.signatureBase64.asPlainLiteral)
+    singleFileResource.addProperty(dataid.preview, datafile.preview)
+    singleFileResource.addProperty(dataid.uncompressedByteSize, datafile.uncompressedByteSize.toString.asTypedLiteral(XSDdecimal))
+    singleFileResource.addProperty(dcat.byteSize, datafile.bytes.toString.asTypedLiteral(XSDdecimal))
+    singleFileResource.addProperty(dcat.downloadURL, datafile.finalBasename(params.versionToInsert).asIRI)
+    singleFileResource.addProperty(dataid.duplicates, datafile.duplicates.toString.asTypedLiteral(XSDdecimal))
+    singleFileResource.addProperty(dataid.sorted, datafile.sorted.toString.asTypedLiteral(XSDboolean))
+    singleFileResource.addProperty(dataid.nonEmptyLines, datafile.nonEmptyLines.toString.asTypedLiteral(XSDdecimal))
   }
 }

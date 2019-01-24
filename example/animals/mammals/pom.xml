@@ -36,7 +36,7 @@ You can configure here:
                     <datasetDescription>Extracted Data from the Wikipedia Article-Infoboxes</datasetDescription>
                     <wasDerivedFrom>
                         <baseEntity>
-                            <artifact>https://databus.dbpedia.org/dbpedia/bio/mammals-evolution</artifact>
+                            <artifact>https://databus.dbpedia.org/dbpedia/bio/mammals-evolution/2018-07-15</artifact>
                             <version>2018-07-15</version>
                         </baseEntity>
                     </wasDerivedFrom>
