@@ -72,7 +72,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     getLog.info(s"Found ${getListOfInputFiles().size} files:\n${
       getListOfInputFiles().mkString(", ").replaceAll(dataInputDirectory.getCanonicalPath + "/" + artifactId, "")
     }")
-    getLog.info(s"collecting metadata for each file (from parameters in pom.xml, from ${markdown} and from the file itself)")
+    getLog.info(s"collecting metadata for each file (from parameters in pom.xml, from ${artifactId}/${markdown.getName} and from the file itself)")
     getListOfInputFiles().foreach(datafile => {
       processFile(datafile, dataIdCollect)
 
@@ -98,11 +98,11 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
       addBasicPropertiesToResource(dataIdCollect, datasetResource)
 
       //creating documentation for dataset resource
-      datasetResource.addProperty(dcterms.description, (params.description + "\n\n" + docfooter).asPlainLiteral)
+      datasetResource.addProperty(dcterms.description, (params.description + "\n\n" + docfooter.trim).asPlainLiteral)
 
       //changelog
       if (changelog.nonEmpty) {
-        datasetResource.addProperty(dataid.changelog, changelog.asPlainLiteral)
+        datasetResource.addProperty(dataid.changelog, changelog.trim.asPlainLiteral)
       }
 
       //match WebId to Account Name

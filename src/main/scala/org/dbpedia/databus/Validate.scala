@@ -27,7 +27,7 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{Execute, LifecyclePhase, Mojo, Parameter}
-import org.dbpedia.databus.lib.{ Datafile, FilenameHelpers, SigningHelpers}
+import org.dbpedia.databus.lib.{Datafile, FilenameHelpers, SigningHelpers}
 
 import scala.collection.mutable
 import org.apache.maven.settings.Settings
@@ -43,15 +43,8 @@ import org.apache.maven.settings.Settings
   *
   */
 @Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE, requiresOnline = true, threadSafe = true)
-class Validate extends AbstractMojo with Properties with SigningHelpers with LazyLogging {
+class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Properties {
 
-
-
-  /**
-    * TODO potential caveat: check if, else based on pom could fail
-    *
-    *
-    */
   @throws[MojoExecutionException]
   override def execute(): Unit = {
 
@@ -60,21 +53,15 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
       validateWebId()
       validateAccount()
     }
-
   }
 
-
-
-
-  /**
-    *
-    */
   def validateWebId(): Unit = {
 
-    if(locations.pkcs12File == null){
-      getLog.error(s"no private key bundle (pkcs12/.pfx) configured [databus.pkcs12File = ${locations.pkcs12File}] \nfix with:\n" +
-        s"adding <databus.pkcs12file> to pom.xml\n" +
-        s"adding server config to settings.xml of maven")
+    if (locations.pkcs12File == null) {
+      getLog.error(s"no private key bundle (pkcs12/.pfx) configured [databus.pkcs12File = ${locations.pkcs12File}]\n" +
+        s"fix with:\n" +
+        s"* adding <databus.pkcs12file> to pom.xml\n" +
+        s"* adding server config to settings.xml of maven")
       System.exit(-1)
     }
 
@@ -115,10 +102,6 @@ class Validate extends AbstractMojo with Properties with SigningHelpers with Laz
       }
     }
   }
-
-
-
-
 
 
 }

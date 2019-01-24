@@ -31,25 +31,27 @@
         <databus.maintainer>https://m1ci.github.io/webid.ttl#this</databus.maintainer>
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <databus.changelog>
-            * 2016.10.01 - old dataset from 2016
-	    ** quite old, but work on new releases is on it's way
-            ** mimetype is detected by a parse over the 10-line preview, line by line. If no wrong triples are found, we assume that it is ntriples, which is a subset of turtle, however, this fails here, sometimes.  
-            ** normalisation of langs: zh_yue to yue, zh_min_nan to nan, bat_smg to batsmg
-            ** we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
-            characters
-            ** link to Wikimedia dump version is missing
-        </databus.changelog>
-        <databus.docfooter>
-            DBpedia is a community project, help us with this dataset:
-            * improve this documentation in the pom.xml at
-            https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/text/pom.xml
+        <databus.changelog><![CDATA[
+# Changelog
+## 2016.10.01
+* old dataset from 2016
+* quite old, but work on new releases is on it's way
+* mimetype is detected by a parse over the 10-line preview, line by line. If no wrong triples are found, we assume that it is ntriples, which is a subset of turtle, however, this fails here, sometimes.
+* normalisation of langs: zh_yue to yue, zh_min_nan to nan, bat_smg to batsmg
+* we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
+characters
+* link to Wikimedia dump version is missing
+        ]]></databus.changelog>
+        <databus.docfooter><![CDATA[
+## How to contribute
+DBpedia is a community project, help us with this dataset:
+* improve this documentation at https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/mappings/${project.artifactId}/${project.artifactId}.md
 
-            Origin:
-            This dataset was extracted using the wikipedia-dumps available on https://dumps.wikimedia.org/
-            using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
-            For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
-        </databus.docfooter>
+## Origin
+This dataset was extracted using the wikipedia-dumps available on https://dumps.wikimedia.org/
+using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
+For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
+        ]]></databus.docfooter>
 
     </properties>
 

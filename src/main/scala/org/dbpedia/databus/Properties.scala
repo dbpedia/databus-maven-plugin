@@ -168,7 +168,7 @@ trait Properties extends Locations with Parameters {
 
   /**
     * DEFAULT ${session.executionRootDirectory}/target/databus/package
-    * all files are copied into this directory where mvn databus:package-export is run
+    * all files are copied into this directory relative to where mvn databus:package-export is run
     */
   @Parameter(property = "databus.packageDirectory", defaultValue = "${session.executionRootDirectory}/target/databus/package/${project.groupId}", required = true)
   val packageDirectory: File = null
