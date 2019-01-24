@@ -29,6 +29,9 @@ import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.TemporalAccessor
 import java.time._
 
+import better.files.File
+import better.files._
+
 
 trait Parameters {
   this: Properties =>
@@ -69,6 +72,34 @@ trait Parameters {
     lazy val wasDerivedFrom = props.wasDerivedFrom.asScala.map(ScalaBaseEntity.fromJava).toSet
 
     lazy val versionToInsert = if (insertVersion) Some(version) else None
+
+    lazy val (label, comment, description) = {
+
+      if (!markdown.exists()) {
+        ("", "", "")
+      }
+
+      val iter = markdown.toScala.lineIterator
+      var firstline = ""
+      var secondline = ""
+      var rest = ""
+
+      if (iter.hasNext) {
+        var tmp = iter.next().trim
+        if (tmp.startsWith("#")) {
+          firstline = tmp.replace("#", "").trim
+        }
+        if (iter.hasNext) {
+          secondline = iter.next().trim
+
+          for {
+            line <- iter
+          } (rest += line)
+        }
+      }
+      (firstline, secondline, rest)
+    }
+
   }
 
 }

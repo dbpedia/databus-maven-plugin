@@ -151,7 +151,8 @@ trait DataFileToModel extends Properties with Parameters {
     }
 
     //basic properties
-    singleFileResource.addProperty(dcterms.description, (docheader + "\n" + datasetDescription + "\n" + docfooter).asPlainLiteral)
+    //todo
+    singleFileResource.addProperty(dcterms.description, ( datasetDescription + "\n" + docfooter).asPlainLiteral)
     // todo add version number, but this is a dataid issue
     singleFileResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
     singleFileResource.addProperty(dcterms.hasVersion, version.asPlainLiteral)
