@@ -68,8 +68,6 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     }
 
     val dataIdCollect: Model = ModelFactory.createDefaultModel
-
-
     getLog.info(s"looking for data files in: ${dataInputDirectory.getCanonicalPath}")
     getLog.info(s"Found ${getListOfInputFiles().size} files:\n${
       getListOfInputFiles().mkString(", ").replaceAll(dataInputDirectory.getCanonicalPath + "/" + artifactId, "")
@@ -88,62 +86,59 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
     getLog.info(s"writing metadata to ${getDataIdFile()}")
     if (!dataIdCollect.isEmpty) {
-      {
-        implicit val editContext = dataIdCollect
 
-        // add DataId
-        addDataId(dataIdCollect)
+      implicit val editContext = dataIdCollect
 
+      // add DataId
+      addDataId(dataIdCollect)
 
-        // add dataset metadata
-        val datasetResource = dataIdCollect.createResource(s"#Dataset")
-        datasetResource.addProperty(RDF.`type`, dataid.Dataset)
-        addBasicPropertiesToResource(dataIdCollect, datasetResource)
-        if (changelog.nonEmpty) {
-          datasetResource.addProperty(dataid.changelog, changelog.asPlainLiteral)
+      // add dataset metadata
+      val datasetResource = dataIdCollect.createResource(s"#Dataset")
+      datasetResource.addProperty(RDF.`type`, dataid.Dataset)
+      addBasicPropertiesToResource(dataIdCollect, datasetResource)
+
+      //creating documentation for dataset resource
+      datasetResource.addProperty(dcterms.description, (params.description + "\n\n" + docfooter).asPlainLiteral)
+
+      //changelog
+      if (changelog.nonEmpty) {
+        datasetResource.addProperty(dataid.changelog, changelog.asPlainLiteral)
+      }
+
+      //match WebId to Account Name
+      AccountHelpers.getAccountOption(publisher) match {
+        case Some(account) => {
+          val groupIRI = s"${account.getURI}/${groupId}".asIRI
+          val artifactIRI = s"${account.getURI}/${groupId}/${artifactId}".asIRI
+          val versionIRI = s"${account.getURI}/${groupId}/${artifactId}/${version}".asIRI
+          groupIRI.addProperty(RDF.`type`, dataid.Group)
+          artifactIRI.addProperty(RDF.`type`, dataid.Artifact)
+          versionIRI.addProperty(RDF.`type`, dataid.Version)
+
+          datasetResource.addProperty(dataid.groupId, groupIRI)
+          datasetResource.addProperty(dataid.artifact, artifactIRI)
+          datasetResource.addProperty(dataid.version, versionIRI)
         }
+        case None => {
 
-        /**
-          * match WebId to Account Name
-          */
-        AccountHelpers.getAccountOption(publisher) match {
-
-          case Some(account) => {
-
-            val groupIRI = s"${account.getURI}/${groupId}".asIRI
-            val artifactIRI = s"${account.getURI}/${groupId}/${artifactId}".asIRI
-            val versionIRI = s"${account.getURI}/${groupId}/${artifactId}/${version}".asIRI
-            groupIRI.addProperty(RDF.`type`, dataid.Group)
-            artifactIRI.addProperty(RDF.`type`, dataid.Artifact)
-            versionIRI.addProperty(RDF.`type`, dataid.Version)
-
-            datasetResource.addProperty(dataid.groupId, groupIRI)
-            datasetResource.addProperty(dataid.artifact, artifactIRI)
-            datasetResource.addProperty(dataid.version, versionIRI)
-          }
-
-          case None => {
-
-            datasetResource.addProperty(dataid.groupId, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
-            datasetResource.addProperty(dataid.artifact, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
-            getLog.warn("Not registered, Dataset URIs will not work, please register at https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED")
-          }
-        }
-
-        /**
-          * adding wasDerivedFrom other datasets
-          */
-        params.wasDerivedFrom.foreach { case ScalaBaseEntity(artifact, version) =>
-
-          val baseEntityBlankNode = editContext.createResource().tap { baseEntityRes =>
-
-            baseEntityRes.addProperty(dataid.artifact, artifact.toString.asIRI)
-            baseEntityRes.addProperty(dcterms.hasVersion, version)
-          }
-
-          datasetResource.addProperty(prov.wasDerivedFrom, baseEntityBlankNode)
+          datasetResource.addProperty(dataid.groupId, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
+          datasetResource.addProperty(dataid.artifact, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
+          getLog.warn("Not registered, Dataset URIs will not work, please register at https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED")
         }
       }
+
+      // adding wasDerivedFrom other datasets
+      params.wasDerivedFrom.foreach { case ScalaBaseEntity(artifact, version) =>
+
+        val baseEntityBlankNode = editContext.createResource().tap { baseEntityRes =>
+
+          baseEntityRes.addProperty(dataid.artifact, artifact.toString.asIRI)
+          baseEntityRes.addProperty(dcterms.hasVersion, version)
+        }
+
+        datasetResource.addProperty(prov.wasDerivedFrom, baseEntityBlankNode)
+      }
+
 
       //writing the metadatafile
       getDataIdFile().toScala.outputStream.foreach { os =>

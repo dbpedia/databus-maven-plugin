@@ -242,8 +242,8 @@ trait Properties extends Locations with Parameters {
     */
 
 
-  @Parameter val labels: JavaList[String] = new util.ArrayList[String]()
-  @Parameter val datasetDescription: String = ""
+  //@Parameter val labels: JavaList[String] = new util.ArrayList[String]()
+  //@Parameter val datasetDescription: String = ""
   @Parameter val wasDerivedFrom: JavaList[BaseEntity] = new util.ArrayList[BaseEntity]()
 
 

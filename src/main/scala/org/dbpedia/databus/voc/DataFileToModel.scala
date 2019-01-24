@@ -132,37 +132,22 @@ trait DataFileToModel extends Properties with Parameters {
   }
 
 
-  def addBasicPropertiesToResource(model: Model, singleFileResource: Resource) = {
+  def addBasicPropertiesToResource(model: Model, resource: Resource) = {
 
     implicit def vocabModel = model
 
-    if (markdown.exists()){
-
-    }
-
-    //
-    // label
-    for {
-      label: String <- labels.asScala
-      labelText :: langTag :: Nil = label.split("@").toList
-    } {
-      singleFileResource.addProperty(RDFS.label, labelText, langTag)
-      singleFileResource.addProperty(dcterms.title, labelText, langTag)
-    }
-
-    //basic properties
-    //todo
-    singleFileResource.addProperty(dcterms.description, ( datasetDescription + "\n" + docfooter).asPlainLiteral)
+    resource.addProperty(RDFS.label, params.label, "en")
+    resource.addProperty(dcterms.title, params.label, "en")
+    resource.addProperty(RDFS.comment, params.comment, "en")
     // todo add version number, but this is a dataid issue
-    singleFileResource.addProperty(dcterms.conformsTo, global.dataid.namespace)
-    singleFileResource.addProperty(dcterms.hasVersion, version.asPlainLiteral)
-    singleFileResource.addProperty(dcterms.issued, ISO_INSTANT_NO_NANO.format(params.issuedDate).asTypedLiteral(XSDdateTime))
-    singleFileResource.addProperty(dcterms.license, license.asIRI)
-    singleFileResource.addProperty(dataid.associatedAgent, publisher.toString.asIRI)
-    singleFileResource.addProperty(dcterms.publisher, publisher.toString.asIRI)
-
+    resource.addProperty(dcterms.conformsTo, global.dataid.namespace)
+    resource.addProperty(dcterms.hasVersion, version.asPlainLiteral)
+    resource.addProperty(dcterms.issued, ISO_INSTANT_NO_NANO.format(params.issuedDate).asTypedLiteral(XSDdateTime))
+    resource.addProperty(dcterms.license, license.asIRI)
+    resource.addProperty(dataid.associatedAgent, publisher.toString.asIRI)
+    resource.addProperty(dcterms.publisher, publisher.toString.asIRI)
     if (maintainer != null) {
-      singleFileResource.addProperty(dataid.maintainer, maintainer.toString.asIRI)
+      resource.addProperty(dataid.maintainer, maintainer.toString.asIRI)
     }
   }
 

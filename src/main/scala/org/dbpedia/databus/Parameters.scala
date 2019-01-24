@@ -94,10 +94,10 @@ trait Parameters {
 
           for {
             line <- iter
-          } (rest += line)
+          } (rest += (line+"\n"))
         }
       }
-      (firstline, secondline, rest)
+      (firstline, secondline, rest.trim)
     }
 
   }

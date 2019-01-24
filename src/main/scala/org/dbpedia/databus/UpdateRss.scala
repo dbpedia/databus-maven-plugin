@@ -126,7 +126,7 @@ class UpdateRss extends AbstractMojo with Properties {
       newFeed.setTitle(artifactId)
       newFeed.setFeedType(feedType)
       newFeed.setAuthor(maintainer.toString)
-      newFeed.setDescription(datasetDescription)
+      //newFeed.setDescription(datasetDescription)
       // TODO copyright
       newFeed.setCopyright("Copyright TODO")
       // TODO channel link
