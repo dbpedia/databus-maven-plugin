@@ -136,6 +136,10 @@ trait DataFileToModel extends Properties with Parameters {
 
     implicit def vocabModel = model
 
+    if (markdown.exists()){
+
+    }
+
     //
     // label
     for {

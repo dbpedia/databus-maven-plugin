@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>common-metadata</artifactId>
+        <artifactId>group-metadata</artifactId>
         <groupId>mappings</groupId>
         <version>2018.09.12</version>
     </parent>
@@ -9,37 +9,5 @@
     <artifactId>mappingbased-objects</artifactId>
     <groupId>mappings</groupId>
     <packaging>jar</packaging>
-    <version>2018.09.12</version>
-
-
-    <!--This is a module, it inherits all config properties form the parent pom.xml
-You can configure here:
-* the artifactId, please also change <module> in parent pom.xml
-* the labels for your dataset (Everything behind the @ is used as language tag):
-<labels>
-    <label>Name in English@en</label>
-    <label>Name in French@fr</label>
-    ...
-</labels>
-* the description
--->
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.dbpedia.databus</groupId>
-                <artifactId>databus-maven-plugin</artifactId>
-                <configuration>
-                    <labels>
-                        <label>Mappingbased Objects@en</label>
-                    </labels>
-                    <datasetDescription>
-                        High quality object properties from the Wikipedia Infoboxes, gathered by the mapping-based extraction.
-                        Derived from uncleaned by post-processing
-                    </datasetDescription>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

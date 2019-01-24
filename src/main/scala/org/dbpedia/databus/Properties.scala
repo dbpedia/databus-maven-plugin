@@ -231,9 +231,10 @@ trait Properties extends Locations with Parameters {
   @Parameter(property = "databus.modifiedDate") val modifiedDate: String = null
 
 
+  //documentation
   @Parameter(property = "databus.changelog", defaultValue = "") val changelog: String = ""
-  @Parameter(property = "databus.docheader", defaultValue = "") val docheader: String = ""
   @Parameter(property = "databus.docfooter", defaultValue = "") val docfooter: String = ""
+  @Parameter(property = "databus.markdown", defaultValue = "${project.artifactId}.md") val markdown: File = null
 
 
   /**
@@ -241,7 +242,6 @@ trait Properties extends Locations with Parameters {
     */
 
 
-  @Parameter(property = "databus.markdown", defaultValue = "${project.artifactId}.md") val markdown: File = null
   @Parameter val labels: JavaList[String] = new util.ArrayList[String]()
   @Parameter val datasetDescription: String = ""
   @Parameter val wasDerivedFrom: JavaList[BaseEntity] = new util.ArrayList[BaseEntity]()
