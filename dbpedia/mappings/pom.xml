@@ -57,6 +57,9 @@
             For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
         </databus.docfooter>
     </properties>
+
+    <!-- currently still needed to find the super-pom, once the super-pom is in maven central,
+    this can be removed as well -->
     <repositories>
         <repository>
             <id>archiva.internal</id>
@@ -72,5 +75,5 @@
             </snapshots>
         </repository>
     </repositories>
-    
+
 </project>

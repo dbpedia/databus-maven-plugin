@@ -2,7 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    <!-- the super-pom deactivates software compilation and configures the plugin to run in default phases -->
+    <parent>
+        <groupId>org.dbpedia.databus</groupId>
+        <artifactId>super-pom</artifactId>
+        <version>1.3-SNAPSHOT</version>
+    </parent>
     <groupId>wikidata</groupId>
     <artifactId>common-metadata</artifactId>
     <packaging>pom</packaging>
@@ -31,7 +36,7 @@
         <module>debug</module>
     </modules>
 
-<!-- needed 511 minutes for 110GB -->
+    <!-- needed 511 minutes for 110GB -->
 
     <properties>
         <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
@@ -48,11 +53,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.changelog>
             * 2018.07.20 to 2018.11.30 - were created as new modular releases, some issues remain:
-            ** mappingbased objects are not cleaned	
+            ** mappingbased objects are not cleaned
             ** we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
             characters
             ** link to Wikimedia dump version is missing
-	    2018.10.01 - deleted due to bzip2 non-recoverable bad blocks
+            2018.10.01 - deleted due to bzip2 non-recoverable bad blocks
         </databus.changelog>
         <databus.docfooter>
             DBpedia is a community project, help us with this dataset:
@@ -70,126 +75,58 @@
 
     </properties>
 
-    <!-- we will move to maven central soon, this is the dev maven repo-->
-    <pluginRepositories>
-        <pluginRepository>
+    <!-- currently still needed to find the super-pom, once the super-pom is in maven central,
+     this can be removed as well -->
+    <repositories>
+        <repository>
             <id>archiva.internal</id>
             <name>Internal Release Repository</name>
             <url>http://databus.dbpedia.org:8081/repository/internal</url>
-        </pluginRepository>
-        <pluginRepository>
+        </repository>
+        <repository>
             <id>archiva.snapshots</id>
             <name>Internal Snapshot Repository</name>
             <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
             <snapshots>
                 <updatePolicy>always</updatePolicy>
             </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
+        </repository>
+    </repositories>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.dbpedia.databus</groupId>
-                <artifactId>databus-maven-plugin</artifactId>
-                <version>1.3-SNAPSHOT</version>
-                <executions>
-                    <execution>
-                        <id>validate</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>validate</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>metadata</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>metadata</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>package-export</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>package-export</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>deploy</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>deploy</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.commonjava.maven.plugins</groupId>
-                <artifactId>directory-maven-plugin</artifactId>
-                <version>0.3.1</version>
-                <executions>
-                    <execution>
-                        <id>directories</id>
-                        <goals>
-                            <goal>highest-basedir</goal>
-                        </goals>
-                        <phase>initialize</phase>
+
+    <profiles>
+        <profile>
+            <!--
+            run with:
+            mvn exec:exec -Prapandsort
+            runs over "*/src/main/databus/*/*.ttl.bz2"
+            lbzip2 -dc $file | rapper -i ntriples -O - - file |  ascii2uni -a U | LC_ALL=C sort -u -T tmpfolder  |  lbzip2
+
+            -->
+            <id>rapandsort</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.3.2</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                         <configuration>
-                            <property>databus.rootProjectDir</property>
+                            <executable>../rapandsort.sh</executable>
+                            <arguments>
+                                <argument>${project.artifactId}</argument>
+                            </arguments>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
- <profiles>
-    <profile>
-<!--
-run with:
-mvn exec:exec -Prapandsort
-runs over "*/src/main/databus/*/*.ttl.bz2"
-lbzip2 -dc $file | rapper -i ntriples -O - - file |  ascii2uni -a U | LC_ALL=C sort -u -T tmpfolder  |  lbzip2
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
 
--->
-      <id>rapandsort</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>1.3.2</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <executable>../rapandsort.sh</executable>
-              <arguments><argument>${project.artifactId}</argument></arguments>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-  </profiles>
+    </profiles>
 </project>

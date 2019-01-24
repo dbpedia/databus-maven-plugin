@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <!-- the super-pom deactivates software compilation and configures the plugin to run in default phases -->
     <parent>
         <groupId>org.dbpedia.databus</groupId>
         <artifactId>super-pom</artifactId>
@@ -19,21 +20,23 @@
     </modules>
 
     <properties>
-		<databus.downloadUrlPath>
-			http://downloads.dbpedia.org/repo/${project.groupId}/${project.artifactId}/${project.version}/
+        <databus.downloadUrlPath>
+            http://downloads.dbpedia.org/repo/${project.groupId}/${project.artifactId}/${project.version}/
         </databus.downloadUrlPath>
         <databus.packageDirectory>
-			${session.executionRootDirectory}/target/databus/package/${project.groupId}
+            ${session.executionRootDirectory}/target/databus/package/${project.groupId}
         </databus.packageDirectory>
         <databus.publisher>https://neradis.github.io/test-id.ttl#this</databus.publisher>
         <databus.pkcs12File>test-cert-bundle.p12</databus.pkcs12File>
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<databus.changelog>No real version, we also use this as a dataset to test the framework</databus.changelog>
-		<databus.docheader>Snippet to put before docu</databus.docheader>
-		<databus.docfooter>Snippet to put after docu</databus.docfooter>
+        <databus.changelog>No real version, we also use this as a dataset to test the framework</databus.changelog>
+        <databus.docheader>Snippet to put before docu</databus.docheader>
+        <databus.docfooter>Snippet to put after docu</databus.docfooter>
     </properties>
 
+    <!-- currently still needed to find the super-pom, once the super-pom is in maven central,
+    this can be removed as well -->
     <repositories>
         <repository>
             <id>archiva.internal</id>
