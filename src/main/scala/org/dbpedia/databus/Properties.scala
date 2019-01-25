@@ -21,14 +21,14 @@
 package org.dbpedia.databus
 
 import better.files.{File => _, _}
-import org.apache.maven.plugin.AbstractMojo
+import org.apache.maven.plugin.{AbstractMojo, Mojo}
 import org.apache.maven.plugins.annotations.Parameter
+
 import java.io.File
 import java.net.URL
 import java.time.{Instant, LocalDateTime, ZoneId}
 import java.util
 import java.util.{List => JavaList}
-
 import org.apache.maven.plugin.logging.Log
 import org.apache.maven.settings.Settings
 
@@ -42,7 +42,7 @@ import org.apache.maven.settings.Settings
   * by maven is done later, so all vars are empty on startup
   *
   */
-trait Properties extends Locations with Parameters {
+trait Properties extends Locations with Parameters with Mojo {
 
   this: AbstractMojo =>
 
@@ -355,17 +355,4 @@ object Properties {
     }
     logoPrinted = true
   }
-
-
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -20,16 +20,15 @@
  */
 package org.dbpedia.databus
 
-import java.nio.charset.StandardCharsets
-
 import org.dbpedia.databus.lib._
 import org.dbpedia.databus.shared._
-import org.dbpedia.databus.shared.helpers.conversions._
-import org.dbpedia.databus.shared.rdf.conversions._
+import org.dbpedia.databus.shared.authentification.AccountHelpers
+
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-import org.dbpedia.databus.shared.authentification.AccountHelpers
+
 import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
