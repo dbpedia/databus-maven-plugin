@@ -102,13 +102,15 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
       s"""PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
          |PREFIX dct: <http://purl.org/dc/terms/>
          |
-         |SELECT ?name ?version ?date ?webid ?account {
+         |SELECT ?name ?version ?date ?webid ?issuedate ?account {
          |Graph <${datasetIdentifier}> {
          |  ?dataset a dataid:Dataset .
          |  ?dataset rdfs:label ?name .
          |  ?dataset dct:hasVersion ?version .
          |  ?dataset dct:issued ?date .
          |  ?dataset dataid:associatedAgent ?webid .
+         |  ?dataid a dataid:DataId .
+         |  ?dataid dct:issued ?issuedate .
          |  }
          |# resides in other graph
          |OPTIONAL {?webid foaf:account ?account }

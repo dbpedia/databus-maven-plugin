@@ -235,6 +235,8 @@ trait Properties extends Locations with Parameters {
   @Parameter(property = "databus.changelog", defaultValue = "") val changelog: String = ""
   @Parameter(property = "databus.docfooter", defaultValue = "") val docfooter: String = ""
   @Parameter(property = "databus.markdown", defaultValue = "${project.artifactId}.md") val markdown: File = null
+  @Parameter(property = "databus.provenanceFileSimple", defaultValue = "src/main/databus/provenance-${project.version}.list")
+  val provenanceFileSimple: File = null
 
 
   /**

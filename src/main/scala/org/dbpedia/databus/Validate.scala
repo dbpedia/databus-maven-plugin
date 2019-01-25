@@ -55,6 +55,8 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
     }
   }
 
+
+
   def validateWebId(): Unit = {
 
     if (locations.pkcs12File == null) {

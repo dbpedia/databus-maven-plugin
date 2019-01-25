@@ -21,6 +21,8 @@
 package org.dbpedia.databus
 
 
+import java.net.URL
+
 import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
 
 import scala.collection.JavaConverters._
@@ -31,6 +33,8 @@ import java.time._
 
 import better.files.File
 import better.files._
+
+import scala.collection.mutable
 
 
 trait Parameters {
@@ -73,6 +77,19 @@ trait Parameters {
 
     lazy val versionToInsert = if (insertVersion) Some(version) else None
 
+    lazy val provenanceIRIs = {
+      val set: mutable.Set[URL] = mutable.Set()
+      if (provenanceFileSimple.exists()) {
+        for {
+          line <- provenanceFileSimple.toScala.lineIterator
+        } (if (line.trim.nonEmpty) {
+          set.add(new URL(line.trim))
+        })
+      }
+      set
+
+    }
+
     lazy val (label, comment, description) = {
 
       if (!markdown.exists()) {
@@ -94,7 +111,7 @@ trait Parameters {
 
           for {
             line <- iter
-          } (rest += (line+"\n"))
+          } (rest += (line + "\n"))
         }
       }
       (firstline, secondline, rest.trim)

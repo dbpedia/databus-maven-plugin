@@ -128,6 +128,11 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
       }
 
       // adding wasDerivedFrom other datasets
+      params.provenanceIRIs.foreach(p => {
+        datasetResource.addProperty(prov.wasDerivedFrom, p.toString.asIRI
+      })
+
+      /*
       params.wasDerivedFrom.foreach { case ScalaBaseEntity(artifact, version) =>
 
         val baseEntityBlankNode = editContext.createResource().tap { baseEntityRes =>
@@ -137,7 +142,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
         }
 
         datasetResource.addProperty(prov.wasDerivedFrom, baseEntityBlankNode)
-      }
+      }*/
 
 
       //writing the metadatafile
@@ -169,8 +174,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
       s"""Metadata created by the DBpedia Databus Maven Plugin: https://github.com/dbpedia/databus-maven-plugin (Version ${Properties.pluginVersion})
          |The DataID ontology is a metadata omnibus, which can be extended to be interoperable with all metadata formats
          |Note that the metadata (the dataid.ttl file) is always CC-0, the files are licensed individually
-         |Metadata created by ${publisher}
-          """.stripMargin)
+         |Metadata created by ${publisher}""".stripMargin)
 
     dataIdResource.addProperty(dcterms.issued, ISO_INSTANT_NO_NANO.format(params.invocationTime).asTypedLiteral(XSDdateTime))
     dataIdResource.addProperty(dcterms.license, "http://purl.oclc.org/NET/rdflicense/cc-zero1.0".asIRI)
