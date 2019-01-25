@@ -129,7 +129,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
       // adding wasDerivedFrom other datasets
       params.provenanceIRIs.foreach(p => {
-        datasetResource.addProperty(prov.wasDerivedFrom, p.toString.asIRI
+        datasetResource.addProperty(prov.wasDerivedFrom, p.toString.asIRI)
       })
 
       /*
