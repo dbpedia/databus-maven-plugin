@@ -9,7 +9,7 @@
         <version>1.3-SNAPSHOT</version>
     </parent>
     <groupId>wikidata</groupId>
-    <artifactId>common-metadata</artifactId>
+    <artifactId>group-metadata</artifactId>
     <packaging>pom</packaging>
     <version>2018.11.30</version>
 
