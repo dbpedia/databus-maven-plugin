@@ -30,7 +30,6 @@
          databus.pkcs12File>${user.home}/.m2/certificate_generic.pfx</databus.pkcs12File-->
         <databus.maintainer>https://m1ci.github.io/webid.ttl#this</databus.maintainer>
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.changelog><![CDATA[
 # Changelog
 ## 2016.10.01

@@ -51,27 +51,33 @@
         <databus.maintainer>https://alismayilov.github.io/webid-ali.ttl#this</databus.maintainer>
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <databus.changelog>
-            * 2018.07.20 to 2018.11.30 - were created as new modular releases, some issues remain:
-            ** mappingbased objects are not cleaned
-            ** we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
-            characters
-            ** link to Wikimedia dump version is missing
-            2018.10.01 - deleted due to bzip2 non-recoverable bad blocks
-        </databus.changelog>
-        <databus.docfooter>
-            DBpedia is a community project, help us with this dataset:
-            * improve the software at: https://github.com/dbpedia/extraction-framework
-            * improve this documentation in the pom.xml at
-            https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/wikidata/pom.xml
+        <databus.changelog><![CDATA[
+# Changelog
+## 2018.07.20 to 2018.11.30
+* were created as new modular releases, some issues remain
+* mappingbased objects are not cleaned
+* we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
+characters
+* link to Wikimedia dump version is missing
+## 2018.10.01
+* deleted due to bzip2 non-recoverable bad blocks
+        ]]></databus.changelog>
+        <databus.docfooter><![CDATA[
+## How to contribute
+TODO bad docu, i.e. missing links where to add the mappings, paper, etc.
 
-            TODO bad docu, i.e. missing links where to add te mappings, paper, etc.
-            Origin:
-            This dataset was extracted using the wikidata-dumps available on
-            https://www.wikidata.org/wiki/Wikidata:Database_download
-            using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
-            For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
-        </databus.docfooter>
+DBpedia is a community project, help us with this dataset:
+* improve the software at: https://github.com/dbpedia/extraction-framework
+* improve this documentation in the pom.xml at
+https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/wikidata/pom.xml
+
+
+## Origin:
+This dataset was extracted using the wikidata-dumps available on
+https://www.wikidata.org/wiki/Wikidata:Database_download
+using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
+For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
+        ]]></databus.docfooter>
 
     </properties>
 
