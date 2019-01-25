@@ -49,7 +49,6 @@ trait Parameters {
 
     val invocationTime: ZonedDateTime = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
 
-
     lazy val issuedDate: ZonedDateTime =
       try {
         if (props.tryVersionAsIssuedDate) {
@@ -62,10 +61,10 @@ trait Parameters {
         }
       } catch {
         case e: Throwable => {
+
           invocationTime
         }
       }
-
 
     lazy val modifiedDate: ZonedDateTime = try {
       ZonedDateTime.parse(props.modifiedDate)
@@ -73,7 +72,7 @@ trait Parameters {
       case e: Throwable => invocationTime
     }
 
-    lazy val wasDerivedFrom = props.wasDerivedFrom.asScala.map(ScalaBaseEntity.fromJava).toSet
+    //lazy val wasDerivedFrom = props.wasDerivedFrom.asScala.map(ScalaBaseEntity.fromJava).toSet
 
     lazy val versionToInsert = if (insertVersion) Some(version) else None
 
@@ -91,7 +90,6 @@ trait Parameters {
     }
 
     lazy val (label, comment, description) = {
-
       if (!markdown.exists()) {
         ("", "", "")
       }

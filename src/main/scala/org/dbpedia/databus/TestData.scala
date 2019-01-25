@@ -44,6 +44,9 @@ class TestData extends AbstractMojo with Properties {
   @Parameter(property = "databus.testRDFSyntax", defaultValue = "false")
   val testRDFSyntax: Boolean = false
 
+
+
+
   @Parameter(property = "databus.allVersions", required = false)
   val allVersions: Boolean = false
 

@@ -52,20 +52,6 @@ trait Properties extends Locations with Parameters {
     * ************************************/
   {
     Properties.printLogoOnce(getLog)
-
-    // password
-    //option 1 no password provided
-    //option 2 pw in pom or passed as parameter
-    //option 3 settings.xml
-    /*val profile = settings.getProfilesAsMap.get("databus_central")
-    if (profile != null) {
-      //get profile
-      // add to memo
-    }*/
-
-    //println(a+"sss")
-    //System.exit(0)
-
   }
 
 
@@ -108,34 +94,25 @@ trait Properties extends Locations with Parameters {
   @Parameter(property = "databus.pluginDirectory", defaultValue = "${project.build.directory}/databus", required = true)
   val pluginDirectory: File = null
 
-
   /**
-    * SH: I marked this one as deprecated as it does not seem to work correctly
-    * reproduce with running mvn help:evaluate -Dexpression=maven.multiModuleProjectDirectory in parent and module dir
-    * I tried to implement an isParent method below to use centrally
-    * At the moment, we are working with the assumption that we only have one parent with modules, no deeper
+    * input folder for data
+    * copy/move all your datafiles in the respective modules
+    * all files have to start with the animals of the module, i.e. src/main/databus/$artifactId_en.nt.bz2
     */
-  //@deprecated(message = "see above", since = "early days")
-  //@Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
-  //val multiModuleBaseDirectory: String = ""
+  @Parameter(property = "databus.dataInputDirectory", defaultValue = "src/main/databus/${project.version}", required = true)
+  val dataInputDirectory: File = null
 
-  /**
-    * The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
-    * We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
-    */
-  @Parameter(property = "databus.includeParseLogs", defaultValue = "true")
-  val includeParseLogs: Boolean = true
 
-  /**
-    * Used to deploy to test repo
-    */
-  @Parameter(property = "databus.deployToTestRepo", defaultValue = "false")
-  val deployToTestRepo: Boolean = false
+  @Parameter(property = "databus.markdown", defaultValue = "${project.artifactId}.md")
+  val markdown: File = null
 
-  @Parameter(property = "databus.deployRepoURL", defaultValue = "https://databus.dbpedia.org/repo")
-  val deployRepoURL: String = ""
+  @Parameter(property = "databus.provenanceFileSimple", defaultValue = "src/main/databus/provenance-${project.version}.list")
+  val provenanceFileSimple: File = null
 
-  @Parameter(property = "databus.allowOverwriteOnDeploy") val allowOverwriteOnDeploy: Boolean = true
+
+
+
+
   @Parameter(property = "databus.insertVersion") val insertVersion: Boolean = true
 
 
@@ -144,17 +121,6 @@ trait Properties extends Locations with Parameters {
     *
     */
 
-  /**
-    * TODO
-    * input folder for data
-    * copy/move all your datafiles in the respective modules
-    * all files have to start with the animals of the module, i.e. src/main/databus/$artifactId_en.nt.bz2
-    */
-  @Parameter(property = "databus.dataInputDirectory", defaultValue = "src/main/databus/${project.version}", required = true)
-  val dataInputDirectory: File = null
-
-  //TODO maybe we need this later when groupid is used for the software, but now it is too complicated
-  //@Parameter val alternateGroupId: String = null
 
   /**
     * Configure downloadUrlPath, where the dataset will be deployed:
@@ -172,6 +138,11 @@ trait Properties extends Locations with Parameters {
     */
   @Parameter(property = "databus.packageDirectory", defaultValue = "${session.executionRootDirectory}/target/databus/package/${project.groupId}", required = true)
   val packageDirectory: File = null
+
+
+
+
+
 
 
   /**
@@ -234,19 +205,8 @@ trait Properties extends Locations with Parameters {
   //documentation
   @Parameter(property = "databus.changelog", defaultValue = "") val changelog: String = ""
   @Parameter(property = "databus.docfooter", defaultValue = "") val docfooter: String = ""
-  @Parameter(property = "databus.markdown", defaultValue = "${project.artifactId}.md") val markdown: File = null
-  @Parameter(property = "databus.provenanceFileSimple", defaultValue = "src/main/databus/provenance-${project.version}.list")
-  val provenanceFileSimple: File = null
 
 
-  /**
-    * for each modules
-    */
-
-
-  //@Parameter val labels: JavaList[String] = new util.ArrayList[String]()
-  //@Parameter val datasetDescription: String = ""
-  @Parameter val wasDerivedFrom: JavaList[BaseEntity] = new util.ArrayList[BaseEntity]()
 
 
   /**

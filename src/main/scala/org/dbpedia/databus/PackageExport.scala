@@ -22,12 +22,10 @@ package org.dbpedia.databus
 
 import org.dbpedia.databus.lib._
 import org.dbpedia.databus.shared.signing
-
 import better.files._
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
-import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
-
+import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import java.io.{File, FileWriter}
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption.REPLACE_EXISTING
@@ -35,6 +33,15 @@ import java.nio.file.StandardCopyOption.REPLACE_EXISTING
 @Mojo(name = "package-export", defaultPhase = LifecyclePhase.PACKAGE)
 class PackageExport extends AbstractMojo with Properties {
 
+  /**
+    * The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
+    * We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
+    */
+  @Parameter(property = "databus.includeParseLogs", defaultValue = "true")
+  val includeParseLogs: Boolean = true
+
+  @Parameter(property = "databus.deactivateDownloadUrl", defaultValue = "false")
+  val deactivateDownloadUrl = false
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
@@ -88,10 +95,16 @@ class PackageExport extends AbstractMojo with Properties {
       getLog.info("packaged: " + packageTarget.name)
     }
 
-    val baseResolvedDataId = resolveBaseForRDFFile(dataIdFile, dataIdDownloadLocation)
+    if (deactivateDownloadUrl) {
+      //copy
+      Files.copy(dataIdFile.toJava.toPath, dataIdPackageTarget.toJava.toPath)
 
-    dataIdPackageTarget.writeByteArray((Properties.logo + "\n").getBytes())
-    dataIdPackageTarget.appendByteArray(baseResolvedDataId)
+    } else {
+      // resolve
+      val baseResolvedDataId = resolveBaseForRDFFile(dataIdFile, dataIdDownloadLocation)
+      dataIdPackageTarget.writeByteArray((Properties.logo + "\n").getBytes())
+      dataIdPackageTarget.appendByteArray(baseResolvedDataId)
+    }
     getLog.info("packaged: " + dataIdPackageTarget.name)
     getLog.info(s"package written to ${packageDirectory}")
   }

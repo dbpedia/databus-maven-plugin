@@ -27,13 +27,19 @@ import org.dbpedia.databus.shared._
 import org.dbpedia.databus.shared.helpers.conversions._
 import org.dbpedia.databus.shared.rdf.conversions._
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
-import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
+import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import org.dbpedia.databus.shared.authentification.AccountHelpers
 import java.net.URLEncoder
 
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 class Deploy extends AbstractMojo with Properties with SigningHelpers {
+
+  @Parameter(property = "databus.deployRepoURL", defaultValue = "https://databus.dbpedia.org/repo")
+  val deployRepoURL: String = ""
+
+  @Parameter(property = "databus.allowOverwriteOnDeploy", defaultValue = "true")
+  val allowOverwriteOnDeploy: Boolean = true
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {

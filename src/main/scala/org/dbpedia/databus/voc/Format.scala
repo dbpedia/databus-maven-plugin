@@ -52,6 +52,10 @@ object TextCSV extends Format(mimeType = "text/csv", lineBased = true)
 
 object TextTabSeparatedValues extends Format("text/tab-separated-values", lineBased = true)
 
+//json
+object ApplicationJson extends Format("application/json", false)
+
+
 /**
   * RDF Based Formats
   */
@@ -95,7 +99,8 @@ object Format {
     "trig" -> ApplicationTrig,
     "txt" -> TextPlain,
     "list" -> TextPlain,
-    "bin" -> ApplicationOctetStream
+    "bin" -> ApplicationOctetStream,
+    "json" -> ApplicationJson
   )
 
   def detectMimeTypeByFileExtension(extensions: Seq[String])(implicit log: Log): (String, Format) = {
