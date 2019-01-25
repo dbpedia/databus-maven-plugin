@@ -23,11 +23,14 @@ package org.dbpedia.databus
 import better.files._
 
 trait Locations {
+
   this: Properties =>
 
   lazy val locations = new Locations(this)
 
   class Locations(props: Properties) {
+
+    def getLog = props.getLog
 
     def packageTargetDirectory = (packageDirectory.toScala / artifactId / version).createDirectories()
 
@@ -52,7 +55,5 @@ trait Locations {
         ""
       }
     }
-
   }
-
 }

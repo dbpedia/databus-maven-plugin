@@ -21,23 +21,20 @@
 package org.dbpedia.databus
 
 
-import java.net.URL
-
 import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
 
-import scala.collection.JavaConverters._
-import java.time.format.DateTimeFormatter.ISO_INSTANT
-import java.time.format.DateTimeFormatterBuilder
-import java.time.temporal.TemporalAccessor
-import java.time._
-
-import better.files.File
 import better.files._
 
+import scala.collection.JavaConverters._
 import scala.collection.mutable
+
+import java.net.URL
+import java.time._
+import java.time.format.DateTimeFormatterBuilder
 
 
 trait Parameters {
+
   this: Properties =>
 
   lazy val params = new Parameters(this)
@@ -46,6 +43,7 @@ trait Parameters {
 
   class Parameters(props: Properties) {
 
+    def getLog = props.getLog
 
     val invocationTime: ZonedDateTime = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
 
@@ -53,8 +51,7 @@ trait Parameters {
       try {
         if (props.tryVersionAsIssuedDate) {
           val attempt = props.version.replace(".", "-") + "T00:00:00Z"
-          val zone = ZonedDateTime.parse(attempt)
-          zone
+          ZonedDateTime.parse(attempt)
         } else {
           //ZonedDateTime.ofInstant(LocalDateTime.parse(props.issuedDate).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
           ZonedDateTime.parse(props.issuedDate)
@@ -62,6 +59,7 @@ trait Parameters {
       } catch {
         case e: Throwable => {
 
+          getLog.error("Error determining the issued date", e)
           invocationTime
         }
       }
