@@ -38,24 +38,26 @@ import java.time.{ZoneId, ZonedDateTime}
 object DataFileToModel {
 
   val prefixes = Map(
-    "databus" -> "https://databus.dbpedia.org/",
     "dataid" -> global.dataid.namespace,
-    "dataid-ld" -> "http://dataid.dbpedia.org/ns/ld#",
-    "dataid-mt" -> "http://dataid.dbpedia.org/ns/mt#",
-    "dataid-pl" -> "http://dataid.dbpedia.org/ns/pl#",
-    "dmp" -> "http://dataid.dbpedia.org/ns/dmp#",
-    "dct" -> global.dcterms.namespace,
     "dcat" -> global.dcat.namespace,
-    "void" -> "http://rdfs.org/ns/void#",
-    "prov" -> global.prov.namespace,
-    "xsd" -> XSD.NS,
-    "owl" -> OWL.NS,
-    "foaf" -> global.foaf.namespace,
     "rdf" -> RDF.uri,
     "rdfs" -> RDFS.uri,
-    "datacite" -> "http://purl.org/spar/datacite/",
-    "spdx" -> "http://spdx.org/rdf/terms#",
-    "sd" -> "http://www.w3.org/ns/sparql-service-description#"
+    "dataid-mt" -> "http://dataid.dbpedia.org/ns/mt#",
+    "prov" -> global.prov.namespace,
+    "databus" -> "https://databus.dbpedia.org/",
+    "xsd" -> XSD.NS,
+    "dct" -> global.dcterms.namespace
+
+
+    //    "dataid-ld" -> "http://dataid.dbpedia.org/ns/ld#",
+    //    "dataid-pl" -> "http://dataid.dbpedia.org/ns/pl#",
+    //    "dmp" -> "http://dataid.dbpedia.org/ns/dmp#",
+    //    "void" -> "http://rdfs.org/ns/void#",
+    //    "owl" -> OWL.NS,
+    //    "foaf" -> global.foaf.namespace,
+    //    "datacite" -> "http://purl.org/spar/datacite/",
+    //    "spdx" -> "http://spdx.org/rdf/terms#",
+    //    "sd" -> "http://www.w3.org/ns/sparql-service-description#"
   )
 }
 
@@ -69,9 +71,9 @@ trait DataFileToModel extends Properties with Parameters {
 
     implicit val model: Model = ModelFactory.createDefaultModel
 
-    // for ((key, value) <- prefixes) {
-    //   model.setNsPrefix(key, value)
-    // }
+    for ((key, value) <- prefixes) {
+      model.setNsPrefix(key, value)
+    }
 
     /*
      main uri of dataid for SingleFile
