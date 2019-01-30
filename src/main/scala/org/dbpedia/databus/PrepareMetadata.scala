@@ -68,13 +68,13 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     }
 
     val dataIdCollect: Model = ModelFactory.createDefaultModel
-    getLog.info(s"looking for data files in: ${dataInputDirectory.getCanonicalPath}")
-    getLog.info(s"Found ${getListOfInputFiles().size} files:\n${
-      getListOfInputFiles().mkString(", ").replaceAll(dataInputDirectory.getCanonicalPath + "/" + artifactId, "")
+    getLog.info(s"looking for data files in: ${versionDirectory.getCanonicalPath}")
+    getLog.info(s"Found ${locations.listInputFiles().size} files:\n${
+      locations.listInputFiles().mkString(", ").replaceAll(versionDirectory.getCanonicalPath + "/" + artifactId, "")
     }")
     getLog.info(s"collecting metadata for each file (from parameters in pom.xml, from ${artifactId}/${markdown.getName} and from the file itself)")
-    getListOfInputFiles().foreach(datafile => {
-      processFile(datafile, dataIdCollect)
+    locations.listInputFiles().foreach(datafile => {
+      processFile(datafile.toJava, dataIdCollect)
 
     })
 
@@ -84,7 +84,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     //Option(publisher.toString.asIRI.getProperty(foaf.account)).map(_.getObject.asResource)
     //}
 
-    getLog.info(s"writing metadata to ${getDataIdFile()}")
+    getLog.info(s"writing metadata to ${locations.prepareDataIdFile}")
     if (!dataIdCollect.isEmpty) {
 
       implicit val editContext = dataIdCollect
@@ -146,11 +146,11 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
 
       //writing the metadatafile
-      getDataIdFile().toScala.outputStream.foreach { os =>
+      locations.prepareDataIdFile.outputStream.foreach { os =>
         os.write((Properties.logo + "\n").getBytes)
         dataIdCollect.write(os, "turtle")
       }
-      getLog.info(s"${getDataIdFile()} written")
+      getLog.info(s"${locations.prepareDataIdFile} written")
 
     }
   }

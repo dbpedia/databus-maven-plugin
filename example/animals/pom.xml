@@ -31,7 +31,6 @@
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.changelog>No real version, we also use this as a dataset to test the framework</databus.changelog>
-        <databus.docheader>Snippet to put before docu</databus.docheader>
         <databus.docfooter>Snippet to put after docu</databus.docfooter>
     </properties>
 

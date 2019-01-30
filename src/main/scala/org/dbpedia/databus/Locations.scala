@@ -20,6 +20,8 @@
  */
 package org.dbpedia.databus
 
+
+import better.files.File
 import better.files._
 
 trait Locations {
@@ -32,14 +34,71 @@ trait Locations {
 
     def getLog = props.getLog
 
-    def packageTargetDirectory = (packageDirectory.toScala / artifactId / version).createDirectories()
+    // input
+    val versionInputDirectory: File = (props.dataInputDirectory.toScala / props.version)
+
+
+    // build
+    lazy val databusBuildDirectory : File = (buildDirectory.toScala / "databus"  )
+
+
+    lazy val prepareDataIdFile: File = (buildDirectory.toScala / "dataid.ttl")
+
+    lazy val parselogDirectory: File = (buildDirectory.toScala / "parselogs").createDirectories()
+
+
+    // repo/package
+    lazy val packageVersionDirectory: File = (packageDirectory.toScala / artifactId / version).createDirectories()
+
+    lazy val packageDataIdFile: File = (packageVersionDirectory / "dataid.ttl")
+
+    lazy val dataIdDownloadLocation: String = downloadUrlPath.toString + "dataid.ttl"
+
+    lazy val parseLogFile: File = (parselogDirectory / (props.finalName + "_parselog.ttl"))
+
+
+    /**
+      * lists all appropriate data files, using these filters:
+      * * is a file
+      * * starts with artifactid
+      * * is not a dataid
+      * * is not a parselog
+      *
+      * @return
+      */
+    def listInputFiles(): List[File] = {
+
+      if (versionInputDirectory.exists && versionInputDirectory.isDirectory) {
+
+        val dataFiles: List[File] = versionInputDirectory.toJava.listFiles()
+          .filter(_.isFile)
+          .filter(_.getName.startsWith(artifactId))
+          .filter(_ != prepareDataIdFile.name)
+          .map(f => f.toScala)
+          .toList
+        //TODO .filter(_ != getParseLogFile())
+
+        if (dataFiles.isEmpty) {
+          getLog.warn(s"no matching input files found within ${versionInputDirectory.toJava.listFiles().size} files in " +
+            s"data input directory ${versionInputDirectory.pathAsString}")
+        }
+
+        dataFiles
+      } else {
+
+        getLog.warn(s"data input location '${props.versionDirectory.getAbsolutePath}' does not exist or is not a directory!")
+
+        List[File]()
+      }
+    }
+
 
     lazy val pkcs12File: File = {
       if (props.pkcs12File != null) {
         lib.findFileMaybeInParent(props.pkcs12File.toScala, "PKCS12 bundle")
       } else if (props.settings.getServer(pkcs12serverId) != null) {
-        //TODO strictly not necessary to us find here
-        lib.findFileMaybeInParent(File(settings.getServer(pkcs12serverId).getPrivateKey),"PKCS bundle")
+        //TODO strictly not necessary to use find here
+        lib.findFileMaybeInParent(File(settings.getServer(pkcs12serverId).getPrivateKey), "PKCS bundle")
       } else {
         null
       }
@@ -47,13 +106,12 @@ trait Locations {
 
     def pkcs12Password: String = {
 
-      if (props.pkcs12password.nonEmpty) {
-        props.pkcs12password
-      } else if (props.settings.getServer(pkcs12serverId) != null) {
+      if (props.settings.getServer(pkcs12serverId) != null) {
         settings.getServer(pkcs12serverId).getPassphrase
       } else {
         ""
       }
     }
   }
+
 }

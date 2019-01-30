@@ -65,7 +65,7 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
       }
 
       case None => {
-        dataIdDownloadLocation
+        locations.dataIdDownloadLocation
       }
     }
 
@@ -73,28 +73,28 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
     getLog.info(s"Attempting upload to ${uploadEndpointIRI} with allowOverrideOnDeploy=${allowOverwriteOnDeploy} into graph ${datasetIdentifier}")
 
     //TODO packageExport should do the resolution of URIs
-    val response = if (dataIdPackageTarget.isRegularFile && dataIdPackageTarget.nonEmpty) {
+    val response = if (locations.packageDataIdFile.isRegularFile && locations.packageDataIdFile.nonEmpty) {
 
       // if there is a (base-resolved) DataId Turtle file in the package directory, attempt to upload that one
-      DataIdUpload.upload(uploadEndpointIRI, dataIdPackageTarget, locations.pkcs12File, pkcs12Password.get,
-        dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)
+      DataIdUpload.upload(uploadEndpointIRI, locations.packageDataIdFile, locations.pkcs12File, pkcs12Password.get,
+        locations.dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)
     } else {
 
-      getLog.warn(s"Did not find expected DataId file '${dataIdPackageTarget.pathAsString}' from " +
+      getLog.warn(s"Did not find expected DataId file '${locations.packageDataIdFile.pathAsString}' from " +
         "databus:package-export goal. Uploading a DataId prepared in-memory.")
 
       //else resolve the base in-memory and upload that
-      val baseResolvedDataId = resolveBaseForRDFFile(dataIdFile, dataIdDownloadLocation)
+      val baseResolvedDataId = resolveBaseForRDFFile(locations.prepareDataIdFile, locations.dataIdDownloadLocation)
 
       DataIdUpload.upload(uploadEndpointIRI, baseResolvedDataId, locations.pkcs12File, pkcs12Password.get,
-        dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)
+        locations.dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)
     }
 
 
     if (response.code != 200) {
       getLog.error(
         s"""|FAILURE HTTP response code: ${response.code} (check https://en.wikipedia.org/wiki/HTTP_${response.code})
-            |$deployRepoURL rejected ${dataIdFile.pathAsString}
+            |$deployRepoURL rejected ${locations.packageDataIdFile.pathAsString}
             |Message:\n${response.body}
        """.stripMargin)
 

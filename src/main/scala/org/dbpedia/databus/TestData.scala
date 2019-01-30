@@ -41,19 +41,17 @@ import scala.collection.mutable
 @Mojo(name = "test-data", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 class TestData extends AbstractMojo with Properties {
 
-  @Parameter(property = "databus.testRDFSyntax", defaultValue = "false")
+  @Parameter(property = "databus.test.RDFSyntax", defaultValue = "false")
   val testRDFSyntax: Boolean = false
 
 
-
-
-  @Parameter(property = "databus.allVersions", required = false)
+  @Parameter(property = "databus.test.allVersions", required = false)
   val allVersions: Boolean = false
 
-  @Parameter(property = "databus.detailedValidation", required = false)
-  val detailedValidation: Boolean = false
+  @Parameter(property = "databus.test.detailed", required = false)
+  val detailed: Boolean = false
 
-  @Parameter(property = "databus.strict", required = false)
+  @Parameter(property = "databus.test.strict", required = false)
   val strict: Boolean = false
 
 
@@ -119,11 +117,11 @@ class TestData extends AbstractMojo with Properties {
   def generateParselogForRDFSyntax = {
     val parseLogFileWriter = Files.newBufferedWriter(getParseLogFile().toPath, StandardCharsets.UTF_8)
 
-    getListOfInputFiles().foreach(datafile => {
+    locations.listInputFiles().foreach(datafile => {
 
       var parseLog = new StringBuilder
       var details = new StringBuilder
-      val df: Datafile = Datafile(datafile)(getLog).ensureExists()
+      val df: Datafile = Datafile(datafile.toJava)(getLog).ensureExists()
       val model: Model = ModelFactory.createDefaultModel
       val finalBasename = df.finalBasename(params.versionToInsert)
       val thisResource = model.createResource("#" + finalBasename)
@@ -199,14 +197,15 @@ class TestData extends AbstractMojo with Properties {
     */
   def validateVersions(): Unit = {
 
-    val dataInputDirectoryParent = dataInputDirectory.getParentFile
+    //val dataInputDirectoryParent = dataInputDirectory.getParentFile
 
-    val versions: mutable.SortedSet[String] = mutable.SortedSet(dataInputDirectory.toString.replace(dataInputDirectoryParent.toString, ""))
+    //dataInputDirectory.toString.replace(dataInputDirectoryParent.toString, "")
+    val versions: mutable.SortedSet[String] = mutable.SortedSet(version)
 
     // add allVersions to the set
     if (allVersions) {
-      versions.++=(dataInputDirectoryParent.listFiles().filter(_.isDirectory).map(f => {
-        f.toString.replace(dataInputDirectoryParent.toString, "")
+      versions.++=(dataInputDirectory.listFiles().filter(_.isDirectory).map(f => {
+        f.toString.replace(dataInputDirectory.toString, "")
       }).toSet)
       getLog.info(s"[databus.allVersion=true] $artifactId found ${versions.size} version(s): ${versions.mkString(", ")}\n")
     }
@@ -215,7 +214,7 @@ class TestData extends AbstractMojo with Properties {
 
     // collect all information
     val versionDirs = versions.toList.flatMap(v => {
-      val versionDir: File = new File(dataInputDirectoryParent, v)
+      val versionDir: File = new File(dataInputDirectory, v)
       if (versionDir.exists && versionDir.isDirectory && versionDir.listFiles().nonEmpty) {
 
         val wrongFiles = versionDir.listFiles.filterNot(_.getName.startsWith(artifactId)).toList
@@ -226,8 +225,8 @@ class TestData extends AbstractMojo with Properties {
         var fileList: List[File] = versionDir.listFiles
           .filter(_.isFile)
           .filter(_.getName.startsWith(artifactId))
-          .filter(_ != getDataIdFile())
-          .filter(_ != getParseLogFile())
+          .filter(_ != locations.prepareDataIdFile.name)
+          //TODO .filter(_ != getParseLogFile())
           .toList
 
         val filenameHelpers: List[FilenameHelpers] = fileList.map(f => {
@@ -237,7 +236,7 @@ class TestData extends AbstractMojo with Properties {
         val datafiles: List[Datafile] = fileList.map(f => {
 
           val df = Datafile(f)(getLog).ensureExists()
-          if (detailedValidation) {
+          if (detailed) {
             df.updateFileMetrics()
           }
           df
@@ -317,7 +316,7 @@ class TestData extends AbstractMojo with Properties {
     }
     getLog.info(s"[${artifactId}] Prefix:\n" + l)
 
-    if (detailedValidation) {
+    if (detailed) {
 
       l = ""
       for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {

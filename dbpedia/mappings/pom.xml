@@ -23,7 +23,7 @@
 
     <properties>
         <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
-        <databus.dataInputDirectory>src/main/databus/${project.version}</databus.dataInputDirectory>
+        <databus.dataInputDirectory>src/main/databus</databus.dataInputDirectory>
         <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}
         </databus.packageDirectory>
         <databus.downloadUrlPath>

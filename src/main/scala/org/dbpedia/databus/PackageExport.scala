@@ -52,44 +52,44 @@ class PackageExport extends AbstractMojo with Properties {
     }
 
 
-    if (!dataIdFile.isRegularFile) {
+    if (!locations.prepareDataIdFile.isRegularFile) {
 
-      val emptyVersion = if (getListOfInputFiles().isEmpty) s"* ${version} does not contain any files\n" else ""
+      val emptyVersion = if (locations.listInputFiles().isEmpty) s"* ${version} does not contain any files\n" else ""
 
-      getLog.warn(s"${dataIdFile} not found for ${artifactId}, can not package\n" +
+      getLog.warn(s"${locations.prepareDataIdFile} not found for ${artifactId}, can not package\n" +
         s"fix with:\n" +
         s"* running mvn prepare-package or mvn databus:metadata first\n" + emptyVersion)
       System.exit(-1)
     }
 
     // for each module copy all files to target
-    getListOfInputFiles().foreach { inputFile =>
+    locations.listInputFiles().foreach { inputFile =>
 
-      val df = Datafile(inputFile)(getLog)
-      val packageTarget = locations.packageTargetDirectory / df.finalBasename(params.versionToInsert)
+      val df = Datafile(inputFile.toJava)(getLog)
+      val filePackageTarget = locations.packageVersionDirectory / df.finalBasename(params.versionToInsert)
 
       // check if files exist already
-      if (packageTarget.isRegularFile) {
+      if (filePackageTarget.isRegularFile) {
 
-        val targetHash = signing.sha256Hash(packageTarget)
-        val sourceHash = signing.sha256Hash(inputFile.toScala)
+        val targetHash = signing.sha256Hash(filePackageTarget)
+        val sourceHash = signing.sha256Hash(inputFile)
 
         //overwrite if different, else keep
         if (targetHash != sourceHash) {
-          inputFile.toScala.copyTo(packageTarget, overwrite = true)
-          getLog.info("packaged (in overwrite mode): " + packageTarget.name)
+          inputFile.copyTo(filePackageTarget, overwrite = true)
+          getLog.info("packaged (in overwrite mode): " + filePackageTarget.name)
         } else {
-          getLog.info("skipped (same file): " + packageTarget.name)
+          getLog.info("skipped (same file): " + filePackageTarget.name)
         }
 
       } else {
-        inputFile.toScala.copyTo(packageTarget, overwrite = true)
-        getLog.info("packaged: " + packageTarget.name)
+        inputFile.copyTo(filePackageTarget, overwrite = true)
+        getLog.info("packaged: " + filePackageTarget.name)
       }
     }
 
     //Parselogs
-    if (includeParseLogs && getParseLogFile().exists()) {
+    if (includeParseLogs && locations.parseLogFile().exists()) {
       val packageTarget = locations.packageTargetDirectory / getParseLogFile().getName
       getParseLogFile().toScala.copyTo(packageTarget, true)
       getLog.info("packaged: " + packageTarget.name)
@@ -97,15 +97,15 @@ class PackageExport extends AbstractMojo with Properties {
 
     if (deactivateDownloadUrl) {
       //copy
-      Files.copy(dataIdFile.toJava.toPath, dataIdPackageTarget.toJava.toPath)
+      locations.prepareDataIdFile.copyTo(locations.packageDataIdFile, overwrite = true)
 
     } else {
       // resolve
-      val baseResolvedDataId = resolveBaseForRDFFile(dataIdFile, dataIdDownloadLocation)
-      dataIdPackageTarget.writeByteArray((Properties.logo + "\n").getBytes())
-      dataIdPackageTarget.appendByteArray(baseResolvedDataId)
+      val baseResolvedDataId = resolveBaseForRDFFile(locations.prepareDataIdFile, dataIdDownloadLocation)
+      locations.packageDataIdFile.writeByteArray((Properties.logo + "\n").getBytes())
+      locations.packageDataIdFile.appendByteArray(baseResolvedDataId)
     }
-    getLog.info("packaged: " + dataIdPackageTarget.name)
-    getLog.info(s"package written to ${packageDirectory}")
+    getLog.info("packaged: " + locations.packageDataIdFile.name)
+    getLog.info(s"package written to ${locations.packageVersionDirectory}")
   }
 }
