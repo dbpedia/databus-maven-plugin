@@ -32,29 +32,67 @@ trait Locations {
 
   class Locations(props: Properties) {
 
+    val dataIdFileName = "dataid.ttl"
+    val parselogFileName = "parselog.ttl"
+    val provenanceFileName = "provenance.tsv"
+    val markdownFileName = s"${props.artifactId}.md"
+    val markdownVersionFileName = s"${props.artifactId}-${props.version}.md"
+
     def getLog = props.getLog
 
-    // input
-    val versionInputDirectory: File = (props.dataInputDirectory.toScala / props.version)
+    //used for better paths in logging
+    def prettyPath(f: File): String = {
+      props.sessionRoot.toScala.relativize(f).toString
+    }
+
+    /**
+      * INPUT
+      */
+
+    // main input directory
+    lazy val inputDirectory: File = props.inputDirectory.toScala
+
+    // version input directory
+    lazy val inputVersionDirectory: File = (props.inputDirectory.toScala / props.version)
+
+    // provenance tsv for each version
+    lazy val inputProvenanceFile: File = (inputDirectory / provenanceFileName)
+
+    // docu and changelog
+    lazy val inputMarkdownFile: File = (inputDirectory / markdownFileName)
+
+    lazy val inputVersionMarkdown: File = (inputDirectory / markdownVersionFileName)
+
+    /**
+      * BUILD
+      */
+
+    // target/databus
+    lazy val buildDirectory: File = (props.buildDirectory.toScala / "databus").createDirectories()
+
+    //
+    lazy val buildVersionDirectory: File = (buildDirectory / props.version)
+
+    lazy val buildDataIdFile: File = (buildVersionDirectory / dataIdFileName)
+
+    lazy val buildParselogFile: File = (buildVersionDirectory / parselogFileName)
 
 
-    // build
-    lazy val databusBuildDirectory : File = (buildDirectory.toScala / "databus"  )
+    /**
+      * repo/package
+      */
+    lazy val packageDirectory: File = (props.packageDirectory.toScala)
 
+    lazy val packageVersionDirectory: File = (packageDirectory / artifactId / version).createDirectories()
 
-    lazy val prepareDataIdFile: File = (buildDirectory.toScala / "dataid.ttl")
+    lazy val packageDataIdFile: File = (packageVersionDirectory / dataIdFileName)
 
-    lazy val parselogDirectory: File = (buildDirectory.toScala / "parselogs").createDirectories()
+    lazy val packageParselogFile: File = (packageVersionDirectory / parselogFileName)
 
+    lazy val dataIdDownloadLocation: String = downloadUrlPath.toString + dataIdFileName
 
-    // repo/package
-    lazy val packageVersionDirectory: File = (packageDirectory.toScala / artifactId / version).createDirectories()
-
-    lazy val packageDataIdFile: File = (packageVersionDirectory / "dataid.ttl")
-
-    lazy val dataIdDownloadLocation: String = downloadUrlPath.toString + "dataid.ttl"
-
-    lazy val parseLogFile: File = (parselogDirectory / (props.finalName + "_parselog.ttl"))
+    //todo not working
+    lazy val packageProvenanceFile: File = (packageVersionDirectory / provenanceFileName)
 
 
     /**
@@ -66,27 +104,33 @@ trait Locations {
       *
       * @return
       */
-    def listInputFiles(): List[File] = {
+    lazy val inputFileList: List[File] = {
 
-      if (versionInputDirectory.exists && versionInputDirectory.isDirectory) {
+      if (inputVersionDirectory.isDirectory && inputVersionDirectory.nonEmpty) {
 
-        val dataFiles: List[File] = versionInputDirectory.toJava.listFiles()
-          .filter(_.isFile)
-          .filter(_.getName.startsWith(artifactId))
-          .filter(_ != prepareDataIdFile.name)
-          .map(f => f.toScala)
+        //todo parselog
+        val nonArtifactFiles: List[File] = inputVersionDirectory.list
+          .filter(!_.name.startsWith(artifactId))
+          .filter(_.name != dataIdFileName)
           .toList
-        //TODO .filter(_ != getParseLogFile())
 
-        if (dataFiles.isEmpty) {
-          getLog.warn(s"no matching input files found within ${versionInputDirectory.toJava.listFiles().size} files in " +
-            s"data input directory ${versionInputDirectory.pathAsString}")
+        if (nonArtifactFiles.nonEmpty) {
+          getLog.warn(s"The following files not starting with artifactId are found in version dir ${props.version}:" +
+            s" ${nonArtifactFiles.mkString(",")}")
         }
 
-        dataFiles
-      } else {
+        val files = inputVersionDirectory.list
+          .filter(_.isRegularFile)
+          .filter(_.name.startsWith(artifactId))
+          .toList
 
-        getLog.warn(s"data input location '${props.versionDirectory.getAbsolutePath}' does not exist or is not a directory!")
+        files
+      } else {
+        getLog.error(s"Problem with databus.inputVersionDirectory\n " +
+          s"Folder: ${inputVersionDirectory}" +
+          s"isDirectory: ${inputVersionDirectory.isDirectory}\n " +
+          s"isEmpty (no files found): ${inputVersionDirectory.isEmpty}\n"
+        )
 
         List[File]()
       }

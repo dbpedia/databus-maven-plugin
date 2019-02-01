@@ -64,7 +64,9 @@ characters
         ]]></databus.changelog>
         <databus.docfooter><![CDATA[
 ## How to contribute
-TODO bad docu, i.e. missing links where to add the mappings, paper, etc.
+* mappings:
+https://github.com/dbpedia/extraction-framework/blob/master/core/src/main/resources/wikidatar2r.json
+
 
 DBpedia is a community project, help us with this dataset:
 * improve the software at: https://github.com/dbpedia/extraction-framework

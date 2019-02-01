@@ -75,7 +75,9 @@ object ApplicationRDFXML extends Format("application/rdf+xml", false) with RDFBa
 }
 
 object ApplicationTrig extends Format("application/trig", false) with RDFBased {
-  val rio = org.eclipse.rdf4j.rio.RDFFormat.TRIG
+  // RDF4j throws and unrecognized format exception
+  //val rio = org.eclipse.rdf4j.rio.RDFFormat.TRIG
+  val rio = null
   val jena = org.apache.jena.riot.RDFFormat.TRIG
 }
 
@@ -110,7 +112,7 @@ object Format {
       knownFormats.get(ext) match {
 
         case None => {
-          log.warn(s"Unable to assign file extension '$ext' to a known format, extend here: https://github.com/dbpedia/databus-maven-plugin/blob/master/src/main/scala/org/dbpedia/databus/voc/Format.scala")
+          log.info(s"Unable to assign file extension '$ext' to a known format, extend here: https://github.com/dbpedia/databus-maven-plugin/blob/master/src/main/scala/org/dbpedia/databus/voc/Format.scala")
           None
         }
 

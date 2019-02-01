@@ -96,7 +96,8 @@ class UpdateRss extends AbstractMojo with Properties {
     var title = finalName
     entry.setTitle(finalName)
     // path to dataid
-    val dataidPath: Path = Paths.get(getDataIdFile().toString)
+    //val dataidPath: Path = Paths.get(getDataIdFile().toString)
+    val dataidPath: Path = null
     val feedPath: Path = Paths.get(getFeedDirectory.toString)
     val relative = feedPath.relativize(dataidPath)
     entry.setLink(relative.toString)

@@ -49,17 +49,21 @@ trait Parameters {
 
     lazy val issuedDate: ZonedDateTime =
       try {
+
         if (props.tryVersionAsIssuedDate) {
           val attempt = props.version.replace(".", "-") + "T00:00:00Z"
           ZonedDateTime.parse(attempt)
-        } else {
+        } else if(props.issuedDate == null){
+          getLog.info{s"<databus.issuedDate> is null, using invocation time: ${invocationTime}"}
+          invocationTime
+        }else {
           //ZonedDateTime.ofInstant(LocalDateTime.parse(props.issuedDate).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
           ZonedDateTime.parse(props.issuedDate)
         }
       } catch {
         case e: Throwable => {
 
-          getLog.error("Error determining the issued date", e)
+          getLog.error("Error determining the issued date, using invocation time, issued data should be ", e)
           invocationTime
         }
       }
@@ -76,9 +80,9 @@ trait Parameters {
 
     lazy val provenanceIRIs = {
       val set: mutable.Set[URL] = mutable.Set()
-      if (provenanceFileSimple.exists()) {
+      if (locations.inputProvenanceFile.exists()) {
         for {
-          line <- provenanceFileSimple.toScala.lineIterator
+          line <- locations.inputProvenanceFile.lineIterator
         } (if (line.trim.nonEmpty) {
           set.add(new URL(line.trim))
         })
@@ -88,11 +92,11 @@ trait Parameters {
     }
 
     lazy val (label, comment, description) = {
-      if (!markdown.exists()) {
+      if (!locations.inputMarkdownFile.exists()) {
         ("", "", "")
       }
 
-      val iter = markdown.toScala.lineIterator
+      val iter = locations.inputMarkdownFile.lineIterator
       var firstline = ""
       var secondline = ""
       var rest = ""
@@ -111,6 +115,50 @@ trait Parameters {
         }
       }
       (firstline, secondline, rest.trim)
+    }
+
+    def validateMarkdown(): Unit = {
+
+      var valmsg = ""
+      val markdown = locations.inputMarkdownFile
+
+      val f1 = s"* Create a markdown file with the same name of the artifact: ${markdown.name}\n"
+      val f2 = s"* First line must be '# Title of all dataset versions' (abstract identity, used as rdfs:label and dct:title)\n"
+      val f3 = s"* Second line should give a good one liner what can be expected (used as rdfs:comment)\n"
+      val f4 = s"* Third line until end is regular markdown with the details (use ##, ###, #### header levels, used as dct:description)\n" +
+        s"Example:\n" +
+        s"# Animal Dataset\n" +
+        s"Contains basic information about animals\n\n " +
+        s"Detailed description in markdown as long as you want"
+
+      if (!markdown.isRegularFile()) {
+        getLog.error(s"No markdown file found at ${markdown}\n" +
+          s"fix with:\n" + f1 + f2 + f3 + f4)
+        System.exit(-1)
+      }
+
+
+      if (params.label.isEmpty) {
+        getLog.error(s"label found in ${markdown.name} is empty '${params.label}'\n" +
+          s"fix with:\n" + f2 + f3 + f4)
+        System.exit(-1)
+      }
+
+
+      if (params.comment.isEmpty) {
+        getLog.error(s"label found in ${markdown.name} is empty '${params.label}'\n" +
+          s"fix with:\n" + f3 + f4)
+        System.exit(-1)
+      }
+
+      if (params.description.isEmpty) {
+        getLog.warn(s"Empty description in ${markdown.name}\n " +
+          s"fix with\n" + f4 +
+          s"* This is lazy, but forgivable, continuing operation"
+        )
+      }
+      getLog.info(s"${markdown.name} exists, label: '${params.label}', comment length: ${params.comment.length}, description length: ${params.description.length}  ")
+
     }
 
   }

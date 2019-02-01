@@ -84,7 +84,7 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
         "databus:package-export goal. Uploading a DataId prepared in-memory.")
 
       //else resolve the base in-memory and upload that
-      val baseResolvedDataId = resolveBaseForRDFFile(locations.prepareDataIdFile, locations.dataIdDownloadLocation)
+      val baseResolvedDataId = resolveBaseForRDFFile(locations.buildDataIdFile, locations.dataIdDownloadLocation)
 
       DataIdUpload.upload(uploadEndpointIRI, baseResolvedDataId, locations.pkcs12File, pkcs12Password.get,
         locations.dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)

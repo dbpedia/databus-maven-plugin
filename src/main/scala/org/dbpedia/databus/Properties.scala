@@ -20,15 +20,11 @@
  */
 package org.dbpedia.databus
 
-import better.files.{File => _, _}
 import org.apache.maven.plugin.{AbstractMojo, Mojo}
 import org.apache.maven.plugins.annotations.Parameter
 
 import java.io.File
 import java.net.URL
-import java.time.{Instant, LocalDateTime, ZoneId}
-import java.util
-import java.util.{List => JavaList}
 import org.apache.maven.plugin.logging.Log
 import org.apache.maven.settings.Settings
 
@@ -72,13 +68,16 @@ trait Properties extends Locations with Parameters with Mojo {
   val packaging: String = null
 
   @Parameter(defaultValue = "${project.build.directory}", readonly = true)
-  val mavenTargetDirectory: File = null
+  val buildDirectory: File = null
 
   @Parameter(defaultValue = "${project.build.finalName}", readonly = true)
   val finalName: String = null
 
   @Parameter(defaultValue = "${settings}", readonly = true)
   val settings: Settings = null
+
+  @Parameter(defaultValue = "${session.executionRootDirectory}", readonly = true)
+  val sessionRoot: File = null
 
 
   /**
@@ -92,20 +91,8 @@ trait Properties extends Locations with Parameters with Mojo {
     * Tipp: src/main is the maven default, if you dislike having three folders you can also use "databus/${project.version}"
     */
   // done, good defaults
-  @Parameter(property = "databus.dataInputDirectory", defaultValue = ".", required = true)
-  val dataInputDirectory: File = null
-
-
-  // input
-  @Parameter(property = "databus.provenanceFileSimple", defaultValue = "${databus.dataInputDirectory}/provenance-${project.version}.list")
-  val provenanceFileSimple: File = null
-
-
-  @Parameter(property = "databus.markdown", defaultValue = "${project.artifactId}.md")
-  val markdown: File = null
-
-
-
+  @Parameter(property = "databus.inputDirectory", defaultValue = ".", required = true)
+  val inputDirectory: File = null
 
   @Parameter(property = "databus.insertVersion") val insertVersion: Boolean = true
 
@@ -196,8 +183,8 @@ trait Properties extends Locations with Parameters with Mojo {
 
 
   //documentation
-  @Parameter(property = "databus.changelog", defaultValue = "") val changelog: String = ""
-  @Parameter(property = "databus.docfooter", defaultValue = "") val docfooter: String = ""
+  @Parameter(property = "databus.documentation", defaultValue = "")
+  val documentation: String = ""
 
 
   /**

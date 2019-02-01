@@ -52,9 +52,18 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
     if (isParent()) {
       validateWebId()
       validateAccount()
+      return
     }
+
+    validateSelectedValues
+
+
   }
 
+  def validateSelectedValues = {
+    getLog.info("Issued date: " + params.issuedDate)
+    params.validateMarkdown()
+  }
 
 
   def validateWebId(): Unit = {

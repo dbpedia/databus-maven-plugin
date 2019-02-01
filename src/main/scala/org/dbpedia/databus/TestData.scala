@@ -20,7 +20,7 @@
  */
 package org.dbpedia.databus
 
-import java.io.File
+import java.io.{ByteArrayOutputStream, File}
 
 import org.dbpedia.databus.lib.{Datafile, FilenameHelpers}
 import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
@@ -28,30 +28,28 @@ import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.jena.riot.RDFLanguages
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-import org.eclipse.rdf4j.rio.{RDFParser, Rio}
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
+import org.eclipse.rdf4j.rio.{RDFFormat, RDFParser, Rio}
 import java.security.MessageDigest
 import java.util.Base64
 
 import org.dbpedia.databus.voc.RDFBased
 
-import scala.collection.mutable
+import scala.collection.{immutable, mutable}
 
 @Mojo(name = "test-data", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 class TestData extends AbstractMojo with Properties {
 
-  @Parameter(property = "databus.test.RDFSyntax", defaultValue = "false")
-  val testRDFSyntax: Boolean = false
+  @Parameter(property = "databus.test.parseRDF", defaultValue = "false")
+  val parseRDF: Boolean = false
 
 
-  @Parameter(property = "databus.test.allVersions", required = false)
+  @Parameter(property = "databus.test.allVersions", defaultValue = "false", required = false)
   val allVersions: Boolean = false
 
-  @Parameter(property = "databus.test.detailed", required = false)
+  @Parameter(property = "databus.test.detailed", defaultValue = "false", required = false)
   val detailed: Boolean = false
 
-  @Parameter(property = "databus.test.strict", required = false)
+  @Parameter(property = "databus.test.strict", defaultValue = "false", required = false)
   val strict: Boolean = false
 
 
@@ -64,70 +62,35 @@ class TestData extends AbstractMojo with Properties {
       return
     }
 
-    validateMarkdown()
+    params.validateMarkdown()
 
-    validateVersions()
+    validateVersions(getVersionsToValidate)
 
-    if (testRDFSyntax) {
+    if (parseRDF) {
+      // prepare parselogfile
+      locations.buildParselogFile.createFileIfNotExists(true).clear()
       generateParselogForRDFSyntax
+
     }
-
-
   }
 
-  def validateMarkdown(): Unit = {
-
-    var valmsg = ""
-
-    val f1 = s"* Create a markdown file with the same name of the artifact: ${markdown.getName}\n"
-    val f2 = s"* First line must be '# Title of all dataset versions' (abstract identity, used as rdfs:label and dct:title)\n"
-    val f3 = s"* Second line should give a good one liner what can be expected (used as rdfs:comment)\n"
-    val f4 = s"* Third line until end is regular markdown with the details (use ##, ###, #### header levels, used as dct:description)"
-
-    if (!markdown.exists()) {
-      getLog.error(s"No markdown file found at ${markdown}\n" +
-        s"fix with:\n" + f1 + f2 + f3 + f4)
-      System.exit(-1)
-    }
-
-
-    if (params.label.isEmpty) {
-      getLog.error(s"label found in ${markdown.getName} is empty '${params.label}'\n" +
-        s"fix with:\n" + f2 + f3 + f4)
-      System.exit(-1)
-    }
-
-
-    if (params.comment.isEmpty) {
-      getLog.error(s"label found in ${markdown.getName} is empty '${params.label}'\n" +
-        s"fix with:\n" + f3 + f4)
-      System.exit(-1)
-    }
-
-    if (params.description.isEmpty) {
-      getLog.warn(s"Empty description in ${markdown.getName}\n " +
-        s"fix with\n" + f3 +
-        s"* This is lazy, but forgivable, continuing operation"
-      )
-    }
-    getLog.info(s"${markdown.getName} exists, label: '${params.label}', comment length: ${params.comment.length}, description length: ${params.description.length}  ")
-
-  }
 
   def generateParselogForRDFSyntax = {
-    val parseLogFileWriter = Files.newBufferedWriter(getParseLogFile().toPath, StandardCharsets.UTF_8)
+    //val parseLogFileWriter = Files.newBufferedWriter(getParseLogFile().toPath, StandardCharsets.UTF_8)
 
-    locations.listInputFiles().foreach(datafile => {
+    locations.inputFileList.foreach(datafile => {
 
       var parseLog = new StringBuilder
       var details = new StringBuilder
       val df: Datafile = Datafile(datafile.toJava)(getLog).ensureExists()
       val model: Model = ModelFactory.createDefaultModel
       val finalBasename = df.finalBasename(params.versionToInsert)
+      //TODO
       val thisResource = model.createResource("#" + finalBasename)
+
       val prefixParse = "http://dataid.dbpedia.org/ns/pl#"
 
-      parseLog.append(s"${finalBasename}\n${df.format}\n")
+      parseLog.append(s"parsing ${datafile.name} with ${df.format}\n")
 
       //val config = new ParserConfig
       //config.set(BasicParserSettings.FAIL_ON_UNKNOWN_DATATYPES, false)
@@ -140,7 +103,9 @@ class TestData extends AbstractMojo with Properties {
       //rdfParser.setParserConfig(config)
 
       if (df.format.isRDF() && (df.format.asInstanceOf[RDFBased].rio != null)) {
-        val rioformat = df.format.asInstanceOf[RDFBased].rio
+
+
+        val rioformat: RDFFormat = df.format.asInstanceOf[RDFBased].rio
         rdfParser = Rio.createParser(rioformat)
 
         if (df.format.lineBased) {
@@ -155,31 +120,40 @@ class TestData extends AbstractMojo with Properties {
           thisResource.addProperty(model.createProperty(prefixParse + "errors"), bad.size.toString);
           //parseLog.append(s"Lines: $lines\nTriples: $all\nValid: $good\nErrors: ${bad.size}\n")
 
-          if (bad.size > 0) {
+          if (bad.isEmpty) {
+            parseLog.append(s"Success, no errors")
+          } else {
+            parseLog.append(s"Errors found, ${bad.size}")
             details.append(s"\n#Error details for $datafile\n#${bad.mkString("\n#")}\n")
           }
         } else {
-
           val (success, errors) = df.getInputStream().apply { in =>
             RioOtherParser.parse(in, rdfParser)
           }
-          parseLog.append(s"Success = $success\nErrors = $errors\n")
+
+          if (success) {
+            parseLog.append(s"Success, no errors")
+          } else {
+            parseLog.append(s"Errors found: $errors\n")
+          }
+
 
         }
       }
       else {
-        parseLog.append("no rdf format")
+        parseLog.append("currently only RDF parsing is implemented, skipped")
       }
 
       // parselog
       thisResource.addProperty(model.createProperty(prefixParse + "parselog"), parseLog.toString);
-      model.write(parseLogFileWriter, RDFLanguages.strLangTurtle)
-      parseLogFileWriter.write(details.toString())
+      val baos = new ByteArrayOutputStream()
+      model.write(baos, RDFLanguages.strLangTurtle)
+      locations.buildParselogFile.appendByteArray(baos.toByteArray)
+      locations.buildParselogFile.append(details.toString())
       getLog.info(parseLog)
     })
 
-    getLog.info(s"Parselog written to ${getParseLogFile()}")
-    parseLogFileWriter.close()
+    getLog.info(s"Parselog written to ${locations.prettyPath(locations.buildParselogFile)}")
   }
 
   def strict(reason: String): Unit = {
@@ -191,30 +165,26 @@ class TestData extends AbstractMojo with Properties {
     }
   }
 
-  /**
-    * validate one or several versions
-    * NOTE: UGLY CODE AHEAD
-    */
-  def validateVersions(): Unit = {
 
-    //val dataInputDirectoryParent = dataInputDirectory.getParentFile
-
-    //dataInputDirectory.toString.replace(dataInputDirectoryParent.toString, "")
+  def getVersionsToValidate(): immutable.Seq[(String, File, List[File], List[FilenameHelpers], List[Datafile])] = {
     val versions: mutable.SortedSet[String] = mutable.SortedSet(version)
 
     // add allVersions to the set
     if (allVersions) {
-      versions.++=(dataInputDirectory.listFiles().filter(_.isDirectory).map(f => {
-        f.toString.replace(dataInputDirectory.toString, "")
-      }).toSet)
-      getLog.info(s"[databus.allVersion=true] $artifactId found ${versions.size} version(s): ${versions.mkString(", ")}\n")
+      versions.++=(inputDirectory.listFiles()
+        .filter(_.isDirectory)
+        .filter(!_.getName.startsWith("target"))
+        .map(f => {
+          f.toString.replace(inputDirectory.toString + "/", "")
+        }).toSet)
+      getLog.info(s"[databus.test.allVersion=true] $artifactId found ${versions.size} version(s): ${versions.mkString(", ")}\n")
     }
 
     //val versions: mutable.SortedSet[String] = mutable.SortedSet(dataInputDirectory.toString.replace(dataInputDirectoryParent.toString, ""))
 
     // collect all information
-    val versionDirs = versions.toList.flatMap(v => {
-      val versionDir: File = new File(dataInputDirectory, v)
+    val versionDirs: immutable.Seq[(String, File, List[File], List[FilenameHelpers], List[Datafile])] = versions.toList.flatMap(v => {
+      val versionDir: File = new File(inputDirectory, v)
       if (versionDir.exists && versionDir.isDirectory && versionDir.listFiles().nonEmpty) {
 
         val wrongFiles = versionDir.listFiles.filterNot(_.getName.startsWith(artifactId)).toList
@@ -225,7 +195,7 @@ class TestData extends AbstractMojo with Properties {
         var fileList: List[File] = versionDir.listFiles
           .filter(_.isFile)
           .filter(_.getName.startsWith(artifactId))
-          .filter(_ != locations.prepareDataIdFile.name)
+          //.filter(_ != locations.prepareDataIdFile.name)
           //TODO .filter(_ != getParseLogFile())
           .toList
 
@@ -247,6 +217,17 @@ class TestData extends AbstractMojo with Properties {
         None
       }
     })
+    versionDirs
+  }
+
+
+  /**
+    * validate one or several versions
+    * NOTE: UGLY CODE AHEAD
+    * REASON: running with -T will scramble the messages, would be much nicer, else
+    */
+  def validateVersions(versionDirs: immutable.Seq[(String, File, List[File], List[FilenameHelpers], List[Datafile])]) = {
+
 
     // now validation starts
 
@@ -288,7 +269,7 @@ class TestData extends AbstractMojo with Properties {
       datafiles.foreach(f => {
         formFile.add(f.format.mimeType)
       })
-      l += (s"${v} from file name: {${formfilenames.mkString(", ")}}, from file {${formFile.mkString(", ")}}\n")
+      l += (s"${v} from file name: {${formfilenames.mkString(", ")}}, from file content {${formFile.mkString(", ")}}\n")
     }
     getLog.info(s"[${artifactId}] Format:\n" + l)
 

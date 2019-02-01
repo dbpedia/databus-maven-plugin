@@ -106,7 +106,9 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
 
   def finalBasename(versionToAdd: Option[String]) = {
 
-    def prefix = versionToAdd.fold(filePrefix) { version => s"$filePrefix-$version" }
+    def prefix = filePrefix
+      // deactivated adding of version for now
+      //versionToAdd.fold(filePrefix) { version => s"$filePrefix-$version" }
 
     // we have to check for empty extension seqs, otherwise we get misplaced inital '.'/'_'
     def contentVariantsSuffix = if (contentVariantExtensions.nonEmpty) {

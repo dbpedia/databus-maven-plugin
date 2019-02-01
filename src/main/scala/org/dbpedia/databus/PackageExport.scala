@@ -52,21 +52,28 @@ class PackageExport extends AbstractMojo with Properties {
     }
 
 
-    if (!locations.prepareDataIdFile.isRegularFile) {
+    if(locations.inputFileList.isEmpty){
+      getLog.warn(s"${locations.prettyPath(locations.inputVersionDirectory)} is empty, skipping")
+      return
+    }
 
-      val emptyVersion = if (locations.listInputFiles().isEmpty) s"* ${version} does not contain any files\n" else ""
+    if (!locations.buildDataIdFile.isRegularFile) {
 
-      getLog.warn(s"${locations.prepareDataIdFile} not found for ${artifactId}, can not package\n" +
+      //val emptyVersion = if (locations.inputFileList.isEmpty) s"* ${version} does not contain any files\n" else ""
+
+      getLog.warn(s"${locations.prettyPath(locations.buildDataIdFile)} not found for ${artifactId}/${version}, can not package\n" +
         s"fix with:\n" +
-        s"* running mvn prepare-package or mvn databus:metadata first\n" + emptyVersion)
+        s"* running mvn prepare-package or mvn databus:metadata first\n")
       System.exit(-1)
     }
 
     // for each module copy all files to target
-    locations.listInputFiles().foreach { inputFile =>
+    locations.inputFileList.foreach { inputFile =>
 
       val df = Datafile(inputFile.toJava)(getLog)
       val filePackageTarget = locations.packageVersionDirectory / df.finalBasename(params.versionToInsert)
+      getLog.info(s"packaging from ${locations.prettyPath(locations.inputVersionDirectory)}")
+      getLog.info(s"packaging to ${locations.prettyPath(locations.packageVersionDirectory)}")
 
       // check if files exist already
       if (filePackageTarget.isRegularFile) {
@@ -79,7 +86,7 @@ class PackageExport extends AbstractMojo with Properties {
           inputFile.copyTo(filePackageTarget, overwrite = true)
           getLog.info("packaged (in overwrite mode): " + filePackageTarget.name)
         } else {
-          getLog.info("skipped (same file): " + filePackageTarget.name)
+          getLog.info("skipped (same file content): " + filePackageTarget.name)
         }
 
       } else {
@@ -89,23 +96,22 @@ class PackageExport extends AbstractMojo with Properties {
     }
 
     //Parselogs
-    if (includeParseLogs && locations.parseLogFile().exists()) {
-      val packageTarget = locations.packageTargetDirectory / getParseLogFile().getName
-      getParseLogFile().toScala.copyTo(packageTarget, true)
-      getLog.info("packaged: " + packageTarget.name)
+    if (includeParseLogs && locations.buildParselogFile.isRegularFile) {
+      locations.buildParselogFile.copyTo(locations.packageParselogFile, true)
+      getLog.info("packaged from build: " + locations.buildParselogFile.name)
     }
 
     if (deactivateDownloadUrl) {
       //copy
-      locations.prepareDataIdFile.copyTo(locations.packageDataIdFile, overwrite = true)
+      locations.buildDataIdFile.copyTo(locations.packageDataIdFile, overwrite = true)
 
     } else {
       // resolve
-      val baseResolvedDataId = resolveBaseForRDFFile(locations.prepareDataIdFile, dataIdDownloadLocation)
+      val baseResolvedDataId = resolveBaseForRDFFile(locations.buildDataIdFile, locations.dataIdDownloadLocation)
       locations.packageDataIdFile.writeByteArray((Properties.logo + "\n").getBytes())
       locations.packageDataIdFile.appendByteArray(baseResolvedDataId)
     }
-    getLog.info("packaged: " + locations.packageDataIdFile.name)
-    getLog.info(s"package written to ${locations.packageVersionDirectory}")
+    getLog.info("packaged from build: " + locations.packageDataIdFile.name)
+    getLog.info(s"package written to ${locations.prettyPath(locations.packageVersionDirectory)}")
   }
 }

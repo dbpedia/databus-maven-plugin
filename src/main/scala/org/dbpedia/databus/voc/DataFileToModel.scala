@@ -43,14 +43,12 @@ object DataFileToModel {
     "rdf" -> RDF.uri,
     "rdfs" -> RDFS.uri,
     "dataid-mt" -> "http://dataid.dbpedia.org/ns/mt#",
+    "dataid-pl" -> "http://dataid.dbpedia.org/ns/pl#",
     "prov" -> global.prov.namespace,
     "databus" -> "https://databus.dbpedia.org/",
     "xsd" -> XSD.NS,
     "dct" -> global.dcterms.namespace
-
-
     //    "dataid-ld" -> "http://dataid.dbpedia.org/ns/ld#",
-    //    "dataid-pl" -> "http://dataid.dbpedia.org/ns/pl#",
     //    "dmp" -> "http://dataid.dbpedia.org/ns/dmp#",
     //    "void" -> "http://rdfs.org/ns/void#",
     //    "owl" -> OWL.NS,

@@ -1,4 +1,10 @@
-# Wikidata Raw
-Raw Statements (not mapped).
+# Raw
+Raw statements (not mapped).
 
-TODO
+todo remove redirected
+
+wikidata-dbpedia as subjects
+wikidata property 
+value
+
+dbp:
