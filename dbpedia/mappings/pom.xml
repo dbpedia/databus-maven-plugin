@@ -23,8 +23,8 @@
 
     <properties>
         <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
-        <databus.dataInputDirectory>src/main/databus</databus.dataInputDirectory>
-        <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}
+        <databus.packageDirectory>
+            /media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}
         </databus.packageDirectory>
         <databus.downloadUrlPath>
             https://downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}/${project.version}/
@@ -35,19 +35,7 @@
         <databus.maintainer>https://termilion.github.io/webid.ttl#this</databus.maintainer>
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <databus.changelog><![CDATA[
-# Changelog
-## since 2018.09.12
-* were created as new modular releases, some issues remain
-* we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe xcharacters
-* parsing removed 250k triples total, debugging pending
-* object-uncleaned was not transformed into objects-cleaned and is missing
-* link to Wikimedia dump version is missing
-
-## 2016.10.01
-* was taken from the previous BIG DBpedia releases under http://downloads.dbpedia.org/2016-10/ and included for completeness
-     ]]></databus.changelog>
-        <databus.docfooter><![CDATA[
+        <databus.documentation><![CDATA[
 ## How to contribute
 DBpedia is a community project, help us with:
 * editing the mappings at http://mappings.dbpedia.org
@@ -57,6 +45,19 @@ DBpedia is a community project, help us with:
 This dataset was extracted using the wikipedia-dumps available on https://dumps.wikimedia.org/
 using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
 For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
+
+# Changelog
+## since 2018.09.12
+* were created as new modular releases, some issues remain
+* we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe xcharacters
+* parsing removed 250k triples total, debugging pending
+* object-uncleaned was not transformed into objects-cleaned and is missing
+* link to Wikimedia dump version is missing
+## 2016.10.01
+* was taken from the previous BIG DBpedia releases under http://downloads.dbpedia.org/2016-10/ and included for completeness
+     ]]></databus.documentation>
+        <databus.docfooter><![CDATA[
+
         ]]></databus.docfooter>
     </properties>
 
