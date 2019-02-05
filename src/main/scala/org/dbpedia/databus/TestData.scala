@@ -123,7 +123,7 @@ class TestData extends AbstractMojo with Properties {
           if (bad.isEmpty) {
             parseLog.append(s"Success, no errors")
           } else {
-            parseLog.append(s"Errors found, ${bad.size}")
+            parseLog.append(s"Errors found: ${bad.size}")
             details.append(s"\n#Error details for $datafile\n#${bad.mkString("\n#")}\n")
           }
         } else {

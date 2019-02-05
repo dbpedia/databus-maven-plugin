@@ -90,10 +90,25 @@ class PackageExport extends AbstractMojo with Properties {
       getLog.info("packaged from build: " + locations.buildParselogFile.name)
     }
 
-    if (locations.provenanceFull.nonEmpty && !sameFile(locations.inputProvenanceFile, locations.packageProvenanceFile)) {
+
+    if (locations.provenanceFull.nonEmpty && locations.packageProvenanceFile.isRegularFile) {
+      if (!sameFile(locations.inputProvenanceFile, locations.packageProvenanceFile)) {
+        locations.inputProvenanceFile.copyTo(locations.packageProvenanceFile, true)
+        getLog.info("packaged (in overwrite mode): " + locations.packageProvenanceFile.name)
+      }
+    } else {
       locations.inputProvenanceFile.copyTo(locations.packageProvenanceFile, true)
-      getLog.info("packaged (in overwrite mode): " + locations.packageProvenanceFile.name)
     }
+
+
+    if (locations.packageDocumentationFile.isRegularFile) {
+      if (!sameFile(locations.inputMarkdownFile, locations.packageDocumentationFile)) {
+        locations.packageDocumentationFile.writeByteArray((params.description + "\n\n" + documentation.trim.).getBytes())
+      }
+    } else {
+      locations.packageDocumentationFile.writeByteArray((params.description + "\n\n" + documentation.trim.).getBytes())
+    }
+
 
     if (keepRelativeURIs) {
       //copy

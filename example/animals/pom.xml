@@ -23,12 +23,12 @@
         <databus.downloadUrlPath>
             http://downloads.dbpedia.org/repo/${project.groupId}/${project.artifactId}/${project.version}/
         </databus.downloadUrlPath>
-         <databus.packageDirectory>
+         <!--databus.packageDirectory>
             .
-        </databus.packageDirectory>
-        <!--databus.packageDirectory>
-            ${session.executionRootDirectory}/target/databus/repo/${project.groupId}/${project.artifactId}
         </databus.packageDirectory-->
+        <databus.packageDirectory>
+            ${session.executionRootDirectory}/target/databus/repo/${project.groupId}/${project.artifactId}
+        </databus.packageDirectory>
         <databus.publisher>https://neradis.github.io/test-id.ttl#this</databus.publisher>
         <databus.pkcs12File>test-cert-bundle.p12</databus.pkcs12File>
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</databus.license>

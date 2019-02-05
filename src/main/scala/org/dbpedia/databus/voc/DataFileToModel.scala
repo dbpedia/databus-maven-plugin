@@ -135,12 +135,14 @@ trait DataFileToModel extends Properties with Parameters {
         // keeping the value part
         singleFileResource.addProperty(dataid.contentVariant, value)
 
-        dataid.contentVariant.addProperty(RDF.`type`,OWL.DatatypeProperty)
+        dataid.contentVariant.addProperty(RDF.`type`, OWL.DatatypeProperty)
         singleFileResource.addProperty(dataidcv.prop.selectDynamic(key), value)
         dataidcv.prop.selectDynamic(key).addProperty(RDFS.subPropertyOf, dataid.contentVariant)
 
       } else {
         singleFileResource.addProperty(dataid.contentVariant, contentVariant)
+        singleFileResource.addProperty(dataidcv.prop.tag, contentVariant)
+        dataidcv.prop.tag.addProperty(RDFS.subPropertyOf, dataid.contentVariant)
       }
     }
   }

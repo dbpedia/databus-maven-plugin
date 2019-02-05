@@ -20,7 +20,8 @@
 
     <properties>
         <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
-        <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}
+        <databus.packageDirectory>
+            /media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}
         </databus.packageDirectory>
         <databus.downloadUrlPath>
             https://downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}/${project.version}/
@@ -30,7 +31,19 @@
          databus.pkcs12File>${user.home}/.m2/certificate_generic.pfx</databus.pkcs12File-->
         <databus.maintainer>https://m1ci.github.io/webid.ttl#this</databus.maintainer>
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
-        <databus.changelog><![CDATA[
+        <databus.documentation><![CDATA[
+## How to contribute
+DBpedia is a community project, help us with this dataset:
+* improve this documentation at https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/mappings/${project.artifactId}/${project.artifactId}.md
+
+## Origin
+This dataset was extracted using the wikipedia-dumps available on https://dumps.wikimedia.org/
+using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
+For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
+
+## Issues
+* documentation is too unspecific, the text extraction needs a more detailed description and better links
+
 # Changelog
 ## 2016.10.01
 * old dataset from 2016
@@ -40,18 +53,7 @@
 * we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
 characters
 * link to Wikimedia dump version is missing
-        ]]></databus.changelog>
-        <databus.docfooter><![CDATA[
-## How to contribute
-DBpedia is a community project, help us with this dataset:
-* improve this documentation at https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/mappings/${project.artifactId}/${project.artifactId}.md
-
-## Origin
-This dataset was extracted using the wikipedia-dumps available on https://dumps.wikimedia.org/
-using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
-For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
-        ]]></databus.docfooter>
-
+        ]]></databus.documentation>
     </properties>
 
     <!-- currently still needed to find the super-pom, once the super-pom is in maven central,

@@ -88,6 +88,8 @@ trait Locations {
       */
     lazy val packageDirectory: File = (props.packageDirectory.toScala)
 
+    lazy val packageDocumentationFile: File = (packageDirectory / markdownFileName)
+
     lazy val packageVersionDirectory: File = (packageDirectory / version).createDirectories()
 
     lazy val packageDataIdFile: File = (packageVersionDirectory / dataIdFileName)
