@@ -98,15 +98,22 @@ class PackageExport extends AbstractMojo with Properties {
       }
     } else {
       locations.inputProvenanceFile.copyTo(locations.packageProvenanceFile, true)
+      getLog.info("packaged: " + locations.packageProvenanceFile.name)
+
     }
 
 
+    val content = s"# ${params.label}\n${params.comment}\n\n${params.description}\n\n + ${documentation.trim}"
     if (locations.packageDocumentationFile.isRegularFile) {
       if (!sameFile(locations.inputMarkdownFile, locations.packageDocumentationFile)) {
-        locations.packageDocumentationFile.writeByteArray((params.description + "\n\n" + documentation.trim.).getBytes())
+        locations.packageDocumentationFile.writeByteArray(content.getBytes())
+        getLog.info("packaged (in overwrite mode): " + locations.packageDocumentationFile.name)
+
       }
     } else {
-      locations.packageDocumentationFile.writeByteArray((params.description + "\n\n" + documentation.trim.).getBytes())
+      locations.packageDocumentationFile.writeByteArray(content.getBytes())
+      getLog.info("packaged: " + locations.packageDocumentationFile.name)
+
     }
 
 
