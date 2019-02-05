@@ -44,6 +44,7 @@ object DataFileToModel {
     "rdfs" -> RDFS.uri,
     "dataid-mt" -> "http://dataid.dbpedia.org/ns/mt#",
     "dataid-pl" -> "http://dataid.dbpedia.org/ns/pl#",
+    "dataid-cv" -> "http://dataid.dbpedia.org/ns/cv#",
     "prov" -> global.prov.namespace,
     "databus" -> "https://databus.dbpedia.org/",
     "xsd" -> XSD.NS,
@@ -122,12 +123,25 @@ trait DataFileToModel extends Properties with Parameters {
     mediaTypeRes.addProperty(RDF.`type`, s"${dataid_mt}MediaType".asIRI)
     singleFileResource.addProperty(dcat.mediaType, mediaTypeRes)
     mediaTypeRes.addProperty(dataid.mimetype, datafile.format.mimeType)
-    singleFileResource.addProperty(dataid.prop.formatExtension, datafile.formatExtension.asPlainLiteral)
+    singleFileResource.addProperty(dataid.formatExtension, datafile.formatExtension.asPlainLiteral)
     singleFileResource.addProperty(dataid.compression, datafile.compressionOrArchiveDesc)
 
     // content variant
     datafile.contentVariantExtensions.foreach { contentVariant =>
-      singleFileResource.addProperty(dataid.prop.contentVariant, contentVariant)
+      if (contentVariant.contains("=")) {
+        val cv = contentVariant.split("=")
+        val (key, value): (String, String) = (cv(0), cv(1))
+
+        // keeping the value part
+        singleFileResource.addProperty(dataid.contentVariant, value)
+
+        dataid.contentVariant.addProperty(RDF.`type`,OWL.DatatypeProperty)
+        singleFileResource.addProperty(dataidcv.prop.selectDynamic(key), value)
+        dataidcv.prop.selectDynamic(key).addProperty(RDFS.subPropertyOf, dataid.contentVariant)
+
+      } else {
+        singleFileResource.addProperty(dataid.contentVariant, contentVariant)
+      }
     }
   }
 

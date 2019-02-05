@@ -59,8 +59,8 @@ class FilenameHelpers(val file: File, previewLineCount: Int = 10)(implicit log: 
     prefix + contentVariantsSuffix + formatVariantsSuffix + compressionVariantsSuffix
   }*/
 
-    //todo check if not private is okay
-   def filenameAnalysis: (String, Seq[String], Seq[String], Seq[String]) = {
+  //todo check if not private is okay
+  def filenameAnalysis: (String, Seq[String], Seq[String], Seq[String]) = {
 
     parse(basename, databusInputFilenameP(_)) match {
 
@@ -89,8 +89,10 @@ object FilenameHelpers extends LazyLogging {
     P((!extensionP ~ CharPred(_ != '_')).rep(1).!)
       .opaque("<filename prefix>")
 
+  //TODO added '=' here in a dirty way
   protected def contentVariantsP[_: P] =
-    P(("_" ~ alphaNumericP.!).rep())
+  //P(("_" ~ alphaNumericP.!).rep())
+    P(("_" ~ (alphaNumericP ~ "=" ~ alphaNumericP | alphaNumericP).!).rep())
       .opaque("<content variants>")
 
   protected def extensionP[_: P] = "." ~ (CharIn("A-Za-z") ~ CharIn("A-Za-z0-9").rep()).!
