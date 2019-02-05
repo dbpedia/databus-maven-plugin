@@ -22,7 +22,7 @@ package org.dbpedia.databus;
  */
 
 import java.net.URL;
-
+@Deprecated
 public class BaseEntity {
 
     private URL artifact;

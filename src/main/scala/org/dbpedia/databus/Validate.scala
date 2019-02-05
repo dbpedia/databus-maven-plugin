@@ -57,12 +57,12 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
 
     validateSelectedValues
 
-
   }
 
   def validateSelectedValues = {
     getLog.info("Issued date: " + params.issuedDate)
     params.validateMarkdown()
+    getLog.info(s"${locations.provenanceFull.size} provenance urls found")
   }
 
 

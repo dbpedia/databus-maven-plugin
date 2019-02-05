@@ -23,12 +23,9 @@ package org.dbpedia.databus
 import org.dbpedia.databus.lib._
 import org.dbpedia.databus.shared.signing
 import better.files._
-import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import java.io.{File, FileWriter}
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption.REPLACE_EXISTING
 
 @Mojo(name = "package-export", defaultPhase = LifecyclePhase.PACKAGE)
 class PackageExport extends AbstractMojo with Properties {
@@ -52,7 +49,7 @@ class PackageExport extends AbstractMojo with Properties {
     }
 
 
-    if(locations.inputFileList.isEmpty){
+    if (locations.inputFileList.isEmpty) {
       getLog.warn(s"${locations.prettyPath(locations.inputVersionDirectory)} is empty, skipping")
       return
     }
@@ -67,22 +64,22 @@ class PackageExport extends AbstractMojo with Properties {
       System.exit(-1)
     }
 
+    getLog.info(s"packaging from ${locations.prettyPath(locations.inputVersionDirectory)}")
+    getLog.info(s"packaging to ${locations.prettyPath(locations.packageVersionDirectory)}")
+
+
+
     // for each module copy all files to target
     locations.inputFileList.foreach { inputFile =>
 
       val df = Datafile(inputFile.toJava)(getLog)
       val filePackageTarget = locations.packageVersionDirectory / df.finalBasename(params.versionToInsert)
-      getLog.info(s"packaging from ${locations.prettyPath(locations.inputVersionDirectory)}")
-      getLog.info(s"packaging to ${locations.prettyPath(locations.packageVersionDirectory)}")
 
       // check if files exist already
       if (filePackageTarget.isRegularFile) {
 
-        val targetHash = signing.sha256Hash(filePackageTarget)
-        val sourceHash = signing.sha256Hash(inputFile)
-
         //overwrite if different, else keep
-        if (targetHash != sourceHash) {
+        if (!sameFile(inputFile, filePackageTarget)) {
           inputFile.copyTo(filePackageTarget, overwrite = true)
           getLog.info("packaged (in overwrite mode): " + filePackageTarget.name)
         } else {
@@ -101,6 +98,11 @@ class PackageExport extends AbstractMojo with Properties {
       getLog.info("packaged from build: " + locations.buildParselogFile.name)
     }
 
+    if (locations.provenanceFull.nonEmpty) {
+      locations.inputProvenanceFile.copyTo(locations.packageProvenanceFile, true)
+      getLog.info("packaged (in overwrite mode): " + locations.packageProvenanceFile.name)
+    }
+
     if (deactivateDownloadUrl) {
       //copy
       locations.buildDataIdFile.copyTo(locations.packageDataIdFile, overwrite = true)
@@ -113,5 +115,11 @@ class PackageExport extends AbstractMojo with Properties {
     }
     getLog.info("packaged from build: " + locations.packageDataIdFile.name)
     getLog.info(s"package written to ${locations.prettyPath(locations.packageVersionDirectory)}")
+  }
+
+  def sameFile(inputFile: better.files.File, filePackageTarget: better.files.File): Boolean = {
+    val targetHash = signing.sha256Hash(filePackageTarget)
+    val sourceHash = signing.sha256Hash(inputFile)
+    targetHash == sourceHash
   }
 }

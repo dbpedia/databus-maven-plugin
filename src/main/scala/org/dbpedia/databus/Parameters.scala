@@ -53,10 +53,12 @@ trait Parameters {
         if (props.tryVersionAsIssuedDate) {
           val attempt = props.version.replace(".", "-") + "T00:00:00Z"
           ZonedDateTime.parse(attempt)
-        } else if(props.issuedDate == null){
-          getLog.info{s"<databus.issuedDate> is null, using invocation time: ${invocationTime}"}
+        } else if (props.issuedDate == null) {
+          getLog.info {
+            s"<databus.issuedDate> is null, using invocation time: ${invocationTime}"
+          }
           invocationTime
-        }else {
+        } else {
           //ZonedDateTime.ofInstant(LocalDateTime.parse(props.issuedDate).toInstant(ZoneOffset.UTC), ZoneId.systemDefault())
           ZonedDateTime.parse(props.issuedDate)
         }
@@ -78,18 +80,6 @@ trait Parameters {
 
     lazy val versionToInsert = if (insertVersion) Some(version) else None
 
-    lazy val provenanceIRIs = {
-      val set: mutable.Set[URL] = mutable.Set()
-      if (locations.inputProvenanceFile.exists()) {
-        for {
-          line <- locations.inputProvenanceFile.lineIterator
-        } (if (line.trim.nonEmpty) {
-          set.add(new URL(line.trim))
-        })
-      }
-      set
-
-    }
 
     lazy val (label, comment, description) = {
       if (!locations.inputMarkdownFile.exists()) {

@@ -21,8 +21,13 @@
 package org.dbpedia.databus
 
 
+import java.net.{MalformedURLException, URL}
+import java.nio.file.NoSuchFileException
+
 import better.files.File
 import better.files._
+
+import scala.collection.mutable
 
 trait Locations {
 
@@ -83,7 +88,7 @@ trait Locations {
       */
     lazy val packageDirectory: File = (props.packageDirectory.toScala)
 
-    lazy val packageVersionDirectory: File = (packageDirectory / artifactId / version).createDirectories()
+    lazy val packageVersionDirectory: File = (packageDirectory / version).createDirectories()
 
     lazy val packageDataIdFile: File = (packageVersionDirectory / dataIdFileName)
 
@@ -134,6 +139,48 @@ trait Locations {
 
         List[File]()
       }
+    }
+
+
+    lazy val provenanceFull: Set[(String, URL)] = {
+
+      val set: mutable.Set[(String, URL)] = mutable.Set()
+
+      try {
+        inputProvenanceFile.lineIterator
+          .filter(_.nonEmpty)
+          .map(line => line.split("\t"))
+          .foreach(arr => {
+            val url = new URL(arr(1))
+            set.+=((arr(0), url))
+          })
+      } catch {
+        case nsf: NoSuchFileException => {
+          getLog.info(s"${artifactId}/provenance.tsv not found, skipping")
+          set
+        }
+        case aie: ArrayIndexOutOfBoundsException => {
+          getLog.error(s"parsing of ${artifactId}/${prettyPath(inputProvenanceFile)} failed\nfix with:\n* must be (version \\t url), ${aie}")
+          System.exit(-1)
+        }
+        case mue: MalformedURLException => {
+          getLog.error(s"parsing of ${artifactId}/${prettyPath(inputProvenanceFile)} failed\nfix with:\n* must be (version \\t url), ${mue}")
+          System.exit(-1)
+        }
+
+      }
+
+      set.toSet
+    }
+
+    def provenanceIRIs = {
+      provenanceForVersion(props.version)
+    }
+
+    def provenanceForVersion(version: String): Set[URL] = {
+
+      provenanceFull.filter(_._1 == version).map(t => t._2)
+
     }
 
 
