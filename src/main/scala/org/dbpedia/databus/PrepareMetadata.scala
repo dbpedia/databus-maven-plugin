@@ -109,19 +109,25 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
       //match WebId to Account Name
       AccountHelpers.getAccountOption(publisher) match {
         case Some(account) => {
+
+          val accountIRI = s"${account.getURI}".asIRI
           val groupIRI = s"${account.getURI}/${groupId}".asIRI
           val artifactIRI = s"${account.getURI}/${groupId}/${artifactId}".asIRI
           val versionIRI = s"${account.getURI}/${groupId}/${artifactId}/${version}".asIRI
+
+          //accountIRI.addProperty(RDF.`type`, dataid.Account)
           groupIRI.addProperty(RDF.`type`, dataid.Group)
           artifactIRI.addProperty(RDF.`type`, dataid.Artifact)
           versionIRI.addProperty(RDF.`type`, dataid.Version)
 
+          datasetResource.addProperty(dataid.account, groupIRI)
           datasetResource.addProperty(dataid.group, groupIRI)
           datasetResource.addProperty(dataid.artifact, artifactIRI)
           datasetResource.addProperty(dataid.version, versionIRI)
         }
         case None => {
 
+          datasetResource.addProperty(dataid.account, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
           datasetResource.addProperty(dataid.group, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
           datasetResource.addProperty(dataid.artifact, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
           datasetResource.addProperty(dataid.version, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)

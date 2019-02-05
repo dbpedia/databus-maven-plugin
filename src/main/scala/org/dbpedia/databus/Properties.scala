@@ -101,7 +101,8 @@ trait Properties extends Locations with Parameters with Mojo {
     * properties that need to be configured by the user
     *
     */
-
+  @Parameter(property = "databus.keepRelativeURIs", defaultValue = "false")
+  val keepRelativeURIs = false
 
   /**
     * Configure downloadUrlPath, where the dataset will be deployed:

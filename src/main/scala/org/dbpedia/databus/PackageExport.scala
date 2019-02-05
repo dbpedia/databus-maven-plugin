@@ -31,14 +31,9 @@ import java.io.{File, FileWriter}
 class PackageExport extends AbstractMojo with Properties {
 
   /**
-    * The parselogs are written to ${databus.pluginDirectory}/parselogs and then packaged with the data
-    * We keep the parselogs in a separate file, because they can be quite large (repeating the triples that have errors)
     */
-  @Parameter(property = "databus.includeParseLogs", defaultValue = "true")
-  val includeParseLogs: Boolean = true
-
-  @Parameter(property = "databus.deactivateDownloadUrl", defaultValue = "false")
-  val deactivateDownloadUrl = false
+  @Parameter(property = "databus.package.includeParseLogs", defaultValue = "false")
+  val includeParseLogs: Boolean = false
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
@@ -48,7 +43,6 @@ class PackageExport extends AbstractMojo with Properties {
       return
     }
 
-
     if (locations.inputFileList.isEmpty) {
       getLog.warn(s"${locations.prettyPath(locations.inputVersionDirectory)} is empty, skipping")
       return
@@ -57,7 +51,6 @@ class PackageExport extends AbstractMojo with Properties {
     if (!locations.buildDataIdFile.isRegularFile) {
 
       //val emptyVersion = if (locations.inputFileList.isEmpty) s"* ${version} does not contain any files\n" else ""
-
       getLog.warn(s"${locations.prettyPath(locations.buildDataIdFile)} not found for ${artifactId}/${version}, can not package\n" +
         s"fix with:\n" +
         s"* running mvn prepare-package or mvn databus:metadata first\n")
@@ -66,8 +59,6 @@ class PackageExport extends AbstractMojo with Properties {
 
     getLog.info(s"packaging from ${locations.prettyPath(locations.inputVersionDirectory)}")
     getLog.info(s"packaging to ${locations.prettyPath(locations.packageVersionDirectory)}")
-
-
 
     // for each module copy all files to target
     locations.inputFileList.foreach { inputFile =>
@@ -92,28 +83,28 @@ class PackageExport extends AbstractMojo with Properties {
       }
     }
 
+    //todo
     //Parselogs
     if (includeParseLogs && locations.buildParselogFile.isRegularFile) {
       locations.buildParselogFile.copyTo(locations.packageParselogFile, true)
       getLog.info("packaged from build: " + locations.buildParselogFile.name)
     }
 
-    if (locations.provenanceFull.nonEmpty) {
+    if (locations.provenanceFull.nonEmpty && !sameFile(locations.inputProvenanceFile, locations.packageProvenanceFile)) {
       locations.inputProvenanceFile.copyTo(locations.packageProvenanceFile, true)
       getLog.info("packaged (in overwrite mode): " + locations.packageProvenanceFile.name)
     }
 
-    if (deactivateDownloadUrl) {
+    if (keepRelativeURIs) {
       //copy
       locations.buildDataIdFile.copyTo(locations.packageDataIdFile, overwrite = true)
-
     } else {
       // resolve
       val baseResolvedDataId = resolveBaseForRDFFile(locations.buildDataIdFile, locations.dataIdDownloadLocation)
       locations.packageDataIdFile.writeByteArray((Properties.logo + "\n").getBytes())
       locations.packageDataIdFile.appendByteArray(baseResolvedDataId)
     }
-    getLog.info("packaged from build: " + locations.packageDataIdFile.name)
+    getLog.info(s"packaged (in overwrite mode): ${locations.prettyPath(locations.packageDataIdFile)}")
     getLog.info(s"package written to ${locations.prettyPath(locations.packageVersionDirectory)}")
   }
 

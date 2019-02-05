@@ -96,8 +96,7 @@ trait Locations {
 
     lazy val dataIdDownloadLocation: String = downloadUrlPath.toString + dataIdFileName
 
-    //todo not working
-    lazy val packageProvenanceFile: File = (packageVersionDirectory / provenanceFileName)
+    lazy val packageProvenanceFile: File = (packageDirectory / provenanceFileName)
 
 
     /**
