@@ -118,6 +118,7 @@ trait Locations {
         val nonArtifactFiles: List[File] = inputVersionDirectory.list
           .filter(!_.name.startsWith(artifactId))
           .filter(_.name != dataIdFileName)
+          .filter(_.name != parselogFileName)
           .toList
 
         if (nonArtifactFiles.nonEmpty) {

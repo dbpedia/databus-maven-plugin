@@ -174,6 +174,7 @@ class TestData extends AbstractMojo with Properties {
       versions.++=(inputDirectory.listFiles()
         .filter(_.isDirectory)
         .filter(!_.getName.startsWith("target"))
+        .filter(!_.getName.startsWith("tmpfolder"))
         .map(f => {
           f.toString.replace(inputDirectory.toString + "/", "")
         }).toSet)
