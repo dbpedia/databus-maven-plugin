@@ -96,7 +96,7 @@ class PackageExport extends AbstractMojo with Properties {
         locations.inputProvenanceFile.copyTo(locations.packageProvenanceFile, true)
         getLog.info("packaged (in overwrite mode): " + locations.packageProvenanceFile.name)
       }
-    } else {
+    } else if(locations.inputProvenanceFile.isRegularFile) {
       locations.inputProvenanceFile.copyTo(locations.packageProvenanceFile, true)
       getLog.info("packaged: " + locations.packageProvenanceFile.name)
 
@@ -114,6 +114,17 @@ class PackageExport extends AbstractMojo with Properties {
       locations.packageDocumentationFile.writeByteArray(content.getBytes())
       getLog.info("packaged: " + locations.packageDocumentationFile.name)
 
+    }
+
+    if (locations.packagePomFile.isRegularFile) {
+      if (!sameFile(locations.inputPomFile, locations.packagePomFile)) {
+        locations.inputPomFile.copyTo(locations.packagePomFile, true)
+        getLog.info("packaged (in overwrite mode): " + locations.packagePomFile.name)
+
+      }
+    } else {
+      locations.inputPomFile.copyTo(locations.packagePomFile, true)
+      getLog.info("packaged: " + locations.packageDocumentationFile.name)
     }
 
 
