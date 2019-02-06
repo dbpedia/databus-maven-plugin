@@ -26,13 +26,13 @@
         <module>ontology-subclassof</module>
         <module>page</module>
         <module>properties-reified</module>
-        <module>raw</module>
+        <!--module>raw</module-->
         <module>redirects</module>
         <module>references</module>
         <module>revision</module>
         <module>sameas-all-wikis</module>
         <module>sameas-external</module>
-        <module>sameas-wikidata</module>
+        <!--module>sameas-wikidata</module-->
         <module>debug</module>
     </modules>
 
@@ -40,7 +40,8 @@
 
     <properties>
         <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
-        <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}
+        <databus.packageDirectory>
+            /media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}
         </databus.packageDirectory>
         <databus.downloadUrlPath>
             https://downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}/${project.version}/
@@ -51,9 +52,25 @@
         <databus.maintainer>https://alismayilov.github.io/webid-ali.ttl#this</databus.maintainer>
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <databus.changelog><![CDATA[
+        <databus.documentation><![CDATA[
+## How to contribute
+* mappings:
+https://github.com/dbpedia/extraction-framework/blob/master/core/src/main/resources/wikidatar2r.json
+
+DBpedia is a community project, help us with this dataset:
+* improve the software at: https://github.com/dbpedia/extraction-framework
+* improve this documentation in the pom.xml at
+https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/wikidata/pom.xml
+
+## Origin:
+This dataset was extracted using the wikidata-dumps available on
+https://www.wikidata.org/wiki/Wikidata:Database_download
+using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
+For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
+
 # Changelog
 ## 2018.07.20 to 2018.11.30
+* removed wikidata-sameas
 * were created as new modular releases, some issues remain
 * mappingbased objects are not cleaned
 * we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
@@ -61,25 +78,7 @@ characters
 * link to Wikimedia dump version is missing
 ## 2018.10.01
 * deleted due to bzip2 non-recoverable bad blocks
-        ]]></databus.changelog>
-        <databus.docfooter><![CDATA[
-## How to contribute
-* mappings:
-https://github.com/dbpedia/extraction-framework/blob/master/core/src/main/resources/wikidatar2r.json
-
-
-DBpedia is a community project, help us with this dataset:
-* improve the software at: https://github.com/dbpedia/extraction-framework
-* improve this documentation in the pom.xml at
-https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/wikidata/pom.xml
-
-
-## Origin:
-This dataset was extracted using the wikidata-dumps available on
-https://www.wikidata.org/wiki/Wikidata:Database_download
-using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
-For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
-        ]]></databus.docfooter>
+        ]]></databus.documentation>
 
     </properties>
 

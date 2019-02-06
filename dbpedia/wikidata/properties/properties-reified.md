@@ -1,4 +1,4 @@
-# Reified Properties
+# Wikidata properties with labels
 Wikidata property URIs as subject and dbo:alias to their labels
 
 TODO rename - reified
