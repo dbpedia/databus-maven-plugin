@@ -39,6 +39,7 @@ trait Locations {
 
     val dataIdFileName = "dataid.ttl"
     val parselogFileName = "parselog.ttl"
+    val pomFileName = "pom.xml"
     val provenanceFileName = "provenance.tsv"
     val markdownFileName = s"${props.artifactId}.md"
     val markdownVersionFileName = s"${props.artifactId}-${props.version}.md"
@@ -66,7 +67,9 @@ trait Locations {
     // docu and changelog
     lazy val inputMarkdownFile: File = (inputDirectory / markdownFileName)
 
-    lazy val inputVersionMarkdown: File = (inputDirectory / markdownVersionFileName)
+    lazy val inputPomFile: File = (inputDirectory / pomFileName)
+
+    //lazy val inputVersionMarkdown: File = (inputDirectory / markdownVersionFileName)
 
     /**
       * BUILD
@@ -99,6 +102,8 @@ trait Locations {
     lazy val dataIdDownloadLocation: String = downloadUrlPath.toString + dataIdFileName
 
     lazy val packageProvenanceFile: File = (packageDirectory / provenanceFileName)
+
+    lazy val packagePomFile: File = (packageDirectory / pomFileName)
 
 
     /**
