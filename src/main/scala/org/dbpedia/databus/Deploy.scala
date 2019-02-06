@@ -100,36 +100,39 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
 
       getLog.debug(s"Full ${response.toString}")
 
-      System.exit(-1)
+
+    } else {
+
+      getLog.info("Response: "+response.toString)
+
+      val query =
+        s"""PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
+           |PREFIX dct: <http://purl.org/dc/terms/>
+           |
+         |SELECT ?name ?version ?date ?webid ?uploadtime ?account {
+           |Graph <${datasetIdentifier}> {
+           |  ?dataset a dataid:Dataset .
+           |  ?dataset rdfs:label ?name .
+           |  ?dataset dct:hasVersion ?version .
+           |  ?dataset dct:issued ?date .
+           |  ?dataset dataid:associatedAgent ?webid .
+           |  ?dataid a dataid:DataId .
+           |  ?dataid dct:issued ?uploadtime .
+           |  }
+           |# resides in other graph
+           |OPTIONAL {?webid foaf:account ?account }
+           |}
+           |""".stripMargin
+
+      val encoded = URLEncoder.encode(query, StandardCharsets.UTF_8.name())
+
+      getLog.info(
+        s"""SUCCESS: upload of DataId for artifact '$artifactId' version ${version} to $deployRepoURL succeeded
+           |Data should be available within some minutes at graph ${datasetIdentifier}
+           |Test at ${deployRepoURL}/sparql  with query: \n\n ${query}
+           |curl "${deployRepoURL}/sparql?query=${encoded}"
+       """
+          .stripMargin)
     }
-
-
-    val query =
-      s"""PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
-         |PREFIX dct: <http://purl.org/dc/terms/>
-         |
-         |SELECT ?name ?version ?date ?webid ?issuedate ?account {
-         |Graph <${datasetIdentifier}> {
-         |  ?dataset a dataid:Dataset .
-         |  ?dataset rdfs:label ?name .
-         |  ?dataset dct:hasVersion ?version .
-         |  ?dataset dct:issued ?date .
-         |  ?dataset dataid:associatedAgent ?webid .
-         |  ?dataid a dataid:DataId .
-         |  ?dataid dct:issued ?issuedate .
-         |  }
-         |# resides in other graph
-         |OPTIONAL {?webid foaf:account ?account }
-         |}
-         |""".stripMargin
-
-    val encoded = URLEncoder.encode(query, StandardCharsets.UTF_8.name())
-
-    getLog.info(
-      s"""SUCCESS: upload of DataId for artifact '$artifactId' version ${version} to $deployRepoURL succeeded
-         |Data should be available within some minutes at graph ${datasetIdentifier}
-         |Test at ${deployRepoURL}/sparql  with query: \n\n ${query}
-         |curl "${deployRepoURL}/sparql?query=${encoded}"
-       """.stripMargin)
   }
 }
