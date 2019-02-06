@@ -43,6 +43,7 @@ For more technical information on how these datasets were generated, please visi
 
 ## Issues
 * documentation is too unspecific, the text extraction needs a more detailed description and better links
+* there seems to be invalid characters in the dataid file, however, the loading and rdf parsing work fine
 
 # Changelog
 ## 2016.10.01
