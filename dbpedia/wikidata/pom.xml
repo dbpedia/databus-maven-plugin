@@ -71,6 +71,7 @@ For more technical information on how these datasets were generated, please visi
 # Changelog
 ## 2018.07.20 to 2018.11.30
 * removed wikidata-sameas
+* removed raw for now
 * were created as new modular releases, some issues remain
 * mappingbased objects are not cleaned
 * we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
