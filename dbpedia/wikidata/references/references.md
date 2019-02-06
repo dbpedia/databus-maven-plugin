@@ -1,4 +1,4 @@
 # Wikidata References
-Reified statements references
+Reified statements about references
 
 TODO

@@ -1,4 +1,5 @@
 # Wikidata Labels
-It contains the name in all the languages available in the mappings wiki. Names in the languages not available in the mappings wiki are found in the _nmw variant.
+Contains the name in all the languages in wikidata. 
 
-TODO
+For each language only one label is used, more labels in the alias artifact.
+Names in the languages not available in the mappings wiki are found in the _nmw variant.

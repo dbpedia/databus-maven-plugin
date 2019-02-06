@@ -1,4 +1,4 @@
 # Wikidata SameAs All Wikis
-sameas for all wikis
+Sameas for all wikis
 
-TODO
+Contains the interlanguage links

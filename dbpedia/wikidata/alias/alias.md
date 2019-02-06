@@ -10,3 +10,4 @@ Currently data is grouped in two categories:
 * aliases from mapping wiki languages (around 40)
 * aliases from all other languages
 In the future, we might separate these into one file per language, which will increase the number of files from 2 (nmw as content variant) now, to many (basically using iso codes as content variants, beyond the 120 wikipedia versions)
+This is under discussion however.

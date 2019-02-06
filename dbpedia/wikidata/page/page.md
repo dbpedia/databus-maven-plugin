@@ -1,4 +1,4 @@
-# Page Lenght and Ids
-Numbers of characters contained in a Wikidata article's source.
+# Page Length and Ids
+Numbers of characters contained in a Wikidata article's source and ids
 
-TODO
+Numbers of characters contained in a Wikidata article's source and ids
