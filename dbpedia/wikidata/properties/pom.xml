@@ -6,7 +6,7 @@
         <version>2018.11.30</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>properties-reified</artifactId>
+    <artifactId>properties</artifactId>
     <groupId>wikidata</groupId>
     <packaging>jar</packaging>
 
