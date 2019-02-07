@@ -1,5 +1,9 @@
 **Discuss** via Slack  #releases: <a href="https://dbpedia.slack.com/messages/CBLRV788K/details/" target="_blank">dbpedia.slack.org</a>
 
+NOTE
+WE ARE WRITING A MANUAL HERE: https://github.com/dbpedia/databus-maven-plugin/wiki/User-Manual-v1.3
+This page is being merged there, information here is outdated
+
 # Databus Maven Plugin [![Build Status](https://travis-ci.org/dbpedia/databus-maven-plugin.svg?branch=master)](https://travis-ci.org/dbpedia/databus-maven-plugin) [![Maven Central Version](https://img.shields.io/maven-central/v/org.dbpedia.databus/databus-maven-plugin.svg)](https://search.maven.org/search?q=g:org.dbpedia.databus%20AND%20a:databus-maven-plugin&core=gav)
 Aligning data and software lifecycle with Maven
 
