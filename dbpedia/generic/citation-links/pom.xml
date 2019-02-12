@@ -3,44 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>common-metadata</artifactId>
-        <groupId>generic-spark</groupId>
-        <version>1.0.0</version>
+        <groupId>generic</groupId>
+        <artifactId>group-metadata</artifactId>
+        <version>2018.08.15</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <groupId>generic</groupId>
     <artifactId>citation-links</artifactId>
-    <groupId>org.dbpedia</groupId>
     <packaging>jar</packaging>
-    <version>1.0.0</version>
-
-
-    <!--This is a module, it inherits all config properties form the parent pom.xml
-You can configure here:
-* the artifactId, please also change <module> in parent pom.xml
-* the labels for your dataset (Everything behind the @ is used as language tag):
-<labels>
-    <label>Name in English@en</label>
-    <label>Name in French@fr</label>
-    ...
-</labels>
-* the description
--->
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.dbpedia.databus</groupId>
-                <artifactId>databus-maven-plugin</artifactId>
-                <configuration>
-                    <labels>
-                        <label>Citation Links@en</label>
-                    </labels>
-                    <datasetDescription>
-                        Links from a citation to a DBpedia article using the dbp:isCitedBy property.
-                    </datasetDescription>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

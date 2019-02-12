@@ -62,9 +62,6 @@ For more technical information on how these datasets were generated, please visi
 ## 2016.10.01
 * was taken from the previous BIG DBpedia releases under http://downloads.dbpedia.org/2016-10/ and included for completeness
      ]]></databus.documentation>
-        <databus.docfooter><![CDATA[
-
-        ]]></databus.docfooter>
     </properties>
 
     <!-- currently still needed to find the super-pom, once the super-pom is in maven central,
