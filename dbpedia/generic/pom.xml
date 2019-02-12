@@ -16,7 +16,6 @@
     <modules>
         <module>article-categories</module>
         <module>article-templates</module>
-        <module>article-templates-nested</module>
         <module>category-labels</module>
         <module>commons-page-links</module>
         <module>disambiguations</module>
