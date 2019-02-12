@@ -1,5 +1,9 @@
 **Discuss** via Slack  #releases: <a href="https://dbpedia.slack.com/messages/CBLRV788K/details/" target="_blank">dbpedia.slack.org</a>
 
+NOTE
+WE ARE WRITING A MANUAL HERE: https://github.com/dbpedia/databus-maven-plugin/wiki/User-Manual-v1.3
+This page is being merged there, information here is outdated
+
 # Databus Maven Plugin [![Build Status](https://travis-ci.org/dbpedia/databus-maven-plugin.svg?branch=master)](https://travis-ci.org/dbpedia/databus-maven-plugin) [![Maven Central Version](https://img.shields.io/maven-central/v/org.dbpedia.databus/databus-maven-plugin.svg)](https://search.maven.org/search?q=g:org.dbpedia.databus%20AND%20a:databus-maven-plugin&core=gav)
 Aligning data and software lifecycle with Maven
 
@@ -40,34 +44,7 @@ We are planning the following features:
 <!--run ` ./gh-md-toc --insert README.md` to regenerate -->
 # Table of Contents
 <!--ts-->
-   * [Databus Maven Plugin](#databus-maven-plugin)
-      * [Roadmap](#roadmap)
-   * [Table of Contents](#table-of-contents)
-   * [Bundle, dataset, distribution](#bundle-dataset-distribution)
-      * [Terminology](#terminology)
-      * [Relation to Maven](#relation-to-maven)
-      * [Versioning](#versioning)
-      * [Files &amp; folders](#files--folders)
-         * [(Important) File input path](#important-file-input-path)
-         * [(Important) File copying](#important-file-copying)
-   * [Usage](#usage)
-      * [How to make a release](#how-to-make-a-release)
-         * [Github setup](#github-setup)
-      * [Change version of the whole bundle](#change-version-of-the-whole-bundle)
-   * [Run the example](#run-the-example)
-   * [Configuration](#configuration)
-      * [File setup and conventions](#file-setup-and-conventions)
-      * [Generate a release configuration with an archetype](#generate-a-release-configuration-with-an-archetype)
-         * [Install databus archetype](#install-databus-archetype)
-         * [Instantiate a new project](#instantiate-a-new-project)
-   * [Development](#development)
-      * [License](#license)
-      * [Development rules](#development-rules)
-   * [Troubleshooting](#troubleshooting)
-      * [BUILD FAILURE, no mojo-descriptors found (when using mvn install to install the databus-maven-plugin)](#build-failure-no-mojo-descriptors-found-when-using-mvn-install-to-install-the-databus-maven-plugin)
-
-<!-- Added by: shellmann, at: 2018-09-07T15:42+02:00 -->
-
+ 
 <!--te-->
 
 # Bundle, dataset, distribution
@@ -80,7 +57,7 @@ In this section, we will describe the basic terminology and how they relate to M
 * Formatvariance - a dataset can have files in different formats. Format variance is abstracted quite well, different distributions are created with same metadata except for the format field
 * Compression variance - compression is handled separatedly from format, i.e. the same format can be compressed in different ways
 * Contentvariance of a dataset - besides the format variance a dataset can have a certain degree of content variance. This normally determines how the dataset is distributed over the files. The easiest example is DBpedia, where each dataset contains all Wikipedia languages, so in this case contentvariance is the language. The data could also be differentiated by type, e.g. a company dataset that produces a distribution for each organsiation form (non-profit, company, etc). As a guideline, contentvariance can be choosen arbitrarily and the only criteria is whether there are some use cases, where users would only want part of the dataset, otherwise merging into one big file is fine. 
-* Bundle - a collection of datasets released together. Also a pragmatic definition. The framework here will not work well, if you combine datasets with different release cycles and metadata in the same bundle, e.g. some daily, some monthly or metadata variance different publishers or versioning systems.
+* Group - a collection of datasets released together. Also a pragmatic definition. The framework here will not work well, if you combine datasets with different release cycles and metadata in the same bundle, e.g. some daily, some monthly or metadata variance different publishers or versioning systems.
 
 ## Relation to Maven
 Maven was established to automate software builds and release them (mostly Java). A major outcome of the ALIGNED project 
@@ -108,206 +85,8 @@ sortable). Another possibility is to align the version number to either:
    release)
 2. the ontology version if and only if the ontology is contained in the bundle and versioned like software
 
-## Files & folders
-Per default 
-```
-${bundle}/ 
-+-- pom.xml (parent pom with bundle metadata and ${version}, all artifactids are listed as `<modules>` )
-+-- ${artifactid1}/ (module with artifactid as datasetname)
-|   +-- pom.xml (dataset metadata)
-|   +-- src/main/databus/${version}/
-|   |   *-- ${artifactid1}_cvar1.nt (distribution, content variance 1, formatvariance nt, compressionvariant none)
-|   |   *-- ${artifactid1}_cvar1.csv (distribution, content variance 1, formatvariance csv, compressionvariant none)
-|   |   *-- ${artifactid1}_cvar1.csv.bz2 (distribution, content variance 1, formatvariance csv, compressionvariant bzip)
-|   |   *-- ${artifactid1}_cvar2.ttl (distribution, content variance 2, formatvariance ttl, compressionvariant none)
-|   |   *-- ${artifactid1}_cvar2.csv (distribution, content variance 2, formatvariance csv, compressionvariant none)
-|   |   *-- ${artifactid1}.csv (distribution, no content variant, formatvariance csv, compressionvariant none)
-```
-An example is given in the example folder of this repo.
-
-### (Important) File input path
-The file input path is `src/main/databus/${version}/` per default, relative to the module.
-This path can be configured in the parent pom.xml using the `<databus.dataInputDirectory>` parameter. 
-Absolute paths are allowed. 
-
-### (Important) File copying
-During the maven build process, the code is normally duplicated 6-7 times. For each module, the code is first copied 
-and compiled in the `target/classes` folder and then copied and compressed again in a .jar file. All this is then 
-copied again. The databus-maven-plugin behaves different: 
-* the `target/databus` folder is used to assemble metadata (which is not large)
-* `mvn clean` deletes the target folder and will only delete the generated metadata
-* no input data is copied into the `target` folder, i.e. the process does not duplicate data due to storage reasons
-* `mvn databus:package-export` will copy the files to an external location as given in `<databus.packageDirectory>`.
- 
-
-# Usage 
-
-## How to make a release 
-Once the project is configured properly [see Configuration](#configuration) releases are easy to generate and update. 
-The only technical requirement for usage is Maven3 `sudo apt-get install maven`
-Maven will automatically install the plugin (Note that the archetype for configuration has to be installed manually at 
-the moment.)
-We assume that you have set the WebId, a corresponding PKCS12 bundle and the data in `src/main/databus/${version}/` and 
-that the pom.xml is configured properly.
-
-```
-# deleting any previously generated metadata
-mvn clean 
-
-# validate setup of private key/webid
-mvn databus:validate
-
-# validate syntax of rdf data, generated parselogs in target/databus/parselogs
-# Note: this is a resource intensive step. It can be skipped (-DskipTests=true)
-mvn databus:test-data
-
-# generate metadata in target/databus/dataid
-mvn databus:metadata
-
-# export the release to a local directory as given in <databus.packageDirectory>
-# copies data from src, metadata and parselogs from data
-mvn databus:package-export
-
-# submit/upload the generated metadata to the databus metadata repository
-mvn databus:deploy
-```
-
-The target directory for packaging and almost any other configuration parameter can be set on the fly 
-
-```
-mvn databus:package-export -Ddatabus.packageDirectory="/var/www/mydata.org/datareleases"
-```
-
-Exceptions are `databus.labels` and `databus.wasDerivedFrom`, as these options expect lists that cannot be
-expressed properly with a `-D`-switch.
 
 
-### Github setup
-The pom.xml can be versioned via GitHub as we do for `dbpedia` (see folder). Add the following to `.gitignore` to exclude data from being committed to git:
-`${bundlefolder}/*/*/src/`
-
-## Change version of the whole bundle
-`mvn versions:set -DnewVersion=2018.08.15`
-
-
-# Run the example
-There are working examples in the example folder, which you can copy and adapt
-
-```
-# clone the repository
-git clone https://github.com/dbpedia/databus-maven-plugin.git
-cd databus-maven-plugin
-cd example/animals
-
-# validate, parse, generate metadata and package
-mvn databus:validate databus:test-data databus:metadata databus:package-export
-
-```
-
-
-
-# Configuration
-
-## File setup and conventions
-### Naming Scheme for File to be Published
-
-To ensure that metadata for files to be published can be determined correctly, the names of
-these files have to fulfil a specific schema. This schema can be described by the following 
-[EBNF](https://www.w3.org/TR/REC-xml/#sec-notation):
-
-```
-inputFileName ::= fileNamePrefix contentVariant* formatExtension+? compressionExtension*
-
-fileNamePrefix ::= [^_]+? /* a non-empty string consisting of any chars except '_' */
-
-contentVariant ::= '_' [A-Za-z0-9]+
-
-formatExtension ::= '.' [A-Za-z] [A-Za-z0-9]*
-
-compressionExtension ::=  '.' ( 'bz2' | 'gz' | 'tar' | 'xz' | 'zip' )
-```
-
-**Hint:** `+?` in the grammar above denotes a reluctant one-or-more quantifier such that, for example, 
-  the production rule for the `artifactName` will not 'parse into' the `formatExtensions` when `contentVariants`
-  are absent.
-
-Here are some examples of valid filenames from the `animals` example:
-
-```
-mammals.nt - `nt` as format variant
-mammals_carnivore_cat.nt.patch - `carnivore` and `cat` as content variants, `nt` and `patch` as content variants
-mammals_monkey.nt.bz2 - `monkey` as content variant; `nt` as format variant; `bz2` as compression variant
-mammals-2018.08.17_cat.nt - `cat` as content variant; `nt` as format variant; `fileNamePrefix` contains a date
-```
-
-In contrast follows a short list of invalid (counter-)examples:
-
-```mammals.zip.nt, mammals_monkey.nt.001.bz2, mammals_2018.08.17_cat.nt```
-
-As mentioned above, filenames are not only required to conform to the  aforementioned schema, but the `fileNamePrefix`
-also has to start with the name of the artifact. (Files with names starting differently will be ignored.)
-
-## Generate a release configuration with an archetype
- Note: For datasets with few artifacts, you can also copy the example and adjust it
-
-We provide a Maven Archetype for easy and automatic project setup. In short, Archetype is a Maven project templating 
-toolkit: https://maven.apache.org/guides/introduction/introduction-to-archetypes.html 
-The template is created from an existing project, found in `archetype/existing-projects`. Variables are replaced 
-upon instantiation. 
-
-### Install databus archetype 
-We provide two archetype templates:
-* `bundle-archetype` generates a bundle with one dataset (called add-one-dataset)
-* `add-one-dataset-archetype` adds a module to an existing bundle
-
-The archetype needs to be installed into the local maven repo:
-```
-git clone https://github.com/dbpedia/databus-maven-plugin.git
-cd databus-maven-plugin/archetype/existing-projects
-./deploy.sh
-```
-`deploy.sh` runs `mvn archetype:create-from-project` and `mvn install` on bundle and bundle/add-one-dataset 
-
-### Instantiate a new project
-With the archetype you can create one bundle with arbitrarily many datasets/artifacts. Here is how:
-
-```
-# Generate the bundle
-
-# version number of bundle
-VERSION=2018.08.15
-# domain 
-GROUPID=org.example.data
-# bundle artifactid
-BUNDLEARTIFACTID=animals
-# configure list of datasets/artifacts to be created
-DATASETARTIFACTID="mammals birds fish"
-
-mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=bundle-archetype -DarchetypeGroupId=org.dbpedia.databus.archetype -DgroupId=$GROUPID -DartifactId=$BUNDLEARTIFACTID -Dversion=$VERSION -DinteractiveMode=false
-
-# Generate datasets/modules 
-
-# go into the bundle
-cd $BUNDLEARTIFACTID
-
-for i in ${DATASETARTIFACTID} ; do 
-	mvn archetype:generate -DarchetypeCatalog=local -DarchetypeArtifactId=add-one-dataset-archetype -DarchetypeGroupId=org.dbpedia.databus.archetype -DgroupId=$GROUPID -DartifactId=$i -Dversion=$VERSION -DinteractiveMode=false
-	# some clean up, since archetype does not set parent automatically  
-	# TODO we are trying to figure out how to automate this
-	sed -i "s|<artifactId>bundle</artifactId>|<artifactId>$BUNDLEARTIFACTID</artifactId>|" */pom.xml
-	sed -i "s|<groupId>org.dbpedia.databus.archetype</groupId>|<groupId>$GROUPID</groupId>|" */pom.xml
-	sed -i "s|<version>1.0.0</version>|<version>$VERSION</version>|" */pom.xml
-done
-
-
-
-# delete add-one-dataset 
-rm -r add-one-dataset
-sed -i  's|<module>add-one-dataset</module>||' pom.xml
-
-# wipe the example data files
-rm */src/main/databus/$VERSION/*
-```
 
 # Development 
 
@@ -572,3 +351,5 @@ run: `grep "LC_ALL" .*` in your /root/ directory and make sure
 .bashrc:export LC_ALL=en_US.UTF-8
 ```
 is set.
+
+

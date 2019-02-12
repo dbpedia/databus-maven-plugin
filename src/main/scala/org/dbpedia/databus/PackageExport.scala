@@ -66,21 +66,14 @@ class PackageExport extends AbstractMojo with Properties {
       val df = Datafile(inputFile.toJava)(getLog)
       val filePackageTarget = locations.packageVersionDirectory / df.finalBasename(params.versionToInsert)
 
-      // check if files exist already
-      if (filePackageTarget.isRegularFile) {
-
-        //overwrite if different, else keep
-        if (!sameFile(inputFile, filePackageTarget)) {
-          inputFile.copyTo(filePackageTarget, overwrite = true)
-          getLog.info("packaged (in overwrite mode): " + filePackageTarget.name)
-        } else {
-          getLog.info("skipped (same file content): " + filePackageTarget.name)
-        }
-
+      // check if files exist already and is same
+      if (filePackageTarget.isRegularFile && sameFile(inputFile, filePackageTarget)) {
+        getLog.info("skipped (same file content): " + filePackageTarget.name)
       } else {
         inputFile.copyTo(filePackageTarget, overwrite = true)
-        getLog.info("packaged: " + filePackageTarget.name)
+        getLog.info("packaged (create or overwrite): " + filePackageTarget.name)
       }
+
     }
 
     //todo
@@ -90,54 +83,46 @@ class PackageExport extends AbstractMojo with Properties {
       getLog.info("packaged from build: " + locations.buildParselogFile.name)
     }
 
-
-    if (locations.provenanceFull.nonEmpty && locations.packageProvenanceFile.isRegularFile) {
-      if (!sameFile(locations.inputProvenanceFile, locations.packageProvenanceFile)) {
+    // provenance file
+    // extra if, since prov is optional
+    if (locations.inputProvenanceFile.isRegularFile && locations.provenanceFull.nonEmpty) {
+      if (locations.packageProvenanceFile.isRegularFile && sameFile(locations.inputProvenanceFile, locations.packageProvenanceFile)) {
+        getLog.info("skipped (same file content): " + locations.packageProvenanceFile.name)
+      } else {
         locations.inputProvenanceFile.copyTo(locations.packageProvenanceFile, true)
-        getLog.info("packaged (in overwrite mode): " + locations.packageProvenanceFile.name)
+        getLog.info("packaged (create or overwrite): " + locations.packageProvenanceFile.name)
       }
-    } else if(locations.inputProvenanceFile.isRegularFile) {
-      locations.inputProvenanceFile.copyTo(locations.packageProvenanceFile, true)
-      getLog.info("packaged: " + locations.packageProvenanceFile.name)
-
     }
 
-
+    // documentation file
     val content = s"# ${params.label}\n${params.comment}\n\n${params.description}\n\n + ${documentation.trim}"
-    if (locations.packageDocumentationFile.isRegularFile) {
-      if (!sameFile(locations.inputMarkdownFile, locations.packageDocumentationFile)) {
-        locations.packageDocumentationFile.writeByteArray(content.getBytes())
-        getLog.info("packaged (in overwrite mode): " + locations.packageDocumentationFile.name)
-
-      }
+    if (locations.packageDocumentationFile.isRegularFile && sameFile(locations.inputMarkdownFile, locations.packageDocumentationFile)) {
+      getLog.info("skipped (same file content): " + locations.packageDocumentationFile.name)
     } else {
       locations.packageDocumentationFile.writeByteArray(content.getBytes())
-      getLog.info("packaged: " + locations.packageDocumentationFile.name)
-
+      getLog.info("packaged (create or overwrite): " + locations.packageDocumentationFile.name)
     }
 
-    if (locations.packagePomFile.isRegularFile) {
-      if (!sameFile(locations.inputPomFile, locations.packagePomFile)) {
-        locations.inputPomFile.copyTo(locations.packagePomFile, true)
-        getLog.info("packaged (in overwrite mode): " + locations.packagePomFile.name)
-
-      }
+    // todo copy group pom?
+    // pom file
+    if (locations.packagePomFile.isRegularFile && sameFile(locations.inputPomFile, locations.packagePomFile)) {
+      getLog.info("skipped (same file content): " + locations.packagePomFile.name)
     } else {
       locations.inputPomFile.copyTo(locations.packagePomFile, true)
-      getLog.info("packaged: " + locations.packageDocumentationFile.name)
+      getLog.info("packaged (create or overwrite): " + locations.packagePomFile.name)
     }
 
-
+    // dataid
     if (keepRelativeURIs) {
-      //copy
+      //copy unmodified, always overwrite
       locations.buildDataIdFile.copyTo(locations.packageDataIdFile, overwrite = true)
     } else {
-      // resolve
+      // resolve uris, always overwrite
       val baseResolvedDataId = resolveBaseForRDFFile(locations.buildDataIdFile, locations.dataIdDownloadLocation)
       locations.packageDataIdFile.writeByteArray((Properties.logo + "\n").getBytes())
       locations.packageDataIdFile.appendByteArray(baseResolvedDataId)
     }
-    getLog.info(s"packaged (in overwrite mode): ${locations.prettyPath(locations.packageDataIdFile)}")
+    getLog.info(s"packaged (create or overwrite): ${locations.prettyPath(locations.packageDataIdFile)}")
     getLog.info(s"package written to ${locations.prettyPath(locations.packageVersionDirectory)}")
   }
 
