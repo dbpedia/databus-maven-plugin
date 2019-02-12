@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>generic</groupId>
-    <artifactId>revision-ids</artifactId>
+    <artifactId>revision</artifactId>
     <packaging>jar</packaging>
  
 </project>

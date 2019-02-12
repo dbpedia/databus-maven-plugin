@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>generic</groupId>
-    <artifactId>commons-page-links</artifactId>
+    <artifactId>commons-sameas-links</artifactId>
     <packaging>jar</packaging>
 
 </project>
