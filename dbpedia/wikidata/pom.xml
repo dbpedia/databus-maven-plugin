@@ -53,20 +53,19 @@
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.documentation><![CDATA[
-## How to contribute
-* mappings:
-https://github.com/dbpedia/extraction-framework/blob/master/core/src/main/resources/wikidatar2r.json
-
-DBpedia is a community project, help us with this dataset:
-* improve the software at: https://github.com/dbpedia/extraction-framework
-* improve this documentation in the pom.xml at
-https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/wikidata/pom.xml
-
 ## Origin:
-This dataset was extracted using the wikidata-dumps available on
-https://www.wikidata.org/wiki/Wikidata:Database_download
-using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
-For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
+This dataset was extracted using the XML wikidata-dumps available on https://www.wikidata.org/wiki/Wikidata:Database_download
+The extraction is performed using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
+You may find more details on the Wikidata extractions at "Wikidata through the eyes of DBpedia" by Ali Ismayilov, Dimitris Kontokostas, Sören Auer, Jens Lehmann and Sebastian Hellmann.
+You may download the article from http://www.semantic-web-journal.net/content/wikidata-through-eyes-dbpedia-1
+
+## How to contribute
+DBpedia is a community project, help us with this dataset:
+* Extend and/or improve the Wikidata class & ontology mappings at the DBpedia mappings wiki (http://mappings.dbpedia.org)
+* Extend and/or improve the Wikidata json mappings at https://github.com/dbpedia/extraction-framework/blob/master/core/src/main/resources/wikidatar2r.json
+* Improve this documentation in the pom.xml at https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/wikidata/pom.xml
+* Improve the software at: https://github.com/dbpedia/extraction-framework
+
 
 # Changelog
 ## 2018.07.20 to 2018.11.30
