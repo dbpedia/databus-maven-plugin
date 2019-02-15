@@ -1,5 +1,4 @@
 .
-├── finalize.sh
 ├── geo-coordinates-mappingbased
 │   ├── 2016.10.01
 │   │   ├── geo-coordinates-mappingbased_lang=ar.ttl.bz2
@@ -182,9 +181,7 @@
 │   │   ├── geo-coordinates-mappingbased_lang=tr.ttl.bz2
 │   │   └── geo-coordinates-mappingbased_lang=vi.ttl.bz2
 │   ├── geo-coordinates-mappingbased.md
-│   ├── log.txt
 │   ├── pom.xml
-│   └── pom.xml.versionsBackup
 ├── instance-types
 │   ├── 2016.10.01
 │   │   ├── instance-types_lang=ar.ttl.bz2
@@ -673,17 +670,7 @@
 │   │   ├── instance-types_transitive_lang=uk.ttl.bz2
 │   │   └── instance-types_transitive_lang=vi.ttl.bz2
 │   ├── instance-types.md
-│   ├── log.txt
 │   ├── pom.xml
-│   └── pom.xml.versionsBackup
-├── log-2016.10.01.txt
-├── log-2018.09.12.txt
-├── log-2018.10.16.txt
-├── log-2018.11.03.txt
-├── log-2018.11.20.txt
-├── log-2018.12.01.txt
-├── log.txt
-├── log-version.txt
 ├── mappingbased-literals
 │   ├── 2016.10.01
 │   │   ├── mappingbased-literals_lang=ar.ttl.bz2
@@ -939,10 +926,8 @@
 │   │   ├── mappingbased-literals_lang=tr.ttl.bz2
 │   │   ├── mappingbased-literals_lang=uk.ttl.bz2
 │   │   └── mappingbased-literals_lang=vi.ttl.bz2
-│   ├── log.txt
 │   ├── mappingbased-literals.md
 │   ├── pom.xml
-│   └── pom.xml.versionsBackup
 ├── mappingbased-objects
 │   ├── 2016.10.01
 │   │   ├── mappingbased-objects_disjoint_domain_lang=ar.ttl.bz2
@@ -1105,14 +1090,8 @@
 │   │   ├── mappingbased-objects_uncleaned_lang=tr.ttl.bz2
 │   │   ├── mappingbased-objects_uncleaned_lang=uk.ttl.bz2
 │   │   └── mappingbased-objects_uncleaned_lang=vi.ttl.bz2
-│   ├── log.txt
 │   ├── mappingbased-objects.md
 │   ├── pom.xml
-│   ├── pom.xml.versionsBackup
-│   └── target
-│       └── databus
-│           ├── dataid
-│           └── parselog
 ├── mappingbased-objects-uncleaned
 │   ├── 2016.10.01
 │   │   ├── mappingbased-objects-uncleaned_lang=ar.ttl.bz2
@@ -1362,9 +1341,7 @@
 │   │   └── mappingbased-objects-uncleaned_lang=vi.ttl.bz2
 │   ├── mappingbased-objects-uncleaned.md
 │   ├── pom.xml
-│   └── pom.xml.versionsBackup
 ├── pom.xml
-├── pom.xml.versionsBackup
 ├── specific-mappingbased-properties
 │   ├── 2016.10.01
 │   │   ├── specific-mappingbased-properties_lang=ar.ttl.bz2
@@ -1612,11 +1589,7 @@
 │   │   ├── specific-mappingbased-properties_lang=tr.ttl.bz2
 │   │   ├── specific-mappingbased-properties_lang=uk.ttl.bz2
 │   │   └── specific-mappingbased-properties_lang=vi.ttl.bz2
-│   ├── log.txt
 │   ├── pom.xml
-│   ├── pom.xml.versionsBackup
 │   └── specific-mappingbased-properties.md
-└── tmpfolder
-    └── logfile
 
 42 directories, 1577 files
