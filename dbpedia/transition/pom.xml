@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.dbpedia.databus</groupId>
+        <artifactId>super-pom</artifactId>
+        <version>1.3-SNAPSHOT</version>
+    </parent>
+
+    <groupId>transition</groupId>
+    <artifactId>group-metadata</artifactId>
+    <packaging>pom</packaging>
+    <version>2019.02.10</version>
+    <modules>
+        <module>linked-hypernyms</module>
+        <module>links</module>
+    </modules>
+
+    <properties>
+        <databus.packageDirectory>
+            /media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}
+        </databus.packageDirectory>
+        <databus.downloadUrlPath>
+            https://downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}/${project.version}/
+        </databus.downloadUrlPath>
+        <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
+        <!-- moved to settings.xml
+         databus.pkcs12File>${user.home}/.m2/certificate_generic.pfx</databus.pkcs12File-->
+        <databus.maintainer>https://www.kliegr.eu/</databus.maintainer>
+        <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <databus.documentation><![CDATA[
+## How to contribute
+DBpedia is a community project. we created this transition group, because the databus is still new.
+Data in this group was contributed by community members in the past. We republish it now once or twice.
+As soon as the contributors publish their data on the bus, we will create an external collection and the files in here will be outdated.
+
+## Group Changelog
+### 2019.02.10
+intial release, as this is a transitional group, we are just using this until the contributors move to their own releases.
+
+     ]]></databus.documentation>
+    </properties>
+
+    <!-- currently still needed to find the super-pom, once the super-pom is in maven central,
+    this can be removed as well -->
+    <repositories>
+        <repository>
+            <id>archiva.internal</id>
+            <name>Internal Release Repository</name>
+            <url>http://databus.dbpedia.org:8081/repository/internal</url>
+        </repository>
+        <repository>
+            <id>archiva.snapshots</id>
+            <name>Internal Snapshot Repository</name>
+            <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+</project>
