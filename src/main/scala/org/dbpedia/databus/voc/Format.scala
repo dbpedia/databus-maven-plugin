@@ -95,6 +95,7 @@ object Format {
     "tql" -> ApplicationNQuad,
     "nq" -> ApplicationNQuad,
     "rdf" -> ApplicationRDFXML,
+    "owl" -> ApplicationRDFXML,
     "csv" -> TextCSV,
     "tsv" -> TextTabSeparatedValues,
     "tab" -> TextTabSeparatedValues,
