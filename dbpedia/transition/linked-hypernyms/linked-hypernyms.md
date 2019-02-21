@@ -3,7 +3,7 @@
 
 ## Description
 The dataset provides more complete `rdf:type` based on the Wikipedia abstracts. 
-It is a transitional artifact, i.e. the file was contributed by Tomas Kliegr originally. We included the English version now, but perspectively Tomas Kliegr has to create his own artifact and release the data there in regular intervals. This artifact will be discontinued. 
+It is a transitional artifact, i.e. the file was contributed by Tomas Kliegr originally. We included the old versions now, but perspectively Tomas Kliegr has to create his own artifact and release the data there in regular intervals. This artifact will be discontinued. 
 
 ### Attribution fullfilled by
 
