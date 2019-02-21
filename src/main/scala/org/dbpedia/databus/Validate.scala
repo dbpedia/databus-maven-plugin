@@ -45,13 +45,19 @@ import org.apache.maven.settings.Settings
 @Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE, requiresOnline = true, threadSafe = true)
 class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Properties {
 
+
   @throws[MojoExecutionException]
   override def execute(): Unit = {
 
-    // parent module, i.e. packaging pom
-    if (isParent()) {
+    if(!Validated.validated){
       validateWebId()
       validateAccount()
+      Validated.validated = true
+    }
+
+    // parent module, i.e. packaging pom
+    if (isParent()) {
+      //do nothing actually
       return
     }
 
@@ -60,6 +66,12 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
   }
 
   def validateSelectedValues = {
+    val forbiddenchars = List("\\", " / ", ":", "\"", "<", ">", "|", "?", "*")
+    if (version.toList.exists(forbiddenchars.contains)) {
+      getLog.error(s"Version: ${version} contains forbidden chars: ${forbiddenchars.mkString("")}")
+      System.exit(-1)
+    }
+
     getLog.info("Issued date: " + params.issuedDate)
     params.validateMarkdown()
     getLog.info(s"${locations.provenanceFull.size} provenance urls found")
@@ -115,4 +127,10 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
   }
 
 
+}
+
+// a small static var
+// if inheritance is used, parent is not validated
+object Validated {
+  var validated = false
 }
