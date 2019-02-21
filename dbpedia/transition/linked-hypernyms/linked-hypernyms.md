@@ -5,6 +5,17 @@
 The dataset provides more complete `rdf:type` based on the Wikipedia abstracts. 
 It is a transitional artifact, i.e. the file was contributed by Tomas Kliegr originally. We included the old versions now, but perspectively Tomas Kliegr has to create his own artifact and release the data there in regular intervals. This artifact will be discontinued. 
 
+There are two different versions of the dataset for each language:
+* `linked-hypernyms_type=dbo_lang={lang}.ttl.bz2`  //  Most accurate - result of
+pattern matching, entity types are from  DBpedia ontology
+* `linked-hypernyms_type=ext_lang={lang}.ttl.bz2`  //   Highest coverage and
+specificity - merged output of multiple algorithms, entity types are DBpedia resources for most precise types
+
+### Languages supported
+* English
+* German 
+* Dutch
+
 ### Attribution fullfilled by
 
 * citing the paper below
