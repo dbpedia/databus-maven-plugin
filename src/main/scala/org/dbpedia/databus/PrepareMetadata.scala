@@ -120,7 +120,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
           artifactIRI.addProperty(RDF.`type`, dataid.Artifact)
           versionIRI.addProperty(RDF.`type`, dataid.Version)
 
-          datasetResource.addProperty(dataid.account, groupIRI)
+          datasetResource.addProperty(dataid.account, accountIRI)
           datasetResource.addProperty(dataid.group, groupIRI)
           datasetResource.addProperty(dataid.artifact, artifactIRI)
           datasetResource.addProperty(dataid.version, versionIRI)
