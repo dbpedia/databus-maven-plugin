@@ -11,5 +11,6 @@
     <groupId>transition</groupId>
     <artifactId>links</artifactId>
     <packaging>jar</packaging>
+    <version>2019.02.01</version>
 
 </project>

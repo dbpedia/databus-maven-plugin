@@ -53,7 +53,7 @@
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.documentation><![CDATA[
-## Origin:
+## Origin
 This dataset was extracted using the XML wikidata-dumps available on https://www.wikidata.org/wiki/Wikidata:Database_download
 The extraction is performed using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
 You may find more details on the Wikidata extractions at "Wikidata through the eyes of DBpedia" by Ali Ismayilov, Dimitris Kontokostas, Sören Auer, Jens Lehmann and Sebastian Hellmann.
@@ -66,12 +66,15 @@ DBpedia is a community project, help us with this dataset:
 * Improve this documentation in the pom.xml at https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/wikidata/pom.xml
 * Improve the software at: https://github.com/dbpedia/extraction-framework
 
+## Known Issues
+* RDF parsing and sorting failed for artifacts rediects, references, raw and sameas*
+* we are attempting to switch from rapper to Sansa-Stack: http://sansa-stack.net/sansa-parser-performance-improved/
 
-# Changelog
-## 2018.07.20 to 2018.11.30
+## Group Changelog
+### 2018.07.20 to 2018.11.30
+* were created as new modular releases, some issues remain
 * removed wikidata-sameas
 * removed raw for now
-* were created as new modular releases, some issues remain
 * mappingbased objects are not cleaned
 * we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
 characters

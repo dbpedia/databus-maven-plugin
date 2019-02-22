@@ -12,4 +12,8 @@
     <artifactId>linked-hypernyms</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <databus.maintainer>https://www.kliegr.eu/</databus.maintainer>
+    </properties>
+
 </project>
