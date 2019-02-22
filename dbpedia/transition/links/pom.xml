@@ -13,4 +13,7 @@
     <packaging>jar</packaging>
     <version>2019.02.01</version>
 
+    <properties>
+	        <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
+    </properties>
 </project>
