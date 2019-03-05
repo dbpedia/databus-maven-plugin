@@ -1,4 +1,4 @@
-**Discuss** via Slack  #releases: <a href="https://dbpedia.slack.com/messages/CBLRV788K/details/" target="_blank">dbpedia.slack.org</a>
+**Discuss** via Slack  #releases:<a href="https://dbpedia.slack.com/messages/CBLRV788K/details/" target="_blank">dbpedia.slack.org</a>
 
 NOTE
 PLEASE READ THE [MANUAL HERE]( https://github.com/dbpedia/databus-maven-plugin/wiki/User-Manual-v1.3)
