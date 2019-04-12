@@ -36,39 +36,73 @@
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.documentation><![CDATA[
+# PreFusion Dataset
+The DBpedia PreFusion dataset is a new addition to the modular DBpedia releases combining DBpedia data from over 140 Wikipedia language editions and Wikidata. As an intermediate step in the FlexiFusion workflow [1], a global and unified preFused view is provided on the essence of DBpedia releases (see origin section).
+The facts are harvested as RDF triples and aggregated using a new serialization format to track statement-level provenance. 
+Unified access to knowledge from different sources is achieved by exploiting previously existing mappings of the DBpedia Ontology as well as merged, normalized entity identifiers (DBpedia Global IDs). 
+The ontology defines a comprehensive class hierarchy and properties, which are modelling common entities described in Wikipedia and Wikidata, and also reuses prominent vocabularies like FOAF and PROV. The dataset offers knowledge about very broad domains (like persons, organizations) but also for very specific domains (e.g. nutrition facts or animal classifications). 
+
+## Description
+The PreFusion dataset is stored as JSON-LD using a custom scheme optimized for an efficient representation of entities with overlapping object values and statement-level provenance. Thus, the dataset can be loaded both into JSON document/NoSQL stores, in case simple lookups are required – and triple stores – in case joins are required. Each PreFusion document describes a normalized subject-predicate pair (*SP−pair*) to aggregate all different object and literal values from the input sources as shown in the example below. The provenance record(s) are referencing the corresponding input file(s) of the object value and iHash value(s) which can be used to determine the original (non-normalized) IRI(s) of the triple(s) with hashing the result of the Global ID Resolution service. For more details see [1]
+
+    {
+      "@id": "9336c15aed0392448b9cdb9d46b8f82e9942",
+      "@context": "https://databus.dbpedia.org/dbpedia/fusion/ fused-geo-coordinates/2018.11.25/fusion=prov-context.jsonld",
+      "subject": {
+        "@id": "https://global.dbpedia.org/id/J1kSq" },
+      "predicate": {
+        "@id": "http://www.w3.org/2003/01/geo/wgs84_pos#long" },
+      "objects": [
+        {
+          "object": {
+            "@value": "-2.3094",
+            "@type": "http://www.w3.org/2001/XMLSchema#float" },
+          "source": [ {
+              "@id": "d0:lang=commonswiki",
+              "iHash": "44473" } ]
+        }
+      ]
+    }
+
 ## Attribution fulfilled by
-* (when deriving another dataset and releasing to the Databus) adding the Databus link to the provenance https://databus.dbpedia.org/dbpedia/${project.groupId}/${project.artifactId}/${project.artifactId}/${project.version}
+* (when deriving another dataset and releasing to the Databus) adding the Databus link to the provenance https://databus.dbpedia.org/dbpedia/\${project.groupId}/${project.artifactId}/${project.artifactId}/${project.version}
 * on your website:
   * include the DBpedia logo and mention the usage of DBpedia with this link: https://databus.dbpedia.org/dbpedia
   * include backlinks from your pages to the individual entities, e.g. http://dbpedia.org/resource/Berlin
-* in academic publications cite: DBpedia - A Large-scale, Multilingual Knowledge Base Extracted from Wikipedia, J. Lehmann, R. Isele, M. Jakob, A. Jentzsch, D. Kontokostas, P. Mendes, S. Hellmann, M. Morsey, P. van Kleef, S. Auer, and C. Bizer. Semantic Web Journal 6 (2): 167--195 (2015)
+* in academic publications cite [1]
 
 ## How to contribute
 DBpedia is a community project, help us with:
-* editing the mappings at http://mappings.dbpedia.org
-* improve this documentation at https://github.com/dbpedia/databus-maven-plugin/tree/master/dbpedia/mappings/${project.artifactId}/${project.artifactId}.md
-* help with the software relevant for extraction:
-** https://github.com/dbpedia/extraction-framework/tree/master/core/src/main/scala/org/dbpedia/extraction/mappings
-** in particular https://github.com/dbpedia/extraction-framework/blob/master/core/src/main/scala/org/dbpedia/extraction/mappings/InfoboxMappingsExtractor.scala
 
-## Debug
-Parselogs are currently kept here: http://downloads.dbpedia.org/temporary/parselogs/
+ - Improving the input datasets (see docu for DBpedia and Wikidata extractions in origin section)
+ - upload datasets using DBpedia ontology and providing sameAs links to DBpedia entities on the databus and contact the maintainer so that it can be included.
 
 ## Origin
-This dataset was extracted using the wikipedia-dumps available on https://dumps.wikimedia.org/
-using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
-For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
+This dataset is based on
+DBpedia extractions 	
+ - https://databus.dbpedia.org/dbpedia/mappings
+ - https://databus.dbpedia.org/dbpedia/generic
+ 	
+Wikidata extractions
+ - https://databus.dbpedia.org/dbpedia/wikidata
+
+For more specific information see the provenance information of the artifact version of interest.
+
+## References
+
+ - [ 1]  Frey J, Hofer M. Hellmann S, Obraczka D, *DBpedia FlexiFusion Best of Wikipedia > Wikidata > Your Data*. ISWC Ressource Track 2019 (submitted). Available at: https://svn.aksw.org/papers/2019/ISWC_FlexiFusion/public.pdf
 
 # Changelog
-## since 2018.09.12
-* were created as new modular releases, some issues remain
-* we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe xcharacters
-* parsing removed 250k triples total, debugging pending
-* object-uncleaned was not transformed into objects-cleaned and is missing
-* link to Wikimedia dump version is missing
-## 2016.10.01
-* was taken from the previous BIG DBpedia releases under http://downloads.dbpedia.org/2016-10/ and included for completeness
-     ]]></databus.documentation>
+## 2019.03.01
+* first official release containing up to 140 DBpedia chapters and Wikidata extraction
+* changed JSON-LD provenance format
+	* removed *selected for fusion* tag 
+	* added iHash to source information
+* introduced new artifacts structure
+* switched to new HTTPS Global IDs
+## 2018.10.01initialeval
+* initial prototype for evaluation containing 5 DBpedia's + Wikidata
+      ]]></databus.documentation>
     </properties>
 
     <!-- currently still needed to find the super-pom, once the super-pom is in maven central,
