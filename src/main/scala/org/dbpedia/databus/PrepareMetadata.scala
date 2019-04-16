@@ -102,7 +102,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
       addBasicPropertiesToResource(dataIdCollect, datasetResource)
 
       //creating documentation for dataset resource
-      datasetResource.addProperty(dcterms.description, (params.description + "\n\n" + documentation.trim).asPlainLiteral)
+      datasetResource.addProperty(dcterms.description, (params.description + "\n\n# Group Documentation\n" + documentation.trim).asPlainLiteral)
 
 
 
