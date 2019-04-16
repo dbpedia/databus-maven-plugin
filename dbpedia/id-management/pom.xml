@@ -19,15 +19,15 @@
 
     <properties>
         <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
-        <databus.packageDirectory>${session.executionRootDirectory}/target/databus/repo/${project.groupId}/${project.artifactId}</databus.packageDirectory>
-        <databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${project.groupId}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
+        <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}</databus.packageDirectory>
+        <databus.downloadUrlPath>https://downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
         <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
         <!--databus.pkcs12File>${user.home}/.m2/certificate_vehnem-github-io.pfx</databus.pkcs12File-->
         <databus.maintainer>https://webid.dbpedia.org/webid.ttl#this</databus.maintainer>
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.documentation><![CDATA[  
-Note: The DBpedia Global ID of an IRI can be derived by appending the base58 cluster ID of it to the string `https://global.dbpedia.org/id/`.	
+DBpedia ID management uses several Linksets available in the Web of Data, computes SameAs clusters, and assigns a DBpedia Global ID to every cluster, which can be used as uniform identifier for all of its equivalent identifiers. 
 ]]></databus.documentation>
     </properties>
 
