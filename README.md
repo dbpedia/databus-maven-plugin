@@ -1,8 +1,8 @@
-**Discuss** via Slack  #releases: <a href="https://dbpedia.slack.com/messages/CBLRV788K/details/" target="_blank">dbpedia.slack.org</a>
+**Discuss** via Slack  #releases:<a href="https://dbpedia.slack.com/messages/CBLRV788K/details/" target="_blank">dbpedia.slack.org</a>
 
 NOTE
-WE ARE WRITING A MANUAL HERE: https://github.com/dbpedia/databus-maven-plugin/wiki/User-Manual-v1.3
-This page is being merged there, information here is outdated
+PLEASE READ THE [MANUAL HERE]( https://github.com/dbpedia/databus-maven-plugin/wiki/User-Manual-v1.3)
+This page below is not up to date yet and will mostly contain info about the development of the software and later the DataID Ontology. 
 
 # Databus Maven Plugin [![Build Status](https://travis-ci.org/dbpedia/databus-maven-plugin.svg?branch=master)](https://travis-ci.org/dbpedia/databus-maven-plugin) [![Maven Central Version](https://img.shields.io/maven-central/v/org.dbpedia.databus/databus-maven-plugin.svg)](https://search.maven.org/search?q=g:org.dbpedia.databus%20AND%20a:databus-maven-plugin&core=gav)
 Aligning data and software lifecycle with Maven
@@ -47,6 +47,28 @@ We are planning the following features:
  
 <!--te-->
 
+
+
+
+# Development 
+
+## License
+License of the software is AGPL with intended copyleft. We expect that you spend your best effort to commit upstream to 
+make this tool better or at least that your extensions are made available again. 
+Any contribution will be merged under the copyright of the DBpedia Association. 
+
+## Development rules
+* configuration values taken from Maven are configured in `Properties.scala`, use its 'sub-trait' `Locations.scala` to
+  derive filesystem locations from these and `Parameters.scala` to compute all other values derived from the original
+  Maven properties (refactoring into this separation is not yet complete, but please heed this guidelines for additional
+  configuration-derived fields nontheless)
+* Datafile.scala is a quasi decorator for files, use getInputStream to open any file
+* Use the issue tracker, do branches instead of forks (we can give access), we will merge with master
+* Document options in the archetype pom and here
+
+
+<!--
+
 # Bundle, dataset, distribution
 In this section, we will describe the basic terminology and how they relate to Maven. 
 
@@ -73,40 +95,6 @@ the model imposed for the databus is simpler than for software:
 * Datasets are modules and receive their metadata from the bundle/parent pom (and can extend or override it)
 * Distributions are the files of the dataset and are normally stored in `src/main/databus/${version}/` for each module
 * Each dataset/module has its own artifactid, the distributions/files must start with the artifactid
-
-
-## Versioning
-Changes in software can be tracked very well and manual versioning can be given. Data behaves two-fold: Schematic 
-information, e.g. schema definitions, taxonomy and ontologies can be versioned like software. The data itself follows 
-pareto-efficiency: The first 80% need 20% of effort, the last 20% need 80%. Fixing the last error in data is extremely 
-expensive. Hence, we recommend using a time-based version, i.e. YEAR.MONTH.DAY in the format YYYY.MM.DD (alphabetical 
-sortable). Another possibility is to align the version number to either:
-1. the software version used to create it (as a consequence the software version needs to be incremented for each data 
-   release)
-2. the ontology version if and only if the ontology is contained in the bundle and versioned like software
-
-
-
-
-# Development 
-
-## License
-License of the software is AGPL with intended copyleft. We expect that you spend your best effort to commit upstream to 
-make this tool better or at least that your extensions are made available again. 
-Any contribution will be merged under the copyright of the DBpedia Association. 
-
-## Development rules
-* configuration values taken from Maven are configured in `Properties.scala`, use its 'sub-trait' `Locations.scala` to
-  derive filesystem locations from these and `Parameters.scala` to compute all other values derived from the original
-  Maven properties (refactoring into this separation is not yet complete, but please heed this guidelines for additional
-  configuration-derived fields nontheless)
-* Datafile.scala is a quasi decorator for files, use getInputStream to open any file
-* Use the issue tracker, do branches instead of forks (we can give access), we will merge with master
-* Document options in the archetype pom and here
-
-
-<!--
-
 
 
 # Phases

@@ -8,17 +8,17 @@
         <version>1.3-SNAPSHOT</version>
     </parent>
 
-    <groupId>mappings</groupId>
+    <groupId>enrichment</groupId>
     <artifactId>group-metadata</artifactId>
     <packaging>pom</packaging>
-    <version>2019.01.01</version>
+    <version>2019.03.01</version>
     <modules>
-        <module>mappingbased-literals</module>
-        <!--module>mappingbased-objects</module-->
-        <module>specific-mappingbased-properties</module>
-        <module>geo-coordinates-mappingbased</module>
+        <module>labels</module>
         <module>instance-types</module>
         <module>mappingbased-objects-uncleaned</module>
+        <module>mappingbased-literals</module>
+        <module>geo-coordinates</module>
+        <module>specific-mappingbased-properties</module>
     </modules>
 
     <properties>
@@ -32,7 +32,7 @@
         <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
         <!-- moved to settings.xml
          databus.pkcs12File>${user.home}/.m2/certificate_generic.pfx</databus.pkcs12File-->
-        <databus.maintainer>https://termilion.github.io/webid.ttl#this</databus.maintainer>
+        <databus.maintainer>https://vehnem.github.io/webid.ttl#this</databus.maintainer>
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.documentation><![CDATA[
