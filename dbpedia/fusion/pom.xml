@@ -37,8 +37,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.documentation><![CDATA[
 # Fusion Dataset
-The DBpedia Enrichemnt dataset is a new addition to the modular DBpedia releases combining DBpedia data from over 140 Wikipedia language editions and Wikidata. As an intermediate step in the FlexiFusion workflow [1], a global and unified preFused view is provided on the essence of DBpedia releases (see origin section).
-Based on the PreFusion dump a fused dataset is derived, that provide better data coverage and quality.
+The DBpedia Fusion dataset is a new addition to the modular DBpedia releases combining DBpedia data from over 140 Wikipedia language editions and Wikidata. As an intermediate step in the FlexiFusion workflow [1], a global and unified preFused view is provided on the essence of DBpedia releases (see origin section).
+Based on the PreFusion dump a fused dataset is derived, that provides better data coverage and quality.
 
 ## Description
 *Fused data based on 140 DBpedia source datasets
@@ -137,3 +137,4 @@ For more specific information see the provenance information of the artifact ver
         </profile>
     </profiles>
 </project>
+

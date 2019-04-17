@@ -37,7 +37,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.documentation><![CDATA[
 # Enrichment Dataset
-The DBpedia Enrichemnt dataset is a new addition to the modular DBpedia releases combining DBpedia data from over 140 Wikipedia language editions and Wikidata. As an intermediate step in the FlexiFusion workflow [1], a global and unified preFused view is provided on the essence of DBpedia releases (see origin section).
+The DBpedia Enrichment dataset is a new addition to the modular DBpedia releases combining DBpedia data from over 140 Wikipedia language editions and Wikidata. As an intermediate step in the FlexiFusion workflow [1], a global and unified preFused view is provided on the essence of DBpedia releases (see origin section).
 Based on the PreFusion dump enriched versions of the sources datasets are created, which provide better data coverage and quality.
 
 ## Description
