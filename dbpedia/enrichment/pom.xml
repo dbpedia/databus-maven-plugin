@@ -36,15 +36,11 @@
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <databus.documentation><![CDATA[
-# PreFusion Dataset
+# Enrichment Dataset
 The DBpedia Enrichemnt dataset is a new addition to the modular DBpedia releases combining DBpedia data from over 140 Wikipedia language editions and Wikidata. As an intermediate step in the FlexiFusion workflow [1], a global and unified preFused view is provided on the essence of DBpedia releases (see origin section).
-The facts are harvested as RDF triples and aggregated using a new serialization format to track statement-level provenance.
-Unified access to knowledge from different sources is achieved by exploiting previously existing mappings of the DBpedia Ontology as well as merged, normalized entity identifiers (DBpedia Global IDs).
-The ontology defines a comprehensive class hierarchy and properties, which are modelling common entities described in Wikipedia and Wikidata, and also reuses prominent vocabularies like FOAF and PROV. The dataset offers knowledge about very broad domains (like persons, organizations) but also for very specific domains (e.g. nutrition facts or animal classifications).
+Based on the PreFusion dump enriched versions of the sources datasets are created, which provide better data coverage and quality.
 
 ## Description
-The PreFusion dataset is stored as JSON-LD using a custom scheme optimized for an efficient representation of entities with overlapping object values and statement-level provenance. Thus, the dataset can be loaded both into JSON document/NoSQL stores, in case simple lookups are required – and triple stores – in case joins are required. Each PreFusion document describes a normalized subject-predicate pair (*SP−pair*) to aggregate all different object and literal values from the input sources as shown in the example below. The provenance record(s) are referencing the corresponding input file(s) of the object value and iHash value(s) which can be used to determine the original (non-normalized) IRI(s) of the triple(s) with hashing the result of the Global ID Resolution service. For more details see [1]
-
 Enriched versions of the input datasets ( e.g. the language specific DBpedia chapter )
 Uses the PreFusion data for the enrichment process, by selecting
 Improves entity-properties and -values coverage for resources only contained in the source data
