@@ -191,18 +191,59 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     dataIdResource.addProperty(dcterms.publisher, publisher.toString.asIRI)
   }
 
+
   def processFile(datafile: File, dataIdCollect: Model): Unit = {
 
     getLog.debug(s"found file ${
       datafile.getCanonicalPath
     }")
     val df: Datafile = Datafile(datafile)(getLog).ensureExists()
+
+
+    // read cache
+    val cacheFile = (locations.buildVersionShaSumDirectory / df.sha256sum)
+    df.fileInfoCache = readCache(cacheFile.toJava)
+
+    //calculate
     df.updateSignature(singleKeyPairFromPKCS12)
     df.updateFileMetrics()
+
+    // write cache
+    writeCache(new FileInfoCache(df.nonEmptyLines, df.duplicates, df.sorted, df.uncompressedByteSize), cacheFile.toJava)
+
 
     val model = modelForDatafile(df)
     getLog.debug(df.toString)
     dataIdCollect.add(model)
   }
+
+  def writeCache(fic: FileInfoCache, cacheFile: File) = {
+    val oos = new ObjectOutputStream(new FileOutputStream(cacheFile))
+    oos.writeObject(fic)
+    oos.close()
+  }
+
+  def readCache(cacheFile: File): FileInfoCache = {
+    if (cacheFile.toScala.isRegularFile()) {
+      val ois = new ObjectInputStream(new FileInputStream(cacheFile))
+      var fic = ois.readObject.asInstanceOf[FileInfoCache]
+      ois.close()
+      fic
+    } else {
+      null
+    }
+  }
+
+
+}
+
+
+class FileInfoCache(
+                     var nonEmptyLines: Int,
+                     var duplicates: Int,
+                     var sorted: Boolean,
+                     var uncompressedByteSize: Int
+                   ) extends Serializable {
+
 }
 

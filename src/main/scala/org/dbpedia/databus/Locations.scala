@@ -81,6 +81,8 @@ trait Locations {
     //
     lazy val buildVersionDirectory: File = (buildDirectory / props.version)
 
+    lazy val buildVersionShaSumDirectory: File = (buildDirectory / props.version / "shasum").createDirectories()
+
     lazy val buildDataIdFile: File = (buildVersionDirectory / dataIdFileName)
 
     lazy val buildParselogFile: File = (buildVersionDirectory / parselogFileName)

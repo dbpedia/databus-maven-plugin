@@ -25,7 +25,6 @@ import org.dbpedia.databus.parse.LineBasedRioDebugParser
 import org.dbpedia.databus.shared.authentification.RSAKeyPair
 import org.dbpedia.databus.shared.signing
 import org.dbpedia.databus.voc.{ApplicationNTriples, Format, TextTurtle}
-
 import better.files.{File => _, _}
 import com.typesafe.scalalogging.LazyLogging
 import fastparse.NoWhitespace._
@@ -38,11 +37,12 @@ import resource._
 
 import scala.io.{Codec, Source}
 import scala.util.{Failure, Success, Try}
-
 import java.io._
 import java.nio.charset.MalformedInputException
 import java.nio.file.Files
 import java.util.Base64
+
+import org.dbpedia.databus.FileInfoCache
 
 
 /**
@@ -67,6 +67,8 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
 
   // sum
   lazy val sha256sum: String = signing.sha256Hash(file.toScala).asBytes.map("%02x" format _).mkString
+
+  var fileInfoCache: FileInfoCache = null
 
   // collected by updateSignature
   var signatureBytes: Array[Byte] = Array.empty
@@ -234,6 +236,15 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
 
   def updateFileMetrics(): Datafile = {
 
+    if (fileInfoCache != null){
+      log.debug("using cache for fileMetrics")
+      nonEmptyLines = fileInfoCache.nonEmptyLines
+      duplicates = fileInfoCache.duplicates
+      sorted = fileInfoCache.sorted
+      uncompressedByteSize = fileInfoCache.uncompressedByteSize
+      this
+    }
+
     var nonEmpty = 0
     var dupes = 0
     var sort: Boolean = true
@@ -270,13 +281,13 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
       }
 
       nonEmptyLines = nonEmpty
-      duplicates = duplicates
+      duplicates = dupes
       sorted = sort
       uncompressedByteSize = uncompressedSize
     } catch {
       case mfe: MalformedInputException => {
         nonEmptyLines = nonEmpty
-        duplicates = duplicates
+        duplicates = dupes
         sorted = sort
         uncompressedByteSize = uncompressedSize
       }
