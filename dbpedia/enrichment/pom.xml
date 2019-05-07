@@ -50,7 +50,7 @@ There are two different cases data is added:
 - If the resource already contains properties with different values from the fused data. In this case, if the properties are determined as functional properties, then add nothing, otherwise, add all values. This ensures that existing values from source datasets stay unchanged in their enriched version.
 
 ## Attribution fulfilled by
-* (when deriving another dataset and releasing to the Databus) adding the Databus link to the provenance https://databus.dbpedia.org/dbpedia/\${project.groupId}/${project.artifactId}/${project.artifactId}/${project.version}
+* (when deriving another dataset and releasing to the Databus) adding the Databus link to the provenance https://databus.dbpedia.org/dbpedia/${project.groupId}/${project.artifactId}/${project.version}
 * on your website:
  * include the DBpedia logo and mention the usage of DBpedia with this link: https://databus.dbpedia.org/dbpedia
  * include backlinks from your pages to the individual entities, e.g. http://dbpedia.org/resource/Berlin

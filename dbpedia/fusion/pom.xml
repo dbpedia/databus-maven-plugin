@@ -11,14 +11,15 @@
     <groupId>fusion</groupId>
     <artifactId>group-metadata</artifactId>
     <packaging>pom</packaging>
-    <version>2019.03.01</version>
+    <version>2018.10.01.initeval</version>
     <modules>
-        <module>labels</module>
+        <module>data</module>
+        <!--module>labels</module>
         <module>instance-types</module>
         <module>mappingbased-objects-uncleaned</module>
         <module>mappingbased-literals</module>
         <module>geo-coordinates</module>
-        <module>specific-mappingbased-properties</module>
+        <module>specific-mappingbased-properties</module-->
     </modules>
 
     <properties>
@@ -38,21 +39,20 @@
         <databus.documentation><![CDATA[
 # Fusion Dataset
 The DBpedia Fusion dataset is a new addition to the modular DBpedia releases combining DBpedia data from over 140 Wikipedia language editions and Wikidata. As an intermediate step in the FlexiFusion workflow [1], a global and unified preFused view is provided on the essence of DBpedia releases (see origin section).
-Based on the PreFusion dump a fused dataset is derived, that provides better data coverage and quality.
+Based on this PreFusion dump a fused RDF dataset is derived, that provides improved data quality.
 
 ## Description
-*Fused data based on 140 DBpedia source datasets
-* Contains all resource of the input data
-* Fusion function is based on
- * functional property decision to decide the number of selected values ( owl:FunctinalProperty determination )
- * value selection based on a preference dependent on the originated source dataset
-*The goal is to improve data quality and data coverage
+* contains all entities (with DBpedia Global Identifiers if exist) from PreFusion Dump based on 140 DBpedia chapters 
+* conflicting values are resolved by FlexiFusion resolve function:
+  * predicate-median-outdegree calculated for every property (see [1] for more details) to classify "functional properties" is calculated and stored as tsv file
+  * in case of conflicts for a "functional property" a source preference list (EN, Wikidata, DE, FR, NL, SV) is used to select one value from multiple options 
+  * union of values for non-functional properties and rdfs:label
 
 ## Attribution fulfilled by
-* (when deriving another dataset and releasing to the Databus) adding the Databus link to the provenance https://databus.dbpedia.org/dbpedia/\${project.groupId}/${project.artifactId}/${project.artifactId}/${project.version}
+* (when deriving another dataset and releasing to the Databus) adding the Databus link to the provenance https://databus.dbpedia.org/dbpedia/${project.groupId}/${project.artifactId}/${project.artifactId}/${project.version}
 * on your website:
- * include the DBpedia logo and mention the usage of DBpedia with this link: https://databus.dbpedia.org/dbpedia
- * include backlinks from your pages to the individual entities, e.g. http://dbpedia.org/resource/Berlin
+  * include the DBpedia logo and mention the usage of DBpedia with this link: https://databus.dbpedia.org/dbpedia
+  * include backlinks from your pages to the individual entities, e.g. http://dbpedia.org/resource/Berlin
 * in academic publications cite [1]
 
 ## How to contribute
@@ -65,13 +65,6 @@ DBpedia is a community project, help us with:
 This dataset is based on
 - https://databus.dbpedia.org/dbpedia/prefusion
 
-from DBpedia extractions
-- https://databus.dbpedia.org/dbpedia/mappings
-- https://databus.dbpedia.org/dbpedia/generic
-
-from Wikidata extractions
-- https://databus.dbpedia.org/dbpedia/wikidata
-
 For more specific information see the provenance information of the artifact version of interest.
 
 ## References
@@ -80,9 +73,13 @@ For more specific information see the provenance information of the artifact ver
 
 # Changelog
 ## 2019.03.01
-* first official release containing the enrichment of the catalan DBpedia
+* first official release containing up to 140 DBpedia chapters and Wikidata extraction
 * introduced new artifacts structure
 * switched to new HTTPS Global IDs
+* usage of new FlexiFusion Workflow (reduce & resolve and new preference list)
+
+## 2018.10.01initeval
+* initial prototype for evaluation containing 5 DBpedia's + Wikidata
      ]]></databus.documentation>
     </properties>
 
