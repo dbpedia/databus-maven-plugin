@@ -23,7 +23,7 @@ package org.dbpedia.databus
 import java.io.{ByteArrayOutputStream, File}
 
 import org.dbpedia.databus.lib.{Datafile, FilenameHelpers}
-import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
+import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser, SansaRdfParser}
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.jena.riot.RDFLanguages
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
@@ -56,24 +56,52 @@ class TestData extends AbstractMojo with Properties {
   @throws[MojoExecutionException]
   override def execute(): Unit = {
 
+
     //skip the parent module
     if (isParent()) {
       getLog.info("skipping parent module")
       return
     }
 
-    params.validateMarkdown()
+//    params.validateMarkdown()
 
-    validateVersions(getVersionsToValidate)
+//    validateVersions(getVersionsToValidate)
 
     if (parseRDF) {
-      // prepare parselogfile
+//       prepare parselogfile
       locations.buildParselogFile.createFileIfNotExists(true).clear()
-      generateParselogForRDFSyntax
-
+      generateParselogForRDFSyntax2
     }
   }
 
+  def generateParselogForRDFSyntax2 = {
+    locations.inputFileList.foreach(datafile => {
+
+
+      var parseLog = new StringBuilder
+//      var details = new StringBuilder
+      val df: Datafile = Datafile(datafile.toJava)(getLog).ensureExists()
+//      val model: Model = ModelFactory.createDefaultModel
+//      val finalBasename = df.finalBasename(params.versionToInsert)
+
+//      val thisResource = model.createResource("#" + finalBasename)
+//
+//      val prefixParse = "http://dataid.dbpedia.org/ns/pl#"
+//
+//      parseLog.append(s"parsing ${datafile.name} with ${df.format}\n")
+
+
+      if (df.format.isRDF() && (df.format.asInstanceOf[RDFBased].rio != null)) {
+
+        SansaRdfParser.parse(datafile)
+
+      }
+      else {
+        parseLog.append("currently only RDF parsing is implemented, skipped")
+      }
+
+    })
+  }
 
   def generateParselogForRDFSyntax = {
     //val parseLogFileWriter = Files.newBufferedWriter(getParseLogFile().toPath, StandardCharsets.UTF_8)

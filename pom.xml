@@ -45,8 +45,8 @@
         <encoding>UTF-8</encoding>
         <file.encoding>UTF-8</file.encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scala.version>2.12.6</scala.version>
-        <scala.compat.version>2.12</scala.compat.version>
+        <scala.version>2.11.6</scala.version>
+        <scala.compat.version>2.11</scala.compat.version>
         <!-- maven license plugin-->
         <license.inceptionYear>2018</license.inceptionYear>
         <license.organizationName>Sebastian Hellmann (on behalf of the DBpedia Association)</license.organizationName>
@@ -55,8 +55,8 @@
         <github.global.server>github</github.global.server>
         <rdf4j.version>2.4.1</rdf4j.version>
         <maven.plugin.tools.version>3.6.0</maven.plugin.tools.version>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -201,6 +201,20 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-settings</artifactId>
             <version>3.6.0</version>
+        </dependency>
+
+        <!-- SANSA RDF -->
+        <dependency>
+            <groupId>net.sansa-stack</groupId>
+            <artifactId>sansa-rdf-spark_2.11</artifactId>
+            <version>0.5.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.18</version>
         </dependency>
     </dependencies>
 
