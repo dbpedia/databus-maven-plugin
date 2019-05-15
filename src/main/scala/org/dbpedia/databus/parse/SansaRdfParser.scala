@@ -34,7 +34,7 @@ object SansaRdfParser {
       .master(s"local[$numberOfworkers]")
       .appName("org.dbpedia.databus.parse.SansaRdfParser")
       .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-      .config("spark.local.dir","/spark.local.dir")
+      .config("spark.local.dir","/tmp/spark.local.dir")
       .config("spark.ui.enabled","false")
       .getOrCreate()
 

@@ -45,7 +45,7 @@
         <encoding>UTF-8</encoding>
         <file.encoding>UTF-8</file.encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scala.version>2.11.6</scala.version>
+        <scala.version>2.11.8</scala.version>
         <scala.compat.version>2.11</scala.compat.version>
         <!-- maven license plugin-->
         <license.inceptionYear>2018</license.inceptionYear>
@@ -162,11 +162,11 @@
         </dependency>-->
 
         <!-- for better file and resource handling -->
-        <dependency>
+        <!--dependency>
             <groupId>com.github.pathikrit</groupId>
             <artifactId>better-files_${scala.compat.version}</artifactId>
             <version>3.6.0</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>com.jsuereth</groupId>
             <artifactId>scala-arm_${scala.compat.version}</artifactId>
@@ -210,12 +210,6 @@
             <version>0.5.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>1.18</version>
-        </dependency>
     </dependencies>
 
     <repositories>
