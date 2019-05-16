@@ -67,6 +67,11 @@ Any contribution will be merged under the copyright of the DBpedia Association.
 * Document options in the archetype pom and here
 
 
+## Maven Archiva 
+
+We are running a Maven Archiva for Snapshots. 
+New snapshots can be deployed with `mvn deploy` as configured in the pom.xml. Password is needed to be entered in `~/.m2/settings.xml`
+
 <!--
 
 # Bundle, dataset, distribution
