@@ -105,14 +105,25 @@ trait Properties extends Locations with Parameters with Mojo {
   val keepRelativeURIs = false
 
   /**
+    * Sets the base URI for the dataid and also dcat:downloadURL
+    * DataID URIs will be rewritten from local <> to <$databus.downloadUrlPath/dataid.ttl>
+    *
     * Configure downloadUrlPath, where the dataset will be deployed:
-    * DBpedia will publish 4 more bundles with dozens of artifacts and new versions at regular intervals,
+    * DBpedia will publish its bundles with dozens of artifacts and new versions at regular intervals,
     * our downloadurl looks like this:
     * <databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
     * We recommend to do the same, as you can add more bundles and datasets later.
     */
   @Parameter(property = "databus.downloadUrlPath", required = true)
   val downloadUrlPath: URL = null
+
+  /**
+    * There are cases where it is impossible to keep the Dataid file in the same URLPath as the data files
+    * An example is the DBpedia Ontology pushed to Github, where you first need to push the files
+    * and then generate dcat:downloadUrl based on the last commit hash
+    */
+  @Parameter(property = "databus.absoluteDCATDownloadUrlPath", required = false)
+  val absoluteDCATDownloadUrlPath: String = null
 
   /**
     * Options:

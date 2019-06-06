@@ -23,6 +23,9 @@
         <databus.downloadUrlPath>
             http://downloads.dbpedia.org/repo/${project.groupId}/${project.artifactId}/${project.version}/
         </databus.downloadUrlPath>
+        <databus.absoluteDCATDownloadUrlPath>
+            http://quatsch.sosse/32ru0322jfj9fowejfp99/
+        </databus.absoluteDCATDownloadUrlPath>
          <!--databus.packageDirectory>
             .
         </databus.packageDirectory-->

@@ -106,7 +106,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     file.getName
   }
 
-  def finalBasename(versionToAdd: Option[String]) = {
+  def finalBasename(versionToAdd: Option[String]): String = {
 
     def prefix = filePrefix
       // deactivated adding of version for now
