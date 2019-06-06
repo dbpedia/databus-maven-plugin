@@ -101,6 +101,11 @@ trait Properties extends Locations with Parameters with Mojo {
     * properties that need to be configured by the user
     *
     */
+
+
+  /**
+    * if true, parameters downloadUrlPath is ignored and also there is dataid.ttl Uris will stay like <>, i.e. relative
+     */
   @Parameter(property = "databus.keepRelativeURIs", defaultValue = "false")
   val keepRelativeURIs = false
 
@@ -109,9 +114,9 @@ trait Properties extends Locations with Parameters with Mojo {
     * DataID URIs will be rewritten from local <> to <$databus.downloadUrlPath/dataid.ttl>
     *
     * Configure downloadUrlPath, where the dataset will be deployed:
-    * DBpedia will publish its bundles with dozens of artifacts and new versions at regular intervals,
+    * DBpedia will publish its groups with dozens of artifacts and new versions at regular intervals,
     * our downloadurl looks like this:
-    * <databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${databus.bundle}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
+    * <databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${project.groupId}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
     * We recommend to do the same, as you can add more bundles and datasets later.
     */
   @Parameter(property = "databus.downloadUrlPath", required = true)
