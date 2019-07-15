@@ -22,15 +22,13 @@ package org.dbpedia.databus
 
 
 import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
-
 import better.files._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-
 import java.net.URL
 import java.time._
-import java.time.format.DateTimeFormatterBuilder
+import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder}
 
 
 trait Parameters {
@@ -39,7 +37,7 @@ trait Parameters {
 
   lazy val params = new Parameters(this)
 
-  val ISO_INSTANT_NO_NANO = new DateTimeFormatterBuilder().parseCaseInsensitive().appendInstant(0).toFormatter
+  val ISO_INSTANT_NO_NANO: DateTimeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().appendInstant(0).toFormatter
 
   class Parameters(props: Properties) {
 

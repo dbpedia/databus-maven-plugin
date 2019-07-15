@@ -55,6 +55,9 @@ object TextTabSeparatedValues extends Format("text/tab-separated-values", lineBa
 //json
 object ApplicationJson extends Format("application/json", false)
 
+object ApplicationXndjson extends Format("application/x-ndjson", false)
+
+
 
 /**
   * RDF Based Formats
@@ -103,7 +106,8 @@ object Format {
     "txt" -> TextPlain,
     "list" -> TextPlain,
     "bin" -> ApplicationOctetStream,
-    "json" -> ApplicationJson
+    "json" -> ApplicationJson,
+    "jsonl" -> ApplicationXndjson
   )
 
   def detectMimeTypeByFileExtension(extensions: Seq[String])(implicit log: Log): (String, Format) = {
