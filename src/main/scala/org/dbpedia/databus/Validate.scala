@@ -83,8 +83,13 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
     if (locations.pkcs12File == null) {
       getLog.error(s"no private key bundle (pkcs12/.pfx) configured [databus.pkcs12File = ${locations.pkcs12File}]\n" +
         s"fix with:\n" +
-        s"* adding <databus.pkcs12file> to pom.xml\n" +
-        s"* adding server config to settings.xml of maven")
+        s"* adding property <databus.pkcs12file> to pom.xml\n" +
+        s"* adding server config to settings.xml of maven:" +
+        s"  <server>"+
+        s"    <id>databus.defaultkey</id>"+
+        s"    <privateKey>\${user.home}/.m2/certificate_generic.pfx</privateKey>"+
+        s"    <passphrase>this is my password</passphrase>"+
+        s"  </server>")
       System.exit(-1)
     }
 
