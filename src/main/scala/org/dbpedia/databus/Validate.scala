@@ -87,7 +87,7 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
         s"* adding server config to settings.xml of maven:" +
         s"  <server>"+
         s"    <id>databus.defaultkey</id>"+
-        s"    <privateKey>\${user.home}/.m2/certificate_generic.pfx</privateKey>"+
+        s"    <privateKey>\$\{user.home\}/.m2/certificate_generic.pfx</privateKey>"+
         s"    <passphrase>this is my password</passphrase>"+
         s"  </server>")
       System.exit(-1)
