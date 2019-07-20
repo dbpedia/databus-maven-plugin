@@ -89,7 +89,7 @@ trait SigningHelpers {
     def inputRequest = s"Enter password for PKCS12 bundle at $canonicalPath: "
 
     pkcs12PasswordMemo.getOrElseUpdate(canonicalPath, {
-
+      locations.getLog.info("No password found in setting.xml, asking user")
       Option(System.console()) match {
 
         case Some(console) => new String(console.readPassword(inputRequest))

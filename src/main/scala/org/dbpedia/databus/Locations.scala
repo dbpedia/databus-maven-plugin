@@ -208,9 +208,8 @@ trait Locations {
 
       if (props.settings.getServer(pkcs12serverId) != null && settings.getServer(pkcs12serverId).getPassphrase !=null ) {
           settings.getServer(pkcs12serverId).getPassphrase
-
       } else {
-        getLog.info("No password found in setting.xml, asking user")
+        //empty
         ""
       }
     }
