@@ -1,5 +1,5 @@
-# Mappingbased objects uncleaned
-Uncleaned higher-quality object properties refined by the mappingbased extraction.
+# (Uncleaned) Object properties extracted with mappings
+Highest quality object properties from the Wikipedia Infoboxes extracted by the mappings extraction. 
 
 (Uncleaned) Object properties from the Wikipedia Infoboxes
 Uncleaned means that two post-processing steps are missing:

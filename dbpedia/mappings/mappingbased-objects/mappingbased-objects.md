@@ -1,5 +1,5 @@
-# Mappingbased object properties
-Highest quality object properties from the Wikipedia Infoboxes.
+# Object properties extracted with mappings
+Highest quality object properties from the Wikipedia Infoboxes extracted by the mappings extraction. 
 
 Derived from uncleaned mappingbased-objects by post-processing:
 * type consistency, i.e. type of object matches the range of property
