@@ -11,7 +11,7 @@
     <groupId>mappings</groupId>
     <artifactId>group-metadata</artifactId>
     <packaging>pom</packaging>
-    <version>2019.01.01</version>
+    <version>2018.12.01</version>
     <modules>
         <module>mappingbased-literals</module>
         <!--module>mappingbased-objects</module-->
