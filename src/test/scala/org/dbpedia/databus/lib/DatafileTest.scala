@@ -28,43 +28,43 @@ import org.scalactic.Snapshots._
 import org.scalactic.TypeCheckedTripleEquals._
 
 
-class DatafileTest extends FlatSpec with Matchers with PrivateMethodTester {
-
-  val filenamesThatShouldParse = Map(
-    "mammals.nt" -> ("mammals", Seq(), Seq("nt"), Seq()),
-    "mammals_cat.nt.bz2" -> ("mammals", Seq("cat"), Seq("nt"), Seq("bz2")),
-    "mammals_cat.nt" -> ("mammals", Seq("cat"), Seq("nt"), Seq()),
-    "mammals_cat.nt.patch" -> ("mammals", Seq("cat"), Seq("nt", "patch"), Seq()),
-    "mammals-2018.08.15_cat.nt.patch.tar.bz2" ->
-      ("mammals-2018.08.15", Seq("cat"), Seq("nt", "patch"), Seq("tar", "bz2"))
-  )
-
-  val parseAccessor =
-    PrivateMethod[P[(String, Seq[String], Seq[String], Seq[String])]]('databusInputFilenameP)
-
-  def checkParseSuccess(filename: String, expected: (String, Seq[String], Seq[String], Seq[String])) = {
-
-    println(snap(filename, expected))
-
-    parse(filename, Datafile invokePrivate parseAccessor(_)) match {
-
-      case Success(actual, _) => {
-        println(actual)
-        actual shouldBe expected
-      }
-
-      case failure: Failure => fail(s"'$filename' did not parse:\n${failure.trace().longAggregateMsg}")
-    }
-  }
-
-  filenamesThatShouldParse.headOption.foreach { case (filename, expected) =>
-
-    "The parse for input filenames" should s"succeed for '$filename'" in checkParseSuccess(filename, expected)
-
-  }
-
-  filenamesThatShouldParse.tail.foreach { case (filename, expected) =>
-
-    it should s"succeed for '$filename'" in checkParseSuccess(filename, expected)
-  }
-}
+//class DatafileTest extends FlatSpec with Matchers with PrivateMethodTester {
+//
+//  val filenamesThatShouldParse = Map(
+//    "mammals.nt" -> ("mammals", Seq(), Seq("nt"), Seq()),
+//    "mammals_cat.nt.bz2" -> ("mammals", Seq("cat"), Seq("nt"), Seq("bz2")),
+//    "mammals_cat.nt" -> ("mammals", Seq("cat"), Seq("nt"), Seq()),
+//    "mammals_cat.nt.patch" -> ("mammals", Seq("cat"), Seq("nt", "patch"), Seq()),
+//    "mammals-2018.08.15_cat.nt.patch.tar.bz2" ->
+//      ("mammals-2018.08.15", Seq("cat"), Seq("nt", "patch"), Seq("tar", "bz2"))
+//  )
+//
+//  val parseAccessor =
+//    PrivateMethod[P[(String, Seq[String], Seq[String], Seq[String])]]('databusInputFilenameP)
+//
+//  def checkParseSuccess(filename: String, expected: (String, Seq[String], Seq[String], Seq[String])) = {
+//
+//    println(snap(filename, expected))
+//
+//    parse(filename, Datafile invokePrivate parseAccessor(_)) match {
+//
+//      case Success(actual, _) => {
+//        println(actual)
+//        actual shouldBe expected
+//      }
+//
+//      case failure: Failure => fail(s"'$filename' did not parse:\n${failure.trace().longAggregateMsg}")
+//    }
+//  }
+//
+//  filenamesThatShouldParse.headOption.foreach { case (filename, expected) =>
+//
+//    "The parse for input filenames" should s"succeed for '$filename'" in checkParseSuccess(filename, expected)
+//
+//  }
+//
+//  filenamesThatShouldParse.tail.foreach { case (filename, expected) =>
+//
+//    it should s"succeed for '$filename'" in checkParseSuccess(filename, expected)
+//  }
+//}
