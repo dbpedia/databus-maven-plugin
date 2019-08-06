@@ -20,7 +20,7 @@ class FileMetadataTest extends FunSuite {
   test("file parameters/metadata test for plain NT test file: FileParamTest.nt") {
     val df = Datafile(File("src/main/resources/FileParamTest.nt").toJava)(new SystemStreamLog())
     df.updateFileMetrics();
-    assert(df.sha256sum==="108f3aff9389f8c83e398db0f354e6b3555fdae686bd8908c9b1172c1aa83697" , "sha256sum is calculated wrong")
+    assert(df.sha256sum==="c9a4f5e0aaf1b04dc9646be0fe6d47cf676d6b031d29c20bbf03ea85f450a216" , "sha256sum is calculated wrong")
     assert(df.nonEmptyLines === 6 , "non-empty lines count is calculated wrong")
     assert(df.duplicates === 2, "duplicate lines count is calculated wrong")
     assert(df.sorted === true, "sorted lines count is calculated wrong")
