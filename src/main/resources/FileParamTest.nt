@@ -1,0 +1,9 @@
+
+
+
+<http://id.dbpedia.org/resource/Almere> <http://www.w3.org/2003/01/geo/wgs84_pos#long> "5.216666666666667"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://id.dbpedia.org/resource/Almer໚> <http://www.georss.org/georss/point> "36.833333333333336 -2.45" .
+<http://id.dbpedia.org/resource/Sle> <http://www.w3.org/2003/01/geo/wgs84_pos#long> "12.933333333333334"^^<http://www.w3.org/2001/XMLSchema#float> .
+<http://id.dbpedia.org/resource/S𐏎le> <http://www.georss.org/georss/point> "45.62 25.709722222222222" .
+<http://id.dbpedia.org/resource/♀> <http://www.georss.org/georss/point> "36.833333333333336 -2.45" .
+<http://id.dbpedia.org/resource/♂> <http://www.georss.org/georss/point> "36.833333333333336 -2.45" .

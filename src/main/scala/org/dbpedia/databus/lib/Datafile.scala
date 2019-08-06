@@ -30,7 +30,7 @@ import com.typesafe.scalalogging.LazyLogging
 import fastparse.NoWhitespace._
 import fastparse._
 import org.apache.commons.compress.archivers.{ArchiveInputStream, ArchiveStreamFactory}
-import org.apache.commons.compress.compressors.CompressorStreamFactory
+import org.apache.commons.compress.compressors.{CompressorInputStream, CompressorStreamFactory}
 import org.apache.maven.plugin.logging.Log
 import org.eclipse.rdf4j.rio.Rio
 import resource._
@@ -76,10 +76,10 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
   var verified: Boolean = false
 
   // some quality metrics
-  var nonEmptyLines = 0
-  var duplicates = 0
+  var nonEmptyLines = 0L
+  var duplicates = 0L
   var sorted: Boolean = false
-  var uncompressedByteSize = 0
+  var uncompressedByteSize = 0L
 
 
   lazy val preview: String = computePreview
@@ -223,6 +223,18 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     val ab = a.getBytes("UTF-8")
     val bb = b.getBytes("UTF-8")
 
+    compareBytewise(ab,bb)
+  }
+
+  /**
+    * does a bytewise comparison in scala
+    *
+    * @param ab
+    * @param bb
+    * @return a negative value if a is in byte order before b, zero if a and b bytestreams match and, and a positive value else
+    */
+  def compareBytewise(ab: Array[Byte], bb: Array[Byte]): Int = {
+
     var mLength = scala.math.min(ab.length, bb.length)
 
     for (i <- 0 to mLength - 1) {
@@ -245,18 +257,20 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
       this
     }
 
-    var nonEmpty = 0
-    var dupes = 0
+    var nonEmpty = 0L
+    var dupes = 0L
     var sort: Boolean = true
-    var uncompressedSize = 0
+    var charSize = 0L
+    var uncompressedSize =0L
 
     var previousLine: String = null
     try {
-      getInputStream().apply { in =>
+      val res = getInputStream()
+      res.apply { in =>
         val it = Source.fromInputStream(in)(Codec.UTF8).getLines()
         while (it.hasNext) {
           val line = it.next().toString
-          uncompressedSize += line.size + 1
+          charSize += line.size //now counts the number of chars (not including linefeeds)
 
           // non empty lines
           if (!line.trim.isEmpty) {
@@ -265,7 +279,10 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
 
           // sorted or duplicate
           if (previousLine != null) {
-            val cmp = compareStringsBytewise(line, previousLine)
+            val lineb = line.getBytes("UTF-8")
+            val previousLineb = previousLine.getBytes("UTF-8")
+            uncompressedSize += lineb.size + 1 //TODO this does not respect windows linefeeds properly (or potentially other control characters)
+            val cmp = compareBytewise(lineb, previousLineb)
             if (cmp == 0) {
               dupes += 1
             } else if (cmp < 0) {
@@ -278,6 +295,14 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
           }
           previousLine = line
         }
+
+        uncompressedSize = in match {
+                case c: CompressorInputStream => c.getBytesRead
+                case a: ArchiveInputStream => a.getBytesRead
+                case i: BufferedInputStream => this.bytes
+                case _ => log.warn(s"Bytesize only approximated for file: ${this.file.getAbsolutePath}"); uncompressedSize
+        }
+
       }
 
       nonEmptyLines = nonEmpty
@@ -329,6 +354,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
        |Datafile(format=$format
        |sha256sum=$sha256sum
        |bytes=$bytes
+       |uncompressedByteSize=$uncompressedByteSize
        |archiveVariant=$archiveVariant
        |compressionVariant=$compressionVariant
        |signatureBytes=${signatureBytes.map("%02X" format _).mkString}

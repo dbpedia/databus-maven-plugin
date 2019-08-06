@@ -319,7 +319,7 @@ class TestData extends AbstractMojo with Properties {
 
       l = ""
       for ((v, dir, fileList: List[File], fileNames, datafiles) <- versionDirs) {
-        var duplicates = 0
+        var duplicates = 0L
         val contfilenames: mutable.SortedSet[String] = mutable.SortedSet()
 
         datafiles.foreach(df => {

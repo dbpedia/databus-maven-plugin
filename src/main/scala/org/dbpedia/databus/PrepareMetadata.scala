@@ -239,10 +239,10 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
 
 class FileInfoCache(
-                     var nonEmptyLines: Int,
-                     var duplicates: Int,
+                     var nonEmptyLines: Long,
+                     var duplicates: Long,
                      var sorted: Boolean,
-                     var uncompressedByteSize: Int
+                     var uncompressedByteSize: Long
                    ) extends Serializable {
 
 }
