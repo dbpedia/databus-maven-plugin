@@ -267,9 +267,9 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     try {
       val res = getInputStream()
       res.apply { in =>
-        val it = Source.fromInputStream(in)(Codec.UTF8).getLines()
+        val it: Iterator[String] = Source.fromInputStream(in)(Codec.UTF8).getLines()
         while (it.hasNext) {
-          val line = it.next().toString
+          val line = it.next()
           charSize += line.size //now counts the number of chars (not including linefeeds)
 
           // non empty lines
@@ -286,22 +286,23 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
             if (cmp == 0) {
               dupes += 1
             } else if (cmp < 0) {
-              log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    Sort order wrong for pair:  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-              log.debug(previousLine)
-              log.debug(line)
-              log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+              def cut(s:String):String = {if(s.length>41) s.substring(0,40) else s }
+              log.debug("Sortorder non-ascii line "+nonEmpty+": |"+cut(previousLine)+">"+cut(line)+"|")
               sort = false
             }
           }
           previousLine = line
+
         }
 
+
+       /* TODO what does this do?
         uncompressedSize = in match {
                 case c: CompressorInputStream => c.getBytesRead
                 case a: ArchiveInputStream => a.getBytesRead
                 case i: BufferedInputStream => this.bytes
                 case _ => log.warn(s"Bytesize only approximated for file: ${this.file.getAbsolutePath}"); uncompressedSize
-        }
+        }*/
 
       }
 

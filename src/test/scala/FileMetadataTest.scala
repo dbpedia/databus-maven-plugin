@@ -26,6 +26,15 @@ import org.scalatest.FunSuite
 
 class FileMetadataTest extends FunSuite  {
 
+  test("compressed smaller than uncompressed"){
+    val list = List ("filestat/instance-types_lang_ga_marvin_2019.ttl.bz2")
+
+    list.foreach(i=>{
+      val df = datafile(i)
+      assert(df.uncompressedByteSize >= df.bytes, "sorted lines count is calculated wrong: " + i)
+    })
+  }
+
   test("basic fixed value file parameters/metadata test for bz2 test file: basic.nt.bz2") {
     val df =datafile("filestat/basic.nt.bz2")
     assert(df.sha256sum==="1ce31e72c9553e8aa3ed63acd22f3046321a0df2d8ecb85b59af28f5bfb3cbd7" , "sha256sum is calculated wrong")
@@ -33,7 +42,7 @@ class FileMetadataTest extends FunSuite  {
     assert(df.duplicates === 2, "duplicate lines count is calculated wrong")
     assert(df.sorted === true, "sorted lines count is calculated wrong")
     assert(df.bytes === 323, "bytes count is calculated wrong")
-    assert(df.uncompressedByteSize === 734, "uncompressedByteSize is calculated wrong")
+    assert(df.uncompressedByteSize === 726, "uncompressedByteSize is calculated wrong")
   }
 
   test("testing sort order US Sorted vs. ASCII") {
@@ -44,14 +53,7 @@ class FileMetadataTest extends FunSuite  {
 
   }
 
-  test("compressed smaller than uncompressed"){
-    val list = List ("filestat/instance-types_lang_ga.ttl.bz2")
 
-    list.foreach(i=>{
-      val df = datafile(i)
-      assert(df.uncompressedByteSize >= df.bytes, "sorted lines count is calculated wrong: " + i)
-    })
-  }
 
   def datafile(resourcename:String): Datafile = {
     val testFile = new File(getClass.getClassLoader.getResource(resourcename).getFile)
