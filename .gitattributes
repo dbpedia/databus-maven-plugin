@@ -1,0 +1,2 @@
+# Never modify line endings of ntriples files
+*.nt -crlf

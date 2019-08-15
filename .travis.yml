@@ -2,6 +2,7 @@ language: java
 jdk:
     - oraclejdk8
 script: "mvn clean install"
+dist: trusty
 cache:
   directories:
   - $HOME/.m2
