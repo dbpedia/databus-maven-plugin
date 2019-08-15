@@ -352,6 +352,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
   override def toString =
     s"""
        |Datafile(format=$format
+       |name=${file.getAbsoluteFile.toString}
        |sha256sum=$sha256sum
        |bytes=$bytes
        |uncompressedByteSize=$uncompressedByteSize

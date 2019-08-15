@@ -44,6 +44,15 @@ class FileMetadataTest extends FunSuite  {
 
   }
 
+  test("compressed smaller than uncompressed"){
+    val list = List ("filestat/instance-types_lang_ga.ttl.bz2")
+
+    list.foreach(i=>{
+      val df = datafile(i)
+      assert(df.uncompressedByteSize >= df.bytes, "sorted lines count is calculated wrong: " + i)
+    })
+  }
+
   def datafile(resourcename:String): Datafile = {
     val testFile = new File(getClass.getClassLoader.getResource(resourcename).getFile)
 
