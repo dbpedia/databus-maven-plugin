@@ -281,7 +281,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
           if (previousLine != null) {
             val lineb = line.getBytes("UTF-8")
             val previousLineb = previousLine.getBytes("UTF-8")
-            uncompressedSize += lineb.size + 1 //TODO this does not respect windows linefeeds properly (or potentially other control characters)
+            uncompressedSize += lineb.size + 1 //estimated bytesize count !!! this does not respect windows linefeeds properly (or potentially other control characters) that is why it is overwritten by stream information if possbile 
             val cmp = compareBytewise(lineb, previousLineb)
             if (cmp == 0) {
               dupes += 1
@@ -296,13 +296,13 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
         }
 
 
-       /* TODO what does this do?
+       //now try to determine the accurate uncompressed byte size by reading it from underlying stream
         uncompressedSize = in match {
                 case c: CompressorInputStream => c.getBytesRead
                 case a: ArchiveInputStream => a.getBytesRead
                 case i: BufferedInputStream => this.bytes
-                case _ => log.warn(s"Bytesize only approximated for file: ${this.file.getAbsolutePath}"); uncompressedSize
-        }*/
+                case _ => log.warn(s"Bytesize only approximated for file: ${this.file.getAbsolutePath}"); uncompressedSize //TODO  maybe wrap the streams in Datafile with a generic counting input stream
+        }
 
       }
 
