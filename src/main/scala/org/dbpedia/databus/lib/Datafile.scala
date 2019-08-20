@@ -295,8 +295,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
 
         }
 
-
-       //now try to determine the accurate uncompressed byte size by reading it from underlying stream
+       //now try to determine the accurate uncompressed byte size by reading it from underlying stream an override estimated one if possible
         uncompressedSize = in match {
                 case c: CompressorInputStream => c.getBytesRead
                 case a: ArchiveInputStream => a.getBytesRead
@@ -311,12 +310,17 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
       sorted = sort
       uncompressedByteSize = uncompressedSize
     } catch {
-      case mfe: MalformedInputException => {
+      /*case mfe: MalformedInputException =>
         nonEmptyLines = nonEmpty
         duplicates = dupes
         sorted = sort
-        uncompressedByteSize = uncompressedSize
-      }
+        uncompressedByteSize = uncompressedSize */
+      case e: Exception =>
+        log.warn(s"Read Error for file: ${this.file.getAbsolutePath} not calculate line-based file metadata statistics (e.g. #empty lines) and also uncompressed byte-size for File")
+        nonEmptyLines = -1
+        duplicates = -1
+        sorted = false
+        uncompressedByteSize = -1
     }
 
 

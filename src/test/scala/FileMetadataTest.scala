@@ -26,38 +26,58 @@ import org.scalatest.FunSuite
 
 class FileMetadataTest extends FunSuite  {
 
-  test("compressed smaller than uncompressed"){
-    val list = List ("filestat/instance-types_lang_ga_marvin_2019.ttl.bz2")
+  test("compressed byte size smaller than uncompressed"){
+    val list = List ("filestat/instance-types_lang_ga_marvin_2019.ttl.bz2","filestat/basic.nt.bz2")
 
     list.foreach(i=>{
       val df = datafile(i)
-      assert(df.uncompressedByteSize >= df.bytes, "sorted lines count is calculated wrong: " + i)
+      assert(df.uncompressedByteSize >= df.bytes, "calculated compressed byte size larger than uncompressed size for file:  " + i)
     })
   }
 
-  test("basic fixed value file parameters/metadata test for bz2 test file: basic.nt.bz2") {
+  test("basic fixed value bz2 file parameters/metadata test: basic.nt.bz2") {
     val df =datafile("filestat/basic.nt.bz2")
     assert(df.sha256sum==="1ce31e72c9553e8aa3ed63acd22f3046321a0df2d8ecb85b59af28f5bfb3cbd7" , "sha256sum is calculated wrong")
     assert(df.nonEmptyLines === 6 , "non-empty lines count is calculated wrong")
     assert(df.duplicates === 2, "duplicate lines count is calculated wrong")
-    assert(df.sorted === true, "sorted lines count is calculated wrong")
+    assert(df.sorted === true, "sorted lines flag is calculated wrong")
     assert(df.bytes === 323, "bytes count is calculated wrong")
-    assert(df.uncompressedByteSize === 726, "uncompressedByteSize is calculated wrong")
+    assert(df.uncompressedByteSize === 734, "uncompressedByteSize is calculated wrong")
   }
+
+  test("basic fixed value bz2 file with corrupt encoding parameters/metadata test: faulty-char-instance-types_lang_ga.ttl.bz2") {
+    val df =datafile("filestat/faulty-char-instance-types_lang_ga.ttl.bz2")
+    assert(df.sha256sum==="c785e6305136a9717d981041614487ac6a9f14a1fb3bc2d38d23233caa94aaf5" , "sha256sum is calculated wrong")
+    assert(df.nonEmptyLines === -1 , "non-empty lines count is calculated wrong")
+    assert(df.duplicates === -1, "duplicate lines count is calculated wrong")
+    assert(df.sorted === false, "sorted lines flag is calculated wrong")
+    assert(df.bytes === 59079, "bytes count is calculated wrong")
+    assert(df.uncompressedByteSize === -1, "uncompressedByteSize is calculated wrong")
+  }
+
+  test("basic fixed value bz2 file with corrupt encoding parameters/metadata test: instance-types_lang_cs.ttl.bz2") {
+    val df =datafile("filestat/instance-types_lang_cs.ttl.bz2")
+    assert(df.sha256sum==="0c0a0d41ce79e0ee8f132d3ca8a7c33e0e4cd9e2e52796dc001fe38e4fdb9f18" , "sha256sum is calculated wrong")
+    assert(df.nonEmptyLines === -1 , "non-empty lines count is calculated wrong")
+    assert(df.duplicates === -1, "duplicate lines count is calculated wrong")
+    assert(df.sorted === false, "sorted lines flag is calculated wrong")
+    assert(df.bytes === 1051359, "bytes count is calculated wrong")
+    assert(df.uncompressedByteSize === -1, "uncompressedByteSize is calculated wrong")
+  }
+
+
 
   test("testing sort order US Sorted vs. ASCII") {
     var df = datafile("filestat/sorttest_us.ttl")
-    assert(df.sorted === false, "sorted lines count is calculated wrong")
+    assert(df.sorted === false, "sorted lines flag is calculated wrong")
     df  = datafile("filestat/sorttest_ascii.txt")
-    assert(df.sorted === true, "sorted lines count is calculated wrong")
+    assert(df.sorted === true, "sorted lines flag is calculated wrong")
 
   }
-
 
 
   def datafile(resourcename:String): Datafile = {
     val testFile = new File(getClass.getClassLoader.getResource(resourcename).getFile)
-
     val df = Datafile(testFile)(new SystemStreamLog())
     df.updateFileMetrics();
     print(df.toString)
