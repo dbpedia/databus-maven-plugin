@@ -65,7 +65,7 @@ trait DataFileToModel extends Properties with Parameters {
   this: AbstractMojo =>
 
 
-  def modelForDatafile(datafile: Datafile): Model = {
+  def modelForDatafile(datafile: Datafile, fileIriBase: String): Model = {
     import DataFileToModel._
 
     implicit val model: Model = ModelFactory.createDefaultModel
@@ -81,6 +81,11 @@ trait DataFileToModel extends Properties with Parameters {
     val singleFileResource = ("#" + datafile.finalBasename(params.versionToInsert)).asIRI
     singleFileResource.addProperty(RDF.`type`, dataid.SingleFile)
 
+
+    /**
+      * adding file iri
+      */
+    singleFileResource.addProperty(dataid.file, (fileIriBase + datafile.finalBasename(params.versionToInsert)).asIRI)
 
     /**
       * linking to dataset

@@ -125,8 +125,9 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
         getLog.info(s"SUCCESS: DBpedia Account found: ${account.getURI}")
       }
       case None => {
-        getLog.warn(s"DBpedia account for $publisher not found at https://github.com/dbpedia/accounts " +
-          s", some features might be deactivated")
+        getLog.warn(s"Databus account for $publisher not found at https://github.com/dbpedia/accounts " +
+          s", some features might be deactivated\n" +
+          s"You will not be able to publish on databus.dbpedia.org with mvn deploy without account")
       }
     }
   }

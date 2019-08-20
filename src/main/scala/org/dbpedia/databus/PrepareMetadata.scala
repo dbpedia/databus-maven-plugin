@@ -69,19 +69,10 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
     // prepare the buildDataidFile
     locations.buildDataIdFile.createFileIfNotExists(true).clear()
-
-
     val dataIdCollect: Model = ModelFactory.createDefaultModel
-    getLog.info(s"looking for data files in: ${locations.inputVersionDirectory.pathAsString}")
-    getLog.info(s"Found ${locations.inputFileList.size} files:\n${
-      locations.inputFileList.mkString(", ").replaceAll(locations.inputVersionDirectory.pathAsString + "/" + artifactId, "")
-    }")
-    getLog.info(s"collecting metadata for each file (from parameters in pom.xml," +
-      s" from ${artifactId}/${locations.markdownFileName} and from the file itself)")
-    locations.inputFileList.foreach(datafile => {
-      processFile(datafile.toJava, dataIdCollect)
 
-    })
+
+
 
     //retrieving all User Accounts
     //var accountOption = {
@@ -89,80 +80,98 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     //Option(publisher.toString.asIRI.getProperty(foaf.account)).map(_.getObject.asResource)
     //}
 
-    if (!dataIdCollect.isEmpty) {
 
-      implicit val editContext = dataIdCollect
+    implicit val editContext = dataIdCollect
 
-      // add DataId
-      addDataId(dataIdCollect)
+    // add DataId
+    addDataId(dataIdCollect)
 
-      // add dataset metadata
-      val datasetResource = dataIdCollect.createResource(s"#Dataset")
-      datasetResource.addProperty(RDF.`type`, dataid.Dataset)
-      addBasicPropertiesToResource(dataIdCollect, datasetResource)
+    // add dataset metadata
+    val datasetResource = dataIdCollect.createResource(s"#Dataset")
+    datasetResource.addProperty(RDF.`type`, dataid.Dataset)
+    addBasicPropertiesToResource(dataIdCollect, datasetResource)
 
-      //creating documentation for dataset resource
-      //datasetResource.addProperty(dcterms.description, (params.description + "\n\n# Group Documentation\n" + documentation.trim).asPlainLiteral)
-      datasetResource.addProperty(dcterms.description, (params.description.trim).asPlainLiteral)
-      datasetResource.addProperty(dataid.groupdocu, ( documentation.trim).asPlainLiteral)
-
+    //creating documentation for dataset resource
+    //datasetResource.addProperty(dcterms.description, (params.description + "\n\n# Group Documentation\n" + documentation.trim).asPlainLiteral)
+    datasetResource.addProperty(dcterms.description, (params.description.trim).asPlainLiteral)
+    datasetResource.addProperty(dataid.groupdocu, (documentation.trim).asPlainLiteral)
 
 
-      //match WebId to Account Name
-      AccountHelpers.getAccountOption(publisher) match {
-        case Some(account) => {
+    var fileIriBase: String = null
+    //match WebId to Account Name
+    AccountHelpers.getAccountOption(publisher) match {
+      case Some(account) => {
 
-          val accountIRI = s"${account.getURI}".asIRI
-          val groupIRI = s"${account.getURI}/${groupId}".asIRI
-          val artifactIRI = s"${account.getURI}/${groupId}/${artifactId}".asIRI
-          val versionIRI = s"${account.getURI}/${groupId}/${artifactId}/${version}".asIRI
+        val accountIRI = s"${account.getURI}".asIRI
+        val groupIRI = s"${account.getURI}/${groupId}".asIRI
+        val artifactIRI = s"${account.getURI}/${groupId}/${artifactId}".asIRI
+        val versionIRI = s"${account.getURI}/${groupId}/${artifactId}/${version}".asIRI
+        fileIriBase = s"${account.getURI}/${groupId}/${artifactId}/${version}/"
 
-          //accountIRI.addProperty(RDF.`type`, dataid.Account)
-          groupIRI.addProperty(RDF.`type`, dataid.Group)
-          artifactIRI.addProperty(RDF.`type`, dataid.Artifact)
-          versionIRI.addProperty(RDF.`type`, dataid.Version)
+        //accountIRI.addProperty(RDF.`type`, dataid.Account)
+        groupIRI.addProperty(RDF.`type`, dataid.Group)
+        artifactIRI.addProperty(RDF.`type`, dataid.Artifact)
+        versionIRI.addProperty(RDF.`type`, dataid.Version)
 
-          datasetResource.addProperty(dataid.account, accountIRI)
-          datasetResource.addProperty(dataid.group, groupIRI)
-          datasetResource.addProperty(dataid.artifact, artifactIRI)
-          datasetResource.addProperty(dataid.version, versionIRI)
-        }
-        case None => {
-
-          datasetResource.addProperty(dataid.account, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
-          datasetResource.addProperty(dataid.group, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
-          datasetResource.addProperty(dataid.artifact, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
-          datasetResource.addProperty(dataid.version, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
-          getLog.warn("Not registered, Dataset URIs will not work, please register at https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED")
-        }
+        datasetResource.addProperty(dataid.account, accountIRI)
+        datasetResource.addProperty(dataid.group, groupIRI)
+        datasetResource.addProperty(dataid.artifact, artifactIRI)
+        datasetResource.addProperty(dataid.version, versionIRI)
       }
+      case None => {
 
-      // adding wasDerivedFrom other datasets
-      locations.provenanceIRIs.foreach(p => {
-        datasetResource.addProperty(prov.wasDerivedFrom, p.toString.asIRI)
-      })
-
-      /*
-      params.wasDerivedFrom.foreach { case ScalaBaseEntity(artifact, version) =>
-
-        val baseEntityBlankNode = editContext.createResource().tap { baseEntityRes =>
-
-          baseEntityRes.addProperty(dataid.artifact, artifact.toString.asIRI)
-          baseEntityRes.addProperty(dcterms.hasVersion, version)
-        }
-
-        datasetResource.addProperty(prov.wasDerivedFrom, baseEntityBlankNode)
-      }*/
-
-
-      //writing the metadatafile
-      locations.buildDataIdFile.outputStream.foreach { os =>
-        os.write((Properties.logo + "\n").getBytes)
-        dataIdCollect.write(os, "turtle")
+        val message = "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED"
+        datasetResource.addProperty(dataid.account, message.asIRI)
+        datasetResource.addProperty(dataid.group, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
+        datasetResource.addProperty(dataid.artifact, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
+        datasetResource.addProperty(dataid.version, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
+        fileIriBase = message
+        getLog.warn("Not registered, Dataset URIs will not work, please register at https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED")
       }
-      getLog.info(s"DataId built at: ${locations.prettyPath(locations.buildDataIdFile)}")
-
     }
+
+    // adding wasDerivedFrom other datasets
+    locations.provenanceIRIs.foreach(p => {
+      datasetResource.addProperty(prov.wasDerivedFrom, p.toString.asIRI)
+    })
+
+    /*
+    params.wasDerivedFrom.foreach { case ScalaBaseEntity(artifact, version) =>
+
+      val baseEntityBlankNode = editContext.createResource().tap { baseEntityRes =>
+
+        baseEntityRes.addProperty(dataid.artifact, artifact.toString.asIRI)
+        baseEntityRes.addProperty(dcterms.hasVersion, version)
+      }
+
+      datasetResource.addProperty(prov.wasDerivedFrom, baseEntityBlankNode)
+    }*/
+
+
+    /**
+      * PROCESS FILES
+      */
+
+    getLog.info(s"looking for data files in: ${locations.inputVersionDirectory.pathAsString}")
+    getLog.info(s"Found ${locations.inputFileList.size} files:\n${
+      locations.inputFileList.mkString(", ").replaceAll(locations.inputVersionDirectory.pathAsString + "/" + artifactId, "")
+    }")
+    getLog.info(s"collecting metadata for each file (from parameters in pom.xml," +
+      s" from ${artifactId}/${locations.markdownFileName} and from the file itself)")
+    locations.inputFileList.foreach(datafile => {
+      processFile(datafile.toJava, dataIdCollect, fileIriBase)
+
+    })
+
+
+    //writing the metadatafile
+    locations.buildDataIdFile.outputStream.foreach { os =>
+      os.write((Properties.logo + "\n").getBytes)
+      dataIdCollect.write(os, "turtle")
+    }
+    getLog.info(s"DataId built at: ${locations.prettyPath(locations.buildDataIdFile)}")
+
+
   }
 
   def addDataId(dataIdCollect: Model): Unit = {
@@ -194,7 +203,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
   }
 
 
-  def processFile(datafile: File, dataIdCollect: Model): Unit = {
+  def processFile(datafile: File, dataIdCollect: Model, fileIriBase: String): Unit = {
 
     getLog.debug(s"found file ${
       datafile.getCanonicalPath
@@ -214,7 +223,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     writeCache(new FileInfoCache(df.nonEmptyLines, df.duplicates, df.sorted, df.uncompressedByteSize), cacheFile.toJava)
 
 
-    val model = modelForDatafile(df)
+    val model = modelForDatafile(df, fileIriBase)
     getLog.debug(df.toString)
     dataIdCollect.add(model)
   }
