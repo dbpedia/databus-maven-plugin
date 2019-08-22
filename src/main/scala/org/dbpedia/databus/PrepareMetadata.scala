@@ -99,6 +99,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     if (codeReference != null) {
       datasetResource.addProperty(dataiddebug.codeReference, codeReference.toString.asIRI)
     }
+
     if (issueTracker != null) {
       datasetResource.addProperty(dataiddebug.issueTracker, issueTracker.toString.asIRI)
     }

@@ -285,6 +285,11 @@ mvn install
 ```
 -->
 # Troubleshooting
+## databus-shared-lib / Local install works, travis will show `build error`
+databus-shared-lib is a co-developed library. If you update it, travis will fail. 
+Travis chaches the shared lib every 6 hours, so you need to flush the cache manually or wait 6 hours
+
+
 ## Download from http://databus.dbpedia.org:8081/repository/ fails, no dependency information available
   Note: this section can be removed after completion of https://github.com/dbpedia/databus-maven-plugin/issues/12 
 Possible reason: we have installed a dev archiva for now. Depending on your org's network configuration, code might only be accepted from Maven Central and local/allowed maven repos.
