@@ -101,15 +101,12 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     }
     if (issueTracker != null) {
       datasetResource.addProperty(dataiddebug.issueTracker, issueTracker.toString.asIRI)
-
     }
     if (documentationLocation != null) {
       datasetResource.addProperty(dataiddebug.documentationLocation, documentationLocation.toString.asIRI)
-
     }
     if (feedbackChannel != null) {
       datasetResource.addProperty(dataiddebug.feedbackChannel, feedbackChannel.toString.asIRI)
-
     }
 
     var fileIriBase: String = null
