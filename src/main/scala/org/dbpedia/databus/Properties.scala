@@ -205,7 +205,7 @@ trait Properties extends Locations with Parameters with Mojo {
 
   /**
     * URL to the place the pom.xml and ${artifactId}.md are managed, e.g. DBpedia Labels on GitHub
-    * https://github.com/dbpedia/databus-maven-plugin/blob/master/dbpedia/${groupId}/{$artifactId}
+    * https://github.com/dbpedia/databus-maven-plugin/blob/master/dbpedia/${groupId}/${artifactId}
     */
   @Parameter(property = "databus.documentationLocation", required = false) val documentationLocation: URL = null
 
