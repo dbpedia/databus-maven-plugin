@@ -126,6 +126,7 @@ trait Properties extends Locations with Parameters with Mojo {
     * There are cases where it is impossible to keep the Dataid file in the same URLPath as the data files
     * An example is the DBpedia Ontology pushed to Github, where you first need to push the files
     * and then generate dcat:downloadUrl based on the last commit hash
+    * TODO SH: please review the docu above, it is not helpful in understanding what this param should be and what it does (consequences)
     */
   @Parameter(property = "databus.absoluteDCATDownloadUrlPath", required = false)
   val absoluteDCATDownloadUrlPath: String = null
@@ -185,6 +186,29 @@ trait Properties extends Locations with Parameters with Mojo {
     * Pick one from here: http://rdflicense.linkeddata.es/
     */
   @Parameter(property = "databus.license", required = true) val license: String = null
+
+  /**
+    * URL to the main issue tracker for reporting data errors
+    */
+  @Parameter(property = "databus.issueTracker", required = false) val issueTracker: URL = null
+
+  /**
+    * URL to the main feedback channel for questions and comments (e.g. "+1" )
+    */
+  @Parameter(property = "databus.feedbackChannel", required = false) val feedbackChannel: URL = null
+
+  /**
+    * URL to a concrete piece of code, e.g. on github
+    * https://github.com/dbpedia/extraction-framework/blob/master/core/src/main/scala/org/dbpedia/extraction/mappings/LabelExtractor.scala
+    */
+  @Parameter(property = "databus.codeReference", required = false) val codeReference: URL = null
+
+  /**
+    * URL to the place the pom.xml and ${artifactId}.md are managed, e.g. DBpedia Labels on GitHub
+    * https://github.com/dbpedia/databus-maven-plugin/blob/master/dbpedia/${groupId}/{$artifactId}
+    */
+  @Parameter(property = "databus.documentationLocation", required = false) val documentationLocation: URL = null
+
 
   /**
     * default today
