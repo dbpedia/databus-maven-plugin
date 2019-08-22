@@ -20,17 +20,17 @@
  */
 package org.dbpedia.databus
 
-import java.io.{DataInput, File}
+
+import java.net.URL
 
 import org.dbpedia.databus.shared.authentification.{AccountHelpers, RSAModulusAndExponent}
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.http.client.methods.HttpHead
+import org.apache.http.impl.client.HttpClients
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
-import org.apache.maven.plugins.annotations.{Execute, LifecyclePhase, Mojo, Parameter}
-import org.dbpedia.databus.lib.{Datafile, FilenameHelpers, SigningHelpers}
-
-import scala.collection.mutable
-import org.apache.maven.settings.Settings
+import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
+import org.dbpedia.databus.lib.SigningHelpers
 
 
 /**
@@ -49,7 +49,7 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
   @throws[MojoExecutionException]
   override def execute(): Unit = {
 
-    if(!Validated.validated){
+    if (!Validated.validated) {
       validateWebId()
       validateAccount()
       Validated.validated = true
@@ -62,6 +62,32 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
     }
 
     validateSelectedValues
+    validateDebugURLs
+
+  }
+
+  def validateDebugURLs() = {
+
+    val check: List[URL] = List(codeReference, feedbackChannel, issueTracker, documentationLocation)
+    check.filter(_ != null).foreach(u => {
+      val httpclient = HttpClients.createDefault();
+      val httpHead = new HttpHead(u.toString)
+      try {
+        val code = httpclient.execute(httpHead).getStatusLine.getStatusCode;
+        if (code == 404) {
+          getLog.error(
+            s"""
+               |One of codeReference,feedbackChannel,issueTracker, documentationLocation, returned 404 NOT FOUND
+               |URL: ${u.toString}
+               |Fix with:
+               |* check pom.xml <properties><databus.(codeReference|feedbackChannel|issueTracker|documentationLocation>
+             """.stripMargin)
+        }
+
+      } catch {
+        case _: Throwable => Unit
+      }
+    })
 
   }
 
@@ -81,15 +107,20 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
   def validateWebId(): Unit = {
 
     if (locations.pkcs12File == null) {
-      getLog.error(s"no private key bundle (pkcs12/.pfx) configured [databus.pkcs12File = ${locations.pkcs12File}]\n" +
-        s"fix with:\n" +
-        s"* adding property <databus.pkcs12file> to pom.xml\n" +
-        s"* adding server config to settings.xml of maven:" +
-        s"  <server>"+
-        s"    <id>databus.defaultkey</id>"+
-        "    <privateKey>${user.home}/.m2/certificate_generic.pfx</privateKey>"+
-        s"    <passphrase>this is my password</passphrase>"+
-        s"  </server>")
+      getLog.error(
+        s"""
+           |no private key bundle (pkcs12/.pfx) configured [databus.pkcs12File = ${locations.pkcs12File}]
+           |fix with:
+           |* adding property <databus.pkcs12file> to pom.xml
+           |* adding server config to settings.xml of maven:
+           |   <server>
+           |      <id>databus.defaultkey</id>
+           |      <privateKey>$${user.home}/.m2/certificate_generic.pfx</privateKey>
+           |      <!-- optional -->
+           |      <passphrase>this is my password</passphrase>
+           |   </server>
+           |
+       """.stripMargin)
       System.exit(-1)
     }
 

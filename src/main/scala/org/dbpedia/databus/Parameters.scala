@@ -115,8 +115,8 @@ trait Parameters {
       val f3 = s"* Second line should give a good one liner what can be expected (used as rdfs:comment)\n"
       val f4 = s"* Third line until end is regular markdown with the details (use ##, ###, #### header levels, used as dct:description)\n" +
         s"Example:\n" +
-        s"# Animal Dataset\n" +
-        s"Contains basic information about animals\n\n " +
+        s"# Collected data about animals\n" +
+        s"Contains basic information about animals collected by x using method y\n\n " +
         s"Detailed description in markdown as long as you want"
 
       if (!markdown.isRegularFile()) {
@@ -130,6 +130,10 @@ trait Parameters {
         getLog.error(s"label found in ${markdown.name} is empty '${params.label}'\n" +
           s"fix with:\n" + f2 + f3 + f4)
         System.exit(-1)
+      }
+
+      if(params.label.toLowerCase.contains("dataset") || params.label.toLowerCase.contains(groupId)) {
+        getLog.warn(s"Not recommended to include 'dataset' or groupId '${groupId}' in rdfs:label (first line of ${markdown.name}): ${params.label}")
       }
 
 
