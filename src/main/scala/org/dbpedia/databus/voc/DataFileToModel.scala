@@ -186,7 +186,7 @@ trait DataFileToModel extends Properties with Parameters {
     singleFileResource.addProperty(dataid.sha256sum, datafile.sha256sum.asPlainLiteral)
     singleFileResource.addProperty(dataid.signature, datafile.signatureBase64.asPlainLiteral)
     singleFileResource.addProperty(dataid.preview, datafile.preview)
-    singleFileResource.addProperty(dataid.uncompressedByteSize, datafile.uncompressedByteSize.toString.asTypedLiteral(XSDdecimal))
+    singleFileResource.addProperty(dataid.uncompressedByteSize, (if (datafile.uncompressedByteSize <0L) Float.NaN else datafile.uncompressedByteSize).toString.asTypedLiteral(XSDdecimal))
     singleFileResource.addProperty(dcat.byteSize, datafile.bytes.toString.asTypedLiteral(XSDdecimal))
 
     val dcatdownloadurlpath: String = if (absoluteDCATDownloadUrlPath != null) {
@@ -195,8 +195,8 @@ trait DataFileToModel extends Properties with Parameters {
       ""
     }
     singleFileResource.addProperty(dcat.downloadURL, (dcatdownloadurlpath + datafile.finalBasename(params.versionToInsert)).asIRI)
-    singleFileResource.addProperty(dataid.duplicates, datafile.duplicates.toString.asTypedLiteral(XSDdecimal))
+    singleFileResource.addProperty(dataid.duplicates, (if (datafile.duplicates <0L) Float.NaN else datafile.duplicates).toString.asTypedLiteral(XSDdecimal))
     singleFileResource.addProperty(dataid.sorted, datafile.sorted.toString.asTypedLiteral(XSDboolean))
-    singleFileResource.addProperty(dataid.nonEmptyLines, datafile.nonEmptyLines.toString.asTypedLiteral(XSDdecimal))
+    singleFileResource.addProperty(dataid.nonEmptyLines, (if (datafile.nonEmptyLines <0L) Float.NaN else datafile.nonEmptyLines).toString.asTypedLiteral(XSDdecimal))
   }
 }
