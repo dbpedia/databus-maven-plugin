@@ -79,7 +79,7 @@ trait Parameters {
     lazy val versionToInsert = if (insertVersion) Some(version) else None
 
 
-    lazy val (label, comment, description) = {
+    var (label, comment, description) = {
       if (!locations.inputMarkdownFile.exists()) {
         ("", "", "")
       }
@@ -103,6 +103,12 @@ trait Parameters {
         }
       }
       (firstline, secondline, rest.trim)
+    }
+
+    // called in prepareMetadata
+    def addLabelCommentPrefixes ():Unit ={
+      label = labelPrefix+label
+      comment =commentPrefix+comment
     }
 
     def validateMarkdown(): Unit = {
