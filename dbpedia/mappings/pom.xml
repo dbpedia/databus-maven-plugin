@@ -22,6 +22,7 @@
     </modules>
 
     <properties>
+
         <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
         <databus.packageDirectory>
             /media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}
@@ -73,6 +74,8 @@ For more technical information on how these datasets were generated, please visi
 ## 2016.10.01
 * was taken from the previous BIG DBpedia releases under http://downloads.dbpedia.org/2016-10/ and included for completeness
      ]]></databus.documentation>
+        <!-- used for derive plugin -->
+        <databus.marvinversion>2019.08.01</databus.marvinversion>
     </properties>
 
     <!-- currently still needed to find the super-pom, once the super-pom is in maven central,
@@ -125,4 +128,32 @@ For more technical information on how these datasets were generated, please visi
             </build>
         </profile>
     </profiles>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.dbpedia.databus</groupId>
+                <artifactId>databus-derive-maven-plugin</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>DeriveFromMarvin</id>
+                        <!--phase>initialize</phase-->
+                        <goals>
+                            <goal>clone-parse</goal>
+                        </goals>
+                        <configuration>
+                            <versions>
+                                <version>https://databus.dbpedia.org/dbpedia/mappings/geo-coordinates-mappingbased/${databus.marvinversion}</version>
+                                <version>https://databus.dbpedia.org/dbpedia/mappings/instance-types/${databus.marvinversion}</version>
+                                <version>https://databus.dbpedia.org/dbpedia/mappings/mappingbased-literals/${databus.marvinversion}</version>
+                                <version>https://databus.dbpedia.org/dbpedia/mappings/mappingbased-objects-uncleaned/${databus.marvinversion}</version>
+                                <version>https://databus.dbpedia.org/dbpedia/mappings/specific-mappingbased-properties/${databus.marvinversion}</version>
+                            </versions>
+                        </configuration>
+                    </execution>
+                </executions>
+
+            </plugin>
+        </plugins>
+    </build>
 </project>
