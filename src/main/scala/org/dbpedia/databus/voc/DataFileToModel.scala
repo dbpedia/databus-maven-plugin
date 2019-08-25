@@ -27,7 +27,7 @@ import org.dbpedia.databus.shared.rdf.conversions._
 import org.dbpedia.databus.shared.rdf.vocab._
 import better.files._
 import org.apache.jena.datatypes.xsd.XSDDatatype._
-import org.apache.jena.rdf.model.{Model, ModelFactory, Resource}
+import org.apache.jena.rdf.model.{Literal, Model, ModelFactory, Resource}
 import org.apache.jena.vocabulary.{OWL, RDF, RDFS, XSD}
 import org.apache.maven.plugin.AbstractMojo
 
@@ -186,17 +186,25 @@ trait DataFileToModel extends Properties with Parameters {
     singleFileResource.addProperty(dataid.sha256sum, datafile.sha256sum.asPlainLiteral)
     singleFileResource.addProperty(dataid.signature, datafile.signatureBase64.asPlainLiteral)
     singleFileResource.addProperty(dataid.preview, datafile.preview)
-    singleFileResource.addProperty(dataid.uncompressedByteSize, (if (datafile.uncompressedByteSize <0L) Float.NaN else datafile.uncompressedByteSize).toString.asTypedLiteral(XSDdecimal))
     singleFileResource.addProperty(dcat.byteSize, datafile.bytes.toString.asTypedLiteral(XSDdecimal))
-
-    val dcatdownloadurlpath: String = if (absoluteDCATDownloadUrlPath != null) {
+     val dcatdownloadurlpath: String = if (absoluteDCATDownloadUrlPath != null) {
       absoluteDCATDownloadUrlPath
     } else {
       ""
     }
     singleFileResource.addProperty(dcat.downloadURL, (dcatdownloadurlpath + datafile.finalBasename(params.versionToInsert)).asIRI)
-    singleFileResource.addProperty(dataid.duplicates, (if (datafile.duplicates <0L) Float.NaN else datafile.duplicates).toString.asTypedLiteral(XSDdecimal))
+
+
+    def decimalize(l:Long):Literal= {
+      if (l <0L)
+      {Float.NaN .toString.asTypedLiteral(XSDdecimal)}
+      else
+      {l.toString.asTypedLiteral(XSDdecimal)}
+    }
+    singleFileResource.addProperty(dataid.duplicates, decimalize(datafile.duplicates))
+    singleFileResource.addProperty(dataid.uncompressedByteSize, decimalize(datafile.uncompressedByteSize))
+    singleFileResource.addProperty(dataid.nonEmptyLines, decimalize(datafile.nonEmptyLines))
     singleFileResource.addProperty(dataid.sorted, datafile.sorted.toString.asTypedLiteral(XSDboolean))
-    singleFileResource.addProperty(dataid.nonEmptyLines, (if (datafile.nonEmptyLines <0L) Float.NaN else datafile.nonEmptyLines).toString.asTypedLiteral(XSDdecimal))
-  }
+
+ }
 }

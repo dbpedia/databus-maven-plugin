@@ -76,10 +76,10 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
   var verified: Boolean = false
 
   // some quality metrics
-  var nonEmptyLines = 0L
-  var duplicates = 0L
+  var nonEmptyLines : Long = 0L
+  var duplicates : Long= 0L
   var sorted: Boolean = false
-  var uncompressedByteSize = 0L
+  var uncompressedByteSize : Long = 0L
 
 
   lazy val preview: String = computePreview
