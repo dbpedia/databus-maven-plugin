@@ -108,7 +108,7 @@ characters
                         <id>DeriveFromMarvin</id>
                         <!--phase>initialize</phase-->
                         <goals>
-                            <goal>clone-parse</goal>
+                            <goal>clone</goal>
                         </goals>
 
                     </execution>
