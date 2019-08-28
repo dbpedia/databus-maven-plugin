@@ -82,7 +82,8 @@ characters
 ## 2018.10.01
 * deleted due to bzip2 non-recoverable bad blocks
         ]]></databus.documentation>
-
+        <!-- used for derive plugin -->
+        <databus.marvinversion>2019.08.01</databus.marvinversion>
     </properties>
 
     <!-- currently still needed to find the super-pom, once the super-pom is in maven central,
@@ -102,7 +103,62 @@ characters
             </snapshots>
         </repository>
     </repositories>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.dbpedia.databus</groupId>
+                <artifactId>databus-derive-maven-plugin</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>DeriveFromMarvin</id>
+                        <goals>
+                            <goal>clone</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--
 
+                    PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
+PREFIX dct:    <http://purl.org/dc/terms/>
+PREFIX dcat:   <http://www.w3.org/ns/dcat#>
+PREFIX db:     <https://databus.dbpedia.org/>
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+prefix dataid-cv: <http://dataid.dbpedia.org/ns/cv#>
+
+
+SELECT distinct ?versionstring WHERE {
+    ?dataset dataid:group <https://databus.dbpedia.org/marvin/wikidata> .
+    ?dataset dataid:version ?version .
+    ?dataset dct:hasVersion "2019.08.01"^^xsd:string
+    BIND (concat("<version>",REPLACE (str(?version),"2019.08.01","${databus.marvinversion}"),"</version>" ) AS ?versionstring )
+}
+order by asc(?versionstring)
+-->
+                    <versions>
+                        <version>https://databus.dbpedia.org/marvin/wikidata/alias/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/debug/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/description/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/geo-coordinates/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/images/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/instance-types/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/labels/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/mappingbased-literals/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/mappingbased-objects-uncleaned/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/ontology-subclassof/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/page/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/properties/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/redirects/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/references/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/revision/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/sameas-all-wikis/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/sameas-external/${databus.marvinversion}</version>                </versions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <profiles>
         <profile>
