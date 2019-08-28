@@ -60,9 +60,9 @@ For more technical information on how these datasets were generated, please visi
     <databus.maintainer>https://termilion.github.io/webid.ttl#this</databus.maintainer>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}</databus.packageDirectory>
-    <databus.feedbackChannel>https://forum.dbpedia.org/c/databus-dbpedia/mappings</databus.feedbackChannel>
-    <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
     <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
+    <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
+    <databus.feedbackChannel>https://forum.dbpedia.org/c/databus-dbpedia/mappings</databus.feedbackChannel>
   </properties>
   <repositories>
     <repository>
@@ -89,7 +89,7 @@ For more technical information on how these datasets were generated, please visi
           <execution>
             <id>DeriveFromMarvin</id>
             <goals>
-              <goal>clone-parse</goal>
+              <goal>clone</goal>
             </goals>
           </execution>
         </executions>
