@@ -114,26 +114,44 @@ characters
                     </execution>
                 </executions>
                 <configuration>
+                    <!-- query
+PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
+PREFIX dct:    <http://purl.org/dc/terms/>
+PREFIX dcat:   <http://www.w3.org/ns/dcat#>
+PREFIX db:     <https://databus.dbpedia.org/>
+PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+prefix dataid-cv: <http://dataid.dbpedia.org/ns/cv#>
+
+
+SELECT distinct (?version) WHERE {
+
+    ?dataset dataid:group <https://databus.dbpedia.org/marvin/generic> .
+    ?dataset dataid:version ?version .
+    ?dataset dct:hasVersion "2019.07.01"^^xsd:string
+}
+order by asc(?version)
+-->
                     <versions>
-                        <version>https://databus.dbpedia.org/marvin/article-templates/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/categories/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/citations/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/commons-sameas-links/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/disambiguations/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/external-links/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/geo-coordinates/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/homepages/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/infobox-properties/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/infobox-property-definitions/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/interlanguage-links/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/labels/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/page/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/persondata/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/redirects/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/revisions/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/topical-concepts/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/wikilinks/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/wikipedia-links/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/article-templates/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/categories/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/citations/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/commons-sameas-links/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/disambiguations/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/external-links/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/geo-coordinates/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/homepages/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/infobox-properties/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/infobox-property-definitions/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/interlanguage-links/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/labels/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/page/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/persondata/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/redirects/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/revisions/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/topical-concepts/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/wikilinks/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/wikipedia-links/${databus.marvinversion}
                     </versions>
                 </configuration>
             </plugin>
