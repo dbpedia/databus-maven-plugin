@@ -28,11 +28,11 @@
         <module>interlanguage-links</module>
         <module>labels</module>
         <module>page</module>
-        <module>wikilinks</module>
         <module>persondata</module>
         <module>redirects</module>
         <module>revisions</module>
         <module>topical-concepts</module>
+        <module>wikilinks</module>
         <module>wikipedia-links</module>
     </modules>
     <properties>
@@ -151,7 +151,7 @@ order by asc(?version)
                         <version>https://databus.dbpedia.org/marvin/generic/revisions/${databus.marvinversion}</version>
                         <version>https://databus.dbpedia.org/marvin/generic/topical-concepts/${databus.marvinversion}</version>
                         <version>https://databus.dbpedia.org/marvin/generic/wikilinks/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/wikipedia-links/${databus.marvinversion}
+                        <version>https://databus.dbpedia.org/marvin/generic/wikipedia-links/${databus.marvinversion}</version>
                     </versions>
                 </configuration>
             </plugin>
