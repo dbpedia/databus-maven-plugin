@@ -11,7 +11,7 @@
     <groupId>id-management</groupId>
     <artifactId>common-metadata</artifactId>
     <packaging>pom</packaging>
-    <version>2019.02.28</version>
+    <version>2019.08.07</version>
 
     <modules>
         <module>global-ids</module>
@@ -48,6 +48,4 @@ DBpedia ID management uses several Linksets available in the Web of Data, comput
             </snapshots>
         </repository>
     </repositories>
-
-
 </project>
