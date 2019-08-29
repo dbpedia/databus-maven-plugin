@@ -84,7 +84,7 @@ trait Parameters {
         ("", "", "")
       }
 
-      getLog.info(s"checking: ${locations.prettyPath(locations.inputMarkdownFile)}")
+      getLog.info(s"Loading docu from: ${locations.prettyPath(locations.inputMarkdownFile)}")
 
       val iter = locations.inputMarkdownFile.lineIterator
       var firstline = ""
@@ -95,20 +95,17 @@ trait Parameters {
       if (iter.hasNext) {
         var tmp = iter.next().trim
         if (tmp.startsWith("#")) {
-          firstline = tmp.replace("#", "").trim
+          firstline = tmp.replace("#", "")
         }
-        getLog.debug(s"rdfs:label  '$firstline' ")
         if (iter.hasNext) {
-          secondline = iter.next().trim
-          getLog.debug(s"rdfs:comment  '$secondline' ")
+          secondline = iter.next()
 
           for {
             line <- iter
           } (rest += (line + "\n"))
-          getLog.debug(s"dct:description '$rest' ")
         }
       }
-      (firstline, secondline, rest.trim)
+      (firstline.trim, secondline.trim, rest.trim)
     }
 
     // called in prepareMetadata
@@ -122,21 +119,31 @@ trait Parameters {
       var valmsg = ""
       val markdown = locations.inputMarkdownFile
 
+      getLog.info(
+        s"""
+           |#################################################
+           |Documention check of ${locations.prettyPath(locations.inputMarkdownFile)}
+           |#################################################""".stripMargin)
+
       val f1 = s"* Create a markdown file with the same name of the artifact: ${markdown.name}\n"
       val f2 = s"* First line must be '# Title of all dataset versions' (abstract identity, used as rdfs:label and dct:title)\n"
       val f3 = s"* Second line should give a good one liner what can be expected (used as rdfs:comment)\n"
-      val f4 = s"* Third line until end is regular markdown with the details (use ##, ###, #### header levels, used as dct:description)\n" +
-        s"Example:\n" +
-        s"# Collected data about animals\n" +
-        s"Contains basic information about animals collected by x using method y\n\n " +
-        s"Detailed description in markdown as long as you want"
+      val f4 = s"* Third line until end is regular markdown with the details (use ##, ###, #### header levels, used as dct:description)"
+      val examples =
+        s"""
+           |Example 1:
+           |# Collected data about animals
+           |Contains basic information about animals collected by x using method y
+           |
+           |## Collection method
+           |Detailed description in markdown as long as you want
+         """.stripMargin
 
       if (!markdown.isRegularFile()) {
         getLog.error(s"No markdown file found at ${markdown}\n" +
-          s"fix with:\n" + f1 + f2 + f3 + f4)
+          s"fix with:\n" + f1 + f2 + f3 + f4 + examples)
         System.exit(-1)
       }
-
 
       if (params.label.isEmpty) {
         getLog.error(s"label found in ${markdown.name} is empty '${params.label}'\n" +
@@ -147,10 +154,13 @@ trait Parameters {
       if(params.label.toLowerCase.contains("dataset") || params.label.toLowerCase.contains(groupId)) {
         getLog.warn(s"Not recommended to include 'dataset' or groupId '${groupId}' in rdfs:label (first line of ${markdown.name}): ${params.label}")
       }
+      if(params.label.length>40){
+        getLog.warn(s"label (${params.label.length}) too long: ${params.label}")
+      }
 
 
       if (params.comment.isEmpty) {
-        getLog.error(s"label found in ${markdown.name} is empty '${params.label}'\n" +
+        getLog.error(s"comment found in ${markdown.name} is empty '${params.comment}'\n" +
           s"fix with:\n" + f3 + f4)
         System.exit(-1)
       }
@@ -161,11 +171,19 @@ trait Parameters {
           s"* This is lazy, but forgivable, continuing operation"
         )
       }
-      if(params.label.length>40){
-        getLog.warn(s"label (${params.label.length}) too long: ${params.label}")
+
+      if(params.description.length>2500) {
+        getLog.info("\uD83D\uDC4D description longer than 2500 chars. Good job")
       }
 
-      getLog.info(s"${markdown.name} exists, label: '${params.label}', comment length: ${params.comment.length}, description length: ${params.description.length}  ")
+
+      getLog.info(
+        s"""
+           |Documentation check finished, docu will look like:
+           |rdfs:label(${params.label.length}) "${params.label}"
+           |rdfs:comment(${params.comment.length}) "${params.comment}"
+           |dct:description(${params.description.length}) "${params.description}"
+         """.stripMargin)
 
     }
 
