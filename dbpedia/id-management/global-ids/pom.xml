@@ -3,11 +3,10 @@
     <parent>
 	<groupId>id-management</groupId>
         <artifactId>common-metadata</artifactId>
-        <version>2019.02.28</version>
+        <version>2019.08.07</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>id-management</groupId>
     <artifactId>global-ids</artifactId>
     <packaging>jar</packaging>
-
 </project>

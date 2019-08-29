@@ -13,12 +13,7 @@
     <packaging>pom</packaging>
     <version>2019.03.01</version>
     <modules>
-        <module>labels</module>
-        <module>instance-types</module>
         <module>mappingbased-objects-uncleaned</module>
-        <module>mappingbased-literals</module>
-        <module>geo-coordinates</module>
-        <module>specific-mappingbased-properties</module>
     </modules>
 
     <properties>

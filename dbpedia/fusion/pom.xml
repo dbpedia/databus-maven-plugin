@@ -11,15 +11,15 @@
     <groupId>fusion</groupId>
     <artifactId>group-metadata</artifactId>
     <packaging>pom</packaging>
-    <version>2018.10.01.initeval</version>
+    <version>2019.03.01</version>
     <modules>
-        <module>data</module>
-        <!--module>labels</module>
+        <!--<module>data</module>-->
+        <module>labels</module>
         <module>instance-types</module>
         <module>mappingbased-objects-uncleaned</module>
         <module>mappingbased-literals</module>
         <module>geo-coordinates</module>
-        <module>specific-mappingbased-properties</module-->
+        <module>specific-mappingbased-properties</module>
     </modules>
 
     <properties>

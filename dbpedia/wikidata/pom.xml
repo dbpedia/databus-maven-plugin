@@ -11,29 +11,11 @@
     <groupId>wikidata</groupId>
     <artifactId>group-metadata</artifactId>
     <packaging>pom</packaging>
-    <version>2018.11.30</version>
+    <version>2019.07.01</version>
 
     <modules>
-        <module>alias</module>
-        <module>description</module>
-        <module>geo-coordinates</module>
-        <module>images</module>
-        <module>instance-types</module>
-        <module>labels</module>
-        <module>mappingbased-literals</module>
-        <module>mappingbased-objects-uncleaned</module>
-        <module>mappingbased-properties-reified</module>
-        <module>ontology-subclassof</module>
-        <module>page</module>
-        <module>properties</module>
-        <!--module>raw</module-->
-        <module>redirects</module>
-        <module>references</module>
-        <module>revision</module>
         <module>sameas-all-wikis</module>
         <module>sameas-external</module>
-        <!--module>sameas-wikidata</module-->
-        <module>debug</module>
     </modules>
 
     <!-- needed 511 minutes for 110GB -->
