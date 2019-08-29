@@ -227,6 +227,14 @@ trait Properties extends Locations with Parameters with Mojo {
   @Parameter(property = "databus.documentation", defaultValue = "")
   val documentation: String = ""
 
+  //prefixed to label
+  @Parameter(property = "databus.labelPrefix", defaultValue = "")
+  val labelPrefix: String = ""
+
+  //prefixed to comment
+  @Parameter(property = "databus.commentPrefix", defaultValue = "")
+  val commentPrefix: String = ""
+
 
   /**
     * common variables used in the code

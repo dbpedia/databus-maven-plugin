@@ -67,12 +67,12 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
       return
     }
 
+    // add notice to labels and comments
+    params.addLabelCommentPrefixes()
+
     // prepare the buildDataidFile
     locations.buildDataIdFile.createFileIfNotExists(true).clear()
     val dataIdCollect: Model = ModelFactory.createDefaultModel
-
-
-
 
     //retrieving all User Accounts
     //var accountOption = {

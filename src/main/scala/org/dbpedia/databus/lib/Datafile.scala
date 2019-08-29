@@ -76,10 +76,10 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
   var verified: Boolean = false
 
   // some quality metrics
-  var nonEmptyLines = 0L
-  var duplicates = 0L
+  var nonEmptyLines : Long = 0L
+  var duplicates : Long= 0L
   var sorted: Boolean = false
-  var uncompressedByteSize = 0L
+  var uncompressedByteSize : Long = 0L
 
 
   lazy val preview: String = computePreview
@@ -109,8 +109,8 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
   def finalBasename(versionToAdd: Option[String]): String = {
 
     def prefix = filePrefix
-      // deactivated adding of version for now
-      //versionToAdd.fold(filePrefix) { version => s"$filePrefix-$version" }
+    // deactivated adding of version for now
+    //versionToAdd.fold(filePrefix) { version => s"$filePrefix-$version" }
 
     // we have to check for empty extension seqs, otherwise we get misplaced inital '.'/'_'
     def contentVariantsSuffix = if (contentVariantExtensions.nonEmpty) {
@@ -136,10 +136,10 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     val mimeType: Format = if (mimeTypeByFileName == TextTurtle) {
 
       val baos: ByteArrayInputStream = new ByteArrayInputStream(preview.getBytes)
-      val (_, _, _, wrongTriples) = LineBasedRioDebugParser.parse(baos, Rio.createParser(ApplicationNTriples.rio))
+      val (_, _, good, wrongTriples) = LineBasedRioDebugParser.parse(baos, Rio.createParser(ApplicationNTriples.rio))
 
 
-      if (wrongTriples.isEmpty) {
+      if (good > 0) {
         ApplicationNTriples
       } else {
         //println(wrongTriples.mkString("\n"))
@@ -223,7 +223,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     val ab = a.getBytes("UTF-8")
     val bb = b.getBytes("UTF-8")
 
-    compareBytewise(ab,bb)
+    compareBytewise(ab, bb)
   }
 
   /**
@@ -248,7 +248,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
 
   def updateFileMetrics(): Datafile = {
 
-    if (fileInfoCache != null){
+    if (fileInfoCache != null) {
       log.debug("using cache for fileMetrics")
       nonEmptyLines = fileInfoCache.nonEmptyLines
       duplicates = fileInfoCache.duplicates
@@ -261,7 +261,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
     var dupes = 0L
     var sort: Boolean = true
     var charSize = 0L
-    var uncompressedSize =0L
+    var uncompressedSize = 0L
 
     var previousLine: String = null
     try {
@@ -286,8 +286,11 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
             if (cmp == 0) {
               dupes += 1
             } else if (cmp < 0) {
-              def cut(s:String):String = {if(s.length>41) s.substring(0,40) else s }
-              log.debug("Sortorder non-ascii line "+nonEmpty+": |"+cut(previousLine)+">"+cut(line)+"|")
+              def cut(s: String): String = {
+                if (s.length > 41) s.substring(0, 40) else s
+              }
+
+              log.debug("Sortorder non-ascii line " + nonEmpty + ": |" + cut(previousLine) + ">" + cut(line) + "|")
               sort = false
             }
           }
@@ -295,12 +298,12 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
 
         }
 
-       //now try to determine the accurate uncompressed byte size by reading it from underlying stream an override estimated one if possible
+        //now try to determine the accurate uncompressed byte size by reading it from underlying stream an override estimated one if possible
         uncompressedSize = in match {
-                case c: CompressorInputStream => c.getBytesRead
-                case a: ArchiveInputStream => a.getBytesRead
-                case i: BufferedInputStream => this.bytes
-                case _ => log.warn(s"Bytesize only approximated for file: ${this.file.getAbsolutePath}"); uncompressedSize //TODO  maybe wrap the streams in Datafile with a generic counting input stream
+          case c: CompressorInputStream => c.getBytesRead
+          case a: ArchiveInputStream => a.getBytesRead
+          case i: BufferedInputStream => this.bytes
+          case _ => log.warn(s"Bytesize only approximated for file: ${this.file.getAbsolutePath}"); uncompressedSize //TODO  maybe wrap the streams in Datafile with a generic counting input stream
         }
 
       }
