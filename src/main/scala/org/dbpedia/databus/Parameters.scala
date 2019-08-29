@@ -84,22 +84,28 @@ trait Parameters {
         ("", "", "")
       }
 
+      getLog.info(s"checking: ${locations.prettyPath(locations.inputMarkdownFile)}")
+
       val iter = locations.inputMarkdownFile.lineIterator
       var firstline = ""
       var secondline = ""
       var rest = ""
+
 
       if (iter.hasNext) {
         var tmp = iter.next().trim
         if (tmp.startsWith("#")) {
           firstline = tmp.replace("#", "").trim
         }
+        getLog.debug(s"rdfs:label  '$firstline' ")
         if (iter.hasNext) {
           secondline = iter.next().trim
+          getLog.debug(s"rdfs:comment  '$secondline' ")
 
           for {
             line <- iter
           } (rest += (line + "\n"))
+          getLog.debug(s"dct:description '$rest' ")
         }
       }
       (firstline, secondline, rest.trim)
@@ -155,6 +161,10 @@ trait Parameters {
           s"* This is lazy, but forgivable, continuing operation"
         )
       }
+      if(params.label.length>40){
+        getLog.warn(s"label (${params.label.length}) too long: ${params.label}")
+      }
+
       getLog.info(s"${markdown.name} exists, label: '${params.label}', comment length: ${params.comment.length}, description length: ${params.description.length}  ")
 
     }

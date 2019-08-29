@@ -25,6 +25,7 @@ import java.net.URL
 
 import org.dbpedia.databus.shared.authentification.{AccountHelpers, RSAModulusAndExponent}
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.http.client.config.{CookieSpecs, RequestConfig}
 import org.apache.http.client.methods.HttpHead
 import org.apache.http.impl.client.HttpClients
 import org.apache.jena.rdf.model.ModelFactory
@@ -70,7 +71,10 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
 
     val check: List[URL] = List(codeReference, feedbackChannel, issueTracker, documentationLocation)
     check.filter(_ != null).foreach(u => {
-      val httpclient = HttpClients.createDefault();
+      //val httpclient = HttpClients.createDefault()
+      val httpclient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
+        .setCookieSpec(CookieSpecs.STANDARD).build())
+        .build()
       val httpHead = new HttpHead(u.toString)
       try {
         val code = httpclient.execute(httpHead).getStatusLine.getStatusCode;
