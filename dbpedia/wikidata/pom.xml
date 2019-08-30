@@ -11,7 +11,7 @@
     <groupId>wikidata</groupId>
     <artifactId>group-metadata</artifactId>
     <packaging>pom</packaging>
-    <version>2018.11.30</version>
+    <version>2019.08.01</version>
 
     <modules>
         <module>alias</module>
@@ -22,7 +22,7 @@
         <module>labels</module>
         <module>mappingbased-literals</module>
         <module>mappingbased-objects-uncleaned</module>
-        <module>mappingbased-properties-reified</module>
+        <!--module>mappingbased-properties-reified</module-->
         <module>ontology-subclassof</module>
         <module>page</module>
         <module>properties</module>
@@ -138,7 +138,7 @@ SELECT distinct ?versionstring WHERE {
 order by asc(?versionstring)
 -->
                     <versions>
-                        <version>https://databus.dbpedia.org/marvin/wikidata/alias/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/alias/${databus.marvinversion}</version>
                     <version>https://databus.dbpedia.org/marvin/wikidata/debug/${databus.marvinversion}</version>
                     <version>https://databus.dbpedia.org/marvin/wikidata/description/${databus.marvinversion}</version>
                     <version>https://databus.dbpedia.org/marvin/wikidata/geo-coordinates/${databus.marvinversion}</version>
@@ -154,7 +154,8 @@ order by asc(?versionstring)
                     <version>https://databus.dbpedia.org/marvin/wikidata/references/${databus.marvinversion}</version>
                     <version>https://databus.dbpedia.org/marvin/wikidata/revision/${databus.marvinversion}</version>
                     <version>https://databus.dbpedia.org/marvin/wikidata/sameas-all-wikis/${databus.marvinversion}</version>
-                    <version>https://databus.dbpedia.org/marvin/wikidata/sameas-external/${databus.marvinversion}</version>                </versions>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/sameas-external/${databus.marvinversion}</version>
+                </versions>
                 </configuration>
             </plugin>
         </plugins>

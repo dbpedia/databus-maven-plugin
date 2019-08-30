@@ -97,7 +97,7 @@ trait DataFileToModel extends Properties with Parameters {
     /**
       * basic properties
       */
-    addBasicPropertiesToResource(model, singleFileResource)
+    //addBasicPropertiesToResource(model, singleFileResource)
 
     /**
       * specific info about the file
@@ -156,10 +156,6 @@ trait DataFileToModel extends Properties with Parameters {
   def addBasicPropertiesToResource(model: Model, resource: Resource) = {
 
     implicit def vocabModel = model
-
-    resource.addProperty(RDFS.label, params.label, "en")
-    resource.addProperty(dcterms.title, params.label, "en")
-    resource.addProperty(RDFS.comment, params.comment, "en")
     // todo add version number, but this is a dataid issue
     resource.addProperty(dcterms.conformsTo, global.dataid.namespace)
     resource.addProperty(dcterms.hasVersion, version.asPlainLiteral)

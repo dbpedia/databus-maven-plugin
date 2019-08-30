@@ -90,6 +90,9 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     val datasetResource = dataIdCollect.createResource(s"#Dataset")
     datasetResource.addProperty(RDF.`type`, dataid.Dataset)
     addBasicPropertiesToResource(dataIdCollect, datasetResource)
+    datasetResource.addProperty(RDFS.label, params.label, "en")
+    datasetResource.addProperty(dcterms.title, params.label, "en")
+    datasetResource.addProperty(RDFS.comment, params.comment, "en")
 
     //creating documentation for dataset resource
     //datasetResource.addProperty(dcterms.description, (params.description + "\n\n# Group Documentation\n" + documentation.trim).asPlainLiteral)

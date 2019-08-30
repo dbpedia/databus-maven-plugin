@@ -68,8 +68,16 @@ This dataset was extracted using the wikipedia-dumps available on https://dumps.
 using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
 For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
 
-# Changelog
-## 2018.08.15 to 2018.12.14 - were created as new modular releases, some issues remain:
+## Changelog
+**2019.09.01** 
+* fixed URI encoding and produce more valid triples
+**2019.08.01 -- skipped**
+* no release, downtime due to maintenance and integration of fixes
+**2018.12.14 - 2019.07.01**
+* Debugging period, acii2uni form before messed up URI encoding
+* Implemented [new ci test approach](https://forum.dbpedia.org/t/new-ci-tests-on-dbpedia-releases/77) 
+**2018.08.15 - 2018.12.14**
+* were created as new modular releases, some issues remain:
 * language normalisation to iso codes, zh-min-nan to nan, zh-yue to yue, bat-smg to batsmg (no iso code available)
 * we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe
 characters
