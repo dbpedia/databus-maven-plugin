@@ -63,7 +63,7 @@ For more technical information on how these datasets were generated, please visi
     <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
     <databus.feedbackChannel>https://forum.dbpedia.org/c/databus-dbpedia/mappings</databus.feedbackChannel>
       <!-- used for derive plugin -->
-      <databus.marvinversion>2019.08.30</databus.marvinversion>
+    <databus.deriveversion>2019.08.30</databus.deriveversion>
   </properties>
   <repositories>
     <repository>
