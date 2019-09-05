@@ -9,13 +9,14 @@
   </parent>
   <groupId>mappings</groupId>
   <artifactId>group-metadata</artifactId>
-  <version>2019.08.01</version>
+  <version>2018.08.30</version>
   <packaging>pom</packaging>
   <modules>
     <module>mappingbased-literals</module>
     <module>specific-mappingbased-properties</module>
     <module>geo-coordinates-mappingbased</module>
     <module>instance-types</module>
+    <module>mappingbased-objects</module>
     <module>mappingbased-objects-uncleaned</module>
   </modules>
   <properties>
@@ -56,14 +57,13 @@ For more technical information on how these datasets were generated, please visi
     <databus.issueTracker>https://github.com/dbpedia/extraction-framework/issues</databus.issueTracker>
     <databus.documentationLocation>https://github.com/dbpedia/databus-maven-plugin/blob/master/dbpedia/${project.groupId}/${project.artifactId}</databus.documentationLocation>
     <databus.downloadUrlPath>https://downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
-    <databus.maintainer>https://termilion.github.io/webid.ttl#this</databus.maintainer>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <databus.packageDirectory>/media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}</databus.packageDirectory>
     <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
     <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
     <databus.feedbackChannel>https://forum.dbpedia.org/c/databus-dbpedia/mappings</databus.feedbackChannel>
       <!-- used for derive plugin -->
-      <databus.marvinversion>2019.08.01</databus.marvinversion>
+      <databus.marvinversion>2019.08.30</databus.marvinversion>
   </properties>
   <repositories>
     <repository>
@@ -100,6 +100,7 @@ For more technical information on how these datasets were generated, please visi
             <version>https://databus.dbpedia.org/marvin/mappings/instance-types/${databus.marvinversion}</version>
             <version>https://databus.dbpedia.org/marvin/mappings/mappingbased-literals/${databus.marvinversion}</version>
             <version>https://databus.dbpedia.org/marvin/mappings/mappingbased-objects-uncleaned/${databus.marvinversion}</version>
+            <version>https://databus.dbpedia.org/marvin/mappings/mappingbased-objects/${databus.marvinversion}</version>
             <version>https://databus.dbpedia.org/marvin/mappings/specific-mappingbased-properties/${databus.marvinversion}</version>
           </versions>
         </configuration>
