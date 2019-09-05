@@ -96,12 +96,12 @@ For more technical information on how these datasets were generated, please visi
         </executions>
         <configuration>
           <versions>
-            <version>https://databus.dbpedia.org/marvin/mappings/geo-coordinates-mappingbased/${databus.marvinversion}</version>
-            <version>https://databus.dbpedia.org/marvin/mappings/instance-types/${databus.marvinversion}</version>
-            <version>https://databus.dbpedia.org/marvin/mappings/mappingbased-literals/${databus.marvinversion}</version>
-            <version>https://databus.dbpedia.org/marvin/mappings/mappingbased-objects-uncleaned/${databus.marvinversion}</version>
-            <version>https://databus.dbpedia.org/marvin/mappings/mappingbased-objects/${databus.marvinversion}</version>
-            <version>https://databus.dbpedia.org/marvin/mappings/specific-mappingbased-properties/${databus.marvinversion}</version>
+            <version>https://databus.dbpedia.org/marvin/mappings/geo-coordinates-mappingbased/${databus.deriveversion}</version>
+            <version>https://databus.dbpedia.org/marvin/mappings/instance-types/${databus.deriveversion}</version>
+            <version>https://databus.dbpedia.org/marvin/mappings/mappingbased-literals/${databus.deriveversion}</version>
+            <version>https://databus.dbpedia.org/marvin/mappings/mappingbased-objects-uncleaned/${databus.deriveversion}</version>
+            <version>https://databus.dbpedia.org/marvin/mappings/mappingbased-objects/${databus.deriveversion}</version>
+            <version>https://databus.dbpedia.org/marvin/mappings/specific-mappingbased-properties/${databus.deriveversion}</version>
           </versions>
         </configuration>
       </plugin>

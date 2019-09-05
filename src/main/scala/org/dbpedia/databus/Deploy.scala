@@ -131,6 +131,10 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
            |Data should be available within some minutes at graph ${datasetIdentifier}
            |Test at ${deployRepoURL}/sparql  with query: \n\n ${query}
            |curl "${deployRepoURL}/sparql?query=${encoded}"
+           |
+           |Note:
+           |* To avoid denial of service attacks, we will sleep 5 minutes after your request is received, before processing it.
+           |* First time account users: We cache WebIDs daily. So if your site is not shown, wait day.
        """
           .stripMargin)
     }
