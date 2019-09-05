@@ -65,7 +65,7 @@ The PreFusion dataset is stored as JSON-LD using a custom scheme optimized for a
     }
 
 ## Attribution fulfilled by
-* (when deriving another dataset and releasing to the Databus) adding the Databus link to the provenance https://databus.dbpedia.org/dbpedia/${project.groupId}/${project.artifactId}/${project.artifactId}/${project.version}
+* (when deriving another dataset and releasing to the Databus) adding the Databus link to the provenance https://databus.dbpedia.org/dbpedia/${project.groupId}/${project.artifactId}/${project.version}
 * on your website:
   * include the DBpedia logo and mention the usage of DBpedia with this link: https://databus.dbpedia.org/dbpedia
   * include backlinks from your pages to the individual entities, e.g. http://dbpedia.org/resource/Berlin
@@ -101,7 +101,7 @@ For more specific information see the provenance information of the artifact ver
 * introduced new artifacts structure
 * switched to new HTTPS Global IDs
 
-## 2018.10.01initialeval
+## 2018.10.01initeval
 * initial prototype for evaluation containing 5 DBpedia's + Wikidata
       ]]></databus.documentation>
     </properties>

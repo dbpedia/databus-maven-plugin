@@ -22,7 +22,7 @@
         <module>labels</module>
         <module>mappingbased-literals</module>
         <module>mappingbased-objects-uncleaned</module>
-        <module>mappingbased-properties-reified</module>
+        <!--module>mappingbased-properties-reified</module-->
         <module>ontology-subclassof</module>
         <module>page</module>
         <module>properties</module>
