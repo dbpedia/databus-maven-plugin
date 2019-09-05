@@ -141,7 +141,8 @@ SELECT distinct (?version) WHERE {
 order by asc(?version)
 -->
                     <versions>
-                        <version>https://databus.dbpedia.org/marvin/generic/article-templates/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/geo-coordinates/${databus.marvinversion}</version>
+                        <!--version>https://databus.dbpedia.org/marvin/generic/article-templates/${databus.marvinversion}</version>
                         <version>https://databus.dbpedia.org/marvin/generic/categories/${databus.marvinversion}</version>
                         <version>https://databus.dbpedia.org/marvin/generic/citations/${databus.marvinversion}</version>
                         <version>https://databus.dbpedia.org/marvin/generic/commons-sameas-links/${databus.marvinversion}</version>
@@ -159,7 +160,7 @@ order by asc(?version)
                         <version>https://databus.dbpedia.org/marvin/generic/revisions/${databus.marvinversion}</version>
                         <version>https://databus.dbpedia.org/marvin/generic/topical-concepts/${databus.marvinversion}</version>
                         <version>https://databus.dbpedia.org/marvin/generic/wikilinks/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/wikipedia-links/${databus.marvinversion}</version>
+                        <version>https://databus.dbpedia.org/marvin/generic/wikipedia-links/${databus.marvinversion}</version-->
                     </versions>
                 </configuration>
             </plugin>
