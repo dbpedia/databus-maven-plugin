@@ -12,4 +12,8 @@
     <groupId>mappings</groupId>
     <packaging>jar</packaging>
 
+    <properties>
+        <databus.codeReference>https://github.com/dbpedia/extraction-framework/blob/master/core/src/main/scala/org/dbpedia/extraction/mappings/GeoCoordinatesMapping.scala</databus.codeReference>
+    </properties>
+
 </project>
