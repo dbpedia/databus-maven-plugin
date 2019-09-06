@@ -2,7 +2,7 @@
 # Geo-coordinates extracted with mappings  
 Contains geographic coordinates from the Wikipedia Infoboxes refined by the mapping-based extraction.  
   
-The dataset contains all triples extracted with the help of the [Geocoordinates Mappings](http://mappings.dbpedia.org/index.php/Template:GeocoordinatesMapping). Whereas [generic geo coordinates datasets](https://databus.dbpedia.org/dbpedia/generic/geo-coordinates) spots any geocoordinate in an infobox without contextualizing it, the mappings allow to describe which kind of location the coordinates are describing. This can be the coordinates of the actual location of the resource  itself
+The dataset contains all triples extracted with the help of the [Geocoordinates Mappings](http://mappings.dbpedia.org/index.php/Template:GeocoordinatesMapping). Whereas [generic geo coordinates datasets](https://databus.dbpedia.org/dbpedia/generic/geo-coordinates) spot any geocoordinate in an infobox without contextualizing it, the mappings allow to describe which kind of location the coordinates are describing. This can be the coordinates of the actual location of the resource  itself
   
 
     <http://dbpedia.org/resource/Atlantic_Ocean> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing> .  
