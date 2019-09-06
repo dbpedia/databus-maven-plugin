@@ -12,7 +12,7 @@
     <groupId>generic</groupId>
     <artifactId>group-metadata</artifactId>
     <packaging>pom</packaging>
-    <version>2019.08.01</version>
+    <version>2019.08.30</version>
     <modules>
         <!--module>anchor-text</module-->
         <module>article-templates</module>
@@ -81,7 +81,7 @@ characters
 * link to Wikimedia dump version is missing
         ]]></databus.documentation>
         <!-- used for derive plugin -->
-        <databus.deriveversion>2019.08.01</databus.version>
+        <databus.deriveversion>2019.08.01</databus.deriveversion>
     </properties>
 
     <!-- currently still needed to find the super-pom, once the super-pom is in maven central,
