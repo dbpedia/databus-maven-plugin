@@ -9,7 +9,7 @@
   </parent>
   <groupId>mappings</groupId>
   <artifactId>group-metadata</artifactId>
-  <version>2018.08.30</version>
+  <version>2019.08.30</version>
   <packaging>pom</packaging>
   <modules>
     <module>mappingbased-literals</module>
