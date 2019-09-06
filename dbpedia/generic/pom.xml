@@ -44,9 +44,6 @@
             https://downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}/${project.version}/
         </databus.downloadUrlPath>
         <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
-        <!-- moved to settings.xml
-         databus.pkcs12File>${user.home}/.m2/certificate_generic.pfx</databus.pkcs12File-->
-        <databus.maintainer>https://termilion.github.io/webid.ttl#this</databus.maintainer>
         <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
         <databus.documentation><![CDATA[
 ## Attribution fulfilled by
@@ -84,7 +81,7 @@ characters
 * link to Wikimedia dump version is missing
         ]]></databus.documentation>
         <!-- used for derive plugin -->
-        <databus.marvinversion>2019.08.01</databus.marvinversion>
+        <databus.deriveversion>2019.08.01</databus.version>
     </properties>
 
     <!-- currently still needed to find the super-pom, once the super-pom is in maven central,
@@ -124,43 +121,55 @@ characters
                 <configuration>
                     <!-- query
 PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
-PREFIX dct:    <http://purl.org/dc/terms/>
-PREFIX dcat:   <http://www.w3.org/ns/dcat#>
-PREFIX db:     <https://databus.dbpedia.org/>
-PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
-prefix dataid-cv: <http://dataid.dbpedia.org/ns/cv#>
-
-
-SELECT distinct (?version) WHERE {
+SELECT distinct (?derive) WHERE {
 
     ?dataset dataid:group <https://databus.dbpedia.org/marvin/generic> .
+    ?dataset dataid:artifact ?artifact .
     ?dataset dataid:version ?version .
-    ?dataset dct:hasVersion "2019.07.01"^^xsd:string
+    ?dataset dct:hasVersion "2019.08.30"^^xsd:string
+	BIND (CONCAT("<version>",?artifact,"/${databus.deriveversion}</version>") as ?derive)
 }
-order by asc(?version)
+order by asc(?derive)
 -->
                     <versions>
-                        <version>https://databus.dbpedia.org/marvin/generic/article-templates/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/categories/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/citations/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/commons-sameas-links/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/disambiguations/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/external-links/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/geo-coordinates/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/homepages/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/infobox-properties/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/infobox-property-definitions/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/interlanguage-links/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/labels/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/page/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/persondata/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/redirects/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/revisions/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/topical-concepts/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/wikilinks/${databus.marvinversion}</version>
-                        <version>https://databus.dbpedia.org/marvin/generic/wikipedia-links/${databus.marvinversion}</version>
-                    </versions>
+                      <version>https://databus.dbpedia.org/marvin/generic/article-templates/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/categories/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/citations/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/commons-sameas-links/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/disambiguations/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/external-links/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/geo-coordinates/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/homepages/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/infobox-properties/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/infobox-property-definitions/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/interlanguage-links/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/labels/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/page/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/persondata/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/redirects/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/revisions/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/topical-concepts/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/wikilinks/${databus.deriveversion}</version>
+
+<version>https://databus.dbpedia.org/marvin/generic/wikipedia-links/${databus.deriveversion}</version>
+</versions>
                 </configuration>
             </plugin>
         </plugins>

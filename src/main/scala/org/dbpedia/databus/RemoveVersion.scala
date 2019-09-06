@@ -57,8 +57,10 @@ class RemoveVersion extends Operations {
       if (c.trim.equalsIgnoreCase("y")) {
         getLog.info("deleting")
         modules.forEach(m => {
+          //DELETE
           val vdir = File(s"$m/$version")
-          getLog.info(s"${!vdir.delete().isDirectory} $vdir")
+          vdir.delete(true)
+          getLog.info(s"${!vdir.isDirectory} $vdir")
         })
 
 

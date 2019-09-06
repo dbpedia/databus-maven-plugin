@@ -97,7 +97,7 @@ trait DataFileToModel extends Properties with Parameters {
     /**
       * basic properties
       */
-    //addBasicPropertiesToResource(model, singleFileResource)
+    addBasicPropertiesToResource(model, singleFileResource)
 
     /**
       * specific info about the file
