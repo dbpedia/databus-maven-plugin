@@ -1,71 +1,35 @@
-**Discuss** via Slack  #releases:<a href="https://dbpedia.slack.com/messages/CBLRV788K/details/" target="_blank">dbpedia.slack.org</a>
+# Databus Maven Plugin 
+[![Build Status](https://travis-ci.org/dbpedia/databus-maven-plugin.svg?branch=master)](https://travis-ci.org/dbpedia/databus-maven-plugin) [![Maven Central Version](https://img.shields.io/maven-central/v/org.dbpedia.databus/databus-maven-plugin.svg)](https://search.maven.org/search?q=g:org.dbpedia.databus%20AND%20a:databus-maven-plugin&core=gav)
+Post `dataid.ttl` into your Databus space to consume your files via the [Databus SPARQL API](http://dev.dbpedia.org/Download_Data)
+Feedback: https://forum.dbpedia.org 
 
-NOTE
-PLEASE READ THE [MANUAL HERE]( https://github.com/dbpedia/databus-maven-plugin/wiki/User-Manual-v1.3)
-This page below is not up to date yet and will mostly contain info about the development of the software and later the DataID Ontology. 
+## User Manual 
+Read the frolicking [Manual]( https://github.com/dbpedia/databus-maven-plugin/wiki/User-Manual-v1.3)
 
-# Databus Maven Plugin [![Build Status](https://travis-ci.org/dbpedia/databus-maven-plugin.svg?branch=master)](https://travis-ci.org/dbpedia/databus-maven-plugin) [![Maven Central Version](https://img.shields.io/maven-central/v/org.dbpedia.databus/databus-maven-plugin.svg)](https://search.maven.org/search?q=g:org.dbpedia.databus%20AND%20a:databus-maven-plugin&core=gav)
-Aligning data and software lifecycle with Maven
+## Data Dependencies for Maven 
+Our goal is to align the data and software lifecycle. We created a Maven plugin that can upload output of software, e.g. the [DBpedia Information Extraction Framework](https://github.com/dbpedia/extraction-framework/) to the Databus platform. The other tools can include it again, just like software dependencies via Maven Central and Archiva. See the [Databus Client](https://github.com/dbpedia/databus-client) and [Databus Derive Plugin](https://github.com/dbpedia/databus-derive) for data dependencies and automating **software with data**.
+The plugin was developed to use the features of the Maven software build automation tool for data releases and metadata generation. Once configured properly (1-3 hours), data can be released and re-released systematically in minutes.
 
-The plugin was developed to use the features of the Maven software build automation tool for data releases and metadata generation.
-The tool has the following features:
-* once configured properly (1-3 hours), data can be released and released systematically in minutes
-* auto-detect RDF formats with syntax validation 
-* RDF is NOT a requirement, any data can be released (binary, csv, xml), however with RDF the tool has more features
-* auto-detect compression variant
-* private key signature, sha256sum and provenance (WebID) generation
-* generation of metadata compatible to:
-  * RSS feeds
 
-## Metadata Standards
-DBpedia's DataID fulfills 31 of 35 Best Practices from the W3C Data on the Web Best Practices Working Group, cf. [implementation report](http://w3c.github.io/dwbp/dwbp-implementation-report.html) 
+<!-- DBpedia's DataID fulfills 31 of 35 Best Practices from the W3C Data on the Web Best Practices Working Group, cf. [implementation report](http://w3c.github.io/dwbp/dwbp-implementation-report.html) 
 
 <img title="DWBP Implementation Report Summary" width="400" src="https://raw.githubusercontent.com/dbpedia/databus-maven-plugin/master/DWBP.png" >
-
-
-## Roadmap
-We are planning the following features:
-* DCAT and DCAT-AP interoperability
-* FAIR Data principles
-* automatic generation of H2020 EU Data Management Plan Deliverables 
-  * feature exists, but is not yet integrated:
-  * https://wiki.dbpedia.org/use-cases/data-management-plan-extension-dataid
-* automatic upload of metadata to other repositories:
-  * http://lod-cloud.net
-  * CKAN
-  * RE3
- 
- Did we forget something? suggest more interoperability in the issue tracker: https://github.com/dbpedia/databus-maven-plugin/issues
-
-
-
-
-
-<!--run ` ./gh-md-toc --insert README.md` to regenerate -->
-# Table of Contents
-<!--ts-->
- 
-<!--te-->
-
-
-
+-->
 
 # Development 
 
 ## License
-License of the software is AGPL with intended copyleft. We expect that you spend your best effort to commit upstream to 
-make this tool better or at least that your extensions are made available again. 
+License of the software is AGPL with intended copyleft. We expect that you spend your best effort to commit upstream to make this tool better or at least that your extensions are made available again. 
 Any contribution will be merged under the copyright of the DBpedia Association. 
 
-## Development rules
-* configuration values taken from Maven are configured in `Properties.scala`, use its 'sub-trait' `Locations.scala` to
-  derive filesystem locations from these and `Parameters.scala` to compute all other values derived from the original
-  Maven properties (refactoring into this separation is not yet complete, but please heed this guidelines for additional
-  configuration-derived fields nontheless)
+## Development notes
+* configuration values taken from Maven are configured in `Properties.scala`, use its 'sub-trait' `Locations.scala` to derive filesystem locations from these and `Parameters.scala` to compute all other values derived from the original Maven properties (refactoring into this separation is not yet complete, but please heed this guidelines for additional   configuration-derived fields nontheless)
 * Datafile.scala is a quasi decorator for files, use getInputStream to open any file
 * Use the issue tracker, do branches instead of forks (we can give access), we will merge with master
-* Document options in the archetype pom and here
 
+## Super-pom
+To set defaults for the plugin we developed a parent `pom.xml` in the super pom folder. 
+All other `pom.xml` can use it. 
 
 ## Maven Archiva 
 
