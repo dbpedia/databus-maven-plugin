@@ -12,4 +12,8 @@
     <artifactId>anchor-text</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <databus.codeReference>https://github.com/dbpedia/extraction-framework/blob/master/core/src/org/dbpedia/extraction/mappings/AnchorTextExtractor.scala</databus.codeReference>
+    </properties>
+
 </project>

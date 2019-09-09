@@ -12,5 +12,8 @@
     <artifactId>article-templates</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <databus.codeReference>https://github.com/dbpedia/extraction-framework/blob/master/core/src/org/dbpedia/extraction/mappings/ArticleTemplatesExtractor.scala</databus.codeReference>
+    </properties>
 
 </project>
