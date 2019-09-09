@@ -12,5 +12,9 @@
     <artifactId>external-links</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <databus.codeReference>https://github.com/dbpedia/extraction-framework/blob/master/core/src/org/dbpedia/extraction/mappings/ExternalLinksExtractor.scala</databus.codeReference>
+    </properties>
+
 
 </project>
