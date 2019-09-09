@@ -81,7 +81,7 @@ characters
 * link to Wikimedia dump version is missing
         ]]></databus.documentation>
         <!-- used for derive plugin -->
-        <databus.deriveversion>2019.08.01</databus.deriveversion>
+        <databus.deriveversion>2019.08.30</databus.deriveversion>
     </properties>
 
     <!-- currently still needed to find the super-pom, once the super-pom is in maven central,
@@ -119,6 +119,8 @@ characters
                     </execution>
                 </executions>
                 <configuration>
+                    <skipParsing>false</skipParsing>
+	            <skipCloning>false</skipCloning>
                     <!-- query
 PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
 SELECT distinct (?derive) WHERE {
