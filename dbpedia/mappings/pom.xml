@@ -9,7 +9,7 @@
   </parent>
   <groupId>mappings</groupId>
   <artifactId>group-metadata</artifactId>
-  <version>2019.08.30</version>
+  <version>2019.09.01</version>
   <packaging>pom</packaging>
   <modules>
     <module>mappingbased-literals</module>
@@ -63,7 +63,7 @@ For more technical information on how these datasets were generated, please visi
     <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
     <databus.feedbackChannel>https://forum.dbpedia.org/c/databus-dbpedia/mappings</databus.feedbackChannel>
       <!-- used for derive plugin -->
-    <databus.deriveversion>2019.08.30</databus.deriveversion>
+    <databus.deriveversion>2019.09.01</databus.deriveversion>
   </properties>
   <repositories>
     <repository>
@@ -95,6 +95,8 @@ For more technical information on how these datasets were generated, please visi
           </execution>
         </executions>
         <configuration>
+	  <skipParsing>false</skipParsing>
+	  <skipCloning>false</skipCloning>
           <versions>
             <version>https://databus.dbpedia.org/marvin/mappings/geo-coordinates-mappingbased/${databus.deriveversion}</version>
             <version>https://databus.dbpedia.org/marvin/mappings/instance-types/${databus.deriveversion}</version>

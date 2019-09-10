@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- the super-pom deactivates software compilation and configures the plugin to run in default phases -->
+    <parent>
+        <groupId>org.dbpedia.databus</groupId>
+        <artifactId>super-pom</artifactId>
+        <version>1.3-SNAPSHOT</version>
+    </parent>
+    <groupId>publication</groupId>
+    <artifactId>group-metadata</artifactId>
+    <packaging>pom</packaging>
+    <version>2019.09.09</version>
+    <modules>
+        <module>strategy</module>
+    </modules>
+    <properties>
+        <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
+        <databus.packageDirectory>
+            /media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}
+        </databus.packageDirectory>
+        <databus.downloadUrlPath>
+            https://downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}/${project.version}/
+        </databus.downloadUrlPath>
+        <databus.publisher>https://webid.dbpedia.org/webid.ttl#this</databus.publisher>
+        <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
+        <databus.documentation><![CDATA[
+## Publication
+A collection of publications by the DBpedia Association, its board, members and community. 
+
+## Changelog
+**2019.09.09** 
+Published 1 Billion derived Knowledge Graph initiative to start the formulation of DBpedia's strategic agenda
+        ]]></databus.documentation>
+        <!-- used for derive plugin -->
+        <databus.deriveversion>2019.08.30</databus.deriveversion>
+    </properties>
+
+    <!-- currently still needed to find the super-pom, once the super-pom is in maven central,
+    this can be removed as well -->
+    <repositories>
+        <repository>
+            <id>archiva.internal</id>
+            <name>Internal Release Repository</name>
+            <url>http://databus.dbpedia.org:8081/repository/internal</url>
+        </repository>
+        <repository>
+            <id>archiva.snapshots</id>
+            <name>Internal Snapshot Repository</name>
+            <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+        </plugins>
+    </build>
+
+
+</project>
