@@ -36,6 +36,10 @@
         <module>wikipedia-links</module>
     </modules>
     <properties>
+        <databus.codeReference>https://github.com/dbpedia/extraction-framework/blob/master/core/src/main/scala/org/dbpedia/extraction/mappings/</databus.codeReference>
+        <databus.issueTracker>https://github.com/dbpedia/extraction-framework/issues</databus.issueTracker>
+        <databus.documentationLocation>https://github.com/dbpedia/databus-maven-plugin/blob/master/dbpedia/${project.groupId}/${project.artifactId}</databus.documentationLocation>
+        <databus.feedbackChannel>https://forum.dbpedia.org/c/databus-dbpedia/generic</databus.feedbackChannel>
         <databus.tryVersionAsIssuedDate>true</databus.tryVersionAsIssuedDate>
         <databus.packageDirectory>
             /media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}/${project.artifactId}
