@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>publication</groupId>
+        <artifactId>group-metadata</artifactId>
+        <version>2019.09.09</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>publication</groupId>
+    <artifactId>strategy</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+		<databus.feedbackChannel>https://forum.dbpedia.org/c/strategy</databus.feedbackChannel>
+    </properties>
+
+</project>
