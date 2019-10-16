@@ -43,15 +43,18 @@ This dataset was extracted using the wikipedia-dumps available on https://dumps.
 using the DBpedia Extraction-Framework available at https://github.com/dbpedia/extraction-framework
 For more technical information on how these datasets were generated, please visit http://dev.dbpedia.org
 
-# Changelog
-## since 2018.09.12
-* were created as new modular releases, some issues remain
-* we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe xcharacters
-* parsing removed 250k triples total, debugging pending
-* object-uncleaned was not transformed into objects-cleaned and is missing
-* link to Wikimedia dump version is missing
-## 2016.10.01
-* was taken from the previous BIG DBpedia releases under http://downloads.dbpedia.org/2016-10/ and included for completeness</databus.documentation>
+## Changelog
+* 2019.10.16
+  * fixed encoding issue
+  * fixed https://github.com/dbpedia/extraction-framework/issues/595 where a nullpointer caused some instance extractions to crash
+* 2018.09.12
+  * were created as new modular releases, some issues remain
+  * we used rapper 2.0.14 to parse and `LC_ALL=C sort` to sort and ascii2uni -a U to unescape unicdoe xcharacters
+  * parsing removed 250k triples total, debugging pending
+  * object-uncleaned was not transformed into objects-cleaned and is missing
+  * link to Wikimedia dump version is missing
+* 2016.10.01
+  * was taken from the previous BIG DBpedia releases under http://downloads.dbpedia.org/2016-10/ and included for completeness</databus.documentation>
     <databus.license>http://purl.oclc.org/NET/rdflicense/cc-by3.0</databus.license>
     <databus.codeReference>https://github.com/dbpedia/extraction-framework/blob/master/core/src/main/scala/org/dbpedia/extraction/mappings/MappingExtractor.scala</databus.codeReference>
     <databus.issueTracker>https://github.com/dbpedia/extraction-framework/issues</databus.issueTracker>

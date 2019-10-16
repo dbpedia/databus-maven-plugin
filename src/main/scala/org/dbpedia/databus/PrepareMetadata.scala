@@ -182,7 +182,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
     //writing the metadatafile
     locations.buildDataIdFile.outputStream.foreach { os =>
-      os.write((Properties.logo + "\n").getBytes)
+      os.write((Properties.logo + "\n").getBytes("UTF-8"))//(charset = "UTF-8")
       dataIdCollect.write(os, "turtle")
     }
     getLog.info(s"DataId built at: ${locations.prettyPath(locations.buildDataIdFile)}")
