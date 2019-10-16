@@ -11,7 +11,7 @@
     <groupId>wikidata</groupId>
     <artifactId>group-metadata</artifactId>
     <packaging>pom</packaging>
-    <version>2019.08.01</version>
+    <version>2019.10.01</version>
 
     <modules>
         <module>alias</module>
@@ -21,6 +21,7 @@
         <module>instance-types</module>
         <module>labels</module>
         <module>mappingbased-literals</module>
+        <module>mappingbased-objects</module>
         <module>mappingbased-objects-uncleaned</module>
         <!--module>mappingbased-properties-reified</module-->
         <module>ontology-subclassof</module>
