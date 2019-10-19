@@ -12,7 +12,7 @@
     <groupId>generic</groupId>
     <artifactId>group-metadata</artifactId>
     <packaging>pom</packaging>
-    <version>2019.08.30</version>
+    <version>2019.10.01</version>
     <modules>
         <!--module>anchor-text</module-->
         <module>article-templates</module>
