@@ -84,7 +84,7 @@ characters
 * deleted due to bzip2 non-recoverable bad blocks
         ]]></databus.documentation>
         <!-- used for derive plugin -->
-        <databus.marvinversion>2019.08.01</databus.marvinversion>
+        <databus.marvinversion>2019.10.01</databus.marvinversion>
     </properties>
 
     <!-- currently still needed to find the super-pom, once the super-pom is in maven central,
@@ -147,6 +147,7 @@ order by asc(?versionstring)
                     <version>https://databus.dbpedia.org/marvin/wikidata/instance-types/${databus.marvinversion}</version>
                     <version>https://databus.dbpedia.org/marvin/wikidata/labels/${databus.marvinversion}</version>
                     <version>https://databus.dbpedia.org/marvin/wikidata/mappingbased-literals/${databus.marvinversion}</version>
+                    <version>https://databus.dbpedia.org/marvin/wikidata/mappingbased-objects/${databus.marvinversion}</version>
                     <version>https://databus.dbpedia.org/marvin/wikidata/mappingbased-objects-uncleaned/${databus.marvinversion}</version>
                     <version>https://databus.dbpedia.org/marvin/wikidata/ontology-subclassof/${databus.marvinversion}</version>
                     <version>https://databus.dbpedia.org/marvin/wikidata/page/${databus.marvinversion}</version>
@@ -157,6 +158,8 @@ order by asc(?versionstring)
                     <version>https://databus.dbpedia.org/marvin/wikidata/sameas-all-wikis/${databus.marvinversion}</version>
                     <version>https://databus.dbpedia.org/marvin/wikidata/sameas-external/${databus.marvinversion}</version>
                 </versions>
+                  <skipParsing>false</skipParsing>        
+                  <skipCloning>false</skipCloning>
                 </configuration>
             </plugin>
         </plugins>
