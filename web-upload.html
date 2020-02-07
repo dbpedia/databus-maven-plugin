@@ -1,4 +1,4 @@
-<html><body>
+<html><body style="margin:6em 5% 19em 5%;box-shadow:0 .3em 1em #000;padding:10em 10em 10em 10em;">
 
 <b>Logged in as kurzum</b><br>
 
@@ -6,52 +6,52 @@ The databus artifact will be available under <emph>https://databus.dbpedia.org/k
 <br>
 <br>
 
-<h1>Step 1: Modify existing or new version of existing or create new </h1>
+<h1>CHOICE: 1. Modify existing or 2. add new version of existing or 3. create new </h1>
  
 <hr>
 
-<h1>Step 2: Versioned Dataset</h1>
+<h1>Versioned Dataset</h1>
 
 Databus follows software design principles to package data, so that any software you and others build on the data will work. 
 By specifying a group and artifact id you create the following <emph>contract</emph> or expectations:
 
 <h2>Group and Artifact</h2>
-define the abstract identity of the dataset with versions. 
+define the abstract identity of the dataset with versions. <br>
 Each Version is therefore still considered to be the <b>same dataset</b>, just a different version. 
 An example here is updating the OS version of your Android mobile phone or using a Web API or software library. Both are versioned as well and if they change too much, apps break. 
-* Datasets can contain any files, but
-** A new version should roughly contain the same set of files with similarly structured content. 
-** Don't put all files in one dataset, follow [Low Coupling and High Cohesion](https://en.wikipedia.org/wiki/Coupling_(computer_programming)), e.g. keep any schematic information (ontologies, XSD, XML Schema) into a different artifact versioned separately.  
-** Think about the lifecycle of each individual file. Are the all updated together?  If some files are updated daily and others yearly, then you probably end up creating new daily versions for the yearly changing files as well. 
-** Fluctuation and changes are normal in the beginning, don't hesitate to use the Databus to gradually improve data and stabilize it following an Agile Data Engineering methodology. 
+* Datasets can contain any files, but<br>
+** A new version should roughly contain the same set of files with similarly structured content. <br>
+** Don't put all files in one dataset, follow [Low Coupling and High Cohesion](https://en.wikipedia.org/wiki/Coupling_(computer_programming)), e.g. keep any schematic information (ontologies, XSD, XML Schema) into a different artifact versioned separately.  <br>
+** Think about the lifecycle of each individual file. Are the all updated together?  If some files are updated daily and others yearly, then you probably end up creating new daily versions for the yearly changing files as well. <br>
+** Fluctuation and changes are normal in the beginning, don't hesitate to use the Databus to gradually improve data and stabilize it following an Agile Data Engineering methodology. <br>
 
 <h2>Versioning</h2> 
 Software versions are driven by code edits, features and functionality and normally follow the MAJOR.MINOR.PATCH or semver.org versioning pattern. 
 Data, however, is more time-driven, e.g. the weekly database dump, a daily web crawl or are created by running an extraction or AI software.  
 Schema and ontologies follow both patterns. 
-In order to accomodate this, Databus follows only one rule for versioning:
-<b>version numbers are sorted alphanumerical</b>
-2018.01.01 > 2017.01.01
-1.5.2 > 1.11.2 > 01.05.02
+In order to accomodate this, Databus follows only one rule for versioning:<br>
+<b>version numbers are sorted alphanumerical</b><br>
+2018.01.01 > 2017.01.01<br>
+1.5.2 > 1.11.2 > 01.05.02<br>
 
 <h2>Notes</h2>
 1. The system is intended to flexibel and you can also repurpose it
-2. Each new version, will require us to store 20  triples or records per file in the Databus API. Please don't update more than 5000 files per month for now.  
-3. The Databus Client handles compression, format conversion and mapping via the "download AS" function. It is unnecessary to duplicate files, which only differ in compression or format. 
+<br>2. Each new version, will require us to store 20  triples or records per file in the Databus API. Please don't update more than 5000 files per month for now.  
+<br>3. The Databus Client handles compression, format conversion and mapping via the "download AS" function. It is unnecessary to duplicate files, which only differ in compression or format. 
 
 
 <table>
 <tr><th>Form</th><th>Description</th><th>validation</th></tr>
 <tr>
 <td>
-<label for="artifact">Group and Artifact </label>
+<label for="artifact">Group/Artifact</label>
 <input type="text" name="artifact" id="artifact" value=""></td>
 <td>see above </td>
 <td>"[A-Za-z0-9_\\-.]+", locked if existing, editable if new</td>
 </tr>
 <tr>
 <td>
-<label for="version">version</label>
+<label for="version">Version</label>
 <input type="text" name="artifact" id="artifact" value=""></td>
 <td>see above </td>
 <td>"[A-Za-z0-9_\\-.]+", locked if overwrite/update, editable if new, best to show the order in relation to other versions</td>
@@ -59,10 +59,10 @@ In order to accomodate this, Databus follows only one rule for versioning:
 </table>
 
 <hr>
-<h1>Step 3: License</h2>
+<h1>License</h2>
 We require machine-readable standardized licenses.
 We collect all valid license URLs in the DBpedia Knowledge Library in collaboration with the DALICC License Library https://dalicc.net/license-library
-If you prefer to use customized, hard to understand, unclear or missing licenses, then the Databus is not the right platform for you.. 
+<br>If you prefer to use customized, hard to understand, unclear or missing licenses, then the Databus is not the right platform for you.. 
 <b></b>
 
 <table>
@@ -84,18 +84,19 @@ If you prefer to use customized, hard to understand, unclear or missing licenses
 </table>
 
 <hr>
-<h1>Step 4: Documentation</h1>
+<h1>Documentation</h1>
 <table>
 <tr><th>Form</th><th>Description</th><th>validation</th></tr>
 <tr>
 <td>
-<label for="docu">docu</label>
+<label for="docu">docu</label><br>
  <textarea name="docu" rows="10" cols="30">Markdown</textarea></td>
-<td>duh </td>
+<td>obvious</td>
 <td>markdown</td>
 </tr>
 </table>
 
+Optional:
 <pre>
 <databus.codeReference>https://github.com/dbpedia/extraction-framework/blob/master/core/src/main/scala/org/dbpedia/extraction/mappings/MappingExtractor.scala</databus.codeReference>
 <databus.documentationLocation>https://raw.githubusercontent.com/kurzum/databus-poms/master/kurzum/${project.groupId}/${project.artifactId}/${project.artifactId}.md</databus.documentationLocation>    
@@ -104,11 +105,11 @@ If you prefer to use customized, hard to understand, unclear or missing licenses
 </pre>
 
 <hr>
-<h1>Step 5: File Urls</h1>
+<h1>File Urls</h1>
 <b>Tricky, discussion necessary</b>
 
 <hr>
-<h1>Step 6: Finalize</h1>
+<h1>Finalize</h1>
 
 
 <input type="radio" name="final" value="male">Publish the metadata on the bus and also host the metadata for me<br>
