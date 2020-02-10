@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/dbpedia/databus-maven-plugin.svg?branch=master)](https://travis-ci.org/dbpedia/databus-maven-plugin) [![Maven Central Version](https://img.shields.io/maven-central/v/org.dbpedia.databus/databus-maven-plugin.svg)](https://search.maven.org/search?q=g:org.dbpedia.databus%20AND%20a:databus-maven-plugin&core=gav)
 Post `dataid.ttl` into your Databus space to consume your files via the [Databus SPARQL API](http://dev.dbpedia.org/Download_Data)
 Feedback: https://forum.dbpedia.org 
-
+ 
 ## User Manual 
 Read the frolicking [Manual]( https://github.com/dbpedia/databus-maven-plugin/wiki/User-Manual-v1.3)
 

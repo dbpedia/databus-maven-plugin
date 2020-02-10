@@ -1,3 +1,4 @@
 # Wikipedia page title as rdfs:label 
-During the generic-spark extraction, the page title of the Wikipedia article is retrieved and saved as rdfs:label, the code is in the [LabelExtractor](https://github.com/dbpedia/extraction-framework/blob/master/core/src/main/scala/org/dbpedia/extraction/mappings/LabelExtractor.scala). Edit [docu on github](https://github.com/dbpedia/databus-maven-plugin/blob/master/dbpedia/generic/labels/labels.md), [post forum question](https://forum.dbpedia.org/c/databus-dbpedia/generic). 
- 
+Contains rdfs:label for every resource based on Wikipedia article title
+
+The Wikipedia page article is extracted as rdfs:label using the 2 letter language code of the Wikipedia version as RDF language tag. Only labels for Article (Main namespace) are contained. Labels for Categories are stored in [categories dataset](https://databus.dbpedia.org/dbpedia/generic/categories).

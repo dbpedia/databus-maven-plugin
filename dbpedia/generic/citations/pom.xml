@@ -5,7 +5,7 @@
     <parent>
         <groupId>generic</groupId>
         <artifactId>group-metadata</artifactId>
-        <version>2019.08.30</version>
+        <version>2019.10.01</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>generic</groupId>
