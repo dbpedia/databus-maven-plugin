@@ -97,6 +97,12 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
 
   def validateSelectedValues = {
     val forbiddenchars = List("\\", " / ", ":", "\"", "<", ">", "|", "?", "*")
+
+    if (artifactId.contains("_")){
+      getLog.error(s"ArtifactId: ${artifactId} contains '_' which is reserved for dimensional tags")
+      System.exit(-1)
+    }
+
     if (version.toList.exists(forbiddenchars.contains)) {
       getLog.error(s"Version: ${version} contains forbidden chars: ${forbiddenchars.mkString("")}")
       System.exit(-1)
