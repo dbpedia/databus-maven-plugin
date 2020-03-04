@@ -30,6 +30,7 @@ Any contribution will be merged under the copyright of the DBpedia Association.
 ## Super-pom
 To set defaults for the plugin we developed a parent `pom.xml` in the super pom folder. 
 All other `pom.xml` can use it. 
+Devnote: When uploading to archiva, select `pomFile` for pom.xml and leave `generate pom` unchecked
 
 ## Maven Archiva 
 

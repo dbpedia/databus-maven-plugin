@@ -28,7 +28,19 @@
     </pluginRepositories>
 
     <build>
+		<extensions>
+ 		  <extension>
+			<groupId>org.apache.maven.wagon</groupId>
+			<artifactId>wagon-webdav-jackrabbit</artifactId>
+			<version>3.0.0</version>
+		  </extension>
+		</extensions>
         <plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>wagon-maven-plugin</artifactId>
+				<version>2.0.0</version>
+			</plugin>
             <plugin>
                 <groupId>org.dbpedia.databus</groupId>
                 <artifactId>databus-maven-plugin</artifactId>
