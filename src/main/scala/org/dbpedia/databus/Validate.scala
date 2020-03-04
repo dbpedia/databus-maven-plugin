@@ -69,7 +69,7 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
 
   def validateDebugURLs() = {
 
-    val check: List[URL] = List(codeReference, feedbackChannel, issueTracker, documentationLocation)
+    val check: List[URL] = List(codeReference, feedbackChannel, issueTracker, documentationLocation, gitCommitLink)
     check.filter(_ != null).foreach(u => {
       //val httpclient = HttpClients.createDefault()
       val httpclient = HttpClients.custom().setDefaultRequestConfig(RequestConfig.custom()
@@ -81,10 +81,10 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
         if (code == 404) {
           getLog.error(
             s"""
-               |One of codeReference,feedbackChannel,issueTracker, documentationLocation, returned 404 NOT FOUND
+               |One of codeReference,feedbackChannel,issueTracker, documentationLocation,gitCommitLink returned 404 NOT FOUND
                |URL: ${u.toString}
                |Fix with:
-               |* check pom.xml <properties><databus.(codeReference|feedbackChannel|issueTracker|documentationLocation>
+               |* check pom.xml <properties><databus.(codeReference|feedbackChannel|issueTracker|documentationLocation|gitCommitLink>
              """.stripMargin)
         }
 

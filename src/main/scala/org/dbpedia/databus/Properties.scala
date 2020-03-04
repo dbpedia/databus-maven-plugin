@@ -198,10 +198,16 @@ trait Properties extends Locations with Parameters with Mojo {
   @Parameter(property = "databus.feedbackChannel", required = false) val feedbackChannel: URL = null
 
   /**
-    * URL to a concrete piece of code, e.g. on github
+    * URL to a concrete piece of code, e.g. on github without Version
     * https://github.com/dbpedia/extraction-framework/blob/master/core/src/main/scala/org/dbpedia/extraction/mappings/LabelExtractor.scala
     */
   @Parameter(property = "databus.codeReference", required = false) val codeReference: URL = null
+
+  /**
+    * URL to a specific commit in git
+    * https://github.com/dbpedia/extraction-framework/commit/bab8a58bdb0162254bee9af71fe87c55b1f92589
+    */
+  @Parameter(property = "databus.gitCommitLink", required = false) val gitCommitLink: URL = null
 
   /**
     * URL to the place the pom.xml and ${artifactId}.md are managed, e.g. DBpedia Labels on GitHub

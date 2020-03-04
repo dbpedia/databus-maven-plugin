@@ -112,6 +112,9 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     if (feedbackChannel != null) {
       datasetResource.addProperty(dataiddebug.feedbackChannel, feedbackChannel.toString.asIRI)
     }
+    if (gitCommitLink != null) {
+      datasetResource.addProperty(dataiddebug.gitCommitLink, gitCommitLink.toString.asIRI)
+    }
 
     var fileIriBase: String = null
     //match WebId to Account Name
