@@ -351,9 +351,14 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
         new ArchiveStreamFactory().createArchiveInputStream(bis)
       }
 
+      case (Some(comp), Some(arch)) => {
+          new ArchiveStreamFactory().createArchiveInputStream(new CompressorStreamFactory().createCompressorInputStream(bis))
+          //sys.error(s"file seems to be both compressed and an archive: $comp, $arch")
+
+        }
+
       case (None, None) => bis
 
-      case (Some(comp), Some(arch)) => sys.error(s"file seems to be both compressed and an archive: $comp, $arch")
     }
   }
 
