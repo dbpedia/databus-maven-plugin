@@ -105,7 +105,7 @@ object FilenameHelpers extends LazyLogging {
       .opaque("<format variant extensions>")
 
   protected def compressionExtensionP[_: P] =
-    P("." ~ StringIn("bz2", "gz", "tar", "xz", "zip").!)
+    P("." ~ StringIn("bz2", "gz", "7z", "rar", "xz", "zip").!)
       .opaque("<compression variant extensions>")
 
   protected def compressionExtensionsP[_: P] = P(compressionExtensionP.rep())
