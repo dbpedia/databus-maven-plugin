@@ -315,4 +315,11 @@ run: `grep "LC_ALL" .*` in your /root/ directory and make sure
 ```
 is set.
 
+## [ERROR] org.scalatra.HaltException at data deploy
+
+Its possible you messed up at creating your webid (especially if you have multiple names in the webid).
+Check if your SAN is correct by using
+`openssl x509 -in certificate.crt -text -noout`
+on your .crt file (if you just have the pkcs12 file use `openssl pkcs12 -in [yourfile.pfx] -clcerts -nokeys -out [drlive.crt]`).
+Check if the SAN matches the one you used in the pom.xml and if not change [the cert.config](https://github.com/dbpedia/webid#x509-certificate-with-webid-in-subject-alternative-name) and generate the pkcs12 file again.
 
