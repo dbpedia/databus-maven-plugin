@@ -197,10 +197,12 @@ trait DataFileToModel extends Properties with Parameters {
       else
       {l.toString.asTypedLiteral(XSDdecimal)}
     }
-    singleFileResource.addProperty(dataid.duplicates, decimalize(datafile.duplicates))
-    singleFileResource.addProperty(dataid.uncompressedByteSize, decimalize(datafile.uncompressedByteSize))
-    singleFileResource.addProperty(dataid.nonEmptyLines, decimalize(datafile.nonEmptyLines))
-    singleFileResource.addProperty(dataid.sorted, datafile.sorted.toString.asTypedLiteral(XSDboolean))
+
+    // TODO move to mods
+    //singleFileResource.addProperty(dataid.duplicates, decimalize(datafile.duplicates))
+    //singleFileResource.addProperty(dataid.uncompressedByteSize, decimalize(datafile.uncompressedByteSize))
+    //singleFileResource.addProperty(dataid.nonEmptyLines, decimalize(datafile.nonEmptyLines))
+    //singleFileResource.addProperty(dataid.sorted, datafile.sorted.toString.asTypedLiteral(XSDboolean))
 
  }
 }

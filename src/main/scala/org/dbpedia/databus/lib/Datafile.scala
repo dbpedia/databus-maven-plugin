@@ -202,6 +202,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
   }
 
   /**
+    * TODO move to mods
     * translates a java (signed!) byte into an unsigned byte (emulated via short)
     *
     * @param b signed byte to convert to unsigned byte value
@@ -213,6 +214,7 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
   }
 
   /**
+   *  TODO move to mods
     * does a bytewise string comparison in scala similar to LC_ALL=C sort does in Unix
     *
     * @param a
@@ -227,7 +229,8 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
   }
 
   /**
-    * does a bytewise comparison in scala
+    * TODO move to mods
+   * does a bytewise comparison in scala
     *
     * @param ab
     * @param bb
@@ -246,6 +249,8 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
   }
 
 
+  //TODO move to mods
+  @deprecated
   def updateFileMetrics(): Datafile = {
 
     if (fileInfoCache != null) {

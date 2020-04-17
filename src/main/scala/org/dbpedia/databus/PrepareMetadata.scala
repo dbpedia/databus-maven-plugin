@@ -236,7 +236,8 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
     //calculate
     df.updateSignature(singleKeyPairFromPKCS12)
-    df.updateFileMetrics()
+    //TODO deactivated because moved to mods
+    //df.updateFileMetrics()
 
     // write cache
     writeCache(new FileInfoCache(df.nonEmptyLines, df.duplicates, df.sorted, df.uncompressedByteSize), cacheFile.toJava)
