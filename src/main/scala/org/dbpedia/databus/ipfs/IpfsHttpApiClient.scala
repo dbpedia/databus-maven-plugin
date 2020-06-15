@@ -5,10 +5,10 @@ import java.net.URI
 import org.dbpedia.databus.ipfs.IpfsApiClient.FileMeta
 import scalaj.http.{BaseHttp, MultiPart}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import spray.json._
 
-
+import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success}
 
 
@@ -43,6 +43,51 @@ class IpfsApiClient(host: String, port: Int, protocol: String)(implicit ec: Exec
     }
   }
 
+  def stats(): Future[String] = {
+    val uri = baseIpfsApiUrl.resolve("stats/bw")
+    val req = client(uri.toURL.toString)
+    Future {
+      val mpReq = req.postData("")
+      mpReq.asString.body
+    }
+  }
+
+  def keyList() = {
+    val uri = baseIpfsApiUrl.resolve(s"key/list?l=true")
+    val req = client(uri.toURL.toString)
+    Future {
+      val mpReq = req.postData("")
+      mpReq.asString.body
+    }
+  }
+
+  def dhtFindProvs(cid: String) = {
+    val uri = baseIpfsApiUrl.resolve(s"dht/findprovs?arg=$cid")
+    val req = client(uri.toURL.toString)
+    Future {
+      val mpReq = req.postData("")
+      mpReq.asString.body
+    }
+  }
+
+  def dhtGet(cid: String) = {
+    val uri = baseIpfsApiUrl.resolve(s"dht/get?arg=$cid")
+    val req = client(uri.toURL.toString)
+    Future {
+      val mpReq = req.postData("")
+      mpReq.asString.body
+    }
+  }
+
+  def filesLs() = {
+    val uri = baseIpfsApiUrl.resolve(s"files/ls")
+    val req = client(uri.toURL.toString)
+    Future {
+      val mpReq = req.postData("")
+      mpReq.asString.body
+    }
+  }
+
 
 }
 
@@ -52,11 +97,18 @@ object RunnableApp extends App {
 
   val cli = new IpfsApiClient("localhost", 5001, "http")
 
-  cli.add("random_file", "hiiiiiii".getBytes)
+  //  val cid = "QmZukcc5QKpQxBFWS3BNWt26HCCGGYC8HiwHHPLYHyoid8"
+  val cid = "Qmez6piTp4yTJ6H5bYWHhd4jCWniuVXDGqAy5DGiMEhXCT"
+  //  cli.add("random_file", "hiiiiiii".getBytes)
+  println("Init")
+  val fut = cli.keyList()
+  fut
     .onComplete {
       case Failure(exception) => exception.printStackTrace()
-      case Success(value) => System.out.println(value)
+      case Success(value) => System.out.println("Value: " + value)
     }
+
+  Await.ready(fut, Duration.Inf)
 
 
 }
