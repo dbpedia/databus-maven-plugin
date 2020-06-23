@@ -2,12 +2,13 @@ package org.dbpedia.databus.ipfs
 
 
 import java.io.ByteArrayOutputStream
-import java.net.URI
+import java.net.{HttpURLConnection, URI}
 import java.nio.file.{Files, Path, Paths}
 import java.util.stream.Collectors
 
+import org.apache.jena.sparql.function.library.leviathan.root
 import org.dbpedia.databus.ipfs.IpfsApiClient.{FileMeta, MultiPart, MultipartHeader}
-import scalaj.http.{BaseHttp, PlainUrlFunc}
+import scalaj.http.{BaseHttp, ByteBodyConnectFunc, HttpRequest, PlainUrlFunc}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 import spray.json._
@@ -64,11 +65,11 @@ object IpfsApiClient {
     }
 
     def getMultipartContentType(boundary: String): Header =
-      Header("ContentType", s"""multipart/form-data; boundary="$boundary"""")
+      Header("Content-Type", s"""multipart/form-data; boundary=$boundary""")
 
     def getBoundary(): String = {
-      val s = random.take(45).foldLeft(StringBuilder.newBuilder)((b, c) => b.append(c))
-      s.toString()
+      val s = random.take(20).foldLeft(StringBuilder.newBuilder)((b, c) => b.append(c))
+      s"--${s.toString()}"
     }
   }
 
@@ -92,7 +93,7 @@ class IpfsApiClient(host: String, port: Int, protocol: String)(implicit ec: Exec
   private val client = new BaseHttp()
 
   //todo add files without sending over the network
-  def addFolder(folder: Path, root: Path, nocopy: Boolean = false): Future[String] = {
+  def addFolder(folder: Path, root: Path, dockerRoot: Path, nocopy: Boolean = false): Future[String] = {
     // todo set parameters in a neat way
     val uri = baseIpfsApiUrl.resolve(s"add?wrap-with-directory=true&nocopy=$nocopy")
     val req = client(uri.toURL.toString)
@@ -120,7 +121,7 @@ class IpfsApiClient(host: String, port: Int, protocol: String)(implicit ec: Exec
             MultipartHeader("Content-Type", "application/octet-stream")
           )
           if (nocopy) {
-            val absPath: Path = ???
+            val absPath: Path = dockerRoot.resolve(root.relativize(fn.toPath))
             headers = headers :+ MultipartHeader("Abspath", absPath.toString)
           }
 
@@ -137,7 +138,7 @@ class IpfsApiClient(host: String, port: Int, protocol: String)(implicit ec: Exec
     Future {
       val (hdr, bd) = MultiPart.buildRequest(mp)
       val mpReq = req
-        .copy(method = "POST", urlBuilder = PlainUrlFunc)
+        .copy(urlBuilder = PlainUrlFunc)
         .header(hdr.name, hdr.value)
         .postData(bd)
       mpReq.asString.body
@@ -214,7 +215,12 @@ object RunnableApp extends App {
   //  cli.add("random_file", "hiiiiiii".getBytes)
   println("Init")
   val fut = cli
-    .addFolder(Paths.get("new_to_add"), Paths.get("/Users/Kirill/Desktop/DbPedia/ipfs_node_data/data"))
+    //    .addFolder(Paths.get("new_to_add"), Paths.get("/Users/Kirill/Desktop/DbPedia/ipfs_node_data/data"))
+    .addFolder(
+      Paths.get("new_to_add"),
+      Paths.get("/Users/Kirill/Desktop/DbPedia/ipfs_node_data/data"),
+      Paths.get("/data/ipfs"),
+      true)
     .andThen {
       case Failure(exception) =>
         println("Error:")
