@@ -2,9 +2,11 @@ package org.dbpedia.databus.ipfs
 
 import java.nio.file.{Path, Paths}
 
-import org.dbpedia.databus.ipfs.IpfsCliClient.{Chunker, DagMeta, Default, DefaultRabin, Rabin}
+import org.dbpedia.databus.ipfs.IpfsCliClient.{Buzhash, Chunker, DagMeta, Default, DefaultRabin, Rabin}
 import spray.json.DefaultJsonProtocol
+
 import scala.sys.process._
+import scala.util.Try
 
 
 object IpfsCliClient {
@@ -41,6 +43,12 @@ object IpfsCliClient {
   case class FixedSize(sizeBytes: Long) extends Chunker {
 
     override def cliParam: String = s"${paramName}size-$sizeBytes"
+
+  }
+
+  case object Buzhash extends Chunker {
+
+    override def cliParam: String = s"${paramName}buzhash"
 
   }
 
@@ -92,7 +100,23 @@ class IpfsCliClient {
   def dagGet(hash: String): Seq[DagMeta] = {
     val p = process(Seq("dag", "get", hash))
     p.lineStream
-      .map(_.parseJson.convertTo[DagMeta])
+      .flatMap(p => Try(p.parseJson.convertTo[DagMeta]).toOption)
+  }
+
+  def fetchAllHashes(hash: String): Seq[String] = {
+    val re = dagGet(hash)
+
+    re.flatMap(dm =>
+      dm.links
+        .flatMap(li =>
+          if (li.cid.v0.length == 59) {
+            Seq(li.cid.v0)
+          } else {
+            fetchAllHashes(li.cid.v0)
+          }
+        )
+    )
+
   }
 
 }
@@ -100,15 +124,16 @@ class IpfsCliClient {
 object RunbableAppli2 extends App {
 
   val hs = Seq(
-    "QmQtiMsYzYcnj8Y5CTPSosgcMRjvZRf5bpuYzsah93Nkg9",
-    "QmSchskU7Kv2UegpD7WXdJkqEHKXd5WFKQyghwwciRUXAo",
-    "QmWyVnQyd4fb7oXqi2GW8mBapt5bg6kfdiUABYW6u5bmF3"
+    //        "QmQtiMsYzYcnj8Y5CTPSosgcMRjvZRf5bpuYzsah93Nkg9",
+    //        "QmSchskU7Kv2UegpD7WXdJkqEHKXd5WFKQyghwwciRUXAo",
+    //        "QmWyVnQyd4fb7oXqi2GW8mBapt5bg6kfdiUABYW6u5bmF3",
+    //    "bafkreiahnckfv2hwtk4aztlducpyj5fala5xy6mfu4zp7uxpi3dduojcvu"
+    "QmYmaWpDFBksYF7PUNPcd3xJ66UK2W6TkPzMNQ1ri5md1T",
+    "Qmf2T1euZRYVoqEWHPY3oEeYpR1j76yxXan2ZJoMHNB5Vq"
   )
 
   val cli = new IpfsCliClient()
-  val dag = cli.dagGet("QmWyVnQyd4fb7oXqi2GW8mBapt5bg6kfdiUABYW6u5bmF3")
-
-  println(dag)
+  Util.outputFileDiff(hs, cli)
 }
 
 object RunnableAppli extends App {
@@ -123,17 +148,31 @@ object RunnableAppli extends App {
   //  val chk = Rabin(16, 100, 500)
 
   //  val files = Seq(
-  //    "/data/ipfs/fs/infobox-properties_lang=en.ttl.bz2",
-  //    "/data/ipfs/fs/infobox-properties_lang=en.ttl-2.bz2"
+  //    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl-2",
+  //    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl",
+  //    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl.copy"
+  //  )
+  //  val files = Seq(
+  //    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl.bz2",
+  //    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl-2.bz2",
   //  )
   val files = Seq(
-    "/data/ipfs/fs/infobox-properties_lang=en.ttl",
-    "/data/ipfs/fs/infobox-properties_lang=en.ttl-2"
+    //      "/data/ipfs/fs/mappingbased-literals_lang=en.ttl.bz2.1.out.gz",
+    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl.gz",
+    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl.bz2.1.out.may.gz"
   )
 
-  val chk = Rabin(16, 200000, 1000000)
+  val chk = Rabin(16, 100000, 1000000)
 
-  val hashes = files
+  val useArgs = !args.isEmpty
+
+  val filesToProcess = if (useArgs) {
+    args.toSeq
+  } else {
+    files
+  }
+
+  val hashes = filesToProcess
     .map(Paths.get(_))
     .flatMap(cli.add(_, chk, true, true))
     .map(p => {
@@ -146,27 +185,43 @@ object RunnableAppli extends App {
       println(p)
       p
     })
-    .filter(_.links.length > 1)
-    .map(_.links.map(v => v.cid.v0))
+    .filter(_.links.length == 1)
+    .flatMap(_.links.map(v => v.cid.v0))
 
   println(hashes.size)
-  hashes.foreach(s => println(s.size))
+  hashes.foreach(s => println(s))
 
-  hashes
-    .dropRight(1)
-    .zip(hashes.drop(1))
-    .map(p => {
-      println("le: " + p._1.size)
-      println("ri: " + p._2.size)
-      p
-    })
-    .map {
-      case (l, r) => r.diff(l)
-    }
-    .map(hs => {
-      println(hs.size);
-      hs
-    })
-    .foreach(println)
+  if (useArgs) {
+    Util.outputFileDiff(hashes, cli)
+  }
+
+}
+
+object Util {
+
+  def outputFileDiff(hashes: Seq[String], cli: IpfsCliClient) = {
+    hashes
+      .dropRight(1)
+      .zip(hashes.drop(1))
+      .map(p => {
+        println("le hash: " + p._1)
+        println("ri hash: " + p._2)
+        p
+      })
+      .map {
+        case (l, r) => (cli.fetchAllHashes(l), cli.fetchAllHashes(r))
+      }
+      .map(p => {
+        println("le sz: " + p._1.size)
+        println("ri sz: " + p._2.size)
+        p
+      })
+      .map {
+        case (l, r) => r.diff(l)
+      }
+      .foreach(hs => {
+        println("diff size: " + hs.size)
+      })
+  }
 
 }
