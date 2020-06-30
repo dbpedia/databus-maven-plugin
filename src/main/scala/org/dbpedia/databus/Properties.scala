@@ -22,9 +22,9 @@ package org.dbpedia.databus
 
 import org.apache.maven.plugin.{AbstractMojo, Mojo}
 import org.apache.maven.plugins.annotations.Parameter
-
 import java.io.File
 import java.net.URL
+
 import org.apache.maven.plugin.logging.Log
 import org.apache.maven.settings.Settings
 
@@ -45,7 +45,7 @@ trait Properties extends Locations with Parameters with Mojo {
   /** ***********************************
     * CODE THAT WILL BE EXECUTED BEFORE RUNNING EACH MOJO
     * ************************************/
-  Properties.printLogoOnce(getLog)
+  Properties.printLogoOnce(version, getLog)
 
   /**
     * Project vars given by Maven
@@ -69,6 +69,9 @@ trait Properties extends Locations with Parameters with Mojo {
   @Parameter(defaultValue = "${project.build.finalName}", readonly = true)
   val finalName: String = null
 
+  @Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
+  val globalProjectRoot: File = null
+
   @Parameter(defaultValue = "${settings}", readonly = true)
   val settings: Settings = null
 
@@ -90,7 +93,8 @@ trait Properties extends Locations with Parameters with Mojo {
   @Parameter(property = "databus.inputDirectory", defaultValue = ".", required = true)
   val inputDirectory: File = null
 
-  @Parameter(property = "databus.insertVersion") val insertVersion: Boolean = true
+  @Parameter(property = "databus.insertVersion")
+  val insertVersion: Boolean = true
 
 
   /**
@@ -162,6 +166,14 @@ trait Properties extends Locations with Parameters with Mojo {
   @Parameter(property = "databus.pkcs12serverId", defaultValue = "databus.defaultkey", required = false)
   val pkcs12serverId: String = ""
 
+  @Parameter(property = "databus.saveToIpfs", defaultValue = "false")
+  val saveToIpfs: Boolean = false
+
+  /**
+   * Optional parameter, specify path in the docker container to which current project root is mounted.
+   */
+  @Parameter(property = "databus.projectRootDockerPath", required = false)
+  val projectRootDockerPath: File = null
 
   /**
     * refers to the WebID that does the publication on the web and on the databus
@@ -260,7 +272,7 @@ object Properties {
   var logoPrinted = false
 
   //NOTE: NEEDS TO BE COMPATIBLE WITH TURTLE COMMENTS
-  val logo =
+  def logo(pluginVersion: String) =
     s"""|
         |
         |######
@@ -275,9 +287,9 @@ object Properties {
         |
         |""".stripMargin
 
-  def printLogoOnce(mavenlog: Log) = {
+  def printLogoOnce(pluginVersion: String, mavenlog: Log) = {
     if (!logoPrinted) {
-      mavenlog.info(logo)
+      mavenlog.info(logo(pluginVersion))
     }
     logoPrinted = true
   }

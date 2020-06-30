@@ -47,9 +47,10 @@ trait Locations {
     def getLog = props.getLog
 
     //used for better paths in logging
-    def prettyPath(f: File): String = {
-      props.sessionRoot.toScala.relativize(f).toString
-    }
+    def prettyPath(f: File): String =
+      props.sessionRoot.toScala
+        .relativize(f)
+        .toString
 
     /**
       * INPUT

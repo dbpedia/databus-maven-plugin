@@ -76,14 +76,12 @@ class FileMetadataTest extends FunSuite  {
 
   }
 
-
-  def datafile(resourcename:String): Datafile = {
+  def datafile(resourcename: String): Datafile = {
     val testFile = new File(getClass.getClassLoader.getResource(resourcename).getFile)
     val df = Datafile(testFile)(new SystemStreamLog())
     df.updateFileMetrics();
     print(df.toString)
     df
-
   }
 
 }

@@ -25,13 +25,16 @@ import java.nio.file.Files
 import org.dbpedia.databus.lib._
 import org.dbpedia.databus.shared._
 import scalaj.http.HttpResponse
-
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import org.dbpedia.databus.shared.authentification.AccountHelpers
-
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+
+import org.dbpedia.databus.ipfs.IpfsCliClient
+import org.dbpedia.databus.ipfs.IpfsCliClient.DefaultRabin
+
+import scala.util.{Failure, Success, Try}
 
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
@@ -52,7 +55,7 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
     }
 
     if (!deployRepoURL.startsWith("https://")) {
-      getLog.error(s"<databus.deployRepoURL> is not https:// ${deployRepoURL}")
+      getLog.error(s"<databus.deployRepoURL> is not https://${deployRepoURL}")
     }
 
     val uploadEndpointIRI = s"$deployRepoURL/dataid/upload"
@@ -63,7 +66,6 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
       case None =>
         locations.dataIdDownloadLocation
     }
-
 
     getLog.info(s"Attempting upload to ${uploadEndpointIRI} with allowOverrideOnDeploy=${allowOverwriteOnDeploy} into graph ${datasetIdentifier}")
 
@@ -78,23 +80,47 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
       resolveBaseForRDFFile(locations.buildDataIdFile, locations.dataIdDownloadLocation)
     }
 
-    val response = DataIdUpload.upload(
-      uploadEndpointIRI,
-      dataidBytes,
-      locations.pkcs12File,
-      pkcs12Password.get,
-      locations.dataIdDownloadLocation,
-      allowOverwriteOnDeploy,
-      datasetIdentifier)
-
-    if (response.code != 200) {
-      processUploadError(response)
-    } else {
-      processUploadSuccess(response, datasetIdentifier)
+    val proceed = if (saveToIpfs) shareToIpfs() else true
+    if (proceed) {
+      val response = DataIdUpload.upload(
+        uploadEndpointIRI,
+        dataidBytes,
+        locations.pkcs12File,
+        pkcs12Password.get,
+        locations.dataIdDownloadLocation,
+        allowOverwriteOnDeploy,
+        datasetIdentifier)
+      if (response.code != 200) {
+        processUploadError(response)
+      } else {
+        processUploadSuccess(response, datasetIdentifier)
+      }
     }
   }
 
-  def processUploadError(response: HttpResponse[String]) = {
+  /**
+   * @return true if successfully saved, false otherwise
+   */
+  private def shareToIpfs(): Boolean = {
+    val client = new IpfsCliClient(true)
+    val dir = locations.inputVersionDirectory.toJava.toPath
+    val input = Option(projectRootDockerPath)
+      .map(_.toPath)
+      .map(_.resolve(globalProjectRoot.toPath.relativize(dir)))
+      .getOrElse(dir)
+
+    getLog.info(s"Adding directory $input to ipfs")
+    Try(client.add(input, DefaultRabin, recursive = true)) match {
+      case Failure(exception) =>
+        getLog.error(s"Failed to add files from $input to ipfs", exception)
+        false
+      case Success(value) =>
+        getLog.info(s"Successfully added files from $input: ${value.last}")
+        true
+    }
+  }
+
+  private def processUploadError(response: HttpResponse[String]) = {
     getLog.error(
       s"""|FAILURE HTTP response code: ${response.code} (check https://en.wikipedia.org/wiki/HTTP_${response.code})
           |$deployRepoURL rejected ${locations.packageDataIdFile.pathAsString}
@@ -103,7 +129,7 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
     getLog.debug(s"Full ${response.toString}")
   }
 
-  def processUploadSuccess(response: HttpResponse[String], datasetIdentifier: String) = {
+  private def processUploadSuccess(response: HttpResponse[String], datasetIdentifier: String) = {
     getLog.info("Response: " + response.toString)
 
     val query =

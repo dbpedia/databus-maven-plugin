@@ -49,8 +49,6 @@ class PackageExport extends AbstractMojo with Properties {
     }
 
     if (!locations.buildDataIdFile.isRegularFile) {
-
-      //val emptyVersion = if (locations.inputFileList.isEmpty) s"* ${version} does not contain any files\n" else ""
       getLog.warn(s"${locations.prettyPath(locations.buildDataIdFile)} not found for ${artifactId}/${version}, can not package\n" +
         s"fix with:\n" +
         s"* running mvn prepare-package or mvn databus:metadata first\n")
@@ -119,7 +117,7 @@ class PackageExport extends AbstractMojo with Properties {
     } else {
       // resolve uris, always overwrite
       val baseResolvedDataId = resolveBaseForRDFFile(locations.buildDataIdFile, locations.dataIdDownloadLocation)
-      locations.packageDataIdFile.writeByteArray((Properties.logo + "\n").getBytes())
+      locations.packageDataIdFile.writeByteArray((Properties.logo(version) + "\n").getBytes())
       locations.packageDataIdFile.appendByteArray(baseResolvedDataId)
     }
     getLog.info(s"packaged (create or overwrite): ${locations.prettyPath(locations.packageDataIdFile)}")
