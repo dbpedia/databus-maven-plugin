@@ -1,3 +1,5 @@
+package org.dbpedia.databus.lib
+
 /*-
  * #%L
  * DBpedia Databus Maven Plugin
@@ -21,7 +23,6 @@
 import java.io.File
 
 import org.apache.maven.plugin.logging.SystemStreamLog
-import org.dbpedia.databus.lib.Datafile
 import org.scalatest.FunSuite
 
 class FileMetadataTest extends FunSuite  {

@@ -20,9 +20,11 @@
  */
 package org.dbpedia.databus
 
+import java.nio.file.Files
+
 import org.dbpedia.databus.lib._
 import org.dbpedia.databus.shared._
-//import org.dbpedia.databus.shared.authentification.AccountHelpers
+import scalaj.http.HttpResponse
 
 import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
@@ -49,8 +51,6 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
       return
     }
 
-    //val repoPathSegement = if(deployToTestRepo) "testrepo" else "repo"
-
     if (!deployRepoURL.startsWith("https://")) {
       getLog.error(s"<databus.deployRepoURL> is not https:// ${deployRepoURL}")
     }
@@ -58,85 +58,86 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
     val uploadEndpointIRI = s"$deployRepoURL/dataid/upload"
 
     val datasetIdentifier = AccountHelpers.getAccountOption(publisher) match {
-
-      case Some(account) => {
-
+      case Some(account) =>
         s"${account.getURI}/${groupId}/${artifactId}/${version}"
-      }
-
-      case None => {
+      case None =>
         locations.dataIdDownloadLocation
-      }
     }
 
 
     getLog.info(s"Attempting upload to ${uploadEndpointIRI} with allowOverrideOnDeploy=${allowOverwriteOnDeploy} into graph ${datasetIdentifier}")
 
     //TODO packageExport should do the resolution of URIs
-    val response = if (locations.packageDataIdFile.isRegularFile && locations.packageDataIdFile.nonEmpty) {
-
+    val dataidBytes = if (locations.packageDataIdFile.isRegularFile && locations.packageDataIdFile.nonEmpty) {
       // if there is a (base-resolved) DataId Turtle file in the package directory, attempt to upload that one
-      DataIdUpload.upload(uploadEndpointIRI, locations.packageDataIdFile, locations.pkcs12File, pkcs12Password.get,
-        locations.dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)
+      Files.readAllBytes(locations.packageDataIdFile.toJava.toPath)
     } else {
-
       getLog.warn(s"Did not find expected DataId file '${locations.packageDataIdFile.pathAsString}' from " +
         "databus:package-export goal. Uploading a DataId prepared in-memory.")
-
       //else resolve the base in-memory and upload that
-      val baseResolvedDataId = resolveBaseForRDFFile(locations.buildDataIdFile, locations.dataIdDownloadLocation)
-
-      DataIdUpload.upload(uploadEndpointIRI, baseResolvedDataId, locations.pkcs12File, pkcs12Password.get,
-        locations.dataIdDownloadLocation, allowOverwriteOnDeploy, datasetIdentifier)
+      resolveBaseForRDFFile(locations.buildDataIdFile, locations.dataIdDownloadLocation)
     }
 
+    val response = DataIdUpload.upload(
+      uploadEndpointIRI,
+      dataidBytes,
+      locations.pkcs12File,
+      pkcs12Password.get,
+      locations.dataIdDownloadLocation,
+      allowOverwriteOnDeploy,
+      datasetIdentifier)
 
     if (response.code != 200) {
-      getLog.error(
-        s"""|FAILURE HTTP response code: ${response.code} (check https://en.wikipedia.org/wiki/HTTP_${response.code})
-            |$deployRepoURL rejected ${locations.packageDataIdFile.pathAsString}
-            |Message:\n${response.body}
-       """.stripMargin)
-
-      getLog.debug(s"Full ${response.toString}")
-
-
+      processUploadError(response)
     } else {
-
-      getLog.info("Response: "+response.toString)
-
-      val query =
-        s"""PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
-           |PREFIX dct: <http://purl.org/dc/terms/>
-           |
-         |SELECT ?name ?version ?date ?webid ?uploadtime ?account {
-           |Graph <${datasetIdentifier}> {
-           |  ?dataset a dataid:Dataset .
-           |  ?dataset rdfs:label ?name .
-           |  ?dataset dct:hasVersion ?version .
-           |  ?dataset dct:issued ?date .
-           |  ?dataset dataid:associatedAgent ?webid .
-           |  ?dataid a dataid:DataId .
-           |  ?dataid dct:issued ?uploadtime .
-           |  }
-           |# resides in other graph
-           |OPTIONAL {?webid foaf:account ?account }
-           |}
-           |""".stripMargin
-
-      val encoded = URLEncoder.encode(query, StandardCharsets.UTF_8.name())
-
-      getLog.info(
-        s"""SUCCESS: upload of DataId for artifact '$artifactId' version ${version} to $deployRepoURL succeeded
-           |Data should be available within some minutes at graph ${datasetIdentifier}
-           |Test at ${deployRepoURL}/sparql  with query: \n\n ${query}
-           |curl "${deployRepoURL}/sparql?query=${encoded}"
-           |
-           |Note:
-           |* To avoid denial of service attacks, we will sleep 5 minutes after your request is received, before processing it.
-           |* First time account users: We cache WebIDs daily. So if your site is not shown, wait day.
-       """
-          .stripMargin)
+      processUploadSuccess(response, datasetIdentifier)
     }
   }
+
+  def processUploadError(response: HttpResponse[String]) = {
+    getLog.error(
+      s"""|FAILURE HTTP response code: ${response.code} (check https://en.wikipedia.org/wiki/HTTP_${response.code})
+          |$deployRepoURL rejected ${locations.packageDataIdFile.pathAsString}
+          |Message:\n${response.body}""".stripMargin)
+
+    getLog.debug(s"Full ${response.toString}")
+  }
+
+  def processUploadSuccess(response: HttpResponse[String], datasetIdentifier: String) = {
+    getLog.info("Response: " + response.toString)
+
+    val query =
+      s"""PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
+         |PREFIX dct: <http://purl.org/dc/terms/>
+         |
+         |SELECT ?name ?version ?date ?webid ?uploadtime ?account {
+         |Graph <${datasetIdentifier}> {
+         |  ?dataset a dataid:Dataset .
+         |  ?dataset rdfs:label ?name .
+         |  ?dataset dct:hasVersion ?version .
+         |  ?dataset dct:issued ?date .
+         |  ?dataset dataid:associatedAgent ?webid .
+         |  ?dataid a dataid:DataId .
+         |  ?dataid dct:issued ?uploadtime .
+         |  }
+         |# resides in other graph
+         |OPTIONAL {?webid foaf:account ?account }
+         |}
+         |""".stripMargin
+
+    val encoded = URLEncoder.encode(query, StandardCharsets.UTF_8.name())
+
+    getLog.info(
+      s"""SUCCESS: upload of DataId for artifact '$artifactId' version ${version} to $deployRepoURL succeeded
+         |Data should be available within some minutes at graph ${datasetIdentifier}
+         |Test at ${deployRepoURL}/sparql  with query: \n\n ${query}
+         |curl "${deployRepoURL}/sparql?query=${encoded}"
+         |
+         |Note:
+         |* To avoid denial of service attacks, we will sleep 5 minutes after your request is received, before processing it.
+         |* First time account users: We cache WebIDs daily. So if your site is not shown, wait day.
+       """
+        .stripMargin)
+  }
+
 }

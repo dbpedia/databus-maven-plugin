@@ -1,8 +1,28 @@
+/*-
+ * #%L
+ * DBpedia Databus Maven Plugin
+ * %%
+ * Copyright (C) 2018 - 2020 Sebastian Hellmann (on behalf of the DBpedia Association)
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * #L%
+ */
 package org.dbpedia.databus.ipfs
 
 import java.nio.file.{Path, Paths}
 
-import org.dbpedia.databus.ipfs.IpfsCliClient.{Buzhash, Chunker, DagMeta, Default, DefaultRabin, Rabin}
+import org.dbpedia.databus.ipfs.IpfsCliClient.{Chunker, DagMeta, Default, Rabin}
 import spray.json.DefaultJsonProtocol
 
 import scala.sys.process._
@@ -62,27 +82,33 @@ object IpfsCliClient {
 
 }
 
-class IpfsCliClient {
+class IpfsCliClient(isInDocker: Boolean = false) {
+
+  private val ipfsCmd: Seq[String] = {
+    val cmd = Seq(
+      "ipfs"
+    )
+    if (isInDocker) {
+      Seq(
+        "docker",
+        "exec",
+        "ipfs_host"
+      ) ++ cmd
+    } else {
+      cmd
+    }
+  }
 
   import spray.json._
   import IpfsCliClient.CliProtocol._
-
-  private val ipfsCmd: Seq[String] = Seq(
-    "docker",
-    "exec",
-    "ipfs_host",
-    "ipfs"
-  )
-
-  private def process(params: Seq[String]) =
-    Process(ipfsCmd ++ params)
 
   def add(fn: Path,
           chunker: Chunker = Default,
           nocopy: Boolean = false,
           recursive: Boolean = false,
           wrapWithDir: Boolean = true,
-          addHiddenFiles: Boolean = false): Seq[String] = {
+          addHiddenFiles: Boolean = false,
+          onlyHash: Boolean = false): Seq[String] = {
     val params = Seq(
       "add",
       chunker.cliParam,
@@ -90,6 +116,7 @@ class IpfsCliClient {
       s"--hidden=$addHiddenFiles",
       s"--nocopy=$nocopy",
       s"--recursive=$recursive",
+      s"--only-hash=$onlyHash",
       fn.toAbsolutePath.toString,
     )
     val p = process(params)
@@ -103,7 +130,10 @@ class IpfsCliClient {
       .flatMap(p => Try(p.parseJson.convertTo[DagMeta]).toOption)
   }
 
-  def fetchAllHashes(hash: String): Seq[String] = {
+  private def process(params: Seq[String]) =
+    Process(ipfsCmd ++ params)
+
+  private[ipfs] def fetchAllHashes(hash: String): Seq[String] = {
     val re = dagGet(hash)
 
     re.flatMap(dm =>
@@ -116,7 +146,6 @@ class IpfsCliClient {
           }
         )
     )
-
   }
 
 }
@@ -132,13 +161,13 @@ object RunbableAppli2 extends App {
     "Qmf2T1euZRYVoqEWHPY3oEeYpR1j76yxXan2ZJoMHNB5Vq"
   )
 
-  val cli = new IpfsCliClient()
+  val cli = new IpfsCliClient(true)
   Util.outputFileDiff(hs, cli)
 }
 
 object RunnableAppli extends App {
 
-  val cli = new IpfsCliClient()
+  val cli = new IpfsCliClient(true)
 
   //  val files = Seq(
   //    "/data/ipfs/fs/preferences.txt",

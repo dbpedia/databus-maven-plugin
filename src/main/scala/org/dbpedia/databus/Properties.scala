@@ -39,17 +39,13 @@ import org.apache.maven.settings.Settings
   *
   */
 trait Properties extends Locations with Parameters with Mojo {
-
   this: AbstractMojo =>
 
 
   /** ***********************************
     * CODE THAT WILL BE EXECUTED BEFORE RUNNING EACH MOJO
     * ************************************/
-  {
-    Properties.printLogoOnce(getLog)
-  }
-
+  Properties.printLogoOnce(getLog)
 
   /**
     * Project vars given by Maven
