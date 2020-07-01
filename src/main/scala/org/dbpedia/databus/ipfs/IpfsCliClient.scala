@@ -80,11 +80,13 @@ object IpfsCliClient {
     override def cliParam: String = s"${paramName}rabin"
   }
 
-}
+  def apply(config: IpfsConfigOps): IpfsCliClient =
+    new IpfsCliClient(ipfsCmd(config.isInDocker, Option(config.containerName)))
 
-class IpfsCliClient(isInDocker: Boolean = false) {
+  def apply(isInDocker: Boolean = false, containerName: String = "ipfs_host"): IpfsCliClient =
+    new IpfsCliClient(ipfsCmd(isInDocker, Option(containerName)))
 
-  private val ipfsCmd: Seq[String] = {
+  private def ipfsCmd(isInDocker: Boolean, containerName: Option[String]): Seq[String] = {
     val cmd = Seq(
       "ipfs"
     )
@@ -92,12 +94,16 @@ class IpfsCliClient(isInDocker: Boolean = false) {
       Seq(
         "docker",
         "exec",
-        "ipfs_host"
+        containerName.getOrElse("ipfs_host") // default name
       ) ++ cmd
     } else {
       cmd
     }
   }
+
+}
+
+class IpfsCliClient private(ipfsCmd: Seq[String]) {
 
   import spray.json._
   import IpfsCliClient.CliProtocol._
@@ -161,13 +167,13 @@ object RunbableAppli2 extends App {
     "Qmf2T1euZRYVoqEWHPY3oEeYpR1j76yxXan2ZJoMHNB5Vq"
   )
 
-  val cli = new IpfsCliClient(true)
+  val cli = IpfsCliClient(true)
   Util.outputFileDiff(hs, cli)
 }
 
 object RunnableAppli extends App {
 
-  val cli = new IpfsCliClient(true)
+  val cli = IpfsCliClient(true)
 
   //  val files = Seq(
   //    "/data/ipfs/fs/preferences.txt",

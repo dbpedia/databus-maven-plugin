@@ -28,7 +28,7 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import java.io.{File, FileWriter}
 
 @Mojo(name = "package-export", defaultPhase = LifecyclePhase.PACKAGE)
-class PackageExport extends AbstractMojo with Properties {
+class PackageExport extends DatabusMojo {
 
   /**
     */
@@ -117,7 +117,7 @@ class PackageExport extends AbstractMojo with Properties {
     } else {
       // resolve uris, always overwrite
       val baseResolvedDataId = resolveBaseForRDFFile(locations.buildDataIdFile, locations.dataIdDownloadLocation)
-      locations.packageDataIdFile.writeByteArray((Properties.logo(version) + "\n").getBytes())
+      locations.packageDataIdFile.writeByteArray((Properties.logo + "\n").getBytes())
       locations.packageDataIdFile.appendByteArray(baseResolvedDataId)
     }
     getLog.info(s"packaged (create or overwrite): ${locations.prettyPath(locations.packageDataIdFile)}")

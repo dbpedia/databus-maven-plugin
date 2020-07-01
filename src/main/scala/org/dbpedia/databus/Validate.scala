@@ -29,7 +29,7 @@ import org.apache.http.client.config.{CookieSpecs, RequestConfig}
 import org.apache.http.client.methods.HttpHead
 import org.apache.http.impl.client.HttpClients
 import org.apache.jena.rdf.model.ModelFactory
-import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
+import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 import org.dbpedia.databus.lib.SigningHelpers
 
@@ -44,12 +44,10 @@ import org.dbpedia.databus.lib.SigningHelpers
   *
   */
 @Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE, requiresOnline = true, threadSafe = true)
-class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Properties {
-
+class Validate extends DatabusMojo with SigningHelpers with LazyLogging {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
-
     if (!Validated.validated) {
       validateWebId()
       validateAccount()

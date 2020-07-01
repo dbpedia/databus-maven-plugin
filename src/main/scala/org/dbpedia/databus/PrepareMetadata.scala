@@ -57,7 +57,7 @@ import org.dbpedia.databus.shared.authentification.AccountHelpers
   *
   */
 @Mojo(name = "metadata", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresOnline = true, threadSafe = true)
-class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers with DataFileToModel {
+class PrepareMetadata extends DatabusMojo with SigningHelpers with DataFileToModel {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
@@ -185,7 +185,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
 
     // writing the metadatafile
     locations.buildDataIdFile.outputStream.foreach { os =>
-      os.write((Properties.logo(version) + "\n").getBytes("UTF-8")) //(charset = "UTF-8")
+      os.write((Properties.logo + "\n").getBytes("UTF-8")) //(charset = "UTF-8")
       dataIdCollect.write(os, "turtle")
     }
     getLog.info(s"DataId built at: ${locations.prettyPath(locations.buildDataIdFile)}")
@@ -206,10 +206,10 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     val dataIdResource = dataIdCollect.createResource("")
     dataIdResource.addProperty(dcterms.title, s"DataID metadata for ${groupId}/${artifactId}", "en")
     dataIdResource.addProperty(RDFS.`label`, s"DataID metadata for ${groupId}/${artifactId}", "en")
-    dataIdResource.addProperty(dcterms.hasVersion, Properties.pluginVersion)
+    dataIdResource.addProperty(dcterms.hasVersion, DatabusPluginVersion.toString)
     dataIdResource.addProperty(RDF.`type`, dataid.DataId)
     dataIdResource.addProperty(RDFS.`comment`,
-      s"""Metadata created by the DBpedia Databus Maven Plugin: https://github.com/dbpedia/databus-maven-plugin (Version ${Properties.pluginVersion})
+      s"""Metadata created by the DBpedia Databus Maven Plugin: https://github.com/dbpedia/databus-maven-plugin (Version $DatabusPluginVersion)
          |The DataID ontology is a metadata omnibus, which can be extended to be interoperable with all metadata formats
          |Note that the metadata (the dataid.ttl file) is always CC-0, the files are licensed individually
          |Metadata created by ${publisher}""".stripMargin)

@@ -18,6 +18,8 @@
                 <version>2.0-SNAPSHOT</version>
                 <configuration>
                     <downloadUrlPath>http://pa</downloadUrlPath>
+                    <ipfsSettings>
+                    </ipfsSettings>
                 </configuration>
             </plugin>
         </plugins>

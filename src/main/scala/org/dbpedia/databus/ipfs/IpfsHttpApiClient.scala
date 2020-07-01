@@ -2,13 +2,12 @@ package org.dbpedia.databus.ipfs
 
 
 import java.io.ByteArrayOutputStream
-import java.net.{HttpURLConnection, URI}
+import java.net.URI
 import java.nio.file.{Files, Path, Paths}
 import java.util.stream.Collectors
 
-import org.apache.jena.sparql.function.library.leviathan.root
-import org.dbpedia.databus.ipfs.IpfsApiClient.{FileMeta, MultiPart, MultipartHeader}
-import scalaj.http.{BaseHttp, ByteBodyConnectFunc, HttpRequest, PlainUrlFunc}
+import org.dbpedia.databus.ipfs.IpfsApiClient.{MultiPart, MultipartHeader}
+import scalaj.http.{BaseHttp, PlainUrlFunc}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 import spray.json._

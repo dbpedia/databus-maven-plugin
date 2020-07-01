@@ -25,12 +25,12 @@ import java.nio.file.Files
 import org.dbpedia.databus.lib._
 import org.dbpedia.databus.shared._
 import scalaj.http.HttpResponse
-import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import org.dbpedia.databus.shared.authentification.AccountHelpers
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
+import org.apache.maven.plugin.MojoExecutionException
 import org.dbpedia.databus.ipfs.IpfsCliClient
 import org.dbpedia.databus.ipfs.IpfsCliClient.DefaultRabin
 
@@ -38,7 +38,7 @@ import scala.util.{Failure, Success, Try}
 
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
-class Deploy extends AbstractMojo with Properties with SigningHelpers {
+class Deploy extends DatabusMojo with SigningHelpers {
 
   @Parameter(property = "databus.deployRepoURL", defaultValue = "https://databus.dbpedia.org/repo")
   val deployRepoURL: String = ""
@@ -80,7 +80,11 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
       resolveBaseForRDFFile(locations.buildDataIdFile, locations.dataIdDownloadLocation)
     }
 
-    val proceed = if (saveToIpfs) shareToIpfs() else true
+    // check for null and execute
+    val proceed = Option(ipfsSettings)
+      .map(_ => shareToIpfs())
+      .getOrElse(true)
+    // todo move this step to separate mojo
     if (proceed) {
       val response = DataIdUpload.upload(
         uploadEndpointIRI,
@@ -102,9 +106,9 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
    * @return true if successfully saved, false otherwise
    */
   private def shareToIpfs(): Boolean = {
-    val client = new IpfsCliClient(true)
+    val client = IpfsCliClient(ipfsSettings)
     val dir = locations.inputVersionDirectory.toJava.toPath
-    val input = Option(projectRootDockerPath)
+    val input = Option(ipfsSettings.projectRootDockerPath)
       .map(_.toPath)
       .map(_.resolve(globalProjectRoot.toPath.relativize(dir)))
       .getOrElse(dir)

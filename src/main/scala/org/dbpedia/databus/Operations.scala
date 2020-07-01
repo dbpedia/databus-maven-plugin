@@ -24,14 +24,14 @@ import java.util
 
 import better.files.File
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugins.annotations.Parameter
 
 object skipmodules {
   var skipmodules = false
 }
 
-abstract class Operations extends AbstractMojo with LazyLogging with Properties {
+trait Operations extends LazyLogging {
+  this: DatabusMojo =>
 
   @Parameter(
     property = "modules",
