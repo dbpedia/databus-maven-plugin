@@ -41,7 +41,7 @@ trait IpfsPluginOps {
 
   private lazy val cliClient = IpfsCliClient(ipfsSettings)
 
-  private lazy val projectFilesDir = locations.inputVersionDirectory.toJava.toPath
+  private lazy val projectFilesDir = locations.inputDirectory.toJava.toPath
 
   private lazy val relativePath: Path =
     globalProjectRoot.toPath
