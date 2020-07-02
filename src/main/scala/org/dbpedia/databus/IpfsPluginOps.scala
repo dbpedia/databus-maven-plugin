@@ -76,6 +76,7 @@ trait IpfsPluginOps {
     defaultIpfsLocation
       .resolve(dirHash + "/")
       .resolve(relativePath.toString + "/")
+      .resolve(version + "/")
       .resolve(filename)
   }
 
