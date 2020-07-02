@@ -31,14 +31,10 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 import org.apache.maven.plugin.MojoExecutionException
-import org.dbpedia.databus.ipfs.IpfsCliClient
-import org.dbpedia.databus.ipfs.IpfsCliClient.DefaultRabin
-
-import scala.util.{Failure, Success, Try}
 
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
-class Deploy extends DatabusMojo with SigningHelpers {
+class Deploy extends DatabusMojo with SigningHelpers with IpfsPluginOps {
 
   @Parameter(property = "databus.deployRepoURL", defaultValue = "https://databus.dbpedia.org/repo")
   val deployRepoURL: String = ""
@@ -80,10 +76,7 @@ class Deploy extends DatabusMojo with SigningHelpers {
       resolveBaseForRDFFile(locations.buildDataIdFile, locations.dataIdDownloadLocation)
     }
 
-    // check for null and execute
-    val proceed = Option(ipfsSettings)
-      .map(_ => shareToIpfs())
-      .getOrElse(true)
+    val proceed = if (saveToIpfs) shareToIpfs() else true
     // todo move this step to separate mojo
     if (proceed) {
       val response = DataIdUpload.upload(
@@ -99,28 +92,6 @@ class Deploy extends DatabusMojo with SigningHelpers {
       } else {
         processUploadSuccess(response, datasetIdentifier)
       }
-    }
-  }
-
-  /**
-   * @return true if successfully saved, false otherwise
-   */
-  private def shareToIpfs(): Boolean = {
-    val client = IpfsCliClient(ipfsSettings)
-    val dir = locations.inputVersionDirectory.toJava.toPath
-    val input = Option(ipfsSettings.projectRootDockerPath)
-      .map(_.toPath)
-      .map(_.resolve(globalProjectRoot.toPath.relativize(dir)))
-      .getOrElse(dir)
-
-    getLog.info(s"Adding directory $input to ipfs")
-    Try(client.add(input, DefaultRabin, recursive = true)) match {
-      case Failure(exception) =>
-        getLog.error(s"Failed to add files from $input to ipfs", exception)
-        false
-      case Success(value) =>
-        getLog.info(s"Successfully added files from $input: ${value.last}")
-        true
     }
   }
 

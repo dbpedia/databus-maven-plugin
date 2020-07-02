@@ -296,7 +296,7 @@ class IpfsConfig extends IpfsConfigOps {
   @Parameter
   override val isInDocker: Boolean = false
 
-  @Parameter(defaultValue = "ipfs_host")
+  @Parameter(defaultValue = "ipfs_host", required = true)
   override val containerName: String = null
 
   /**

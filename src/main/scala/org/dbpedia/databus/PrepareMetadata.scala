@@ -57,7 +57,7 @@ import org.dbpedia.databus.shared.authentification.AccountHelpers
   *
   */
 @Mojo(name = "metadata", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresOnline = true, threadSafe = true)
-class PrepareMetadata extends DatabusMojo with SigningHelpers with DataFileToModel {
+class PrepareMetadata extends DatabusMojo with SigningHelpers with DataFileToModel with IpfsPluginOps {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
@@ -153,19 +153,6 @@ class PrepareMetadata extends DatabusMojo with SigningHelpers with DataFileToMod
     locations.provenanceIRIs.foreach(p => {
       datasetResource.addProperty(prov.wasDerivedFrom, p.toString.asIRI)
     })
-
-    /*
-    params.wasDerivedFrom.foreach { case ScalaBaseEntity(artifact, version) =>
-
-      val baseEntityBlankNode = editContext.createResource().tap { baseEntityRes =>
-
-        baseEntityRes.addProperty(dataid.artifact, artifact.toString.asIRI)
-        baseEntityRes.addProperty(dcterms.hasVersion, version)
-      }
-
-      datasetResource.addProperty(prov.wasDerivedFrom, baseEntityBlankNode)
-    }*/
-
 
     /**
       * PROCESS FILES

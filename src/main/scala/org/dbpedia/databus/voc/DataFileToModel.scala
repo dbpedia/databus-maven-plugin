@@ -21,7 +21,7 @@
 
 package org.dbpedia.databus.voc
 
-import org.dbpedia.databus.{Parameters, Properties}
+import org.dbpedia.databus.{DatabusMojo, IpfsPluginOps}
 import org.dbpedia.databus.lib.Datafile
 import org.dbpedia.databus.shared.rdf.conversions._
 import org.dbpedia.databus.shared.rdf.vocab._
@@ -29,7 +29,6 @@ import better.files._
 import org.apache.jena.datatypes.xsd.XSDDatatype._
 import org.apache.jena.rdf.model.{Literal, Model, ModelFactory, Resource}
 import org.apache.jena.vocabulary.{OWL, RDF, RDFS, XSD}
-import org.apache.maven.plugin.AbstractMojo
 
 import scala.collection.JavaConverters._
 import scala.language.reflectiveCalls
@@ -60,9 +59,8 @@ object DataFileToModel {
   )
 }
 
-trait DataFileToModel extends Properties with Parameters {
-
-  this: AbstractMojo =>
+trait DataFileToModel {
+  this: DatabusMojo with IpfsPluginOps =>
 
 
   def modelForDatafile(datafile: Datafile, fileIriBase: String): Model = {
@@ -83,33 +81,33 @@ trait DataFileToModel extends Properties with Parameters {
 
 
     /**
-      * adding file iri
-      */
+     * adding file iri
+     */
     singleFileResource.addProperty(dataid.file, (fileIriBase + datafile.finalBasename(params.versionToInsert)).asIRI)
 
     /**
-      * linking to dataset
-      */
+     * linking to dataset
+     */
     val datasetResource = model.createResource(s"#Dataset")
     singleFileResource.addProperty(dataid.isDistributionOf, datasetResource)
     datasetResource.addProperty(dcat.distribution, singleFileResource)
 
     /**
-      * basic properties
-      */
+     * basic properties
+     */
     addBasicPropertiesToResource(model, singleFileResource)
 
     /**
-      * specific info about the file
-      */
+     * specific info about the file
+     */
     addSpecificInfoToFile(model, datafile, singleFileResource)
 
 
     /**
-      * mediatype
-      * sh: it is a dataid property. However, dataid modeled it as a property of the mimetype, which is the wrong place
-      * files have one format extension and maybe one compressionextension and mimetypes have a list of likely extensions
-      */
+     * mediatype
+     * sh: it is a dataid property. However, dataid modeled it as a property of the mimetype, which is the wrong place
+     * files have one format extension and maybe one compressionextension and mimetypes have a list of likely extensions
+     */
 
     addMediatypeAndVariants(model, datafile, singleFileResource)
 
@@ -183,19 +181,24 @@ trait DataFileToModel extends Properties with Parameters {
     singleFileResource.addProperty(dataid.signature, datafile.signatureBase64.asPlainLiteral)
     singleFileResource.addProperty(dataid.preview, datafile.preview)
     singleFileResource.addProperty(dcat.byteSize, datafile.bytes.toString.asTypedLiteral(XSDdecimal))
-     val dcatdownloadurlpath: String = if (absoluteDCATDownloadUrlPath != null) {
-      absoluteDCATDownloadUrlPath
-    } else {
-      ""
+
+    val fileLink = if (saveToIpfs){
+      downloadLink(datafile.finalBasename(params.versionToInsert)).toString.asIRI
+    }else{
+      val dcatdownloadurlpath: String = Option(absoluteDCATDownloadUrlPath).getOrElse("")
+      (dcatdownloadurlpath + datafile.finalBasename(params.versionToInsert)).asIRI
     }
-    singleFileResource.addProperty(dcat.downloadURL, (dcatdownloadurlpath + datafile.finalBasename(params.versionToInsert)).asIRI)
+
+    singleFileResource.addProperty(dcat.downloadURL, fileLink)
 
 
-    def decimalize(l:Long):Literal= {
-      if (l <0L)
-      {Float.NaN .toString.asTypedLiteral(XSDdecimal)}
-      else
-      {l.toString.asTypedLiteral(XSDdecimal)}
+    def decimalize(l: Long): Literal = {
+      if (l < 0L) {
+        Float.NaN.toString.asTypedLiteral(XSDdecimal)
+      }
+      else {
+        l.toString.asTypedLiteral(XSDdecimal)
+      }
     }
 
     // TODO move to mods
@@ -204,5 +207,5 @@ trait DataFileToModel extends Properties with Parameters {
     //singleFileResource.addProperty(dataid.nonEmptyLines, decimalize(datafile.nonEmptyLines))
     //singleFileResource.addProperty(dataid.sorted, datafile.sorted.toString.asTypedLiteral(XSDboolean))
 
- }
+  }
 }
