@@ -60,11 +60,7 @@ trait IpfsPluginOps {
    * @return true if successfully saved, false otherwise
    */
   def shareToIpfs(): Boolean = {
-    val input = Option(ipfsSettings.projectRootDockerPath)
-      .map(_.toPath)
-      .map(_.resolve(relativePath))
-      .getOrElse(filesDir)
-
+    val input = filesDir
     getLog.info(s"Adding directory $input to ipfs")
     Try(processDirectory(input, false)) match {
       case Failure(exception) =>
