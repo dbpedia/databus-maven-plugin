@@ -33,7 +33,7 @@ trait IpfsPluginOps {
   this: DatabusMojo =>
 
   // todo make configurable
-  private val defaultIpfsLocation = URI.create("http://localhost:8080/ipfs/")
+  private val defaultIpfsLocation = URI.create("https://ipfs.io/ipfs/")
 
   lazy val saveToIpfs = Option(ipfsSettings).isDefined
 
@@ -78,8 +78,8 @@ trait IpfsPluginOps {
 
   def downloadLink(filename: String): URI = {
     defaultIpfsLocation
-      .resolve(dirHash)
-      .resolve(relativePath.toString)
+      .resolve(dirHash + "/")
+      .resolve(relativePath.toString + "/")
       .resolve(filename)
   }
 
