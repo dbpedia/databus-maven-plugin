@@ -183,7 +183,7 @@ trait DataFileToModel {
     singleFileResource.addProperty(dcat.byteSize, datafile.bytes.toString.asTypedLiteral(XSDdecimal))
 
     val fileLink = if (saveToIpfs){
-      downloadLink(datafile.finalBasename(params.versionToInsert)).toString.asIRI
+      downloadLink(datafile.file).toString.asIRI
     }else{
       val dcatdownloadurlpath: String = Option(absoluteDCATDownloadUrlPath).getOrElse("")
       (dcatdownloadurlpath + datafile.finalBasename(params.versionToInsert)).asIRI

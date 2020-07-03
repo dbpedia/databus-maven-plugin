@@ -20,6 +20,7 @@
  */
 package org.dbpedia.databus
 
+import java.io.File
 import java.net.URI
 import java.nio.file.Path
 
@@ -41,7 +42,7 @@ trait IpfsPluginOps {
 
   private lazy val cliClient = IpfsCliClient(ipfsSettings)
 
-  private lazy val projectFilesDir = locations.inputDirectory.toJava.toPath
+  private lazy val projectFilesDir = locations.inputVersionDirectory.toJava.toPath
 
   private lazy val relativePath: Path =
     globalProjectRoot.toPath
@@ -72,12 +73,15 @@ trait IpfsPluginOps {
     }
   }
 
-  def downloadLink(filename: String): URI = {
+  def downloadLink(file: File): URI = {
     defaultIpfsLocation
       .resolve(dirHash + "/")
-      .resolve(relativePath.toString + "/")
-      .resolve(version + "/")
-      .resolve(filename)
+      .resolve(
+        projectFilesDir
+        .getParent
+        .relativize(file.toPath)
+        .toString
+      )
   }
 
 }
