@@ -28,11 +28,12 @@ class IpfsPluginTest extends CommonMavenPluginTest {
 
   override def tearDown(): Unit = super.tearDown()
 
-  def testIpfsPluginGoal() = {
+  def testIpfsPluginConfig() = {
     var mojo = new PrepareMetadata()
     val conf = extractPluginConfiguration("databus-maven-plugin", configFile.toFile)
     mojo = configureMojo(mojo, conf).asInstanceOf[PrepareMetadata]
-    mojo.execute()
+
+
   }
 
 }

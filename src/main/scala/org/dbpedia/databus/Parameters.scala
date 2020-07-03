@@ -20,15 +20,10 @@
  */
 package org.dbpedia.databus
 
-
-import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
-import better.files._
-
-import scala.collection.JavaConverters._
-import scala.collection.mutable
-import java.net.URL
 import java.time._
 import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder}
+
+import scala.util.Try
 
 
 trait Parameters {
@@ -68,13 +63,9 @@ trait Parameters {
         }
       }
 
-    lazy val modifiedDate: ZonedDateTime = try {
-      ZonedDateTime.parse(props.modifiedDate)
-    } catch {
-      case e: Throwable => invocationTime
-    }
-
-    //lazy val wasDerivedFrom = props.wasDerivedFrom.asScala.map(ScalaBaseEntity.fromJava).toSet
+    lazy val modifiedDate: ZonedDateTime =
+      Try(ZonedDateTime.parse(props.modifiedDate))
+        .getOrElse(invocationTime)
 
     lazy val versionToInsert = if (insertVersion) Some(version) else None
 

@@ -33,10 +33,7 @@ import scala.util.{Failure, Success, Try}
 trait IpfsPluginOps {
   this: DatabusMojo =>
 
-  // todo make configurable
-  private val defaultIpfsLocation = URI.create("https://ipfs.io/ipfs/")
-
-  lazy val saveToIpfs = Option(ipfsSettings).isDefined
+  lazy val saveToIpfs = ipfsSettings != null
 
   private lazy val dirHash = processDirectory(filesDir, true).last
 
@@ -74,7 +71,9 @@ trait IpfsPluginOps {
   }
 
   def downloadLink(file: File): URI = {
-    defaultIpfsLocation
+    ipfsSettings
+      .ipfsEndpointLink
+      .toURI
       .resolve(dirHash + "/")
       .resolve(
         projectFilesDir

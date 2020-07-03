@@ -21,6 +21,7 @@
 package org.dbpedia.databus.ipfs
 
 import java.io.File
+import java.net.URL
 
 trait IpfsConfigOps {
 
@@ -29,6 +30,8 @@ trait IpfsConfigOps {
   def isInDocker: Boolean = false
 
   def containerName: String = null
+
+  def ipfsEndpointLink: URL
 
   /**
    * Optional parameter, specify path in the docker container to which current project root is mounted.

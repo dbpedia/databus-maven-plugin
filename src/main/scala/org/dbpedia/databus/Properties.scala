@@ -293,6 +293,9 @@ object Properties {
 
 class IpfsConfig extends IpfsConfigOps {
 
+  @Parameter(defaultValue = "https://ipfs.io/ipfs/")
+  override val ipfsEndpointLink: URL = null
+
   @Parameter
   override val isInDocker: Boolean = false
 
