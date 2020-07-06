@@ -20,32 +20,28 @@
  */
 package org.dbpedia.databus.ipfs
 
-import org.dbpedia.databus.CommonMavenIntegrationTest
+import org.dbpedia.databus.{CommonMavenPluginTest, PrepareMetadata}
 
-import scala.util.{Failure, Try}
+class PrepareMetadataGoalTest extends CommonMavenPluginTest {
+
+  override def setUp(): Unit = super.setUp()
+
+  override def tearDown(): Unit = super.tearDown()
+
+  def testRegularPluginConfig() = {
+    var mojo = new PrepareMetadata()
+    val conf = extractPluginConfiguration("databus-maven-plugin", configFile.toFile)
+    mojo = configureMojo(mojo, conf).asInstanceOf[PrepareMetadata]
 
 
-class IpfsPluginItTest extends CommonMavenIntegrationTest {
+  }
 
-  test("the goal is executed") {
-    val v = verifier
-    v.setDebug(false)
-    v.setMavenDebug(false)
+  def testIpfsPluginConfig() = {
+    var mojo = new PrepareMetadata()
+    val conf = extractPluginConfiguration("databus-maven-plugin", configFile.toFile)
+    mojo = configureMojo(mojo, conf).asInstanceOf[PrepareMetadata]
 
-
-    Try(v.executeGoal("package")) match {
-      case Failure(exception) =>
-        exception.printStackTrace()
-        fail(exception)
-      case _ =>
-    }
-
-    Try(v.verifyErrorFreeLog()) match {
-      case Failure(exception) =>
-        exception.printStackTrace()
-        fail(exception)
-      case _ =>
-    }
+    println(mojo)
   }
 
 }

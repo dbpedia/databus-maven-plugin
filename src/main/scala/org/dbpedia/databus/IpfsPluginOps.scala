@@ -24,6 +24,7 @@ import java.io.File
 import java.net.URI
 import java.nio.file.Path
 
+import org.apache.maven.plugins.annotations.Parameter
 import org.dbpedia.databus.ipfs.IpfsCliClient
 import org.dbpedia.databus.ipfs.IpfsCliClient.DefaultRabin
 
@@ -32,6 +33,9 @@ import scala.util.{Failure, Success, Try}
 
 trait IpfsPluginOps {
   this: DatabusMojo =>
+
+  @Parameter(property = "ipfsSettings")
+  val ipfsSettings: IpfsConfig = null
 
   lazy val saveToIpfs = ipfsSettings != null
 
@@ -51,7 +55,7 @@ trait IpfsPluginOps {
     .map(_.resolve(relativePath))
     .getOrElse(projectFilesDir)
 
-  private def processDirectory(path: Path, onlyHash: Boolean) =
+  private[databus] def processDirectory(path: Path, onlyHash: Boolean) =
     cliClient.add(path, DefaultRabin, recursive = true, onlyHash=onlyHash)
 
   /**

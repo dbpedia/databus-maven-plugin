@@ -243,10 +243,6 @@ trait Properties extends Locations with Parameters with Mojo {
   @Parameter(property = "databus.commentPrefix", defaultValue = "")
   val commentPrefix: String = ""
 
-  @Parameter(property = "ipfsSettings")
-  val ipfsSettings: IpfsConfig = null
-
-
   /**
    * common variables used in the code
    */
