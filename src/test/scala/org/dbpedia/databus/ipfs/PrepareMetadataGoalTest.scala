@@ -28,20 +28,10 @@ class PrepareMetadataGoalTest extends CommonMavenPluginTest {
 
   override def tearDown(): Unit = super.tearDown()
 
-  def testRegularPluginConfig() = {
-    var mojo = new PrepareMetadata()
-    val conf = extractPluginConfiguration("databus-maven-plugin", configFile.toFile)
-    mojo = configureMojo(mojo, conf).asInstanceOf[PrepareMetadata]
-
-
-  }
-
   def testIpfsPluginConfig() = {
-    var mojo = new PrepareMetadata()
-    val conf = extractPluginConfiguration("databus-maven-plugin", configFile.toFile)
-    mojo = configureMojo(mojo, conf).asInstanceOf[PrepareMetadata]
-
-    println(mojo)
+    val mojo = lookupMojo("metadata", configFile.toFile).asInstanceOf[PrepareMetadata]
+    assert(mojo.ipfsSettings != null)
+    assert(mojo.downloadUrlPath.toString.equals("http://pa"))
   }
 
 }

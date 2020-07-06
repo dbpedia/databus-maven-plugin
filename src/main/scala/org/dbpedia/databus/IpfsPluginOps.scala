@@ -39,7 +39,7 @@ trait IpfsPluginOps {
 
   lazy val saveToIpfs = ipfsSettings != null
 
-  private lazy val dirHash = processDirectory(filesDir, true).last
+  private def dirHash: String = processDirectory(filesDir, true).last
 
   private lazy val cliClient = IpfsCliClient(ipfsSettings)
 
