@@ -127,7 +127,7 @@ class IpfsCliClient private(ipfsCmd: Seq[String]) {
     )
     val p = process(params)
     p.lineStream
-      .map(s => s.split("\\s+")(1))
+      .map(_.split("\\s+")(1))
   }
 
   def dagGet(hash: String): Seq[DagMeta] = {
@@ -136,8 +136,28 @@ class IpfsCliClient private(ipfsCmd: Seq[String]) {
       .flatMap(p => Try(p.parseJson.convertTo[DagMeta]).toOption)
   }
 
+  def objectLinks(hash: String): Seq[String] = {
+    val p = process(Seq("object", "links", hash))
+    p.lineStream
+      .map(_.split("\\s+")(0))
+  }
+
   private def process(params: Seq[String]) =
     Process(ipfsCmd ++ params)
+
+  // todo make tail recursive?
+  private[ipfs] def fetchAllHashes2(hash: String): Seq[String] = {
+    if (hash.length == 59) {
+      Seq(hash)
+    } else {
+      val re = objectLinks(hash)
+      if (re.isEmpty) {
+        Seq(hash)
+      } else {
+        re.flatMap(fetchAllHashes2)
+      }
+    }
+  }
 
   private[ipfs] def fetchAllHashes(hash: String): Seq[String] = {
     val re = dagGet(hash)
@@ -168,6 +188,10 @@ object RunbableAppli2 extends App {
   )
 
   val cli = IpfsCliClient(true)
+
+  val lis = cli.objectLinks(hs(0))
+  println(lis)
+
   Util.outputFileDiff(hs, cli)
 }
 
@@ -244,7 +268,7 @@ object Util {
         p
       })
       .map {
-        case (l, r) => (cli.fetchAllHashes(l), cli.fetchAllHashes(r))
+        case (l, r) => (cli.fetchAllHashes2(l), cli.fetchAllHashes2(r))
       }
       .map(p => {
         println("le sz: " + p._1.size)
