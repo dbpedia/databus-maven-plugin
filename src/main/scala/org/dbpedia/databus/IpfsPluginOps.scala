@@ -34,7 +34,7 @@ import scala.util.{Failure, Success, Try}
 trait IpfsPluginOps {
   this: DatabusMojo =>
 
-  @Parameter(property = "ipfsSettings")
+  @Parameter(property = "ipfsSettings", readonly = true)
   val ipfsSettings: IpfsConfig = null
 
   lazy val saveToIpfs = ipfsSettings != null
@@ -56,7 +56,7 @@ trait IpfsPluginOps {
     .getOrElse(projectFilesDir)
 
   private[databus] def processDirectory(path: Path, onlyHash: Boolean) =
-    cliClient.add(path, DefaultRabin, recursive = true, onlyHash=onlyHash)
+    cliClient.add(path, DefaultRabin, recursive = true, onlyHash = onlyHash)
 
   /**
    * @return true if successfully saved, false otherwise
@@ -75,15 +75,21 @@ trait IpfsPluginOps {
   }
 
   def downloadLink(file: File): URI = {
+    getLog.info("sets " + ipfsSettings)
+    getLog.info("sets " + ipfsSettings.isInDocker)
+    getLog.info("sets " + ipfsSettings.ipfsEndpointLink)
+    getLog.info("sets " + ipfsSettings.projectRootDockerPath)
+    getLog.info("sets " + ipfsSettings.containerName)
+
     ipfsSettings
       .ipfsEndpointLink
       .toURI
       .resolve(dirHash + "/")
       .resolve(
         projectFilesDir
-        .getParent
-        .relativize(file.toPath)
-        .toString
+          .getParent
+          .relativize(file.toPath)
+          .toString
       )
   }
 

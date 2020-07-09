@@ -23,7 +23,7 @@ package org.dbpedia.databus
 import org.apache.maven.plugin.{AbstractMojo, Mojo}
 import org.apache.maven.plugins.annotations.Parameter
 import java.io.File
-import java.net.URL
+import java.net.{URI, URL}
 
 import org.apache.maven.plugin.logging.Log
 import org.apache.maven.settings.Settings
@@ -289,18 +289,14 @@ object Properties {
 
 class IpfsConfig extends IpfsConfigOps {
 
-  @Parameter(defaultValue = "https://ipfs.io/ipfs/")
-  override val ipfsEndpointLink: URL = null
+  override val ipfsEndpointLink: URL = URI.create("https://ipfs.io/ipfs/").toURL
 
-  @Parameter
   override val isInDocker: Boolean = false
 
-  @Parameter(defaultValue = "ipfs_host", required = true)
-  override val containerName: String = null
+  override val containerName: String = "ipfs_host"
 
   /**
    * Optional parameter, specify path in the docker container to which current project root is mounted.
    */
-  @Parameter
   override val projectRootDockerPath: File = null
 }

@@ -57,7 +57,7 @@ import org.dbpedia.databus.shared.authentification.AccountHelpers
   *
   */
 @Mojo(name = "metadata", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresOnline = true, threadSafe = true)
-class PrepareMetadata extends DatabusMojo with SigningHelpers with DataFileToModel with IpfsPluginOps {
+class PrepareMetadata extends DatabusMojo with SigningHelpers with IpfsPluginOps with DataFileToModel  {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {

@@ -217,11 +217,11 @@ object RunnableAppli extends App {
   //  )
   val files = Seq(
     //      "/data/ipfs/fs/mappingbased-literals_lang=en.ttl.bz2.1.out.gz",
-    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl.gz",
-    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl.bz2.1.out.may.gz"
+    "/data/ipfs/fs/apr.gz",
+    "/data/ipfs/fs/may.gz"
   )
 
-  val chk = Rabin(16, 100000, 1000000)
+  val chk = Rabin(16, 5000, 100000)
 
   val useArgs = !args.isEmpty
 
