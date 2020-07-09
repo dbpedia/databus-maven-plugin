@@ -75,12 +75,6 @@ trait IpfsPluginOps {
   }
 
   def downloadLink(file: File): URI = {
-    getLog.info("sets " + ipfsSettings)
-    getLog.info("sets " + ipfsSettings.isInDocker)
-    getLog.info("sets " + ipfsSettings.ipfsEndpointLink)
-    getLog.info("sets " + ipfsSettings.projectRootDockerPath)
-    getLog.info("sets " + ipfsSettings.containerName)
-
     ipfsSettings
       .ipfsEndpointLink
       .toURI
