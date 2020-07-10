@@ -63,7 +63,9 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
   lazy val compressionVariant: Option[String] = Compression.detectCompression(file.toScala)
 
   def compressionOrArchiveDesc =
-    (Stream.empty ++ compressionVariant ++ archiveVariant).headOption.getOrElse("None")
+    compressionVariant
+      .orElse(archiveVariant)
+      .getOrElse("None")
 
   // sum
   lazy val sha256sum: String = signing.sha256Hash(file.toScala).asBytes.map("%02x" format _).mkString
@@ -387,39 +389,8 @@ class Datafile private(val file: File, previewLineCount: Int = 10)(implicit log:
 
 object Datafile extends LazyLogging {
 
-
   def apply(file: File, previewLineCount: Int = 10)(implicit log: Log): Datafile = {
     new Datafile(file, previewLineCount)(log)
   }
 
-  /*
-    protected def alphaNumericP[_: P] = CharIn("A-Za-z0-9").rep(1)
-
-    // the negative lookahead ensures that we do not parse into the format extension(s) if there is no content variant
-    protected def artifactNameP[_: P] =
-      P((!extensionP ~ CharPred(_ != '_')).rep(1).!)
-        .opaque("<filename prefix>")
-
-    protected def contentVariantsP[_: P] =
-      P(("_" ~ alphaNumericP.!).rep())
-        .opaque("<content variants>")
-
-    protected def extensionP[_: P] = "." ~ (CharIn("A-Za-z") ~ CharIn("A-Za-z0-9").rep()).!
-
-    // using a negative lookahead here to ensure that no compression extension is parsed as format extension
-    protected def formatExtensionP[_: P] = P(!compressionExtensionP ~ extensionP)
-
-    protected def formatExtensionsP[_: P] =
-      P(formatExtensionP.rep(1))
-        .opaque("<format variant extensions>")
-
-    protected def compressionExtensionP[_: P] =
-      P("." ~ StringIn("bz2", "gz", "tar", "xz", "zip").!)
-        .opaque("<compression variant extensions>")
-
-    protected def compressionExtensionsP[_: P] = P(compressionExtensionP.rep())
-
-    protected def databusInputFilenameP[_: P]: P[(String, Seq[String], Seq[String], Seq[String])] =
-      (Start ~ artifactNameP ~ contentVariantsP ~ formatExtensionsP ~ compressionExtensionsP ~ End)
-  */
 }

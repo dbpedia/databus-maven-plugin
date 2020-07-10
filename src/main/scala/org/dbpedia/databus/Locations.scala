@@ -146,8 +146,7 @@ trait Locations {
           s"isDirectory: ${inputVersionDirectory.isDirectory}\n " +
           s"isEmpty (no files found): ${inputVersionDirectory.isEmpty}\n"
         )
-
-        List[File]()
+        List.empty
       }
     }
 
@@ -159,40 +158,28 @@ trait Locations {
       try {
         inputProvenanceFile.lineIterator
           .filter(_.nonEmpty)
-          .map(line => line.split("\t"))
+          .map(_.split("\t"))
           .foreach(arr => {
             val url = new URL(arr(1))
             set.+=((arr(0), url))
           })
       } catch {
-        case nsf: NoSuchFileException => {
+        case _: NoSuchFileException =>
           getLog.info(s"${artifactId}/provenance.tsv not found, skipping")
-          set
-        }
-        case aie: ArrayIndexOutOfBoundsException => {
-          getLog.error(s"parsing of ${artifactId}/${prettyPath(inputProvenanceFile)} failed\nfix with:\n* must be (version \\t url), ${aie}")
+        case e@(_ : ArrayIndexOutOfBoundsException | _: MalformedURLException) =>
+          getLog.error(s"parsing of ${artifactId}/${prettyPath(inputProvenanceFile)} failed\nfix with:\n* must be (version \\t url), $e")
           System.exit(-1)
-        }
-        case mue: MalformedURLException => {
-          getLog.error(s"parsing of ${artifactId}/${prettyPath(inputProvenanceFile)} failed\nfix with:\n* must be (version \\t url), ${mue}")
-          System.exit(-1)
-        }
-
       }
-
       set.toSet
     }
 
-    def provenanceIRIs = {
+    def provenanceIRIs =
       provenanceForVersion(props.version)
-    }
 
-    def provenanceForVersion(version: String): Set[URL] = {
-
-      provenanceFull.filter(_._1 == version).map(t => t._2)
-
-    }
-
+    def provenanceForVersion(version: String): Set[URL] =
+      provenanceFull
+        .filter(_._1 == version)
+        .map(t => t._2)
 
     lazy val pkcs12File: File = {
       if (props.pkcs12File != null) {
@@ -205,15 +192,9 @@ trait Locations {
       }
     }
 
-    def pkcs12Password: String = {
-
-      if (props.settings.getServer(pkcs12serverId) != null && settings.getServer(pkcs12serverId).getPassphrase !=null ) {
-          settings.getServer(pkcs12serverId).getPassphrase
-      } else {
-        //empty
-        ""
-      }
-    }
+    def pkcs12Password: String =
+      Option(settings.getServer(pkcs12serverId))
+        .flatMap(s => Option(s.getPassphrase))
+        .getOrElse("")
   }
-
 }

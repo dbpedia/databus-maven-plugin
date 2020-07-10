@@ -25,9 +25,6 @@ import better.files.File
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.Mojo
 
-
-//todo remove this goal, configure maven to do it
-
 /**
  * Delete current version
  *
@@ -61,13 +58,9 @@ class RemoveVersion extends DatabusMojo with Operations {
           vdir.delete(true)
           getLog.info(s"${!vdir.isDirectory} $vdir")
         })
-
-
       } else {
         println(s"aborted, read '$c'")
       }
-
-
     } else {
       if (!skipmodules.skipmodules) {
         getLog.info(
@@ -76,7 +69,6 @@ class RemoveVersion extends DatabusMojo with Operations {
              |rm -r $artifactId/$version"
            """.stripMargin)
       }
-      return
     }
   }
 
