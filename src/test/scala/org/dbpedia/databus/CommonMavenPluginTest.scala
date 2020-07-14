@@ -20,27 +20,80 @@
  */
 package org.dbpedia.databus
 
-import java.nio.file.Paths
+import java.io.File
+import java.nio.file.{Path, Paths}
+import java.util
 
+import org.apache.maven.execution.MavenSession
+import org.apache.maven.model.Build
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader
 import org.apache.maven.plugin.testing.AbstractMojoTestCase
+import org.apache.maven.plugin.testing.stubs.MavenProjectStub
+import org.apache.maven.shared.utils.ReaderFactory
 
-trait CommonMavenPluginTest extends AbstractMojoTestCase {
+abstract class CommonMavenPluginTest extends AbstractMojoTestCase {
 
-  val projectRoot = {
-    val resPa = getClass.getClassLoader
-      .getResource("")
-      .getPath
-    Paths.get(resPa)
-      .resolve("../../")
-      .normalize()
+  def initMojo[T <: DatabusMojo](projectName: String, goal: String): T = {
+    val mj: DatabusMojo =
+      lookupConfiguredMojo(initSession(projectName), newMojoExecution(goal))
+        .asInstanceOf[T]
+    configureMojo(
+      mj,
+      "databus-maven-plugin",
+      new File(mj.proj.getBasedir, "pom.xml"))
+      .asInstanceOf[T]
   }
 
-  val configFile =
+  def initSession(projectName: String): MavenSession = {
+    val proj = new TestProjectStub(CommonMavenPluginTest.projectFolder(projectName))
+    val session = newMavenSession(proj)
+    session.getRequest.setBaseDirectory(proj.getBasedir())
+    session
+  }
+
+}
+
+object CommonMavenPluginTest {
+
+  def projectFolder(name: String): Path =
     Paths.get(
       getClass.getClassLoader
-        .getResource("sampleProj/pom.xml")
+        .getResource(name)
         .getPath)
 
-  val pluginBuildDir = projectRoot.resolve("target/tests")
+}
 
+
+class TestProjectStub(projectFolder: Path) extends MavenProjectStub {
+
+  val pomReader = new MavenXpp3Reader();
+  val model = pomReader.read(ReaderFactory.newXmlReader(new File(getBasedir(), "pom.xml")));
+  setModel(model)
+  setGroupId(model.getGroupId)
+  setArtifactId(model.getArtifactId)
+  setVersion(model.getVersion)
+  setName(model.getName)
+  setUrl(model.getUrl)
+  setPackaging(model.getPackaging)
+
+  val build = new Build();
+  build.setFinalName(model.getArtifactId);
+  build.setDirectory(getBasedir() + "/target");
+  build.setSourceDirectory(getBasedir() + "/src/main/java");
+  build.setOutputDirectory(getBasedir() + "/target/classes");
+  build.setTestSourceDirectory(getBasedir() + "/src/test/java");
+  build.setTestOutputDirectory(getBasedir() + "/target/test-classes");
+  setBuild(build);
+
+  val compileSourceRoots = new util.ArrayList[String]();
+  compileSourceRoots.add(getBasedir() + "/src/main/java");
+  setCompileSourceRoots(compileSourceRoots);
+
+  val testCompileSourceRoots = new util.ArrayList[String]();
+  testCompileSourceRoots.add(getBasedir() + "/src/test/java");
+  setTestCompileSourceRoots(testCompileSourceRoots);
+
+  /** {@inheritDoc } */
+  override def getBasedir() =
+    projectFolder.toFile;
 }

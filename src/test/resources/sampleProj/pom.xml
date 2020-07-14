@@ -22,7 +22,6 @@
                     <downloadUrlPath>http://pa</downloadUrlPath>
                     <ipfsSettings>
                     </ipfsSettings>
-                    <proj implementation="org.dbpedia.databus.TestProjectStub"/>
                 </configuration>
             </plugin>
         </plugins>

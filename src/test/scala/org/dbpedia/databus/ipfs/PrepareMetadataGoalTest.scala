@@ -37,19 +37,12 @@ class PrepareMetadataGoalTest extends CommonMavenPluginTest {
   override def tearDown(): Unit = super.tearDown()
 
   def testIpfsPluginConfig() = {
-//    val mojo = lookupMojo("metadata", configFile.toFile).asInstanceOf[PrepareMetadata]
-    val mojo = lookupConfiguredMojo(initSession(), newMojoExecution("metadata"))
-      .asInstanceOf[PrepareMetadata]
+    val mojo = initMojo[PrepareMetadata]("sampleProj","metadata")
 
     assert(mojo.ipfsSettings != null)
     assert(mojo.downloadUrlPath.toString.equals("http://pa"))
   }
 
-  def initSession(): MavenSession = {
-    val proj = new TestProjectStub
-    val session = newMavenSession(proj)
-    session.getRequest.setBaseDirectory(proj.getBasedir())
-    session
-  }
+
 
 }

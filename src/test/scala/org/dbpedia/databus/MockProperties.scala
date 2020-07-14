@@ -51,37 +51,3 @@ trait MockProperties extends Properties {
 
 }
 
-class TestProjectStub extends MavenProjectStub {
-
-  val pomReader = new MavenXpp3Reader();
-  val model = pomReader.read(ReaderFactory.newXmlReader(new File(getBasedir(), "pom.xml")));
-  setModel(model)
-  setGroupId(model.getGroupId)
-  setArtifactId(model.getArtifactId)
-  setVersion(model.getVersion)
-  setName(model.getName)
-  setUrl(model.getUrl)
-  setPackaging(model.getPackaging)
-
-  val build = new Build();
-  build.setFinalName(model.getArtifactId);
-  build.setDirectory(getBasedir() + "/target");
-  build.setSourceDirectory(getBasedir() + "/src/main/java");
-  build.setOutputDirectory(getBasedir() + "/target/classes");
-  build.setTestSourceDirectory(getBasedir() + "/src/test/java");
-  build.setTestOutputDirectory(getBasedir() + "/target/test-classes");
-  setBuild(build);
-
-  val compileSourceRoots = new util.ArrayList[String]();
-  compileSourceRoots.add(getBasedir() + "/src/main/java");
-  setCompileSourceRoots(compileSourceRoots);
-
-  val testCompileSourceRoots = new util.ArrayList[String]();
-  testCompileSourceRoots.add(getBasedir() + "/src/test/java");
-  setTestCompileSourceRoots(testCompileSourceRoots);
-
-  /** {@inheritDoc } */
-  override def getBasedir() = {
-    new File(super.getBasedir() + "/src/test/resources/sampleProj/");
-  }
-}
