@@ -183,16 +183,16 @@ trait Locations {
     lazy val pkcs12File: File = {
       if (props.pkcs12File != null) {
         lib.findFileMaybeInParent(props.pkcs12File.toScala, "PKCS12 bundle")
-      } else if (props.settings.getServer(pkcs12serverId) != null) {
+      } else if (pkcsServer != null) {
         //TODO strictly not necessary to use find here
-        lib.findFileMaybeInParent(File(settings.getServer(pkcs12serverId).getPrivateKey), "PKCS bundle")
+        lib.findFileMaybeInParent(File(pkcsServer.getPrivateKey), "PKCS bundle")
       } else {
         null
       }
     }
 
     def pkcs12Password: String =
-      Option(settings.getServer(pkcs12serverId))
+      Option(pkcsServer)
         .flatMap(s => Option(s.getPassphrase))
         .getOrElse("")
   }

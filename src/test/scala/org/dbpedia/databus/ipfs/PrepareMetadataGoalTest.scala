@@ -21,24 +21,35 @@
 package org.dbpedia.databus.ipfs
 
 import java.nio.file.Path
+import java.util.Collections
 
-import org.dbpedia.databus.{CommonMavenPluginTest, MockProperties, PrepareMetadata}
+import org.apache.maven.{DefaultMaven, Maven}
+import org.apache.maven.execution.{DefaultMavenExecutionRequest, DefaultMavenExecutionResult, MavenExecutionRequestPopulator, MavenSession}
+import org.dbpedia.databus.{CommonMavenPluginTest, MockProperties, PrepareMetadata, TestProjectStub}
 
-import scala.util.Random
 
 class PrepareMetadataGoalTest extends CommonMavenPluginTest {
 
-  override def setUp(): Unit = super.setUp()
+  override def setUp(): Unit = {
+    super.setUp()
+  }
 
   override def tearDown(): Unit = super.tearDown()
 
   def testIpfsPluginConfig() = {
-    val mojo = lookupMojo("metadata", configFile.toFile)
+//    val mojo = lookupMojo("metadata", configFile.toFile).asInstanceOf[PrepareMetadata]
+    val mojo = lookupConfiguredMojo(initSession(), newMojoExecution("metadata"))
       .asInstanceOf[PrepareMetadata]
-
 
     assert(mojo.ipfsSettings != null)
     assert(mojo.downloadUrlPath.toString.equals("http://pa"))
+  }
+
+  def initSession(): MavenSession = {
+    val proj = new TestProjectStub
+    val session = newMavenSession(proj)
+    session.getRequest.setBaseDirectory(proj.getBasedir())
+    session
   }
 
 }

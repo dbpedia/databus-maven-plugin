@@ -120,7 +120,7 @@ class PrepareMetadata extends DatabusMojo with SigningHelpers with IpfsPluginOps
       case Some(account) => {
 
         val accountIRI = s"${account.getURI}".asIRI
-        val groupIRI = s"${account.getURI}/$subpathGroup".asIRI
+        val groupIRI = s"${account.getURI}/$groupId".asIRI
         val artifactIRI = s"${account.getURI}/$subpathGroupArtifactId".asIRI
         val versionIRI = s"${account.getURI}/$subpathGroupArtifactIdVersion".asIRI
         fileIriBase = s"${account.getURI}/$subpathGroupArtifactIdVersion/"

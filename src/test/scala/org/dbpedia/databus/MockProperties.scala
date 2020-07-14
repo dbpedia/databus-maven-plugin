@@ -23,10 +23,12 @@ package org.dbpedia.databus
 import java.io.File
 import java.util
 
+import org.apache.maven.execution.MavenSession
 import org.apache.maven.model.{Build, Model}
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub
+import org.apache.maven.settings.Settings
 import org.apache.maven.shared.utils.ReaderFactory
 
 
@@ -80,6 +82,6 @@ class TestProjectStub extends MavenProjectStub {
 
   /** {@inheritDoc } */
   override def getBasedir() = {
-    new File(super.getBasedir() + "/src/test/resources/unit/project-to-test/");
+    new File(super.getBasedir() + "/src/test/resources/sampleProj/");
   }
 }

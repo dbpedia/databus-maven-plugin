@@ -37,7 +37,7 @@ trait IpfsPluginOps {
   @Parameter(property = "ipfsSettings", readonly = true)
   val ipfsSettings: IpfsConfig = null
 
-  lazy val saveToIpfs = ipfsSettings != null
+  def saveToIpfs: Boolean = ipfsSettings != null
 
   private def dirHash: String = processDirectory(filesDir, true).last
 

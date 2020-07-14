@@ -141,8 +141,8 @@ trait Parameters {
         System.exit(-1)
       }
 
-      if(params.label.toLowerCase.contains("dataset") || params.label.toLowerCase.contains(subpathGroup)) {
-        getLog.warn(s"Not recommended to include 'dataset' or groupId '$subpathGroup' in rdfs:label (first line of ${markdown.name}): ${params.label}")
+      if(params.label.toLowerCase.contains("dataset") || params.label.toLowerCase.contains(groupId)) {
+        getLog.warn(s"Not recommended to include 'dataset' or groupId '$groupId' in rdfs:label (first line of ${markdown.name}): ${params.label}")
       }
       if(params.label.length>40){
         getLog.warn(s"label (${params.label.length}) too long: ${params.label}")

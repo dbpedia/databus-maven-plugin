@@ -28,7 +28,6 @@ import org.apache.maven.execution.MavenSession
 import org.apache.maven.plugin.logging.Log
 import org.apache.maven.plugins.annotations.{Component, Parameter}
 import org.apache.maven.project.MavenProject
-import org.apache.maven.settings.Settings
 import org.dbpedia.databus.ipfs.IpfsConfigOps
 
 
@@ -44,21 +43,19 @@ import org.dbpedia.databus.ipfs.IpfsConfigOps
 trait Properties extends Locations with Parameters with Mojo {
   this: AbstractMojo =>
 
-  @Component
+  @Parameter(defaultValue = "${project}")
   val proj: MavenProject = null
 
-  @Component
+  @Parameter(defaultValue = "${session}")
   val session: MavenSession = null
 
-  @Parameter(defaultValue = "${settings}", readonly = true)
-  val settings: Settings = null
-
-  def subpathGroup: String = proj.getGroupId
+  def groupId: String = proj.getGroupId
   def artifactId: String = proj.getArtifactId
   def version: String = proj.getVersion
 
-  def subpathGroupArtifactId: String = subpathGroup + "/" + artifactId
+  def subpathGroupArtifactId: String = groupId + "/" + artifactId
   def subpathGroupArtifactIdVersion: String = subpathGroupArtifactId + "/" + version
+  def pkcsServer = session.getSettings.getServer(pkcs12serverId)
 
 
   /**
