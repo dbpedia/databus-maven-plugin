@@ -22,7 +22,7 @@ package org.dbpedia.databus
 
 
 import java.net.{MalformedURLException, URL}
-import java.nio.file.NoSuchFileException
+import java.nio.file.{NoSuchFileException, Paths}
 
 import better.files.File
 import better.files._
@@ -30,7 +30,6 @@ import better.files._
 import scala.collection.mutable
 
 trait Locations {
-
   this: Properties =>
 
   lazy val locations = new Locations(this)
@@ -48,7 +47,7 @@ trait Locations {
 
     //used for better paths in logging
     def prettyPath(f: File): String =
-      props.sessionRoot.toScala
+      Paths.get(props.session.getExecutionRootDirectory)
         .relativize(f)
         .toString
 
@@ -77,12 +76,12 @@ trait Locations {
       */
 
     // target/databus
-    lazy val buildDirectory: File = (props.buildDirectory.toScala / "databus").createDirectories()
+    lazy val buildDirectory: File = (props.proj.getBuild.getDirectory / "databus").createDirectories()
 
     //
     lazy val buildVersionDirectory: File = (buildDirectory / props.version)
 
-    lazy val buildVersionShaSumDirectory: File = (buildDirectory / props.version / "shasum").createDirectories()
+    lazy val buildVersionShaSumDirectory: File = (buildVersionDirectory / "shasum").createDirectories()
 
     lazy val buildDataIdFile: File = (buildVersionDirectory / dataIdFileName)
 
@@ -96,7 +95,7 @@ trait Locations {
 
     lazy val packageDocumentationFile: File = (packageDirectory / markdownFileName)
 
-    lazy val packageVersionDirectory: File = (packageDirectory / version).createDirectories()
+    lazy val packageVersionDirectory: File = (packageDirectory / props.version).createDirectories()
 
     lazy val packageDataIdFile: File = (packageVersionDirectory / dataIdFileName)
 

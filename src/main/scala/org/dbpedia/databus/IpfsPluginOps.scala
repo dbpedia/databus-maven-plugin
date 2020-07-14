@@ -22,10 +22,10 @@ package org.dbpedia.databus
 
 import java.io.File
 import java.net.URI
-import java.nio.file.Path
+import java.nio.file.{Path, Paths}
 
 import org.apache.maven.plugins.annotations.Parameter
-import org.dbpedia.databus.ipfs.IpfsCliClient
+import org.dbpedia.databus.ipfs.{IpfsCliClient, IpfsClientOps}
 import org.dbpedia.databus.ipfs.IpfsCliClient.DefaultRabin
 
 import scala.util.{Failure, Success, Try}
@@ -41,12 +41,12 @@ trait IpfsPluginOps {
 
   private def dirHash: String = processDirectory(filesDir, true).last
 
-  private lazy val cliClient = IpfsCliClient(ipfsSettings)
+  private[databus] lazy val cliClient: IpfsClientOps = IpfsCliClient(ipfsSettings)
 
   private lazy val projectFilesDir = locations.inputVersionDirectory.toJava.toPath
 
   private lazy val relativePath: Path =
-    globalProjectRoot.toPath
+    Paths.get(session.getExecutionRootDirectory)
       .relativize(projectFilesDir)
 
   private lazy val filesDir: Path = Option(ipfsSettings)

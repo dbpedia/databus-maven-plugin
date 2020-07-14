@@ -20,7 +20,11 @@
  */
 package org.dbpedia.databus.ipfs
 
-import org.dbpedia.databus.{CommonMavenPluginTest, PrepareMetadata}
+import java.nio.file.Path
+
+import org.dbpedia.databus.{CommonMavenPluginTest, MockProperties, PrepareMetadata}
+
+import scala.util.Random
 
 class PrepareMetadataGoalTest extends CommonMavenPluginTest {
 
@@ -29,7 +33,10 @@ class PrepareMetadataGoalTest extends CommonMavenPluginTest {
   override def tearDown(): Unit = super.tearDown()
 
   def testIpfsPluginConfig() = {
-    val mojo = lookupMojo("metadata", configFile.toFile).asInstanceOf[PrepareMetadata]
+    val mojo = lookupMojo("metadata", configFile.toFile)
+      .asInstanceOf[PrepareMetadata]
+
+
     assert(mojo.ipfsSettings != null)
     assert(mojo.downloadUrlPath.toString.equals("http://pa"))
   }

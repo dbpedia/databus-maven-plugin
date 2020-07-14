@@ -22,24 +22,22 @@
 package org.dbpedia.databus
 
 import org.dbpedia.databus.lib.{Datafile, SigningHelpers}
-import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
-import org.dbpedia.databus.shared.helpers.conversions._
 import org.dbpedia.databus.shared.rdf.conversions._
 import org.dbpedia.databus.shared.rdf.vocab._
 import org.dbpedia.databus.voc.DataFileToModel
+import org.dbpedia.databus.shared.authentification.AccountHelpers
 import better.files.{File => _, _}
 import org.apache.jena.rdf.model.{Model, ModelFactory}
-import org.apache.jena.riot.RDFLanguages.TURTLE
-import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
+import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo}
 
 import scala.language.reflectiveCalls
 import java.io._
 
 import org.apache.jena.datatypes.xsd.XSDDatatype.XSDdateTime
+import org.apache.jena.vocabulary.{RDF, RDFS}
 
-import org.apache.jena.vocabulary.{RDF, RDFS, XSD}
-import org.dbpedia.databus.shared.authentification.AccountHelpers
+
 
 /**
   * Analyse release data files
@@ -122,10 +120,10 @@ class PrepareMetadata extends DatabusMojo with SigningHelpers with IpfsPluginOps
       case Some(account) => {
 
         val accountIRI = s"${account.getURI}".asIRI
-        val groupIRI = s"${account.getURI}/${groupId}".asIRI
-        val artifactIRI = s"${account.getURI}/${groupId}/${artifactId}".asIRI
-        val versionIRI = s"${account.getURI}/${groupId}/${artifactId}/${version}".asIRI
-        fileIriBase = s"${account.getURI}/${groupId}/${artifactId}/${version}/"
+        val groupIRI = s"${account.getURI}/$subpathGroup".asIRI
+        val artifactIRI = s"${account.getURI}/$subpathGroupArtifactId".asIRI
+        val versionIRI = s"${account.getURI}/$subpathGroupArtifactIdVersion".asIRI
+        fileIriBase = s"${account.getURI}/$subpathGroupArtifactIdVersion/"
 
         //accountIRI.addProperty(RDF.`type`, dataid.Account)
         groupIRI.addProperty(RDF.`type`, dataid.Group)
@@ -191,8 +189,8 @@ class PrepareMetadata extends DatabusMojo with SigningHelpers with IpfsPluginOps
       * foaf:primaryTopic          <http://dbpedia.org/dataset/main_dataset?lang=en&dbpv=2016-10> .
       */
     val dataIdResource = dataIdCollect.createResource("")
-    dataIdResource.addProperty(dcterms.title, s"DataID metadata for ${groupId}/${artifactId}", "en")
-    dataIdResource.addProperty(RDFS.`label`, s"DataID metadata for ${groupId}/${artifactId}", "en")
+    dataIdResource.addProperty(dcterms.title, s"DataID metadata for $subpathGroupArtifactId", "en")
+    dataIdResource.addProperty(RDFS.`label`, s"DataID metadata for $subpathGroupArtifactId", "en")
     dataIdResource.addProperty(dcterms.hasVersion, DatabusPluginVersion.toString)
     dataIdResource.addProperty(RDF.`type`, dataid.DataId)
     dataIdResource.addProperty(RDFS.`comment`,

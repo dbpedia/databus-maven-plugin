@@ -21,11 +21,13 @@
 package org.dbpedia.databus
 
 import org.apache.maven.plugin.{AbstractMojo, Mojo}
-import org.apache.maven.plugins.annotations.Parameter
 import java.io.File
 import java.net.{URI, URL}
 
+import org.apache.maven.execution.MavenSession
 import org.apache.maven.plugin.logging.Log
+import org.apache.maven.plugins.annotations.{Component, Parameter}
+import org.apache.maven.project.MavenProject
 import org.apache.maven.settings.Settings
 import org.dbpedia.databus.ipfs.IpfsConfigOps
 
@@ -42,36 +44,21 @@ import org.dbpedia.databus.ipfs.IpfsConfigOps
 trait Properties extends Locations with Parameters with Mojo {
   this: AbstractMojo =>
 
-  /**
-   * Project vars given by Maven
-   */
+  @Component
+  val proj: MavenProject = null
 
-  @Parameter(defaultValue = "${project.groupId}", readonly = true)
-  val groupId: String = null
-
-  @Parameter(defaultValue = "${project.artifactId}", readonly = true)
-  val artifactId: String = null
-
-  @Parameter(defaultValue = "${project.version}", readonly = true)
-  val version: String = null
-
-  @Parameter(defaultValue = "${project.packaging}", readonly = true)
-  val packaging: String = null
-
-  @Parameter(defaultValue = "${project.build.directory}", readonly = true)
-  val buildDirectory: File = null
-
-  @Parameter(defaultValue = "${project.build.finalName}", readonly = true)
-  val finalName: String = null
-
-  @Parameter(defaultValue = "${maven.multiModuleProjectDirectory}", readonly = true)
-  val globalProjectRoot: File = null
+  @Component
+  val session: MavenSession = null
 
   @Parameter(defaultValue = "${settings}", readonly = true)
   val settings: Settings = null
 
-  @Parameter(defaultValue = "${session.executionRootDirectory}", readonly = true)
-  val sessionRoot: File = null
+  def subpathGroup: String = proj.getGroupId
+  def artifactId: String = proj.getArtifactId
+  def version: String = proj.getVersion
+
+  def subpathGroupArtifactId: String = subpathGroup + "/" + artifactId
+  def subpathGroupArtifactIdVersion: String = subpathGroupArtifactId + "/" + version
 
 
   /**
@@ -249,7 +236,7 @@ trait Properties extends Locations with Parameters with Mojo {
 
 
   def isParent(): Boolean = {
-    packaging.equals("pom")
+    proj.getPackaging.equals("pom")
   }
 
 
@@ -260,7 +247,7 @@ trait Properties extends Locations with Parameters with Mojo {
  */
 object Properties {
 
-  var logoPrinted = false
+  private var logoPrinted = false
 
   //NOTE: NEEDS TO BE COMPATIBLE WITH TURTLE COMMENTS
   val logo =

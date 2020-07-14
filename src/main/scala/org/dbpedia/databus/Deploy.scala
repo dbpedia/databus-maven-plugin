@@ -57,7 +57,7 @@ class Deploy extends DatabusMojo with SigningHelpers with IpfsPluginOps {
     val uploadEndpointIRI = s"$deployRepoURL/dataid/upload"
 
     val datasetIdentifier = AccountHelpers.getAccountOption(publisher)
-      .map(a => s"${a.getURI}/${groupId}/${artifactId}/${version}")
+      .map(a => s"${a.getURI}/$subpathGroupArtifactIdVersion")
       .getOrElse(locations.dataIdDownloadLocation)
 
     getLog.info(s"Attempting upload to ${uploadEndpointIRI} with allowOverrideOnDeploy=${allowOverwriteOnDeploy} into graph ${datasetIdentifier}")

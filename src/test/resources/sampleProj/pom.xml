@@ -9,6 +9,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <metadata.ipfsSettings.isInDocker>true</metadata.ipfsSettings.isInDocker>
+        <project.groupId>test</project.groupId>
     </properties>
 
     <build>

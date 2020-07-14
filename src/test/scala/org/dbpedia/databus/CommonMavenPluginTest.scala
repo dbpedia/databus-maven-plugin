@@ -38,7 +38,7 @@ trait CommonMavenPluginTest extends AbstractMojoTestCase {
   val configFile =
     Paths.get(
       getClass.getClassLoader
-        .getResource("sample-pom.xml")
+        .getResource("sampleProj/pom.xml")
         .getPath)
 
   val pluginBuildDir = projectRoot.resolve("target/tests")

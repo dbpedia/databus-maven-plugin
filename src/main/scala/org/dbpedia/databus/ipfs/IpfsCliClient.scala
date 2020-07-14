@@ -103,7 +103,24 @@ object IpfsCliClient {
 
 }
 
-class IpfsCliClient private(ipfsCmd: Seq[String]) {
+trait IpfsClientOps {
+
+  def add(fn: Path,
+          chunker: Chunker = Default,
+          nocopy: Boolean = false,
+          recursive: Boolean = false,
+          wrapWithDir: Boolean = true,
+          addHiddenFiles: Boolean = false,
+          onlyHash: Boolean = false): Seq[String]
+
+  def dagGet(hash: String): Seq[DagMeta]
+
+  def objectLinks(hash: String): Seq[String]
+
+
+}
+
+class IpfsCliClient private(ipfsCmd: Seq[String]) extends IpfsClientOps {
 
   import spray.json._
   import IpfsCliClient.CliProtocol._
@@ -144,143 +161,5 @@ class IpfsCliClient private(ipfsCmd: Seq[String]) {
 
   private def process(params: Seq[String]) =
     Process(ipfsCmd ++ params)
-
-  // todo make tail recursive?
-  private[ipfs] def fetchAllHashes2(hash: String): Seq[String] = {
-    if (hash.length == 59) {
-      Seq(hash)
-    } else {
-      val re = objectLinks(hash)
-      if (re.isEmpty) {
-        Seq(hash)
-      } else {
-        re.flatMap(fetchAllHashes2)
-      }
-    }
-  }
-
-  private[ipfs] def fetchAllHashes(hash: String): Seq[String] = {
-    val re = dagGet(hash)
-
-    re.flatMap(dm =>
-      dm.links
-        .flatMap(li =>
-          if (li.cid.v0.length == 59) {
-            Seq(li.cid.v0)
-          } else {
-            fetchAllHashes(li.cid.v0)
-          }
-        )
-    )
-  }
-
-}
-
-object RunbableAppli2 extends App {
-
-  val hs = Seq(
-    //        "QmQtiMsYzYcnj8Y5CTPSosgcMRjvZRf5bpuYzsah93Nkg9",
-    //        "QmSchskU7Kv2UegpD7WXdJkqEHKXd5WFKQyghwwciRUXAo",
-    //        "QmWyVnQyd4fb7oXqi2GW8mBapt5bg6kfdiUABYW6u5bmF3",
-    //    "bafkreiahnckfv2hwtk4aztlducpyj5fala5xy6mfu4zp7uxpi3dduojcvu"
-    "QmYmaWpDFBksYF7PUNPcd3xJ66UK2W6TkPzMNQ1ri5md1T",
-    "Qmf2T1euZRYVoqEWHPY3oEeYpR1j76yxXan2ZJoMHNB5Vq"
-  )
-
-  val cli = IpfsCliClient(true)
-
-  val lis = cli.objectLinks(hs(0))
-  println(lis)
-
-  Util.outputFileDiff(hs, cli)
-}
-
-object RunnableAppli extends App {
-
-  val cli = IpfsCliClient(true)
-
-  //  val files = Seq(
-  //    "/data/ipfs/fs/preferences.txt",
-  //    "/data/ipfs/fs/preferences2.txt",
-  //    "/data/ipfs/fs/preferences3.txt"
-  //  )
-  //  val chk = Rabin(16, 100, 500)
-
-  //  val files = Seq(
-  //    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl-2",
-  //    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl",
-  //    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl.copy"
-  //  )
-  //  val files = Seq(
-  //    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl.bz2",
-  //    "/data/ipfs/fs/mappingbased-literals_lang=en.ttl-2.bz2",
-  //  )
-  val files = Seq(
-    //      "/data/ipfs/fs/mappingbased-literals_lang=en.ttl.bz2.1.out.gz",
-    "/data/ipfs/fs/apr.gz",
-    "/data/ipfs/fs/may.gz"
-  )
-
-  val chk = Rabin(16, 5000, 100000)
-
-  val useArgs = !args.isEmpty
-
-  val filesToProcess = if (useArgs) {
-    args.toSeq
-  } else {
-    files
-  }
-
-  val hashes = filesToProcess
-    .map(Paths.get(_))
-    .flatMap(cli.add(_, chk, true, true))
-    .map(p => {
-      println("hash: " + p)
-      p
-    })
-    .flatMap(cli.dagGet)
-    .map(p => {
-      println("dag: ")
-      println(p)
-      p
-    })
-    .filter(_.links.length == 1)
-    .flatMap(_.links.map(v => v.cid.v0))
-
-  println(hashes.size)
-  hashes.foreach(s => println(s))
-
-  if (useArgs) {
-    Util.outputFileDiff(hashes, cli)
-  }
-
-}
-
-object Util {
-
-  def outputFileDiff(hashes: Seq[String], cli: IpfsCliClient) = {
-    hashes
-      .dropRight(1)
-      .zip(hashes.drop(1))
-      .map(p => {
-        println("le hash: " + p._1)
-        println("ri hash: " + p._2)
-        p
-      })
-      .map {
-        case (l, r) => (cli.fetchAllHashes2(l), cli.fetchAllHashes2(r))
-      }
-      .map(p => {
-        println("le sz: " + p._1.size)
-        println("ri sz: " + p._2.size)
-        p
-      })
-      .map {
-        case (l, r) => r.diff(l)
-      }
-      .foreach(hs => {
-        println("diff size: " + hs.size)
-      })
-  }
 
 }
