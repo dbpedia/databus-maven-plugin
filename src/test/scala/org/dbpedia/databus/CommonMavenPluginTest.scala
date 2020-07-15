@@ -23,29 +23,39 @@ package org.dbpedia.databus
 import java.io.File
 import java.nio.file.{Path, Paths}
 import java.util
+import java.util.concurrent.CopyOnWriteArrayList
 
 import org.apache.maven.execution.MavenSession
 import org.apache.maven.model.Build
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader
+import org.apache.maven.plugin.logging.Log
 import org.apache.maven.plugin.testing.AbstractMojoTestCase
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub
 import org.apache.maven.shared.utils.ReaderFactory
+import org.dbpedia.databus.LogInterceptor.{Debug, Err, Info, LogMessage, Warn}
 
 abstract class CommonMavenPluginTest extends AbstractMojoTestCase {
 
-  def initMojo[T <: DatabusMojo](projectName: String, goal: String): T = {
+  def initMojo[T <: DatabusMojo](projectRelativePath: String, goal: String): T = {
+    val session = initSession(projectRelativePath)
     val mj: DatabusMojo =
-      lookupConfiguredMojo(initSession(projectName), newMojoExecution(goal))
+      lookupConfiguredMojo(session, newMojoExecution(goal))
         .asInstanceOf[T]
-    configureMojo(
+    val cmj = configureMojo(
       mj,
       "databus-maven-plugin",
-      new File(mj.proj.getBasedir, "pom.xml"))
-      .asInstanceOf[T]
+      new File(mj.session.getCurrentProject.getBasedir, "pom.xml"))
+    cmj.asInstanceOf[T]
   }
 
-  def initSession(projectName: String): MavenSession = {
-    val proj = new TestProjectStub(CommonMavenPluginTest.projectFolder(projectName))
+  def interceptLogs(mj: DatabusMojo): LogInterceptor = {
+    val log = new LogInterceptor(mj.getLog)
+    mj.setLog(log)
+    log
+  }
+
+  def initSession(projectRelativePath: String): MavenSession = {
+    val proj = new TestProjectStub(CommonMavenPluginTest.projectFolder(projectRelativePath))
     val session = newMavenSession(proj)
     session.getRequest.setBaseDirectory(proj.getBasedir())
     session
@@ -63,8 +73,95 @@ object CommonMavenPluginTest {
 
 }
 
+class LogInterceptor(log: Log) extends Log {
+  val logs = new CopyOnWriteArrayList[LogMessage]()
 
-class TestProjectStub(projectFolder: Path) extends MavenProjectStub {
+  override def isDebugEnabled: Boolean = log.isDebugEnabled
+
+  override def debug(content: CharSequence): Unit = {
+    log.debug(content)
+    logs.add(LogMessage(Some(content.toString), None, Debug))
+  }
+
+  override def debug(content: CharSequence, error: Throwable): Unit = {
+    log.debug(content, error)
+    logs.add(LogMessage(Some(content.toString), Some(error), Debug))
+  }
+
+  override def debug(error: Throwable): Unit = {
+    log.debug(error)
+    logs.add(LogMessage(None, Some(error), Debug))
+  }
+
+  override def isInfoEnabled: Boolean = log.isInfoEnabled
+
+  override def info(content: CharSequence): Unit = {
+    log.info(content)
+    logs.add(LogMessage(Some(content.toString), None, Info))
+  }
+
+  override def info(content: CharSequence, error: Throwable): Unit = {
+    log.info(content, error)
+    logs.add(LogMessage(Some(content.toString), Some(error), Info))
+  }
+
+  override def info(error: Throwable): Unit = {
+    log.info(error)
+    logs.add(LogMessage(None, Some(error), Info))
+  }
+
+  override def isWarnEnabled: Boolean = log.isWarnEnabled
+
+  override def warn(content: CharSequence): Unit = {
+    log.warn(content)
+    logs.add(LogMessage(Some(content.toString), None, Warn))
+  }
+
+  override def warn(content: CharSequence, error: Throwable): Unit = {
+    log.warn(content, error)
+    logs.add(LogMessage(Some(content.toString), Some(error), Warn))
+  }
+
+  override def warn(error: Throwable): Unit = {
+    log.warn(error)
+    logs.add(LogMessage(None, Some(error), Warn))
+  }
+
+  override def isErrorEnabled: Boolean = log.isErrorEnabled
+
+  override def error(content: CharSequence): Unit = {
+    log.error(content)
+    logs.add(LogMessage(Some(content.toString), None, Err))
+  }
+
+  override def error(content: CharSequence, error: Throwable): Unit = {
+    log.error(content, error)
+    logs.add(LogMessage(Some(content.toString), Some(error), Err))
+  }
+
+  override def error(error: Throwable): Unit = {
+    log.error(error)
+    logs.add(LogMessage(None, Some(error), Err))
+  }
+}
+
+object LogInterceptor {
+
+  trait LogLevel
+
+  object Info extends LogLevel
+
+  object Err extends LogLevel
+
+  object Warn extends LogLevel
+
+  object Debug extends LogLevel
+
+  case class LogMessage(message: Option[String], error: Option[Throwable], level: LogLevel)
+
+}
+
+class TestProjectStub(baseFolder: Path) extends MavenProjectStub {
 
   val pomReader = new MavenXpp3Reader();
   val model = pomReader.read(ReaderFactory.newXmlReader(new File(getBasedir(), "pom.xml")));
@@ -95,5 +192,5 @@ class TestProjectStub(projectFolder: Path) extends MavenProjectStub {
 
   /** {@inheritDoc } */
   override def getBasedir() =
-    projectFolder.toFile;
+    baseFolder.toFile;
 }

@@ -117,7 +117,6 @@ trait IpfsClientOps {
 
   def objectLinks(hash: String): Seq[String]
 
-
 }
 
 class IpfsCliClient private(ipfsCmd: Seq[String]) extends IpfsClientOps {

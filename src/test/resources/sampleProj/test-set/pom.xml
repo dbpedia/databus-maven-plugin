@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>testGroup</groupId>
-    <artifactId>testArtifact</artifactId>
-    <packaging>pom</packaging>
-    <version>1.0</version>
 
-    <modules>
-        <module>test-set</module>
-    </modules>
+    <parent>
+        <groupId>testGroup</groupId>
+        <artifactId>testArtifact</artifactId>
+        <version>2020.06.05</version>
+    </parent>
+
+    <groupId>testGroup</groupId>
+    <artifactId>test-set</artifactId>
+    <version>2020.06.05</version>
+
+    <packaging>jar</packaging>
+
 
     <build>
         <plugins>
@@ -20,10 +26,15 @@
                 <configuration>
                     <packageDirectory>/dir/dir</packageDirectory>
                     <downloadUrlPath>http://pa</downloadUrlPath>
+                    <publisher>https://neradis.github.io/test-id.ttl#this</publisher>
+                    <pkcs12File>src/test/resources/sampleProj/test-cert-bundle.p12</pkcs12File>
+                    <license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</license>
+                    <documentation><![CDATA[No real version, we also use this as a dataset to test the framework]]></documentation>
                     <ipfsSettings>
                     </ipfsSettings>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
 </project>

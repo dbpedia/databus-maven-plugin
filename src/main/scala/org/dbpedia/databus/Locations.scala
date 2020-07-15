@@ -76,7 +76,7 @@ trait Locations {
       */
 
     // target/databus
-    lazy val buildDirectory: File = (props.proj.getBuild.getDirectory / "databus").createDirectories()
+    lazy val buildDirectory: File = (props.session.getCurrentProject.getBuild.getDirectory / "databus").createDirectories()
 
     //
     lazy val buildVersionDirectory: File = (buildDirectory / props.version)

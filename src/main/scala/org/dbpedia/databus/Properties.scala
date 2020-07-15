@@ -26,8 +26,7 @@ import java.net.{URI, URL}
 
 import org.apache.maven.execution.MavenSession
 import org.apache.maven.plugin.logging.Log
-import org.apache.maven.plugins.annotations.{Component, Parameter}
-import org.apache.maven.project.MavenProject
+import org.apache.maven.plugins.annotations.Parameter
 import org.dbpedia.databus.ipfs.IpfsConfigOps
 
 
@@ -43,15 +42,12 @@ import org.dbpedia.databus.ipfs.IpfsConfigOps
 trait Properties extends Locations with Parameters with Mojo {
   this: AbstractMojo =>
 
-  @Parameter(defaultValue = "${project}")
-  val proj: MavenProject = null
-
   @Parameter(defaultValue = "${session}")
   val session: MavenSession = null
 
-  def groupId: String = proj.getGroupId
-  def artifactId: String = proj.getArtifactId
-  def version: String = proj.getVersion
+  def groupId: String = session.getCurrentProject.getGroupId
+  def artifactId: String = session.getCurrentProject.getArtifactId
+  def version: String = session.getCurrentProject.getVersion
 
   def subpathGroupArtifactId: String = groupId + "/" + artifactId
   def subpathGroupArtifactIdVersion: String = subpathGroupArtifactId + "/" + version
@@ -98,7 +94,7 @@ trait Properties extends Locations with Parameters with Mojo {
    * <databus.downloadUrlPath>http://downloads.dbpedia.org/repo/${project.groupId}/${project.artifactId}/${project.version}/</databus.downloadUrlPath>
    * We recommend to do the same, as you can add more bundles and datasets later.
    */
-  @Parameter(property = "databus.downloadUrlPath", required = true)
+  @Parameter(property = "databus.downloadUrlPath", required = false)
   val downloadUrlPath: URL = null
 
   /**
@@ -227,15 +223,10 @@ trait Properties extends Locations with Parameters with Mojo {
   @Parameter(property = "databus.commentPrefix", defaultValue = "")
   val commentPrefix: String = ""
 
-  /**
-   * common variables used in the code
-   */
-
-
-  def isParent(): Boolean = {
-    proj.getPackaging.equals("pom")
-  }
-
+  def isParent(): Boolean =
+    // todo not really nice property to detect parent
+    session.getCurrentProject
+      .getPackaging.equals("pom")
 
 }
 

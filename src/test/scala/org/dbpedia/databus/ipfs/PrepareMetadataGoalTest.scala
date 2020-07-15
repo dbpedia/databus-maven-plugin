@@ -21,11 +21,11 @@
 package org.dbpedia.databus.ipfs
 
 import java.nio.file.Path
-import java.util.Collections
 
-import org.apache.maven.{DefaultMaven, Maven}
-import org.apache.maven.execution.{DefaultMavenExecutionRequest, DefaultMavenExecutionResult, MavenExecutionRequestPopulator, MavenSession}
-import org.dbpedia.databus.{CommonMavenPluginTest, MockProperties, PrepareMetadata, TestProjectStub}
+import org.dbpedia.databus.{CommonMavenPluginTest, PrepareMetadata}
+
+import scala.collection.JavaConverters._
+import scala.util.Random
 
 
 class PrepareMetadataGoalTest extends CommonMavenPluginTest {
@@ -36,13 +36,41 @@ class PrepareMetadataGoalTest extends CommonMavenPluginTest {
 
   override def tearDown(): Unit = super.tearDown()
 
-  def testIpfsPluginConfig() = {
-    val mojo = initMojo[PrepareMetadata]("sampleProj","metadata")
+  def testIpfsParentProj(): Unit = {
+    val mojo = initMojo[PrepareMetadata]("sampleProj", "metadata")
+    mojo.setIpfsClient(DummyIpfsClient)
+    val log = interceptLogs(mojo)
 
-    assert(mojo.ipfsSettings != null)
-    assert(mojo.downloadUrlPath.toString.equals("http://pa"))
+    assert(mojo.isParent())
+    mojo.execute()
+    val re = log.logs.asScala.exists(m => m.message.exists(_.contains("skipping parent testArtifact")))
+    assert(re)
+  }
+
+  def testIpfsDataProj(): Unit = {
+    val mojo = initMojo[PrepareMetadata]("sampleProj/test-set", "metadata")
+    mojo.setIpfsClient(DummyIpfsClient)
+    val log = interceptLogs(mojo)
+
+    assert(!mojo.isParent())
+    mojo.execute()
   }
 
 
+}
+
+object DummyIpfsClient extends IpfsClientOps {
+  override def add(fn: Path, chunker: IpfsCliClient.Chunker, nocopy: Boolean, recursive: Boolean, wrapWithDir: Boolean, addHiddenFiles: Boolean, onlyHash: Boolean): Seq[String] =
+    randomStrings(10, 1)
+
+  override def dagGet(hash: String): Seq[IpfsCliClient.DagMeta] = ???
+
+  override def objectLinks(hash: String): Seq[String] = ???
+
+  private def randomStrings(length: Int, number: Int) =
+    Random.alphanumeric.take(length * number)
+      .sliding(length, length)
+      .map(_.foldLeft("")(_ + _))
+      .toSeq
 
 }

@@ -92,7 +92,7 @@ class UpdateRss extends DatabusMojo {
 
     // create the new entry
     var entry: SyndEntry = new SyndEntryImpl()
-    var title = proj.getBuild.getFinalName
+    var title = session.getCurrentProject.getBuild.getFinalName
     entry.setTitle(title)
     // path to dataid
     //val dataidPath: Path = Paths.get(getDataIdFile().toString)
