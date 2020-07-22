@@ -59,9 +59,13 @@ class PrepareMetadataGoalTest extends CommonMavenPluginTest {
     when(client.add(any[Path], any[Chunker], anyBoolean, anyBoolean, anyBoolean, anyBoolean, anyBoolean))
       .thenReturn(Seq("some_hash", hashVal))
     mojo.setIpfsClient(client)
+    val log = interceptLogs(mojo)
 
     assert(!mojo.isParent())
     mojo.execute()
+    val re = log.logs.asScala
+      .exists(m => m.message.exists(_.contains("Found 1 files:")))
+    assert(re)
     val lns = Files.readAllLines(mojo.locations.buildDataIdFile.toJava.toPath).asScala
     assert(lns.exists(_.contains(s"dcat:downloadURL         <https://ipfs.io/ipfs/$hashVal")))
     verify(client, times(1)).add(any[Path], any[Chunker], anyBoolean, anyBoolean, anyBoolean, anyBoolean, ArgumentMatchers.eq(true))

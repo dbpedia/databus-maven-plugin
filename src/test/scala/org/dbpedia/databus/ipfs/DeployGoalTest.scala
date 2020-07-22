@@ -42,7 +42,7 @@ class DeployGoalTest extends CommonMavenPluginTest with MockHttpServerOps {
     super.tearDown()
   }
 
-  def testDeploy(): Unit = {
+  def testSkipParent(): Unit = {
     val mojo = initMojo[Deploy]("sampleProj", "deploy")
     val client = mock[IpfsClientOps]
     mojo.setIpfsClient(client)
@@ -78,9 +78,6 @@ class DeployGoalTest extends CommonMavenPluginTest with MockHttpServerOps {
     val re = log.logs.asScala
       .exists(m => m.message.exists(_.contains("SUCCESS: upload of DataId for artifact 'test-set' version 2020.06.05 to http://localhost:8081/ succeeded")))
     assert(re)
-    val re2 = log.logs.asScala
-      .exists(m => m.message.exists(_.contains("Found 1 files:")))
-    assert(re2)
     verify(client, times(1))
       .add(any[Path], any[Chunker], anyBoolean, anyBoolean, anyBoolean, anyBoolean, ArgumentMatchers.eq(false))
   }
