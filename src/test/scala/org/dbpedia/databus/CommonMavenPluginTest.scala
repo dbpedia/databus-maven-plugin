@@ -32,19 +32,35 @@ import org.apache.maven.plugin.logging.Log
 import org.apache.maven.plugin.testing.AbstractMojoTestCase
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub
 import org.apache.maven.shared.utils.ReaderFactory
+import org.codehaus.plexus.configuration.{DefaultPlexusConfiguration, PlexusConfiguration}
 import org.dbpedia.databus.LogInterceptor.{Debug, Err, Info, LogMessage, Warn}
+import org.mockserver.integration.ClientAndServer
+import org.scalatest.mockito.MockitoSugar
+import org.mockserver.integration.ClientAndServer._
+import org.mockserver.model.HttpRequest._
+import org.mockserver.model.HttpResponse._
 
-abstract class CommonMavenPluginTest extends AbstractMojoTestCase {
 
-  def initMojo[T <: DatabusMojo](projectRelativePath: String, goal: String): T = {
+abstract class CommonMavenPluginTest extends AbstractMojoTestCase with MockitoSugar {
+
+  def initMojo[T <: DatabusMojo](projectRelativePath: String, goal: String, ignoreProps: Seq[String] = Seq.empty): T = {
     val session = initSession(projectRelativePath)
     val mj: DatabusMojo =
       lookupConfiguredMojo(session, newMojoExecution(goal))
         .asInstanceOf[T]
-    val cmj = configureMojo(
-      mj,
-      "databus-maven-plugin",
-      new File(mj.session.getCurrentProject.getBasedir, "pom.xml"))
+    val artifactId = "databus-maven-plugin"
+
+    val config = extractPluginConfiguration(
+      artifactId,
+      new File(mj.session.getCurrentProject.getBasedir, "pom.xml")
+    )
+
+    val newConf = new DefaultPlexusConfiguration(config.getName)
+    config.getChildren
+      .filter(p => !ignoreProps.contains(p.getName))
+      .foreach(p => newConf.addChild(p))
+
+    val cmj = configureMojo(mj, newConf)
     cmj.asInstanceOf[T]
   }
 
@@ -70,6 +86,22 @@ object CommonMavenPluginTest {
       getClass.getClassLoader
         .getResource(name)
         .getPath)
+
+}
+
+trait MockHttpServerOps {
+
+  lazy val mockHttpServer: ClientAndServer = {
+    val cs = startClientAndServer(8081)
+    cs.when(request()
+        .withMethod("POST"))
+      .respond(
+        response()
+          .withStatusCode(200)
+          .withReasonPhrase("Okk")
+      )
+    cs
+  }
 
 }
 
