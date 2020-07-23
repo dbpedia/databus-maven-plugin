@@ -73,6 +73,8 @@ class Deploy extends DatabusMojo with SigningHelpers with IpfsPluginOps {
       resolveBaseForRDFFile(locations.buildDataIdFile, locations.dataIdDownloadLocation)
     }
 
+    getLog.info("Ipfs settings: " + ipfsSettings.toString)
+
     val proceed = if (saveToIpfs) shareToIpfs() else true
     // todo possibly  move this step to separate mojo
     if (proceed) {

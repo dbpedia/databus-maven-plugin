@@ -274,4 +274,6 @@ class IpfsConfig extends IpfsConfigOps {
    * Optional parameter, specify path in the docker container to which current project root is mounted.
    */
   override val projectRootDockerPath: File = null
+
+  override def toString = s"IpfsConfig($ipfsEndpointLink, $isInDocker, $containerName, $projectRootDockerPath)"
 }

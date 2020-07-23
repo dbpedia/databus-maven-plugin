@@ -32,7 +32,7 @@ import org.apache.maven.plugin.logging.Log
 import org.apache.maven.plugin.testing.AbstractMojoTestCase
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub
 import org.apache.maven.shared.utils.ReaderFactory
-import org.codehaus.plexus.configuration.{DefaultPlexusConfiguration, PlexusConfiguration}
+import org.codehaus.plexus.configuration.DefaultPlexusConfiguration
 import org.dbpedia.databus.LogInterceptor.{Debug, Err, Info, LogMessage, Warn}
 import org.mockserver.integration.ClientAndServer
 import org.scalatest.mockito.MockitoSugar
