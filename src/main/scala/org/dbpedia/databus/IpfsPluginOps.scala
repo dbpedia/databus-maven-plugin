@@ -28,16 +28,21 @@ import org.apache.maven.plugins.annotations.Parameter
 import org.dbpedia.databus.ipfs.{IpfsCliClient, IpfsClientOps}
 import org.dbpedia.databus.ipfs.IpfsCliClient.DefaultRabin
 
-import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
 
+/**
+ * Convenience class with ipfs operations embeddable in mojo
+ */
 trait IpfsPluginOps {
   this: DatabusMojo =>
 
   @Parameter(property = "ipfsSettings", readonly = true)
   val ipfsSettings: IpfsConfig = null
 
+  /**
+   * returns true if the plugin was configured to save files in ipfs
+   */
   def saveToIpfs: Boolean = ipfsSettings != null
 
   private def dirHash: String = processDirectory(filesDir, true).last
@@ -90,6 +95,9 @@ trait IpfsPluginOps {
     }
   }
 
+  /**
+   * Calculate ipfs hash for the file and return a link to download it from ipfs.
+   */
   def downloadLink(file: File): URI = {
     ipfsSettings
       .ipfsEndpointLink

@@ -23,14 +23,24 @@ package org.dbpedia.databus.ipfs
 import java.io.File
 import java.net.URL
 
+/**
+ * Configuration properties for an ipfs client.
+ */
 trait IpfsConfigOps {
 
-  def saveToIpfs: Boolean = false
-
+  /**
+   * Specifies if the ipfs cli is in docker.
+   */
   def isInDocker: Boolean = false
 
+  /**
+   * Name of the ipfs docker container. (optional)
+   */
   def containerName: String = null
 
+  /**
+   * Link to an ipfs http endpoint for file downloads.
+   */
   def ipfsEndpointLink: URL
 
   /**
