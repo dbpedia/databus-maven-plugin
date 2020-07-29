@@ -21,12 +21,12 @@
 package org.dbpedia.databus
 
 import java.io.File
-import java.net.URI
+import java.net.{URI, URL}
 import java.nio.file.{Path, Paths}
 
 import org.apache.maven.plugins.annotations.Parameter
 import org.dbpedia.databus.ipfs.{IpfsCliClient, IpfsClientOps}
-import org.dbpedia.databus.ipfs.IpfsCliClient.DefaultRabin
+import org.dbpedia.databus.ipfs.IpfsCliClient.{DefaultRabin, IpfsClientConf}
 
 import scala.util.{Failure, Success, Try}
 
@@ -65,7 +65,8 @@ trait IpfsPluginOps {
     // todo this may be improved in case not enough performance
     synchronized {
       if (cliClient.isEmpty) {
-        val c = IpfsCliClient(ipfsSettings)
+        val conf = IpfsClientConf(ipfsSettings.isInDocker, ipfsSettings.containerName)
+        val c = IpfsCliClient(conf)
         cliClient = Some(c)
       }
     }
@@ -111,4 +112,25 @@ trait IpfsPluginOps {
       )
   }
 
+}
+
+
+/**
+ * Configuration properties for working with ipfs.
+ *
+ * @param isInDocker            Specifies if the ipfs cli is in docker.
+ * @param containerName         Name of the ipfs docker container. (optional)
+ * @param ipfsEndpointLink      Link to an ipfs http endpoint for file downloads.
+ * @param projectRootDockerPath Optional parameter, specify path in the docker container to which current project root is mounted.
+ */
+case class IpfsConfig(isInDocker: Boolean,
+                      containerName: String,
+                      ipfsEndpointLink: URL,
+                      projectRootDockerPath: File) {
+  /**
+   * Needed for injection.
+   */
+  def this() = this(false, "ipfs_host", URI.create("https://ipfs.io/ipfs/").toURL, null)
+
+  override def toString = s"IpfsConfig($ipfsEndpointLink, $isInDocker, $containerName, $projectRootDockerPath)"
 }

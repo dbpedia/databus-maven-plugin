@@ -27,7 +27,6 @@ import java.net.{URI, URL}
 import org.apache.maven.execution.MavenSession
 import org.apache.maven.plugin.logging.Log
 import org.apache.maven.plugins.annotations.Parameter
-import org.dbpedia.databus.ipfs.IpfsConfigOps
 
 
 /**
@@ -46,11 +45,15 @@ trait Properties extends Locations with Parameters with Mojo {
   val session: MavenSession = null
 
   def groupId: String = session.getCurrentProject.getGroupId
+
   def artifactId: String = session.getCurrentProject.getArtifactId
+
   def version: String = session.getCurrentProject.getVersion
 
   def subpathGroupArtifactId: String = groupId + "/" + artifactId
+
   def subpathGroupArtifactIdVersion: String = subpathGroupArtifactId + "/" + version
+
   def pkcsServer = session.getSettings.getServer(pkcs12serverId)
 
 
@@ -224,7 +227,7 @@ trait Properties extends Locations with Parameters with Mojo {
   val commentPrefix: String = ""
 
   def isParent(): Boolean =
-    // todo not really nice property to detect parent
+  // todo not really nice property to detect parent
     session.getCurrentProject
       .getPackaging.equals("pom")
 
@@ -259,21 +262,4 @@ object Properties {
     }
     logoPrinted = true
   }
-}
-
-
-class IpfsConfig extends IpfsConfigOps {
-
-  override val ipfsEndpointLink: URL = URI.create("https://ipfs.io/ipfs/").toURL
-
-  override val isInDocker: Boolean = false
-
-  override val containerName: String = "ipfs_host"
-
-  /**
-   * Optional parameter, specify path in the docker container to which current project root is mounted.
-   */
-  override val projectRootDockerPath: File = null
-
-  override def toString = s"IpfsConfig($ipfsEndpointLink, $isInDocker, $containerName, $projectRootDockerPath)"
 }

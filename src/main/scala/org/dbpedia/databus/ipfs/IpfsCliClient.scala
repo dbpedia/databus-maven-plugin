@@ -20,6 +20,8 @@
  */
 package org.dbpedia.databus.ipfs
 
+import java.io.File
+import java.net.URL
 import java.nio.file.Path
 
 import org.dbpedia.databus.ipfs.IpfsCliClient.{Chunker, DagMeta, Default}
@@ -56,6 +58,15 @@ object IpfsCliClient {
     implicit val dagMetaProtocol = jsonFormat2(DagMeta.apply)
 
   }
+
+  /**
+   * Configuration properties for an ipfs client.
+   *
+   * @param isInDocker    Specifies if the ipfs cli is in docker.
+   * @param containerName Name of the ipfs docker container. (optional)
+   */
+  case class IpfsClientConf(isInDocker: Boolean = false,
+                            containerName: String = null)
 
   /**
    * Generic ipfs chunker.
@@ -112,7 +123,7 @@ object IpfsCliClient {
   /**
    * Creates ipfs client from config.
    */
-  def apply(config: IpfsConfigOps): IpfsCliClient =
+  def apply(config: IpfsClientConf): IpfsCliClient =
     new IpfsCliClient(ipfsCmd(config.isInDocker, Option(config.containerName)))
 
   /**
