@@ -18,57 +18,70 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-package org.dbpedia.databus.ipfs
+package org.dbpedia.databus.test.ipfs
 
-import java.nio.file.{Files, Path}
+import java.nio.file.Path
 
 import org.dbpedia.databus.ipfs.IpfsCliClient.Chunker
-import org.dbpedia.databus.{CommonMavenPluginTest, PrepareMetadata}
+import org.dbpedia.databus.ipfs.IpfsClientOps
+import org.dbpedia.databus.test.{CommonMavenPluginTest, MockHttpServerOps}
+import org.dbpedia.databus.{Deploy, PrepareMetadata}
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, anyBoolean}
+import org.mockito.Mockito.{times, verify, when}
 
 import scala.collection.JavaConverters._
-import org.mockito.Mockito._
-import org.mockito.ArgumentMatchers._
 
-
-class PrepareMetadataGoalTest extends CommonMavenPluginTest {
+class DeployGoalTest extends CommonMavenPluginTest with MockHttpServerOps {
 
   override def setUp(): Unit = {
     super.setUp()
+    mockHttpServer
   }
 
-  override def tearDown(): Unit = super.tearDown()
+  override def tearDown(): Unit = {
+    mockHttpServer.stop()
+    super.tearDown()
+  }
 
-  def testIpfsParentProj(): Unit = {
-    val mojo = initMojo[PrepareMetadata]("sampleProj", "metadata")
+  def testSkipParent(): Unit = {
+    val mojo = initMojo[Deploy]("sampleProj", "deploy")
     val client = mock[IpfsClientOps]
     mojo.setIpfsClient(client)
     val log = interceptLogs(mojo)
 
     assert(mojo.isParent())
     mojo.execute()
-    val re = log.logs.asScala.exists(m => m.message.exists(_.contains("skipping parent testArtifact")))
+    val re = log.logs.asScala.exists(m => m.message.exists(_.contains("skipping parent module")))
     assert(re)
-    verify(client, times(0)).add(any[Path], any[Chunker], anyBoolean, anyBoolean, anyBoolean, anyBoolean, ArgumentMatchers.eq(true))
+    verify(client, times(0))
+      .add(any[Path], any[Chunker], anyBoolean, anyBoolean, anyBoolean, anyBoolean, anyBoolean)
   }
 
   def testIpfsDataProj(): Unit = {
-    val mojo = initMojo[PrepareMetadata]("sampleProj/test-set-meta", "metadata")
     val client = mock[IpfsClientOps]
     val hashVal = "dummy_hash"
     when(client.add(any[Path], any[Chunker], anyBoolean, anyBoolean, anyBoolean, anyBoolean, anyBoolean))
       .thenReturn(Seq("some_hash", hashVal))
+
+    val preMojo = initMojo[PrepareMetadata](
+      "sampleProj/test-set-deploy",
+      "metadata",
+      Seq("deployRepoURL"))
+    preMojo.setIpfsClient(client)
+    preMojo.execute()
+
+    val mojo = initMojo[Deploy]("sampleProj/test-set-deploy", "deploy")
     mojo.setIpfsClient(client)
     val log = interceptLogs(mojo)
 
     assert(!mojo.isParent())
     mojo.execute()
     val re = log.logs.asScala
-      .exists(m => m.message.exists(_.contains("Found 1 files:")))
+      .exists(m => m.message.exists(_.contains("SUCCESS: upload of DataId for artifact 'test-set' version 2020.06.05 to http://localhost:8081/ succeeded")))
     assert(re)
-    val lns = Files.readAllLines(mojo.locations.buildDataIdFile.toJava.toPath).asScala
-    assert(lns.exists(_.contains(s"dcat:downloadURL         <https://ipfs.io/ipfs/$hashVal")))
-    verify(client, times(1)).add(any[Path], any[Chunker], anyBoolean, anyBoolean, anyBoolean, anyBoolean, ArgumentMatchers.eq(true))
+    verify(client, times(1))
+      .add(any[Path], any[Chunker], anyBoolean, anyBoolean, anyBoolean, anyBoolean, ArgumentMatchers.eq(false))
   }
 
 }

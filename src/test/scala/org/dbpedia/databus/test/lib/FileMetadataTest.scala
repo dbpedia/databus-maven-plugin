@@ -1,4 +1,4 @@
-package org.dbpedia.databus.lib
+package org.dbpedia.databus.test.lib
 
 /*-
  * #%L
@@ -23,6 +23,7 @@ package org.dbpedia.databus.lib
 import java.io.File
 
 import org.apache.maven.plugin.logging.SystemStreamLog
+import org.dbpedia.databus.lib.Datafile
 import org.scalatest.FunSuite
 
 class FileMetadataTest extends FunSuite  {
