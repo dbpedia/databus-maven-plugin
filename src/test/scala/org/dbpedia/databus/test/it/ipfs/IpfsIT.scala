@@ -24,14 +24,14 @@ import java.nio.file.Path
 
 import org.dbpedia.databus.test.CommonMavenPluginTest
 import org.dbpedia.databus.test.it.CommonMavenPluginIT
-import org.scalatest.BeforeAndAfterAll
+import org.junit.{After, Before, Test}
 import org.testcontainers.containers.{BindMode, GenericContainer}
 import org.testcontainers.utility.DockerImageName
 
 import scala.collection.JavaConverters._
 
 
-class IpfsIt extends CommonMavenPluginIT with BeforeAndAfterAll {
+class IpfsIT extends CommonMavenPluginIT {
 
   val projResourcePath = "it/ipfs-test"
 
@@ -43,13 +43,14 @@ class IpfsIt extends CommonMavenPluginIT with BeforeAndAfterAll {
         BindMode.READ_ONLY
       )
 
-  override def beforeAll(): Unit = {
-    super.beforeAll()
+  @Before
+  def beforeAll(): Unit = {
     ipfsContainer.start()
     mockHttpServer
   }
 
-  test("plugin_works_with_ipfs_it"){
+  @Test
+  def test_plugin_works_with_ipfs_it: Unit = {
     val name = ipfsContainer.getContainerInfo.getName
     val ver = initVerifier
     ver.setSystemProperty("cn", name)
@@ -61,10 +62,10 @@ class IpfsIt extends CommonMavenPluginIT with BeforeAndAfterAll {
 
   override def projectPath: Path = CommonMavenPluginTest.projectFolder(projResourcePath)
 
-  override def afterAll(): Unit = {
+  @After
+  def afterAll(): Unit = {
     ipfsContainer.stop()
     mockHttpServer.stop()
-    super.afterAll()
   }
 
 }

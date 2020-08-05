@@ -25,14 +25,14 @@ import java.nio.file.Path
 import org.apache.maven.it.VerificationException
 import org.dbpedia.databus.test.CommonMavenPluginTest
 import org.dbpedia.databus.test.it.CommonMavenPluginIT
-import org.scalatest.BeforeAndAfterAll
+import org.junit.{After, Before, Test}
 import org.testcontainers.containers.{BindMode, GenericContainer}
 import org.testcontainers.utility.DockerImageName
 
 import scala.collection.JavaConverters._
 
 
-class PropsIpfsIT extends CommonMavenPluginIT with BeforeAndAfterAll {
+class PropsIpfsIT extends CommonMavenPluginIT {
 
   val projResourcePath = "it/props-config"
 
@@ -44,27 +44,26 @@ class PropsIpfsIT extends CommonMavenPluginIT with BeforeAndAfterAll {
         BindMode.READ_ONLY
       )
 
-  override def beforeAll(): Unit = {
-    super.beforeAll()
+  @Before
+  def beforeAll(): Unit = {
     ipfsContainer.start()
     mockHttpServer
   }
 
-  test("plugin_doesnt_work_with_ipfs_configured_with_properties_it"){
+  @Test(expected = classOf[VerificationException])
+  def test_plugin_doesnt_work_with_ipfs_configured_with_properties_it: Unit = {
     val name = ipfsContainer.getContainerInfo.getName
     val ver = initVerifier
     ver.setSystemProperty("cn", name)
-    assertThrows[VerificationException]{
-      ver.executeGoals(Seq("package", "deploy").asJava)
-    }
+    ver.executeGoals(Seq("package", "deploy").asJava)
   }
 
   override def projectPath: Path = CommonMavenPluginTest.projectFolder(projResourcePath)
 
-  override def afterAll(): Unit = {
+  @After
+  def afterAll(): Unit = {
     ipfsContainer.stop()
     mockHttpServer.stop()
-    super.afterAll()
   }
 
 }

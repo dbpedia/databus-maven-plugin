@@ -25,12 +25,8 @@ import java.nio.file.Path
 import org.apache.maven.it.Verifier
 import org.dbpedia.databus.DatabusPluginVersion
 import org.dbpedia.databus.test.MockHttpServerOps
-import org.scalatest.FunSuiteLike
 
-/**
- * Created by .
- */
-trait CommonMavenPluginIT extends MockHttpServerOps with FunSuiteLike {
+trait CommonMavenPluginIT extends MockHttpServerOps {
 
   def projectPath: Path
 
