@@ -20,8 +20,6 @@
  */
 package org.dbpedia.databus.ipfs
 
-import java.io.File
-import java.net.URL
 import java.nio.file.Path
 
 import org.dbpedia.databus.ipfs.IpfsCliClient.{Chunker, DagMeta, Default}
@@ -66,7 +64,8 @@ object IpfsCliClient {
    * @param containerName Name of the ipfs docker container. (optional)
    */
   case class IpfsClientConf(isInDocker: Boolean = false,
-                            containerName: String = null)
+                            containerName: String = null,
+                            nodeAddress: String)
 
   /**
    * Generic ipfs chunker.
@@ -124,7 +123,7 @@ object IpfsCliClient {
    * Creates ipfs client from config.
    */
   def apply(config: IpfsClientConf): IpfsCliClient =
-    new IpfsCliClient(ipfsCmd(config.isInDocker, Option(config.containerName)))
+    new IpfsCliClient(ipfsCmd(config.isInDocker, Option(config.containerName)) :+ ("--api=" + config.nodeAddress))
 
   /**
    * Creates ipfs client.
@@ -196,8 +195,8 @@ trait IpfsClientOps {
  */
 class IpfsCliClient private(ipfsCmd: Seq[String]) extends IpfsClientOps {
 
-  import spray.json._
   import IpfsCliClient.CliProtocol._
+  import spray.json._
 
   override def add(fn: Path,
                    chunker: Chunker = Default,

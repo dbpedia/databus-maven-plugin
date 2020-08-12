@@ -45,6 +45,8 @@ trait IpfsPluginOps {
    */
   def saveToIpfs: Boolean = ipfsSettings != null
 
+  private def endpointAddress(host: String, port: Int): String = s"/ip4/$host/tcp/$port"
+
   private def dirHash: String = processDirectory(filesDir, true).last
 
   private[databus] var cliClient: Option[IpfsClientOps] = None
@@ -65,7 +67,11 @@ trait IpfsPluginOps {
     // todo this may be improved in case not enough performance
     synchronized {
       if (cliClient.isEmpty) {
-        val conf = IpfsClientConf(ipfsSettings.isInDocker, ipfsSettings.containerName)
+        val conf = IpfsClientConf(
+          ipfsSettings.isInDocker,
+          ipfsSettings.containerName,
+          endpointAddress(ipfsSettings.nodeHost, ipfsSettings.nodePort)
+        )
         val c = IpfsCliClient(conf)
         cliClient = Some(c)
       }
@@ -126,11 +132,12 @@ trait IpfsPluginOps {
 case class IpfsConfig(isInDocker: Boolean,
                       containerName: String,
                       ipfsEndpointLink: URL,
-                      projectRootDockerPath: File) {
+                      projectRootDockerPath: File,
+                      nodeHost: String,
+                      nodePort: Int) {
   /**
    * Needed for injection.
    */
-  def this() = this(false, "ipfs_host", URI.create("https://ipfs.io/ipfs/").toURL, null)
+  def this() = this(false, "ipfs_host", URI.create("https://ipfs.io/ipfs/").toURL, null, "127.0.0.1", 5001)
 
-  override def toString = s"IpfsConfig($ipfsEndpointLink, $isInDocker, $containerName, $projectRootDockerPath)"
 }

@@ -22,7 +22,8 @@ package org.dbpedia.databus
 
 import org.apache.maven.plugin.{AbstractMojo, Mojo}
 import java.io.File
-import java.net.{URI, URL}
+import java.net.URL
+import java.nio.file.Paths
 
 import org.apache.maven.execution.MavenSession
 import org.apache.maven.plugin.logging.Log
@@ -56,6 +57,7 @@ trait Properties extends Locations with Parameters with Mojo {
 
   def pkcsServer = session.getSettings.getServer(pkcs12serverId)
 
+  def packageDirectory: File = Paths.get(session.getExecutionRootDirectory).resolve("target").toFile
 
   /**
    * Project internal parameters
@@ -108,20 +110,6 @@ trait Properties extends Locations with Parameters with Mojo {
    */
   @Parameter(property = "databus.absoluteDCATDownloadUrlPath", required = false)
   val absoluteDCATDownloadUrlPath: String = null
-
-  /**
-   * Options:
-   * * aggregation ${session.executionRootDirectory}/target/databus/package/${project.groupId}/${project.artifactId}
-   * * apache /var/www/www.example.org/repo/${project.groupId}/${project.artifactId}
-   * * dbpedia example /media/bigone/25TB/www/downloads.dbpedia.org/repo/lts/${project.groupId}/$(project.artifactId)
-   * * local as repo ./
-   * *
-   * DEFAULT ${session.executionRootDirectory}/target/databus/package
-   * all files are copied into this directory relative to where mvn databus:package-export is run
-   */
-  @Parameter(property = "databus.packageDirectory", defaultValue = "${session.executionRootDirectory}/target/databus/repo/${project.groupId}", required = true)
-  val packageDirectory: File = null
-
 
   /**
    * File ending on `.pfx` or `.p12`
