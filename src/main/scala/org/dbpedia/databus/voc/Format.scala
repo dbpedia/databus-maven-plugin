@@ -21,11 +21,7 @@
 package org.dbpedia.databus.voc
 
 import org.apache.maven.plugin.logging.Log
-import java.io.File
 
-
-//class Format(val mimeType: String = "UNKNOWN", val lineBased: Boolean = false, val rio: org.eclipse.rdf4j.rio.RDFFormat, val jena: org.apache.jena.riot.RDFFormat) {
-//}
 
 class Format(val mimeType: String = "UNKNOWN", val lineBased: Boolean = false) {
   override def toString = s"$mimeType"
@@ -112,18 +108,14 @@ object Format {
 
   def detectMimeTypeByFileExtension(extensions: Seq[String])(implicit log: Log): (String, Format) = {
 
-    val extensionMatch = extensions.reverse.toStream.map({ ext =>
-
+    val extensionMatch = extensions.reverse.toStream.map(ext =>
       knownFormats.get(ext) match {
-
-        case None => {
+        case None =>
           log.info(s"Unable to assign file extension '$ext' to a known format, extend here: https://github.com/dbpedia/databus-maven-plugin/blob/master/src/main/scala/org/dbpedia/databus/voc/Format.scala")
           None
-        }
-
         case Some(format) => Some((ext, format))
       }
-    }).collectFirst { case Some(pair) => pair }
+    ).collectFirst { case Some(pair) => pair }
 
     extensionMatch.getOrElse(("", UNKNOWN))
   }

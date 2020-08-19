@@ -20,19 +20,13 @@
  */
 package org.dbpedia.databus
 
-
-import org.dbpedia.databus.params.{BaseEntity => ScalaBaseEntity}
-import better.files._
-
-import scala.collection.JavaConverters._
-import scala.collection.mutable
-import java.net.URL
 import java.time._
 import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder}
 
+import scala.util.Try
+
 
 trait Parameters {
-
   this: Properties =>
 
   lazy val params = new Parameters(this)
@@ -68,13 +62,9 @@ trait Parameters {
         }
       }
 
-    lazy val modifiedDate: ZonedDateTime = try {
-      ZonedDateTime.parse(props.modifiedDate)
-    } catch {
-      case e: Throwable => invocationTime
-    }
-
-    //lazy val wasDerivedFrom = props.wasDerivedFrom.asScala.map(ScalaBaseEntity.fromJava).toSet
+    lazy val modifiedDate: ZonedDateTime =
+      Try(ZonedDateTime.parse(props.modifiedDate))
+        .getOrElse(invocationTime)
 
     lazy val versionToInsert = if (insertVersion) Some(version) else None
 
@@ -152,7 +142,7 @@ trait Parameters {
       }
 
       if(params.label.toLowerCase.contains("dataset") || params.label.toLowerCase.contains(groupId)) {
-        getLog.warn(s"Not recommended to include 'dataset' or groupId '${groupId}' in rdfs:label (first line of ${markdown.name}): ${params.label}")
+        getLog.warn(s"Not recommended to include 'dataset' or groupId '$groupId' in rdfs:label (first line of ${markdown.name}): ${params.label}")
       }
       if(params.label.length>40){
         getLog.warn(s"label (${params.label.length}) too long: ${params.label}")

@@ -26,22 +26,21 @@ import org.dbpedia.databus.lib.{Datafile, FilenameHelpers}
 import org.dbpedia.databus.parse.{LineBasedRioDebugParser, RioOtherParser}
 import org.apache.jena.rdf.model.{Model, ModelFactory}
 import org.apache.jena.riot.RDFLanguages
-import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
 import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import org.eclipse.rdf4j.rio.{RDFFormat, RDFParser, Rio}
 import java.security.MessageDigest
 import java.util.Base64
 
+import org.apache.maven.plugin.MojoExecutionException
 import org.dbpedia.databus.voc.RDFBased
 
 import scala.collection.{immutable, mutable}
 
 @Mojo(name = "test-data", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
-class TestData extends AbstractMojo with Properties {
+class TestData extends DatabusMojo {
 
   @Parameter(property = "databus.test.parseRDF", defaultValue = "false")
   val parseRDF: Boolean = false
-
 
   @Parameter(property = "databus.test.allVersions", defaultValue = "false", required = false)
   val allVersions: Boolean = false
@@ -51,7 +50,6 @@ class TestData extends AbstractMojo with Properties {
 
   @Parameter(property = "databus.test.strict", defaultValue = "false", required = false)
   val strict: Boolean = false
-
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {

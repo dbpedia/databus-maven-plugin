@@ -5,7 +5,7 @@
     <groupId>org.dbpedia.databus</groupId>
     <artifactId>databus-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.3-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
 
     <name>DBpedia Databus Maven Plugin</name>
     <description>A Maven Plugin to prepare meta-data (DataIDs) and publish the resulting DataIDs to the Databus repository.</description>
@@ -63,19 +63,24 @@
         <dependency>
             <groupId>org.dbpedia.databus</groupId>
             <artifactId>databus-shared-lib</artifactId>
-            <!--version>0.2.6-20190416.110638-17</version-->
             <version>0.2.6-SNAPSHOT</version>
         </dependency>
+
+        <!-- maven plugin api deps -->
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>2.0</version>
+            <version>${maven.plugin.tools.version}</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <version>${maven.plugin.tools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-settings</artifactId>
+            <version>${maven.plugin.tools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
@@ -83,6 +88,8 @@
             <version>${maven.plugin.tools.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!-- maven plugin api deps -->
+
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
@@ -93,6 +100,7 @@
             <artifactId>scala-reflect</artifactId>
             <version>${scala.version}</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.apache.jena/apache-jena-libs -->
         <dependency>
             <groupId>org.apache.jena</groupId>
@@ -107,13 +115,6 @@
             <version>1.18</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-api -->
-        <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-rio-api</artifactId>
-            <version>${rdf4j.version}</version>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-ntriples -->
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
@@ -121,25 +122,6 @@
             <version>${rdf4j.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-ntriples -->
-        <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-rio-nquads</artifactId>
-            <version>${rdf4j.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-ntriples -->
-        <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-rio-rdfxml</artifactId>
-            <version>${rdf4j.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-ntriples -->
-        <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-rio-turtle</artifactId>
-            <version>${rdf4j.version}</version>
-        </dependency>
 
         <!-- used for time measurements-->
         <dependency>
@@ -155,13 +137,6 @@
             <version>1.11.1</version>
         </dependency>
 
-        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.apache.maven/maven-project &ndash;&gt;
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-project</artifactId>
-            <version>3.0-alpha-2</version>
-        </dependency>-->
-
         <!-- for better file and resource handling -->
         <dependency>
             <groupId>com.github.pathikrit</groupId>
@@ -173,33 +148,51 @@
             <artifactId>scala-arm_${scala.compat.version}</artifactId>
             <version>2.0</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.scalactic</groupId>
-            <artifactId>scalactic_${scala.compat.version}</artifactId>
-            <version>3.0.5</version>
-        </dependency>
-        <dependency> <!-- required for scalactic -->
-            <groupId>org.scala-lang.modules</groupId>
-            <artifactId>scala-xml_${scala.compat.version}</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-
         <dependency>
             <groupId>com.lihaoyi</groupId>
             <artifactId>fastparse_${scala.compat.version}</artifactId>
             <version>2.0.4</version>
         </dependency>
+        <!-- json (de)serialization -->
         <dependency>
-            <groupId>org.tukaani</groupId>
-            <artifactId>xz</artifactId>
-            <version>1.8</version>
+            <groupId>io.spray</groupId>
+            <artifactId>spray-json_${scala.compat.version}</artifactId>
+            <version>1.3.5</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.github.luben/zstd-jni notwendig fuer zstd compression-->
         <dependency>
             <groupId>com.github.luben</groupId>
             <artifactId>zstd-jni</artifactId>
             <version>1.4.3-1</version>
+        </dependency>
+
+        <!-- test dependencies -->
+
+        <!-- needed for unit/intergration tests -->
+        <dependency>
+            <groupId>org.apache.maven.plugin-testing</groupId>
+            <artifactId>maven-plugin-testing-harness</artifactId>
+            <version>3.3.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-netty</artifactId>
+            <version>5.11.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>3.4.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-compat</artifactId>
+            <version>${maven.plugin.tools.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
@@ -207,17 +200,19 @@
             <version>3.0.5</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-settings</artifactId>
-            <version>3.6.0</version>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.14.3</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.9</version>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-verifier</artifactId>
+            <version>1.7.2</version>
+            <scope>test</scope>
         </dependency>
+        <!-- test dependencies -->
     </dependencies>
 
     <repositories>
@@ -265,11 +260,6 @@
     </reporting>
 
     <distributionManagement>
-        <!--repository>
-            <id>internal.repo</id>
-            <name>Temporary Staging Repository</name>
-            <url>file://${project.build.directory}/mvn-repo</url>
-        </repository-->
         <repository>
             <id>archiva.internal</id>
             <name>Internal Release Repository</name>
@@ -287,6 +277,31 @@
         <testSourceDirectory>src/test/scala</testSourceDirectory>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.0.0-M4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>install</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.scalatest</groupId>
                 <artifactId>scalatest-maven-plugin</artifactId>
@@ -314,28 +329,6 @@
                     <pomFile>pom.xml</pomFile>
                 </configuration>
             </plugin>
-            <!--plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.11</version>
-                <configuration>
-                    <message>Maven artifacts for ${project.version}</message>
-                    <noJekyll>true</noJekyll>
-                    <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
-                    <branch>refs/heads/mvn-repo</branch>
-                    <includes><include>**/*</include></includes>
-                    <repositoryName>data-release-tool-ti</repositoryName>
-                    <repositoryOwner>dbpedia</repositoryOwner>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>deploy</phase>
-                    </execution>
-                </executions>
-            </plugin-->
             <plugin>
                 <!-- see http://davidb.github.com/scala-maven-plugin -->
                 <groupId>net.alchim31.maven</groupId>
@@ -426,6 +419,24 @@
                             <goal>update-file-header</goal>
                         </goals>
                         <phase>process-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- this plugin does filtering of the sources, i.e. is needed to generate DatabusPluginVersion -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>templating-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <id>filter-src</id>
+                        <goals>
+                            <goal>filter-sources</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${basedir}/src/main/scala-templates</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/generated-sources/scala-templates</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

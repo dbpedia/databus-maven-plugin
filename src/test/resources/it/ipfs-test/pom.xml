@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  DBpedia Databus Maven Plugin
+  %%
+  Copyright (C) 2018 - 2020 Sebastian Hellmann (on behalf of the DBpedia Association)
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  #L%
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>testGroup</groupId>
+    <artifactId>testArtifact</artifactId>
+    <version>1.0</version>
+
+    <parent>
+        <groupId>org.dbpedia.databus</groupId>
+        <artifactId>super-pom</artifactId>
+        <version>1.3-SNAPSHOT</version>
+    </parent>
+    <packaging>pom</packaging>
+
+    <repositories>
+        <repository>
+            <id>archiva.internal</id>
+            <name>Internal Release Repository</name>
+            <url>http://databus.dbpedia.org:8081/repository/internal</url>
+        </repository>
+        <repository>
+            <id>archiva.snapshots</id>
+            <name>Internal Snapshot Repository</name>
+            <url>http://databus.dbpedia.org:8081/repository/snapshots</url>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+
+    <modules>
+        <module>test-set</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.dbpedia.databus</groupId>
+                <artifactId>databus-maven-plugin</artifactId>
+                <version>${pluginVersion}</version>
+                <configuration>
+                    <deployRepoURL>http://localhost:8081/</deployRepoURL>
+                    <downloadUrlPath>http://pa</downloadUrlPath>
+                    <publisher>https://neradis.github.io/test-id.ttl#this</publisher>
+                    <pkcs12File>test-cert-bundle.p12</pkcs12File>
+                    <license>http://purl.oclc.org/NET/rdflicense/cc-by-sa3.0</license>
+                    <documentation><![CDATA[No real version, we also use this as a dataset to test the framework]]></documentation>
+                    <ipfsSettings>
+                        <containerName>${cn}</containerName>
+                        <isInDocker>true</isInDocker>
+                        <projectRootDockerPath>/export/sample/</projectRootDockerPath>
+                    </ipfsSettings>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

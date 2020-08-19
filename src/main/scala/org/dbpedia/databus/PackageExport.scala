@@ -28,7 +28,7 @@ import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
 import java.io.{File, FileWriter}
 
 @Mojo(name = "package-export", defaultPhase = LifecyclePhase.PACKAGE)
-class PackageExport extends AbstractMojo with Properties {
+class PackageExport extends DatabusMojo {
 
   /**
     */
@@ -49,8 +49,6 @@ class PackageExport extends AbstractMojo with Properties {
     }
 
     if (!locations.buildDataIdFile.isRegularFile) {
-
-      //val emptyVersion = if (locations.inputFileList.isEmpty) s"* ${version} does not contain any files\n" else ""
       getLog.warn(s"${locations.prettyPath(locations.buildDataIdFile)} not found for ${artifactId}/${version}, can not package\n" +
         s"fix with:\n" +
         s"* running mvn prepare-package or mvn databus:metadata first\n")

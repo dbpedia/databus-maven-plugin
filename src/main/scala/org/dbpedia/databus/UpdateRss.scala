@@ -27,9 +27,7 @@ import java.util
 
 import com.rometools.rome.feed.synd._
 import com.rometools.rome.io.{SyndFeedInput, SyndFeedOutput}
-
-import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
-import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
+import org.apache.maven.plugin.MojoExecutionException
 
 import scala.collection.JavaConverters._
 
@@ -38,7 +36,7 @@ import scala.collection.JavaConverters._
   * TODO use right links to dataid (catalog)
   */
 @deprecated(message = "RSS will be generated from the SPARQL API", since = "early days")
-class UpdateRss extends AbstractMojo with Properties {
+class UpdateRss extends DatabusMojo {
 
   // rometools offers different options:
   // "rss_0.9", "rss_0.91", "rss_0.92", "rss_0.93", "rss_0.94", "rss_1.0", "rss_2.0", "atom_0.3"
@@ -46,6 +44,7 @@ class UpdateRss extends AbstractMojo with Properties {
 
   def getFeedDirectory() :File = {null}
   def getFeedFile() :File = {null}
+
   @throws[MojoExecutionException]
   override def execute(): Unit = {
 
@@ -93,8 +92,8 @@ class UpdateRss extends AbstractMojo with Properties {
 
     // create the new entry
     var entry: SyndEntry = new SyndEntryImpl()
-    var title = finalName
-    entry.setTitle(finalName)
+    var title = session.getCurrentProject.getBuild.getFinalName
+    entry.setTitle(title)
     // path to dataid
     //val dataidPath: Path = Paths.get(getDataIdFile().toString)
     val dataidPath: Path = null

@@ -1,0 +1,6 @@
+# completed 2018-09-10T00:42:16Z
+<http://hy.dbpedia.org/resource/Աբբաս_Սիխաթ> <http://dbpedia.org/ontology/birthPlace> <http://hy.dbpedia.org/resource/Շամախի> .
+<http://hy.dbpedia.org/resource/Աբբաս_Սիխաթ> <http://dbpedia.org/ontology/deathPlace> <http://hy.dbpedia.org/resource/Գանձակ> .
+<http://hy.dbpedia.org/resource/Աբբոթ_Լիման> <http://dbpedia.org/ontology/deathPlace> <http://hy.dbpedia.org/resource/ԱՄՆ> .
+<http://hy.dbpedia.org/resource/Աբբոթ_Լիման> <http://dbpedia.org/ontology/deathPlace> <http://hy.dbpedia.org/resource/Նյու_Յորք> .
+<http://hy.dbpedia.org/resource/Աբդ_ալ-Ռահման_Շուքրի> <http://dbpedia.org/ontology/deathPlace> <http://hy.dbpedia.org/resource/Կահիրե> .

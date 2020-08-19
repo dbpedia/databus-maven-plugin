@@ -20,25 +20,21 @@
  */
 package org.dbpedia.databus
 
-import java.util
 
 import better.files.File
-import com.typesafe.scalalogging.LazyLogging
-import org.apache.maven.plugin.{AbstractMojo, MojoExecutionException}
-import org.apache.maven.plugins.annotations.{LifecyclePhase, Mojo, Parameter}
-
+import org.apache.maven.plugin.MojoExecutionException
+import org.apache.maven.plugins.annotations.Mojo
 
 /**
-  * Delete current version
-  *
-  * * lists files
-  * * asks for approval, no -f option
-  * * deletes
-  *
-  */
+ * Delete current version
+ *
+ * * lists files
+ * * asks for approval, no -f option
+ * * deletes
+ *
+ */
 @Mojo(name = "rm", requiresOnline = true, threadSafe = true)
-class RemoveVersion extends Operations {
-
+class RemoveVersion extends DatabusMojo with Operations {
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
@@ -62,13 +58,9 @@ class RemoveVersion extends Operations {
           vdir.delete(true)
           getLog.info(s"${!vdir.isDirectory} $vdir")
         })
-
-
-      }else {
+      } else {
         println(s"aborted, read '$c'")
       }
-
-
     } else {
       if (!skipmodules.skipmodules) {
         getLog.info(
@@ -77,7 +69,6 @@ class RemoveVersion extends Operations {
              |rm -r $artifactId/$version"
            """.stripMargin)
       }
-      return
     }
   }
 

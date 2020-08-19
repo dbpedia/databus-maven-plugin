@@ -20,7 +20,6 @@
  */
 package org.dbpedia.databus
 
-import better.files.File
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.Mojo
 
@@ -32,14 +31,12 @@ import org.apache.maven.plugins.annotations.Mojo
   *
   */
 @Mojo(name = "ls", requiresOnline = true, threadSafe = true)
-class ListVersionFiles extends Operations {
+class ListVersionFiles extends DatabusMojo with Operations {
 
   val separator = ", "
 
   @throws[MojoExecutionException]
   override def execute(): Unit = {
-
-
     if (isParent()) {
       skipmodules.skipmodules = true
       modules.forEach(m => {

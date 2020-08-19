@@ -22,7 +22,7 @@ package org.dbpedia.databus
 
 
 import java.net.{MalformedURLException, URL}
-import java.nio.file.NoSuchFileException
+import java.nio.file.{NoSuchFileException, Paths}
 
 import better.files.File
 import better.files._
@@ -30,7 +30,6 @@ import better.files._
 import scala.collection.mutable
 
 trait Locations {
-
   this: Properties =>
 
   lazy val locations = new Locations(this)
@@ -47,9 +46,10 @@ trait Locations {
     def getLog = props.getLog
 
     //used for better paths in logging
-    def prettyPath(f: File): String = {
-      props.sessionRoot.toScala.relativize(f).toString
-    }
+    def prettyPath(f: File): String =
+      Paths.get(props.session.getExecutionRootDirectory)
+        .relativize(f)
+        .toString
 
     /**
       * INPUT
@@ -76,12 +76,12 @@ trait Locations {
       */
 
     // target/databus
-    lazy val buildDirectory: File = (props.buildDirectory.toScala / "databus").createDirectories()
+    lazy val buildDirectory: File = (props.session.getCurrentProject.getBuild.getDirectory / "databus").createDirectories()
 
     //
     lazy val buildVersionDirectory: File = (buildDirectory / props.version)
 
-    lazy val buildVersionShaSumDirectory: File = (buildDirectory / props.version / "shasum").createDirectories()
+    lazy val buildVersionShaSumDirectory: File = (buildVersionDirectory / "shasum").createDirectories()
 
     lazy val buildDataIdFile: File = (buildVersionDirectory / dataIdFileName)
 
@@ -95,7 +95,7 @@ trait Locations {
 
     lazy val packageDocumentationFile: File = (packageDirectory / markdownFileName)
 
-    lazy val packageVersionDirectory: File = (packageDirectory / version).createDirectories()
+    lazy val packageVersionDirectory: File = (packageDirectory / props.version).createDirectories()
 
     lazy val packageDataIdFile: File = (packageVersionDirectory / dataIdFileName)
 
@@ -145,8 +145,7 @@ trait Locations {
           s"isDirectory: ${inputVersionDirectory.isDirectory}\n " +
           s"isEmpty (no files found): ${inputVersionDirectory.isEmpty}\n"
         )
-
-        List[File]()
+        List.empty
       }
     }
 
@@ -158,61 +157,43 @@ trait Locations {
       try {
         inputProvenanceFile.lineIterator
           .filter(_.nonEmpty)
-          .map(line => line.split("\t"))
+          .map(_.split("\t"))
           .foreach(arr => {
             val url = new URL(arr(1))
             set.+=((arr(0), url))
           })
       } catch {
-        case nsf: NoSuchFileException => {
+        case _: NoSuchFileException =>
           getLog.info(s"${artifactId}/provenance.tsv not found, skipping")
-          set
-        }
-        case aie: ArrayIndexOutOfBoundsException => {
-          getLog.error(s"parsing of ${artifactId}/${prettyPath(inputProvenanceFile)} failed\nfix with:\n* must be (version \\t url), ${aie}")
+        case e@(_ : ArrayIndexOutOfBoundsException | _: MalformedURLException) =>
+          getLog.error(s"parsing of ${artifactId}/${prettyPath(inputProvenanceFile)} failed\nfix with:\n* must be (version \\t url), $e")
           System.exit(-1)
-        }
-        case mue: MalformedURLException => {
-          getLog.error(s"parsing of ${artifactId}/${prettyPath(inputProvenanceFile)} failed\nfix with:\n* must be (version \\t url), ${mue}")
-          System.exit(-1)
-        }
-
       }
-
       set.toSet
     }
 
-    def provenanceIRIs = {
+    def provenanceIRIs =
       provenanceForVersion(props.version)
-    }
 
-    def provenanceForVersion(version: String): Set[URL] = {
-
-      provenanceFull.filter(_._1 == version).map(t => t._2)
-
-    }
-
+    def provenanceForVersion(version: String): Set[URL] =
+      provenanceFull
+        .filter(_._1 == version)
+        .map(t => t._2)
 
     lazy val pkcs12File: File = {
       if (props.pkcs12File != null) {
         lib.findFileMaybeInParent(props.pkcs12File.toScala, "PKCS12 bundle")
-      } else if (props.settings.getServer(pkcs12serverId) != null) {
+      } else if (pkcsServer != null) {
         //TODO strictly not necessary to use find here
-        lib.findFileMaybeInParent(File(settings.getServer(pkcs12serverId).getPrivateKey), "PKCS bundle")
+        lib.findFileMaybeInParent(File(pkcsServer.getPrivateKey), "PKCS bundle")
       } else {
         null
       }
     }
 
-    def pkcs12Password: String = {
-
-      if (props.settings.getServer(pkcs12serverId) != null && settings.getServer(pkcs12serverId).getPassphrase !=null ) {
-          settings.getServer(pkcs12serverId).getPassphrase
-      } else {
-        //empty
-        ""
-      }
-    }
+    def pkcs12Password: String =
+      Option(pkcsServer)
+        .flatMap(s => Option(s.getPassphrase))
+        .getOrElse("")
   }
-
 }
