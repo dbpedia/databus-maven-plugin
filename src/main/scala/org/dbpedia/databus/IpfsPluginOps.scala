@@ -26,7 +26,7 @@ import java.nio.file.{Path, Paths}
 
 import org.apache.maven.plugins.annotations.Parameter
 import org.dbpedia.databus.ipfs.{IpfsCliClient, IpfsClientOps}
-import org.dbpedia.databus.ipfs.IpfsCliClient.{DefaultRabin, IpfsClientConf}
+import org.dbpedia.databus.ipfs.IpfsCliClient.{Chunker, IpfsClientConf}
 
 import scala.util.{Failure, Success, Try}
 
@@ -39,6 +39,12 @@ trait IpfsPluginOps {
 
   @Parameter(property = "ipfsSettings", readonly = true)
   val ipfsSettings: IpfsConfig = null
+
+  lazy val chunker: Chunker = IpfsCliClient.Rabin(
+    ipfsSettings.chunkerMinBlockSize,
+    ipfsSettings.chunkerAvgBlockSize,
+    ipfsSettings.chunkerMaxBlockSize
+  )
 
   /**
    * returns true if the plugin was configured to save files in ipfs
@@ -76,7 +82,7 @@ trait IpfsPluginOps {
         cliClient = Some(c)
       }
     }
-    cliClient.get.add(path, DefaultRabin, recursive = true, onlyHash = onlyHash)
+    cliClient.get.add(path, chunker, recursive = true, onlyHash = onlyHash)
   }
 
   /**
@@ -128,16 +134,39 @@ trait IpfsPluginOps {
  * @param containerName         Name of the ipfs docker container. (optional)
  * @param ipfsEndpointLink      Link to an ipfs http endpoint for file downloads.
  * @param projectRootDockerPath Optional parameter, specify path in the docker container to which current project root is mounted.
+ * @param nodeHost              host of the IPFS node
+ * @param nodePort              port of the IPFS node
+ * @param chunkerMinBlockSize   min block size of rabin chunker of IPFS
+ * @param chunkerMaxBlockSize   max block size of rabin chunker of IPFS
+ * @param chunkerAvgBlockSize   avg block size of rabin chunker of IPFS
  */
 case class IpfsConfig(isInDocker: Boolean,
                       containerName: String,
                       ipfsEndpointLink: URL,
                       projectRootDockerPath: File,
                       nodeHost: String,
-                      nodePort: Int) {
+                      nodePort: Int,
+                      chunkerMinBlockSize: Int,
+                      chunkerAvgBlockSize: Int,
+                      chunkerMaxBlockSize: Int) {
+
   /**
    * Needed for injection.
    */
-  def this() = this(false, "ipfs_host", URI.create("https://ipfs.io/ipfs/").toURL, null, "127.0.0.1", 5001)
+  def this() = this(
+    false,
+    "ipfs_host",
+    URI.create("https://ipfs.io/ipfs/").toURL,
+    null,
+    "127.0.0.1",
+    5001,
+    IpfsConfig.DefaultChunkSize / 2,
+    IpfsConfig.DefaultChunkSize,
+    IpfsConfig.DefaultChunkSize * 2
+  )
 
+}
+
+object IpfsConfig {
+  private val DefaultChunkSize = 262144
 }
