@@ -138,14 +138,22 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
         datasetResource.addProperty(dataid.version, versionIRI)
       }
       case None => {
+        val account = publisher.toString.replace("#this", "")
+        val accountIRI = account.asIRI
+        val groupIRI = s"$account/${groupId}".asIRI
+        val artifactIRI = s"$account/${groupId}/${artifactId}".asIRI
+        val versionIRI = s"$account/${groupId}/${artifactId}/${version}".asIRI
+        fileIriBase = s"$account/${groupId}/${artifactId}/${version}/"
 
-        val message = "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED"
-        datasetResource.addProperty(dataid.account, message.asIRI)
-        datasetResource.addProperty(dataid.group, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
-        datasetResource.addProperty(dataid.artifact, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
-        datasetResource.addProperty(dataid.version, "https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED".asIRI)
-        fileIriBase = message
-        getLog.warn("Not registered, Dataset URIs will not work, please register at https://github.com/dbpedia/accounts/blob/master/README.md#ACCOUNTNEEDED")
+        //accountIRI.addProperty(RDF.`type`, dataid.Account)
+        groupIRI.addProperty(RDF.`type`, dataid.Group)
+        artifactIRI.addProperty(RDF.`type`, dataid.Artifact)
+        versionIRI.addProperty(RDF.`type`, dataid.Version)
+
+        datasetResource.addProperty(dataid.account, accountIRI)
+        datasetResource.addProperty(dataid.group, groupIRI)
+        datasetResource.addProperty(dataid.artifact, artifactIRI)
+        datasetResource.addProperty(dataid.version, versionIRI)
       }
     }
 
@@ -235,7 +243,7 @@ class PrepareMetadata extends AbstractMojo with Properties with SigningHelpers w
     df.fileInfoCache = readCache(cacheFile.toJava)
 
     //calculate
-    df.updateSignature(singleKeyPairFromPKCS12)
+    //df.updateSignature(singleKeyPairFromPKCS12)
     //TODO deactivated because moved to mods
     //df.updateFileMetrics()
 

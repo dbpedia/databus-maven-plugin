@@ -51,8 +51,8 @@ class Validate extends AbstractMojo with SigningHelpers with LazyLogging with Pr
   override def execute(): Unit = {
 
     if (!Validated.validated) {
-      validateWebId()
-      validateAccount()
+//      validateWebId()
+//      validateAccount()
       Validated.validated = true
     }
 
