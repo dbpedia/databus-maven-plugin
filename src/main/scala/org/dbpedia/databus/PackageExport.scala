@@ -118,7 +118,7 @@ class PackageExport extends AbstractMojo with Properties {
       locations.buildDataIdFile.copyTo(locations.packageDataIdFile, overwrite = true)
     } else {
       // resolve uris, always overwrite
-      val baseResolvedDataId = resolveBaseForRDFFile(locations.buildDataIdFile, locations.dataIdDownloadLocation)
+      val baseResolvedDataId = resolveBaseForRDFFile(locations.buildDataIdFile, locations.datasetIdNoSlash)
       locations.packageDataIdFile.writeByteArray((Properties.logo + "\n").getBytes())
       locations.packageDataIdFile.appendByteArray(baseResolvedDataId)
     }

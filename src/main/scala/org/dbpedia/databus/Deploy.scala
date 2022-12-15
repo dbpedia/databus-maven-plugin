@@ -108,15 +108,6 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
 
     buf ++= model.listStatements().filterKeep(s => {
       s.getPredicate.toString.contains("type") &&
-        s.getObject.toString.contentEquals("http://dataid.dbpedia.org/ns/core#Group")
-    }).asScala
-    buf.foreach(s => {
-      s.remove()
-    })
-    buf.clear()
-
-    buf ++= model.listStatements().filterKeep(s => {
-      s.getPredicate.toString.contains("type") &&
         s.getObject.toString.contentEquals("http://dataid.dbpedia.org/ns/core#Version")
     }).asScala
     buf.foreach(s => {
@@ -157,6 +148,19 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
       )
     })
     buf.clear()
+
+    model.listStatements().asScala.find(ss => {
+      ss.getPredicate.toString.contains("type") &&
+        ss.getObject.toString.contentEquals("http://dataid.dbpedia.org/ns/core#Group")
+    }).foreach(ss =>
+      model.listStatements().asScala
+        .find(p => p.getPredicate.toString.endsWith("groupdocu"))
+        .map(gd =>
+          ss.getSubject.addProperty(
+            model.createProperty("http://purl.org/dc/terms/description"),
+            model.createLiteral(gd.getObject.asLiteral().getString)
+          )).getOrElse(ss.remove()))
+
 
     buf ++= model.listStatements().filterKeep(s => {
       s.getSubject.toString.contains("/dataid.ttl") && s.getPredicate.toString.contains("type")
@@ -230,7 +234,7 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
       }
 
       case None => {
-        downloadUrlPath
+        locations.datasetIdNoSlash
       }
     }
 

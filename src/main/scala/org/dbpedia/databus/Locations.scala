@@ -87,6 +87,8 @@ trait Locations {
 
     lazy val buildParselogFile: File = (buildVersionDirectory / parselogFileName)
 
+    lazy val datasetIdNoSlash: String = s"${publisher.toString.replace("#this", "")}/${groupId}/${artifactId}/${version}"
+
 
     /**
       * repo/package

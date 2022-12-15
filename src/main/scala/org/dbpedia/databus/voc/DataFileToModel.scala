@@ -186,7 +186,7 @@ trait DataFileToModel extends Properties with Parameters {
      val dcatdownloadurlpath: String = if (absoluteDCATDownloadUrlPath != null) {
       absoluteDCATDownloadUrlPath
     } else {
-      ""
+      downloadUrlPath.toString
     }
     singleFileResource.addProperty(dcat.downloadURL, (dcatdownloadurlpath + datafile.finalBasename(params.versionToInsert)).asIRI)
 
