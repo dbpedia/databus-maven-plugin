@@ -137,10 +137,15 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
       s.getObject.toString.contains("Dataset") && s.getPredicate.toString.contains("type")
     }).asScala
     buf.foreach(s => {
-      s.getSubject.addProperty(
-        model.createProperty("http://purl.org/dc/terms/abstract"),
-        model.createLiteral("")
-      )
+      val dsProps = model.listStatements().filterKeep(ss => {
+        ss.getSubject.toString.contentEquals(s.getSubject.toString)
+      }).asScala
+      dsProps.find(p => p.getPredicate.toString.endsWith("comment"))
+        .foreach(l =>
+          s.getSubject.addProperty(
+            model.createProperty("http://purl.org/dc/terms/abstract"),
+            model.createLiteral(l.getObject.asLiteral().getString)
+          ))
       s.getSubject.addProperty(
         model.createProperty("http://purl.org/dc/terms/modified"),
         model.createTypedLiteral(
@@ -249,7 +254,7 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
       .header("Content-Type", "application/json")
       .asString
 
-    if ((!response.is2xx) || (!response.toString.contains("Publishing DataId finished with code 200."))) {
+    if (!response.is2xx) {
       getLog.error(
         s"""|FAILURE HTTP response code: ${response.code} (check https://en.wikipedia.org/wiki/HTTP_${response.code})
             |$deployRepoURL rejected ${locations.packageDataIdFile.pathAsString}
@@ -258,7 +263,7 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
 
       getLog.debug(s"Full ${response.toString}")
     } else {
-      getLog.info("Response: " + response.toString)
+      getLog.info("Response: " + response.body)
 
       val query =
         s"""PREFIX dataid: <http://dataid.dbpedia.org/ns/core#>
