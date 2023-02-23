@@ -42,6 +42,8 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 import org.apache.jena.util.ResourceUtils
+import org.apache.jena.vocabulary.RDF
+import org.dbpedia.databus.shared.rdf.vocab.dataid
 
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
@@ -125,9 +127,22 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
     buf.clear()
 
     buf ++= model.listStatements().filterKeep(s => {
+      s.getPredicate.toString.contains("type") &&
+        s.getObject.toString.contentEquals("http://dataid.dbpedia.org/ns/core#DataId")
+    }).asScala
+    buf.foreach(s => {
+      s.getSubject.removeProperties()
+      s.remove()
+    })
+    buf.clear()
+
+    buf ++= model.listStatements().filterKeep(s => {
       s.getObject.toString.contains("Dataset") && s.getPredicate.toString.contains("type")
     }).asScala
     buf.foreach(s => {
+      s.getSubject.addProperty(
+        RDF.`type`, dataid(model).Version
+      )
       val dsProps = model.listStatements().filterKeep(ss => {
         ss.getSubject.toString.contentEquals(s.getSubject.toString)
       }).asScala
@@ -146,6 +161,9 @@ class Deploy extends AbstractMojo with Properties with SigningHelpers {
           XSDDatatype.XSDdateTime
         )
       )
+    })
+    buf.foreach(s => {
+      ResourceUtils.renameResource(s.getSubject, s.getSubject.toString.replace("#Dataset", ""))
     })
     buf.clear()
 
